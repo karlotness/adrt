@@ -1,6 +1,6 @@
-# ADRT (Approximate Discrete Radon Transform)
+# ADRTC (Approximate Discrete Radon Transform in C)
 
-Developement repository for ADRT 
+Developement repository for ADRT written as C extension
 
 ## References
 
