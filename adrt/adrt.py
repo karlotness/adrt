@@ -147,9 +147,9 @@ def adrt(a,p=1):
 
     """
 
-    pdaa,pdab,pdac,pdad = _adrt.adrtm.pdrtaq(a,p)
+    da = _adrtc.adrt(a)
 
-    return pdaa,pdab,pdac,pdad
+    return da
 
 
 def badrt(da,r=1):

@@ -11,7 +11,7 @@
 /* 
  * compute ADRT of a single quadrant
  */
-void adrtq(PyArrayObject* a, npy_double** da, int n, int n1){
+void adrtq(PyArrayObject* a, npy_double** da, int n, int n1, int n2){
 
     int h,s,t,l,m;
     int L,M,N;
@@ -39,7 +39,7 @@ void adrtq(PyArrayObject* a, npy_double** da, int n, int n1){
 
     N = (int) pow(2.0, (double) n);
     /* section loop 2^n x 2^m image */
-    for (m = 0; m < n1; m++){
+    for (m = n1; m < n2; m++){
         /* l-th 2^n x 2^m image */
         M = (int) pow(2.0, (double) m);
         L = (int) pow(2.0, (double) n-m-1);
@@ -325,9 +325,9 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
     
     int h,s,n,N,M;
     /* const int ndim = 2; */
-    int k;
+    int n1,n2;
 
-    if (!PyArg_ParseTuple(args,"O!i",&PyArray_Type,&a,&k))
+    if (!PyArg_ParseTuple(args,"O!ii",&PyArray_Type,&a,&n1,&n2))
         return NULL;
     
     Py_INCREF(a);
@@ -338,7 +338,9 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
 
     n = (int) round(log2( (double) N));
 
-    if (k > n) k = n;
+    /* force bounds */
+    if (n2 > n) n2 = n;
+    if (n1 < 0) n1 = 0;
 
     /* temporary scratch space */
     npy_double ** da = malloc(sizeof(npy_double*)*3*N);
@@ -349,7 +351,7 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
         }
     }
     
-    adrtq(a,da,n,k); 
+    adrtq(a,da,n,n1,n2); 
 
     Py_DECREF(a);
 
@@ -437,21 +439,22 @@ static PyObject * adrt(PyObject *self, PyObject *args){
         }
     }
 
-    adrtq(a,daa,n,n);             /* quadrant a */
+    adrtq(a,daa,n,0,n);             /* quadrant a */
     
     tr(a0,aw,N,N);              /* quadrant b */
     set_pyarray(aw,a,N,N);
-    adrtq(a,dab,n,n); 
+    adrtq(a,dab,n,0,n); 
     
     fliplr(a0,av,N,N);          /* quadrant d */
     tr(av,aw,N,N);
     set_pyarray(aw,a,N,N);
-    adrtq(a,dac,n,n); 
+    adrtq(a,dac,n,0,n); 
 
     fliplr(a0,aw,N,N);          /* quadrant c */
     set_pyarray(aw,a,N,N);
-    adrtq(a,dad,n,n); 
+    adrtq(a,dad,n,0,n); 
 
+    set_pyarray(a0,a,N,N);
     Py_DECREF(a);
 
     npy_intp nmdim[2] = {3*N,N};
@@ -562,6 +565,8 @@ void iadrtq(PyArrayObject* da, npy_double** a, int n){
     free(at);
     }
 
+
+
 /* 
  * compute inverse ADRT
  */
@@ -617,6 +622,8 @@ static PyObject * iadrt(PyObject *self, PyObject *args){
     
     return Py_BuildValue("O",a_out); 
     }
+
+
 
 static PyMethodDef AdrtModuleMethods[] = {
     {"adrt",     adrt, METH_VARARGS, "compute full ADRT of 2^N x 2^N image"},
