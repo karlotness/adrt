@@ -141,20 +141,52 @@ def matmulw(x,p=1):
 
     return ba
 
-def adrt(a,p=1):
+def adrt(a):
     r"""
-        compute adrt
+    Compute ADRT of a square image of size 2**n x 2**n
+
+    Parameters
+    ----------
+    a : array
+        an array of size 2**n x 2**n
+
+
+    Returns
+    -------
+    daa : array
+        an array of size 3*2**n x 2**n containing the ADRT of the first 
+        quadrant of the image, corresponding to continuous angles pi*[0/4,1/4]
+    dab : array
+        an array of size 3*2**n x 2**n containing the ADRT of the second 
+        quadrant of the image, corresponding to continuous angles pi*[1/4,1/4]
+    dac : array
+        an array of size 3*2**n x 2**n containing the ADRT of the third 
+        quadrant of the image, corresponding to continuous angles pi*[1/4,3/4]
+    dad : array
+        an array of size 3*2**n x 2**n containing the ADRT of the fourth 
+        quadrant of the image, corresponding to continuous angles pi*[3/4,4/4]
 
     """
 
-    pdaa,pdab,pdac,pdad = _adrt.adrtm.pdrtaq(a,p)
+    da = _adrtc.adrt(a)
 
-    return pdaa,pdab,pdac,pdad
+    return da
 
 
 def badrt(da,r=1):
     r"""
-        compute back projection of adrt
+    Computes the backprojection of ADRT
+
+    Parameters
+    ----------
+    da : list_like
+        a list containing arrays corresponding to ADRT of the four qudrants,
+        each of size 3*2**n x 2**n
+
+    Returns
+    -------
+    ba : array
+        the back-projection, an array of size 2**n x 2**n
 
     """
 
@@ -163,7 +195,7 @@ def badrt(da,r=1):
     dac = da[2]
     dad = da[3]
 
-    ba = _adrt.adrtm.rbdrtaq(daa,dab,dac,dad,r)
+    ba = _adrtc.bdrt(daa,dab,dac,dad)
 
     return ba
 

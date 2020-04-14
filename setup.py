@@ -7,7 +7,7 @@ ext1 = Extension('adrt._adrtc',
                  include_dirs=[numpy_dir],
                  sources = ['adrt/adrt.c'])
 
-setup(name = 'adrt',
+setup(name = 'adrtc',
       packages = ['adrt'],
       version = '0.1.0',
       description       = "Approximate Discrete Radon Transform",
