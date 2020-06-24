@@ -639,11 +639,14 @@ static PyMethodDef AdrtModuleMethods[] = {
 
 static struct PyModuleDef AdrtModule = {
         PyModuleDef_HEAD_INIT,
-        "adrtc",
-        "ADRT in C",
-        -1,
-        AdrtModuleMethods
-    };
+        "_adrtc",
+        "C routines for ADRT computation",
+        0,
+        AdrtModuleMethods,
+        NULL,
+        NULL,
+        NULL,
+        NULL};
 
 PyMODINIT_FUNC PyInit__adrtc(void) {
     Py_Initialize();
