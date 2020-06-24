@@ -52,7 +52,7 @@ PyMODINIT_FUNC
 PyInit__adrtc_cdefs(void)
 {
     PyObject *module = PyModule_Create(&adrtc_cdefs_module);
-    if (!module) {
+    if(!module) {
         return NULL;
     }
     return module;
