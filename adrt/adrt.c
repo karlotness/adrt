@@ -1,5 +1,5 @@
 /*  C extensions for Approximate  Discrete Radon Transform
- *  See LICENSE  
+ *  See LICENSE
  */
 
 #include "Python.h"
@@ -8,7 +8,7 @@
 #include "math.h"
 #include <stdio.h>
 
-/* 
+/*
  * compute ADRT of a single quadrant
  */
 void adrtq(PyArrayObject* a, npy_double** da, int n, int n1, int n2){
@@ -16,7 +16,7 @@ void adrtq(PyArrayObject* a, npy_double** da, int n, int n1, int n2){
     int h,s,t,l,m;
     int L,M,N;
     npy_intp hs[2]={0,0};     /* integer pair for indices */
-    
+
     N = (int) PyArray_DIM(a,0);
     M = (int) PyArray_DIM(a,1);
 
@@ -70,7 +70,7 @@ void bdrtq(PyArrayObject* da, npy_double** ba, int n){
     int h,s,l,m,mh,m0;
     int M,N;
     npy_intp hs[2]={0,0};     /* integer pair for indices */
-    
+
     M = (int) PyArray_DIM(da,0);
     N = (int) PyArray_DIM(da,1);
 
@@ -96,7 +96,7 @@ void bdrtq(PyArrayObject* da, npy_double** ba, int n){
     for (m = n-1; m > -1; m--){
         /* l-th 2^n x 2^m image */
         mh = (int) pow(2.0, (double) m);   /* 2^m length of half-img */
-        m0 = 2*mh; 
+        m0 = 2*mh;
         for (h = 0; h < M; h++){
             for (s = 0; s < mh; s++){
                 for (l = 0; l < N; l += m0){
@@ -109,7 +109,7 @@ void bdrtq(PyArrayObject* da, npy_double** ba, int n){
                     }
                 }
             }
-        } 
+        }
         /* update da */
         for (h = 0; h < M; h++){
             for (s = 0; s < N; s++){
@@ -164,13 +164,13 @@ static PyObject * bdrtpart(PyObject *self, PyObject *args){
 
     PyArrayObject *da;   /* input image */
     PyArrayObject *ba_out;   /* input image */
-    
+
     int h,s,n,N,M;
     /* const int ndim = 2; */
 
     if (!PyArg_ParseTuple(args,"O!",&PyArray_Type,&da))
         return NULL;
-    
+
     Py_INCREF(da);
     M = (int) PyArray_DIM(da,0);
     N = (int) PyArray_DIM(da,1);
@@ -188,7 +188,7 @@ static PyObject * bdrtpart(PyObject *self, PyObject *args){
         }
     }
 
-    bdrtq(da,ba,n); 
+    bdrtq(da,ba,n);
 
     Py_DECREF(da);
 
@@ -196,7 +196,7 @@ static PyObject * bdrtpart(PyObject *self, PyObject *args){
     npy_intp hs[2] = {0,0};
 
     /* prep for output */
-    ba_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    ba_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                             PyArray_DescrFromType(NPY_DOUBLE),
                             PyArray_NDIM(da), nmdim, NULL,NULL,0,NULL);
 
@@ -209,8 +209,8 @@ static PyObject * bdrtpart(PyObject *self, PyObject *args){
     }
 
     free(ba);
-    
-    return Py_BuildValue("O",ba_out); 
+
+    return Py_BuildValue("O",ba_out);
     }
 
 
@@ -220,24 +220,24 @@ static PyObject * bdrt(PyObject *self, PyObject *args){
     PyArrayObject *dab;   /* input image */
     PyArrayObject *dac;   /* input image */
     PyArrayObject *dad;   /* input image */
-    
+
     PyArrayObject *baa_out;   /* input image */
     PyArrayObject *bab_out;   /* input image */
     PyArrayObject *bac_out;   /* input image */
     PyArrayObject *bad_out;   /* input image */
-    
+
     int h,s,n,N,M;
     /* const int ndim = 2; */
 
     if (!PyArg_ParseTuple(args,"O!O!O!O!",&PyArray_Type,&daa,
         &PyArray_Type,&dab,&PyArray_Type,&dac,&PyArray_Type,&dad))
         return NULL;
-    
+
     Py_INCREF(daa);
     Py_INCREF(dab);
     Py_INCREF(dac);
     Py_INCREF(dad);
-    
+
     M = (int) PyArray_DIM(daa,0);
     N = (int) PyArray_DIM(daa,1);
     if (M != 3*N || (int) PyArray_NDIM(daa) != 2)
@@ -263,10 +263,10 @@ static PyObject * bdrt(PyObject *self, PyObject *args){
         }
     }
 
-    bdrtq(daa,baa,n); 
-    bdrtq(dab,bab,n); 
-    bdrtq(dac,bac,n); 
-    bdrtq(dad,bad,n); 
+    bdrtq(daa,baa,n);
+    bdrtq(dab,bab,n);
+    bdrtq(dac,bac,n);
+    bdrtq(dad,bad,n);
 
     Py_DECREF(daa);
     Py_DECREF(dab);
@@ -277,19 +277,19 @@ static PyObject * bdrt(PyObject *self, PyObject *args){
     npy_intp hs[2] = {0,0};
 
     /* prep for output */
-    baa_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    baa_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(daa), nmdim, NULL,NULL,0,NULL);
 
-    bab_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    bab_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(daa), nmdim, NULL,NULL,0,NULL);
 
-    bac_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    bac_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(daa), nmdim, NULL,NULL,0,NULL);
 
-    bad_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    bad_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(daa), nmdim, NULL,NULL,0,NULL);
 
@@ -309,27 +309,27 @@ static PyObject * bdrt(PyObject *self, PyObject *args){
     free(bab);
     free(bac);
     free(bad);
-    
-    return Py_BuildValue("(OOOO)",baa_out,bab_out,bac_out,bad_out); 
+
+    return Py_BuildValue("(OOOO)",baa_out,bab_out,bac_out,bad_out);
     }
 
 
 
-/* 
- * compute ADRT 
+/*
+ * compute ADRT
  */
 static PyObject * adrtpart(PyObject *self, PyObject *args){
 
     PyArrayObject *a;   /* input image */
     PyArrayObject *da_out;   /* input image */
-    
+
     int h,s,n,N,M;
     /* const int ndim = 2; */
     int n1,n2;
 
     if (!PyArg_ParseTuple(args,"O!ii",&PyArray_Type,&a,&n1,&n2))
         return NULL;
-    
+
     Py_INCREF(a);
     N = (int) PyArray_DIM(a,0);
     M = (int) PyArray_DIM(a,1);
@@ -350,8 +350,8 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
             da[h][s] = 0.0;
         }
     }
-    
-    adrtq(a,da,n,n1,n2); 
+
+    adrtq(a,da,n,n1,n2);
 
     Py_DECREF(a);
 
@@ -359,7 +359,7 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
     npy_intp hs[2] = {0,0};
 
     /* prep for output */
-    da_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    da_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                             PyArray_DescrFromType(NPY_DOUBLE),
                             PyArray_NDIM(a), nmdim, NULL,NULL,0,NULL);
 
@@ -372,30 +372,30 @@ static PyObject * adrtpart(PyObject *self, PyObject *args){
     }
 
     free(da);
-    
-    return Py_BuildValue("O",da_out); 
+
+    return Py_BuildValue("O",da_out);
     }
 
 
 static PyObject * adrt(PyObject *self, PyObject *args){
 
     PyArrayObject *a;   /* input image */
-    
+
     PyArrayObject *daa_out;   /* output adrt quadrant a */
     PyArrayObject *dab_out;   /* output adrt quadrant b */
     PyArrayObject *dac_out;   /* output adrt quadrant c */
     PyArrayObject *dad_out;   /* output adrt quadrant d */
-    
+
     npy_intp hs[2] = {0,0};
-    
+
     int h,s,n,N,M;
     /* const int ndim = 2; */
 
     if (!PyArg_ParseTuple(args,"O!",&PyArray_Type,&a))
         return NULL;
-    
+
     Py_INCREF(a);
-    
+
     N = (int) PyArray_DIM(a,0);
     M = (int) PyArray_DIM(a,1);
     if (N != M || (int) PyArray_NDIM(a) != 2)
@@ -408,7 +408,7 @@ static PyObject * adrt(PyObject *self, PyObject *args){
     npy_double ** dab = malloc(sizeof(npy_double*)*3*N);
     npy_double ** dac = malloc(sizeof(npy_double*)*3*N);
     npy_double ** dad = malloc(sizeof(npy_double*)*3*N);
-    
+
     for (h=0; h<3*N; h++){
         daa[h] = malloc(sizeof(npy_double*)*N);
         dab[h] = malloc(sizeof(npy_double*)*N);
@@ -421,7 +421,7 @@ static PyObject * adrt(PyObject *self, PyObject *args){
             dad[h][s] = 0.0;
         }
     }
-    
+
     npy_double ** av = malloc(sizeof(npy_double*)*N);
     npy_double ** aw = malloc(sizeof(npy_double*)*N);
     npy_double ** a0 = malloc(sizeof(npy_double*)*N);
@@ -440,19 +440,19 @@ static PyObject * adrt(PyObject *self, PyObject *args){
     }
 
     adrtq(a,daa,n,0,n);             /* quadrant a */
-    
+
     tr(a0,aw,N,N);              /* quadrant b */
     set_pyarray(aw,a,N,N);
-    adrtq(a,dab,n,0,n); 
-    
+    adrtq(a,dab,n,0,n);
+
     fliplr(a0,av,N,N);          /* quadrant d */
     tr(av,aw,N,N);
     set_pyarray(aw,a,N,N);
-    adrtq(a,dac,n,0,n); 
+    adrtq(a,dac,n,0,n);
 
     fliplr(a0,aw,N,N);          /* quadrant c */
     set_pyarray(aw,a,N,N);
-    adrtq(a,dad,n,0,n); 
+    adrtq(a,dad,n,0,n);
 
     set_pyarray(a0,a,N,N);
     Py_DECREF(a);
@@ -460,19 +460,19 @@ static PyObject * adrt(PyObject *self, PyObject *args){
     npy_intp nmdim[2] = {3*N,N};
 
     /* prep for output */
-    daa_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    daa_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(a), nmdim, NULL,NULL,0,NULL);
 
-    dab_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    dab_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(a), nmdim, NULL,NULL,0,NULL);
 
-    dac_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    dac_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(a), nmdim, NULL,NULL,0,NULL);
 
-    dad_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    dad_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                                 PyArray_DescrFromType(NPY_DOUBLE),
                                 PyArray_NDIM(a), nmdim, NULL,NULL,0,NULL);
 
@@ -491,17 +491,17 @@ static PyObject * adrt(PyObject *self, PyObject *args){
     free(dab);
     free(dac);
     free(dad);
-     
+
     free(aw);
     free(av);
     free(a0);
-    
-    return Py_BuildValue("(OOOO)",daa_out,dab_out,dac_out,dad_out); 
+
+    return Py_BuildValue("(OOOO)",daa_out,dab_out,dac_out,dad_out);
 }
 
 
 
-/* 
+/*
  * compute inverse ADRT from single quadrant
  */
 void iadrtq(PyArrayObject* da, npy_double** a, int n){
@@ -539,11 +539,11 @@ void iadrtq(PyArrayObject* da, npy_double** a, int n){
         for (l = 0; l < L; l++){
             for (t = 0; t < M; t++){
                 for (h = 0; h+1 < 3*N; h++){
-                    at[h][t+(2*l)*M] = a[h+1][2*t  +(2*l)*M] 
+                    at[h][t+(2*l)*M] = a[h+1][2*t  +(2*l)*M]
                                      - a[h  ][2*t+1+(2*l)*M];
                 }
                 for (h = t; h < 3*N; h++){
-                    at[h][t+(2*l+1)*M] = a[h-t][2*t+1+(2*l)*M] 
+                    at[h][t+(2*l+1)*M] = a[h-t][2*t+1+(2*l)*M]
                                        - a[h-t][2*t  +(2*l)*M];
                 }
                 for (h = 0; h < t; h++){
@@ -567,20 +567,20 @@ void iadrtq(PyArrayObject* da, npy_double** a, int n){
 
 
 
-/* 
+/*
  * compute inverse ADRT
  */
 static PyObject * iadrt(PyObject *self, PyObject *args){
 
     PyArrayObject *da;      /* input transform */
     PyArrayObject *a_out;   /* output image */
-    
+
     int h,s,n,N,M;
-    
+
     /* const int ndim = 2; */
     if (!PyArg_ParseTuple(args,"O!",&PyArray_Type,&da))
         return NULL;
-    
+
     Py_INCREF(da);
     M = (int) PyArray_DIM(da,0);
     N = (int) PyArray_DIM(da,1);
@@ -597,8 +597,8 @@ static PyObject * iadrt(PyObject *self, PyObject *args){
             a[h][s] = 0.0;
         }
     }
-    
-    iadrtq(da,a,n); 
+
+    iadrtq(da,a,n);
 
     Py_DECREF(da);
 
@@ -606,7 +606,7 @@ static PyObject * iadrt(PyObject *self, PyObject *args){
     npy_intp hs[2] = {0,0};
 
     /* prep for output */
-    a_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type, 
+    a_out =  (PyArrayObject*) PyArray_NewFromDescr(&PyArray_Type,
                               PyArray_DescrFromType(NPY_DOUBLE),
                               PyArray_NDIM(da), nmdim, NULL,NULL,0,NULL);
 
@@ -619,20 +619,20 @@ static PyObject * iadrt(PyObject *self, PyObject *args){
     }
 
     free(a);
-    
-    return Py_BuildValue("O",a_out); 
+
+    return Py_BuildValue("O",a_out);
     }
 
 
 
 static PyMethodDef AdrtModuleMethods[] = {
     {"adrt",     adrt, METH_VARARGS, "compute full ADRT of 2^N x 2^N image"},
-    {"adrtpart", adrtpart, METH_VARARGS, 
+    {"adrtpart", adrtpart, METH_VARARGS,
                             "compute partial ADRT of 2^N x 2^N image"},
     {"iadrt",   iadrt, METH_VARARGS, "invert ADRT of 2^N x 2^N image"},
-    {"bdrt",     bdrt, METH_VARARGS, 
+    {"bdrt",     bdrt, METH_VARARGS,
              "compute full back-projection from ADRT of 2^N x 2^N image"},
-    {"bdrtpart", bdrtpart, METH_VARARGS, 
+    {"bdrtpart", bdrtpart, METH_VARARGS,
              "compute back-projection from ADRT of 2^N x 2^N image"},
     {NULL, NULL, 0, NULL}   /* Sentinel */
     };
@@ -650,4 +650,3 @@ PyMODINIT_FUNC PyInit__adrtc(void) {
     import_array();
     return PyModule_Create(&AdrtModule);
     }
-
