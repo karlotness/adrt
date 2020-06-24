@@ -1,0 +1,14 @@
+# Emacs files
+*~
+.dir-locals-2.el
+
+# Python scratch files
+__pycache__/
+*.pyc
+*.pyo
+
+# Build files and directories
+*.so
+*.egg-info/
+build/
+dist/
