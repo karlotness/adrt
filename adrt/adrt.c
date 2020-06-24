@@ -11,7 +11,7 @@
 /*
  * compute ADRT of a single quadrant
  */
-void adrtq(PyArrayObject* a, npy_double** da, int n, int n1, int n2){
+void adrtq(PyArrayObject *a, npy_double **da, int n, int n1, int n2){
 
     int h,s,t,l,m;
     int L,M,N;
@@ -65,7 +65,7 @@ void adrtq(PyArrayObject* a, npy_double** da, int n, int n1, int n2){
     free(dat);
     }
 
-void bdrtq(PyArrayObject* da, npy_double** ba, int n){
+void bdrtq(PyArrayObject *da, npy_double **ba, int n){
 
     int h,s,l,m,mh,m0;
     int M,N;
@@ -122,7 +122,7 @@ void bdrtq(PyArrayObject* da, npy_double** ba, int n){
     free(bat);
     }
 
-void fliplr(npy_double** a, npy_double** b, int M, int N){
+void fliplr(npy_double **a, npy_double **b, int M, int N){
 
     int i,j;
 
@@ -133,8 +133,8 @@ void fliplr(npy_double** a, npy_double** b, int M, int N){
     }
     }
 
-void tr(npy_double** a, npy_double** b, int M, int N){
-    
+void tr(npy_double **a, npy_double **b, int M, int N){
+
     int i,j;
 
     for( i=0; i < M; i++){
@@ -145,8 +145,8 @@ void tr(npy_double** a, npy_double** b, int M, int N){
 }
 
 
-void set_pyarray(npy_double** b, PyArrayObject* a, int M, int N){
-    
+void set_pyarray(npy_double **b, PyArrayObject *a, int M, int N){
+
     int i,j;
     npy_intp ii[2] = {0,0};
 
@@ -504,7 +504,7 @@ static PyObject * adrt(PyObject *self, PyObject *args){
 /*
  * compute inverse ADRT from single quadrant
  */
-void iadrtq(PyArrayObject* da, npy_double** a, int n){
+void iadrtq(PyArrayObject *da, npy_double **a, int n){
 
     int h,s,t,l,m;
     int L,M,N;
