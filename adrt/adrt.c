@@ -2,6 +2,8 @@
  *  See LICENSE
  */
 
+#define PY_SSIZE_T_CLEAN
+#define PY_LIMITED_API 0x03040000
 #include "Python.h"
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "arrayobject.h"
