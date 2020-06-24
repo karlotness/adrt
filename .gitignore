@@ -9,6 +9,7 @@ __pycache__/
 
 # Build files and directories
 *.so
+*.o
 *.egg-info/
 build/
 dist/
