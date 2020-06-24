@@ -33,6 +33,9 @@
 #define PY_LIMITED_API 0x03040000
 #include "Python.h"
 
+#define NPY_NO_DEPRECATED_API NPY_1_8_API_VERSION
+#include "numpy/arrayobject.h"
+
 static PyMethodDef adrtc_cdefs_methods[] = {
     {NULL, NULL, 0, NULL}
 };
@@ -55,5 +58,6 @@ PyInit__adrtc_cdefs(void)
     if(!module) {
         return NULL;
     }
+    import_array();
     return module;
 }
