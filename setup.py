@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages, Extension
 import numpy
 
-adrtc_ext = Extension("_adrtc_cdefs",
+adrtc_ext = Extension("adrtc._adrtc_cdefs",
                       sources=["adrtc/adrtc_cdefs.c"],
                       include_dirs=[numpy.get_include()])
 
