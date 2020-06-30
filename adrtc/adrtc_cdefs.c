@@ -80,7 +80,8 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
                                    PyArray_NDIM(I), PyArray_SHAPE(I), NULL,
                                    NULL,  NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED | NPY_ARRAY_OWNDATA | NPY_ARRAY_WRITEABLE,
                                    NULL);
-        if(!Sadrt((npy_float*)PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
+        if(!ret || !Sadrt((npy_float*)PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
+            Py_XDECREF(ret);
             return NULL;
         }
         break;
