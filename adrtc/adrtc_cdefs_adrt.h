@@ -22,7 +22,7 @@
 
 static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHAPE *shape, ADRT_SCALAR *out) {
     // Allocate auxiliary memory
-    ADRT_SCALAR *aux = malloc(sizeof(ADRT_SCALAR) * 2 * shape[0] * shape[1]);
+    ADRT_SCALAR *aux = PyMem_New(ADRT_SCALAR, 2 * shape[0] * shape[1]);
     if(!aux) {
         PyErr_NoMemory();
         return false;
@@ -33,6 +33,7 @@ static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHA
 
     Py_END_ALLOW_THREADS;
 
+    PyMem_Free(aux);
     return true;
 }
 
