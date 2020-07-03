@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages, Extension
 import numpy
+import glob
 
 adrtc_ext = Extension("adrtc._adrtc_cdefs",
                       sources=["adrtc/adrtc_cdefs.c"],
+                      depends=glob.glob('adrtc/*.h'),
                       include_dirs=[numpy.get_include()])
 
 setup(name="adrtc",

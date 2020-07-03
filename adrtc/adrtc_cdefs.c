@@ -38,21 +38,12 @@
 
 #include <stdbool.h>
 
-static bool Sadrt(const npy_float32 *const data, npy_intp *shape, npy_float32 *out) {
-    // Allocate auxiliary memory
-    npy_float32 *aux = malloc(sizeof(npy_float32) * 2 * shape[0] * shape[1]);
-    if(!aux) {
-        PyErr_NoMemory();
-        return false;
-    }
-
-    // NO PYTHON API BELOW THIS POINT
-    NPY_BEGIN_ALLOW_THREADS;
-
-    NPY_END_ALLOW_THREADS;
-
-    return true;
-}
+// Define adrt<npy_float32>
+#define ADRT_SCALAR npy_float32
+#define ADRT_SHAPE npy_intp
+#include "adrtc_cdefs_adrt.h"
+#undef ADRT_SCALAR
+#undef ADRT_SHAPE
 
 static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     PyArrayObject *I; // Input array
@@ -80,7 +71,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
                                    PyArray_NDIM(I), PyArray_SHAPE(I), NULL,
                                    NULL,  NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED | NPY_ARRAY_OWNDATA | NPY_ARRAY_WRITEABLE,
                                    NULL);
-        if(!ret || !Sadrt((npy_float*)PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
+        if(!ret || !_adrt_impl_npy_float32((npy_float32*)PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
             Py_XDECREF(ret);
             return NULL;
         }
