@@ -31,6 +31,13 @@ static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHA
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
+    for (ADRT_SHAPE i = 0; i < shape[0]; i++) {
+        for (ADRT_SHAPE j = 0; j < shape[1]; j++) {
+            out[shape[1] * i + j] = 10 * data[shape[1] * i + j];
+        }
+    }
+
+    // PYTHON API ALLOWED BELOW THIS POINT
     Py_END_ALLOW_THREADS;
 
     PyMem_Free(aux);
