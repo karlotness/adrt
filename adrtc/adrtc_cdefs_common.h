@@ -10,8 +10,9 @@
 #include "numpy/arrayobject.h"
 
 template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_2d_access(adrt_scalar *buf, adrt_shape *shape, adrt_shape row, adrt_shape col) {
-    return buf[shape[1] * row + col];
+inline adrt_scalar& adrt_array_3d_access(adrt_scalar *buf, const adrt_shape shape[3],
+                                         adrt_shape plane, adrt_shape row, adrt_shape col) {
+    return buf[(shape[1] * shape[2]) * plane + shape[2] * row + col];
 }
 
 #endif //ADRTC_CDEFS_COMMON_H
