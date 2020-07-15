@@ -18,7 +18,7 @@ static bool _adrt(const adrt_scalar *const data, adrt_shape *shape, adrt_scalar 
 
     for (adrt_shape i = 0; i < shape[0]; i++) {
         for (adrt_shape j = 0; j < shape[1]; j++) {
-            out[shape[1] * i + j] = 10 * data[shape[1] * i + j];
+            adrt_array_2d_access(out, shape, i, j) = 10 * adrt_array_2d_access(data, shape, i, j);
         }
     }
 
