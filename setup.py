@@ -4,7 +4,7 @@ import glob
 
 adrtc_ext = Extension("adrtc._adrtc_cdefs",
                       sources=["adrtc/adrtc_cdefs.cpp"],
-                      depends=glob.glob('adrtc/*.h'),
+                      depends=glob.glob('adrtc/*.hpp'),
                       include_dirs=[numpy.get_include()])
 
 setup(name="adrtc",
