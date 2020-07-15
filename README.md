@@ -1,11 +1,21 @@
-# ADRTC (Approximate Discrete Radon Transform in C)
+# Approximate Discrete Radon Transform
 
-Developement repository for ADRT written as C extension
+This library provides an implementation of an approximate discrete
+Radon transform (ADRT) and its inverse, as a Python module operating
+on NumPy arrays.
 
 ## References
 
-* Martin L. Brady, [*A Fast Discrete Approximation Algorithm for the Radon Transform Related Databases*](https://doi.org/10.1137/S0097539793256673), SIAM J. Comput., **27**(1), 107–119. 
-* William H. Press, [*Discrete Radon transform has an exact, fast inverse and generalizes to operations other than sums along lines*](https://doi.org/10.1073/pnas.0609228103), Proc. Natl. Acad. Sci. Dec 2006, 103 (51) 19249-19254
-* Donsub Rim, [*Exact and fast inversion of the approximate discrete Radon transform from partial data*](https://doi.org/10.1016/j.aml.2019.106159), Appl. Math., **102** 106159. 
+This implementation is based on descriptions in several publications:
+- Martin L. Brady, [A Fast Discrete Approximation Algorithm for the Radon Transform Related Databases][brady98], SIAM Journal on Computing, 27.
+- William H. Press, [Discrete Radon transform has an exact, fast inverse and generalizes to operations other than sums along lines][press08], Proceedings of the National Academy of Sciences, 103.
+- Donsub Rim, [Exact and fast inversion of the approximate discrete Radon transform from partial data][rim20], Applied Mathematics Letters, 102.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3706748.svg)](https://doi.org/10.5281/zenodo.3706748)
+## License
+
+The code in this repository is licensed under a 3-clause BSD license.
+See [LICENSE.txt](LICENSE.txt) for the license text.
+
+[brady98]: https://doi.org/10.1137/S0097539793256673
+[press08]: https://doi.org/10.1073/pnas.0609228103
+[rim20]: https://doi.org/10.1016/j.aml.2019.106159
