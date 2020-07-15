@@ -29,57 +29,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define PY_SSIZE_T_CLEAN
-#define Py_LIMITED_API 0x03040000
-#include "Python.h"
-
-#define NPY_NO_DEPRECATED_API NPY_1_8_API_VERSION
-#include "numpy/arrayobject.h"
-
-#include <stdbool.h>
-
-// Define adrt<npy_float32>
-#define ADRT_SCALAR npy_float32
-#define ADRT_SHAPE npy_intp
+#include "adrtc_cdefs_common.h" // Include this first
 #include "adrtc_cdefs_adrt.h"
-#undef ADRT_SCALAR
-#undef ADRT_SHAPE
-
-// Define adrt<npy_float64>
-#define ADRT_SCALAR npy_float64
-#define ADRT_SHAPE npy_intp
-#include "adrtc_cdefs_adrt.h"
-#undef ADRT_SCALAR
-#undef ADRT_SHAPE
 
 static PyArrayObject *adrt_validate_array(PyObject *args) {
     PyArrayObject *I;
     if(!PyArg_ParseTuple(args, "O!", &PyArray_Type, &I)) {
-        return NULL;
+        return nullptr;
     }
     if(!PyArray_CHKFLAGS(I, NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, and aligned");
-        return NULL;
+        return nullptr;
     }
     if(PyArray_ISBYTESWAPPED(I)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have native byte order");
-        return NULL;
+        return nullptr;
     }
-    if(PyArray_NDIM(I) != 2) {
-        PyErr_Format(PyExc_ValueError, "Invalid dimensionality %d, array must have two dimensions", PyArray_NDIM(I));
-        return NULL;
+    int ndim = PyArray_NDIM(I);
+    if(ndim != 2 && ndim != 3) {
+        PyErr_Format(PyExc_ValueError, "Invalid dimensionality %d, array must have two or three dimensions", ndim);
+        return nullptr;
     }
     return I;
 }
 
+extern "C" {
+
 static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process function arguments
-    PyObject *ret = NULL;
+    PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
     if(!I) {
         goto fail;
     }
-    ret = PyArray_NewLikeArray(I, NPY_CORDER, NULL, 0);
+    ret = PyArray_NewLikeArray(I, NPY_CORDER, nullptr, 0);
     if(!ret) {
         // Allocation failed
         goto fail;
@@ -87,12 +70,16 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        if(!_adrt_impl_npy_float32(PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
+        if(!_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
+                  PyArray_SHAPE(I),
+                  static_cast<npy_float32*>(PyArray_DATA((PyArrayObject *) ret)))) {
             goto fail;
         }
         break;
     case NPY_FLOAT64:
-        if(!_adrt_impl_npy_float64(PyArray_DATA(I), PyArray_SHAPE(I), PyArray_DATA((PyArrayObject *) ret))) {
+        if(!_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
+                  PyArray_SHAPE(I),
+                  static_cast<npy_float64*>(PyArray_DATA((PyArrayObject *) ret)))) {
             goto fail;
         }
         break;
@@ -103,12 +90,12 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return ret;
   fail:
     Py_XDECREF(ret);
-    return NULL;
+    return nullptr;
 }
 
 static PyMethodDef adrtc_cdefs_methods[] = {
     {"adrt", adrt, METH_VARARGS, "Compute the ADRT"},
-    {NULL, NULL, 0, NULL}
+    {nullptr, nullptr, 0, nullptr}
 };
 
 static struct PyModuleDef adrtc_cdefs_module = {
@@ -117,9 +104,9 @@ static struct PyModuleDef adrtc_cdefs_module = {
     "C routines for ADRTC. These should not be called directly by module users.",
     0,
     adrtc_cdefs_methods,
-    NULL,
+    nullptr,
     // GC hooks below, unused
-    NULL, NULL, NULL
+    nullptr, nullptr, nullptr
 };
 
 PyMODINIT_FUNC
@@ -127,8 +114,10 @@ PyInit__adrtc_cdefs(void)
 {
     PyObject *module = PyModule_Create(&adrtc_cdefs_module);
     if(!module) {
-        return NULL;
+        return nullptr;
     }
     import_array();
     return module;
 }
+
+} // extern "C"

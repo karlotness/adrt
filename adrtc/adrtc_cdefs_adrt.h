@@ -1,28 +1,13 @@
-#if !defined(ADRT_SCALAR) || !defined(ADRT_SHAPE)
-#error "Must define the scalar types and allocator functions"
-#endif
+#pragma once
+#ifndef ADRTC_CDEFS_ADRT_H
+#define ADRTC_CDEFS_ADRT_H
 
-#ifndef ADRT_SCALAR
-#define ADRT_SCALAR double
-#endif
+#include "adrtc_cdefs_common.h"
 
-#ifndef ADRT_SHAPE
-#define ADRT_SHAPE int
-#endif
-
-// Hack to calm linters: include Python
-#ifndef PY_VERSION
-#include <Python.h>
-#endif
-
-#define ADRT_FUNC_NAME_INNER(SCALAR) _adrt_impl_ ## SCALAR
-#define ADRT_FUNC_NAME(SCALAR) ADRT_FUNC_NAME_INNER(SCALAR)
-
-#include <stdbool.h>
-
-static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHAPE *shape, ADRT_SCALAR *out) {
+template <typename adrt_scalar, typename adrt_shape>
+static bool _adrt(const adrt_scalar *const data, adrt_shape *shape, adrt_scalar *out) {
     // Allocate auxiliary memory
-    ADRT_SCALAR *aux = PyMem_New(ADRT_SCALAR, 2 * shape[0] * shape[1]);
+    adrt_scalar *aux = PyMem_New(adrt_scalar, 2 * shape[0] * shape[1]);
     if(!aux) {
         PyErr_NoMemory();
         return false;
@@ -31,8 +16,8 @@ static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHA
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
-    for (ADRT_SHAPE i = 0; i < shape[0]; i++) {
-        for (ADRT_SHAPE j = 0; j < shape[1]; j++) {
+    for (adrt_shape i = 0; i < shape[0]; i++) {
+        for (adrt_shape j = 0; j < shape[1]; j++) {
             out[shape[1] * i + j] = 10 * data[shape[1] * i + j];
         }
     }
@@ -44,5 +29,4 @@ static bool ADRT_FUNC_NAME(ADRT_SCALAR) (const ADRT_SCALAR *const data, ADRT_SHA
     return true;
 }
 
-#undef ADRT_FUNC_NAME
-#undef ADRT_FUNC_NAME_INNER
+#endif // ADRTC_CDEFS_ADRT_H
