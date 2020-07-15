@@ -5,7 +5,13 @@
 #include "adrtc_cdefs_common.h"
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool _adrt(const adrt_scalar *const data, adrt_shape *shape, adrt_scalar *out) {
+static bool _adrt(const adrt_scalar *const data, unsigned char ndims, const adrt_shape *const shape, adrt_scalar *out) {
+    // Shape (plane, row, col)
+    const adrt_shape corrected_shape[3] =
+        {(ndims > 2 ? shape[0] : 1),
+         (ndims > 2 ? shape[1] : shape[0]),
+         (ndims > 2 ? shape[2] : shape[1])};
+
     // Allocate auxiliary memory
     adrt_scalar *aux = PyMem_New(adrt_scalar, 2 * shape[0] * shape[1]);
     if(!aux) {
@@ -15,12 +21,6 @@ static bool _adrt(const adrt_scalar *const data, adrt_shape *shape, adrt_scalar 
 
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
-
-    for (adrt_shape i = 0; i < shape[0]; i++) {
-        for (adrt_shape j = 0; j < shape[1]; j++) {
-            adrt_array_2d_access(out, shape, i, j) = 10 * adrt_array_2d_access(data, shape, i, j);
-        }
-    }
 
     // PYTHON API ALLOWED BELOW THIS POINT
     Py_END_ALLOW_THREADS;
