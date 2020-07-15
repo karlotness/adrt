@@ -2,7 +2,7 @@
 #ifndef ADRTC_CDEFS_ADRT_H
 #define ADRTC_CDEFS_ADRT_H
 
-#include "adrtc_cdefs_common.h"
+#include "adrtc_cdefs_common.hpp"
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool _adrt(const adrt_scalar *const data, unsigned char ndims, const adrt_shape *const shape, adrt_scalar *out) {

@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "adrtc_cdefs_common.h" // Include this first
-#include "adrtc_cdefs_adrt.h"
+#include "adrtc_cdefs_common.hpp" // Include this first
+#include "adrtc_cdefs_adrt.hpp"
 
 static PyArrayObject *adrt_validate_array(PyObject *args) {
     PyArrayObject *I;
