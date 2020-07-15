@@ -59,6 +59,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
+    int ndim = 2;
     if(!I) {
         goto fail;
     }
@@ -67,10 +68,12 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
         // Allocation failed
         goto fail;
     }
+    ndim = PyArray_NDIM(I);
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
         if(!_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
+                  ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float32*>(PyArray_DATA((PyArrayObject *) ret)))) {
             goto fail;
@@ -78,6 +81,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
         break;
     case NPY_FLOAT64:
         if(!_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
+                  ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float64*>(PyArray_DATA((PyArrayObject *) ret)))) {
             goto fail;
