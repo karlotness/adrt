@@ -55,6 +55,20 @@ inline adrt_scalar& adrt_array_5d_access(adrt_scalar *buf, const adrt_shape shap
                shape[4] * col + \
                a];
 }
+
+template <typename adrt_shape>
+inline adrt_shape adrt_floor_div2(adrt_shape val) {
+    return val / 2;
+}
+
+template <typename adrt_shape>
+inline adrt_shape adrt_ceil_div2(adrt_shape val) {
+    adrt_shape div = val / 2;
+    adrt_shape rem = val % 2;
+    if(rem > 0) {
+        return div + 1;
+    }
+    return div;
 }
 
 template <typename adrt_shape>
