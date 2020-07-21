@@ -46,4 +46,18 @@ inline adrt_scalar& adrt_array_3d_access(adrt_scalar *buf, const adrt_shape shap
     return buf[(shape[1] * shape[2]) * plane + shape[2] * row + col];
 }
 
+template <typename adrt_shape>
+adrt_shape adrt_num_iters(const adrt_shape shape[3]) {
+    if(shape[1] <= 1 && shape[2] <= 1) {
+        return 0;
+    }
+    adrt_shape num_iters = 1;
+    adrt_shape segment_length = 2;
+    while(segment_length < shape[1] && segment_length < shape[2] && (segment_length * 2) > segment_length) {
+        ++num_iters;
+        segment_length *= 2;
+    }
+    return num_iters;
+}
+
 #endif //ADRTC_CDEFS_COMMON_H
