@@ -47,9 +47,14 @@ inline adrt_scalar& adrt_array_3d_access(adrt_scalar *buf, const adrt_shape shap
 }
 
 template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_4d_access(adrt_scalar *buf, const adrt_shape shape[4],
-                                         adrt_shape quadrant, adrt_shape plane, adrt_shape row, adrt_shape col) {
-    return buf[(shape[1] * shape[2] * shape[3]) * quadrant + (shape[2] * shape[3]) * plane + shape[3] * row + col];
+inline adrt_scalar& adrt_array_5d_access(adrt_scalar *buf, const adrt_shape shape[5],
+                                         adrt_shape quadrant, adrt_shape plane, adrt_shape row, adrt_shape col, adrt_shape a) {
+    return buf[(shape[1] * shape[2] * shape[3] * shape[4]) * quadrant + \
+               (shape[2] * shape[3] * shape[4]) * plane + \
+               (shape[3] * shape[4]) * row + \
+               shape[4] * col + \
+               a];
+}
 }
 
 template <typename adrt_shape>
