@@ -70,6 +70,66 @@ def _naive_adrt(a):
     ])
 
 
+class TestAdrtCdefs(unittest.TestCase):
+    def test_accepts_float32(self):
+        inarr = np.zeros((16, 16), dtype=np.float32)
+        _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_accepts_float32_three_dim(self):
+        inarr = np.zeros((5, 16, 16), dtype=np.float32)
+        _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_accepts_float64(self):
+        inarr = np.zeros((16, 16), dtype=np.float64)
+        _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_int32(self):
+        inarr = np.zeros((16, 16), dtype=np.int32)
+        with self.assertRaises(TypeError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_non_square(self):
+        inarr = np.zeros((16, 32), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_four_dim(self):
+        inarr = np.zeros((5, 3, 16, 16), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_non_power_of_two(self):
+        inarr = np.zeros((31, 31), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_non_array(self):
+        with self.assertRaises(TypeError):
+            _ = adrtc._adrtc_cdefs.adrt(None)
+        with self.assertRaises(TypeError):
+            _ = adrtc._adrtc_cdefs.adrt([[1., 2., 3., 4.],
+                                         [1., 2., 3., 4.],
+                                         [1., 2., 3., 4.],
+                                         [1., 2., 3., 4.]])
+
+    def test_refuses_fortran_order(self):
+        inarr = np.zeros((32, 32), dtype=np.float32, order='F')
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_c_non_contiguous(self):
+        inarr = np.zeros((64, 32), dtype=np.float32, order='F')[::2]
+        self.assertEqual(inarr.shape, (32, 32))
+        self.assertFalse(inarr.flags['C_CONTIGUOUS'])
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+    def test_refuses_byteswapped(self):
+        inarr = np.ones((16, 16), dtype=np.float32).newbyteorder()
+        with self.assertRaises(ValueError):
+            _ = adrtc._adrtc_cdefs.adrt(inarr)
+
+
 class TestAdrt(unittest.TestCase):
     def test_accepts_float32(self):
         inarr = np.zeros((16, 16), dtype=np.float32)
