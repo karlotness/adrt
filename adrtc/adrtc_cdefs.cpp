@@ -53,26 +53,54 @@ static PyArrayObject *adrt_validate_array(PyObject *args) {
     return I;
 }
 
+static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
+    if(ndim < 2 || shape[ndim - 1] != shape[ndim - 2]) {
+        return false;
+    }
+    for(int i = 0; i < ndim; ++i) {
+        if(shape[i] <= 0) {
+            return false;
+        }
+        npy_intp val = 1;
+        while(val < shape[i] && val > 0) {
+            val *= 2;
+        }
+        if(val != shape[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 extern "C" {
 
 static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
+    npy_intp *old_shape = nullptr;
+    npy_intp new_shape[3] = {0};
     int ndim = 2;
     if(!I) {
         goto fail;
     }
-    ret = PyArray_NewLikeArray(I, NPY_CORDER, nullptr, 0);
-    if(!ret) {
-        // Allocation failed
+    ndim = PyArray_NDIM(I);
+    old_shape = PyArray_SHAPE(I);
+    if(!adrt_is_square_power_of_two(ndim, PyArray_SHAPE(I))) {
+        PyErr_SetString(PyExc_ValueError, "Provided array be square with power of two shapes");
         goto fail;
     }
-    ndim = PyArray_NDIM(I);
+    // Compute new array shape
+    for(int i = 0; i < ndim; ++i) {
+        new_shape[i] = old_shape[i];
+    }
+    new_shape[ndim - 1] *= 4;
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        if(!_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        if(!ret ||
+           !_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float32*>(PyArray_DATA((PyArrayObject *) ret)))) {
@@ -80,7 +108,9 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        if(!_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        if(!ret ||
+           !_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float64*>(PyArray_DATA((PyArrayObject *) ret)))) {
