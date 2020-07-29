@@ -1,2 +1,2 @@
-include README.md MANIFEST.in LICENSE.txt setup.py pyproject.toml tox.ini
+include README.md MANIFEST.in LICENSE.txt setup.py pyproject.toml tox.ini setup.cfg
 recursive-include adrt/ *.py *.cpp *.hpp
