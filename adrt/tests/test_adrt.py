@@ -111,9 +111,9 @@ class TestAdrtCdefs(unittest.TestCase):
             _ = adrt._adrt_cdefs.adrt(None)
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.adrt([[1., 2., 3., 4.],
-                                         [1., 2., 3., 4.],
-                                         [1., 2., 3., 4.],
-                                         [1., 2., 3., 4.]])
+                                       [1., 2., 3., 4.],
+                                       [1., 2., 3., 4.],
+                                       [1., 2., 3., 4.]])
 
     def test_refuses_fortran_order(self):
         inarr = np.zeros((32, 32), dtype=np.float32, order='F')
