@@ -62,6 +62,13 @@ class TestAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
+    def test_all_zeros_square(self):
+        inarr = np.zeros((64, 64))
+        c_out = adrtc.adrt(inarr)
+        naive_out = _naive_adrt(inarr)
+        self.assertEqual(c_out.shape, naive_out.shape)
+        self.assertTrue(np.allclose(c_out, naive_out))
+
 
 if __name__ == '__main__':
     unittest.main()
