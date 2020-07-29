@@ -41,8 +41,8 @@
 #include "numpy/arrayobject.h"
 
 template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_3d_access(adrt_scalar *buf, const adrt_shape shape[3],
-                                         adrt_shape plane, adrt_shape row, adrt_shape col) {
+inline adrt_scalar& adrt_array_3d_access(adrt_scalar *const buf, const adrt_shape shape[3],
+                                         const adrt_shape plane, const adrt_shape row, const adrt_shape col) {
     return buf[(shape[1] * shape[2]) * plane + shape[2] * row + col];
 }
 
