@@ -57,7 +57,7 @@ static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
     if(ndim < 2 || ndim > 3 || shape[ndim - 1] != shape[ndim - 2]) {
         return false;
     }
-    for(int i = 0; i < ndim; ++i) {
+    for(int i = ndim - 2; i < ndim; ++i) {
         if(shape[i] <= 0) {
             return false;
         }
