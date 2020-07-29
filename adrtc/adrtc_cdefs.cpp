@@ -54,7 +54,7 @@ static PyArrayObject *adrt_validate_array(PyObject *args) {
 }
 
 static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
-    if(ndim < 2 || shape[ndim - 1] != shape[ndim - 2]) {
+    if(ndim < 2 || ndim > 3 || shape[ndim - 1] != shape[ndim - 2]) {
         return false;
     }
     for(int i = 0; i < ndim; ++i) {
