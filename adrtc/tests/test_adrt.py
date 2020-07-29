@@ -59,7 +59,7 @@ def _naive_adrt(a):
                     for x in range(2*n):
                         r[i, quad, y, x, a] = \
                             r[i-1, quad, y, x, floor(a/2)] + \
-                            r[i-1, quad, y + 2**(i-1), x - ceil(a/2), floor(a/2)]  # noqa
+                            r[i-1, quad, y + 2**(i-1), x - ceil(a/2), floor(a/2)]  # noqa: E501
 
     # Copy out the result
     return np.hstack([
