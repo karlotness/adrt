@@ -145,23 +145,20 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
         // Compute the curr_shape for the current buffer (based on prev shape)
         curr_shape[0] = 4; // We always have four quadrants
         curr_shape[1] = corrected_shape[0]; // We always have the same number of planes
-        curr_shape[2] = corrected_shape[1]; // In these quadrants the X dimension doesn't change
-        curr_shape[3] = adrt_ceil_div2(prev_shape[3]); // But the Y dimension is halved
+        curr_shape[2] = adrt_ceil_div2(prev_shape[2]); // We halve the number of rows
+        curr_shape[3] = corrected_shape[2]; // Keep the same number of columns
         curr_shape[4] = prev_shape[4] * 2; // The number of angles doubles
 
-        const adrt_shape two_to_i = 1<<i;
-        const adrt_shape j_lim = corrected_shape[2] / two_to_i;
-
         // Inner loops (these loops can be parallel)
-#pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape, i, j_lim, corrected_shape)
-        for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
-            for(adrt_shape quadrant = 0; quadrant < 4; ++quadrant) {
-                for(adrt_shape a = 0; a <= (1<<i) - 1; ++a) {
-                    for(adrt_shape j = 0; j < j_lim; ++j) {
-                        for(adrt_shape x = 0; x <= 2 * corrected_shape[1] - 1; ++x) {
-                            const adrt_scalar aval = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, x, j, adrt_floor_div2(a));
-                            const adrt_scalar bval = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, x - adrt_ceil_div2(a), j + 1, adrt_floor_div2(a));
-                            adrt_array_5d_mod_access(curr, curr_shape, quadrant, plane, x, j, a) = aval + bval;
+        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape, i)
+        for(adrt_shape quadrant = 0; quadrant < curr_shape[0]; ++quadrant) {
+            for(adrt_shape plane = 0; plane < curr_shape[1]; ++plane) {
+                for(adrt_shape j = 0; j < curr_shape[2]; ++j) {
+                    for(adrt_shape x = 0; x < curr_shape[3]; ++x) {
+                        for(adrt_shape a = 0; a < curr_shape[4]; ++a) {
+                            const adrt_scalar aval = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, 2 * j, x, adrt_floor_div2(a));
+                            const adrt_scalar bval = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, (2 * j) + 1, x - adrt_ceil_div2(a), adrt_floor_div2(a));
+                            adrt_array_5d_mod_access(curr, curr_shape, quadrant, plane, j, x, a) = aval + bval;
                         }
                     }
                 }
