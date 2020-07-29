@@ -173,14 +173,31 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
     }
 
     // Copy results to destination buffer
-    // TODO: Fix overlaps. There should be (4N - 3) unique angles
     for(adrt_shape quadrant = 0; quadrant < 4; ++quadrant) {
         const adrt_shape zero = 0;
         for(adrt_shape plane = 0; plane < output_shape[0]; ++plane) {
-            for(adrt_shape d = 0; d < output_shape[1]; ++d) {
-                for(adrt_shape a = 0; a < output_shape[1]; ++a) {
-                    const adrt_scalar val = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, d, zero, a);
-                    adrt_array_3d_access(out, output_shape, plane, d, (output_shape[1] * quadrant) + a) = val;
+            for(adrt_shape d = 0; d < prev_shape[3]; ++d) {
+                for(adrt_shape a = (quadrant == 0 ? 0 : 1); a < prev_shape[4]; ++a) {
+                    adrt_shape acc_d = 0;
+                    adrt_shape acc_a = 0;
+                    if(quadrant == 0) {
+                        acc_d = d;
+                        acc_a = a;
+                    }
+                    else if(quadrant == 1) {
+                        acc_d = d;
+                        acc_a = prev_shape[4] - a - 1;
+                    }
+                    else if(quadrant == 2) {
+                        acc_d = prev_shape[3] - d - 1;
+                        acc_a = a;
+                    }
+                    else {
+                        acc_d = prev_shape[3] - d - 1;
+                        acc_a = prev_shape[4] - a - 1;
+                    }
+                    const adrt_scalar val = adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, zero, acc_d, acc_a);
+                    adrt_array_3d_access(out, output_shape, plane, d, output_shape[2] - 1 - ((output_shape[1] * quadrant) + a - quadrant)) = val;
                 }
             }
         }
