@@ -134,7 +134,7 @@ static PyMethodDef adrtc_cdefs_methods[] = {
 
 static struct PyModuleDef adrtc_cdefs_module = {
     PyModuleDef_HEAD_INIT,
-    "_adrtc_cdefs",
+    "adrtc._adrtc_cdefs",
     "C routines for ADRTC. These should not be called directly by module users.",
     0,
     adrtc_cdefs_methods,
