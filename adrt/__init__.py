@@ -32,7 +32,7 @@
 
 
 import numpy as np
-from . import _adrtc_cdefs
+from . import _adrt_cdefs
 
 
 def adrt(a):
@@ -40,4 +40,4 @@ def adrt(a):
     a = np.require(a, dtype=native_dtype,
                    requirements=['C_CONTIGUOUS', 'ALIGNED'])
     # TODO: Pad to be square and power of two
-    return _adrtc_cdefs.adrt(a)
+    return _adrt_cdefs.adrt(a)

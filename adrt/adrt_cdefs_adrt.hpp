@@ -33,7 +33,7 @@
 #ifndef ADRTC_CDEFS_ADRT_H
 #define ADRTC_CDEFS_ADRT_H
 
-#include "adrtc_cdefs_common.hpp"
+#include "adrt_cdefs_common.hpp"
 #include <cstring>
 
 template <typename adrt_scalar, typename adrt_shape>

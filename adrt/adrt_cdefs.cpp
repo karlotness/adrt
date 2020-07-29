@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "adrtc_cdefs_common.hpp" // Include this first
-#include "adrtc_cdefs_adrt.hpp"
+#include "adrt_cdefs_common.hpp" // Include this first
+#include "adrt_cdefs_adrt.hpp"
 
 static PyArrayObject *adrt_validate_array(PyObject *args) {
     PyArrayObject *I;
@@ -127,26 +127,26 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return nullptr;
 }
 
-static PyMethodDef adrtc_cdefs_methods[] = {
+static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt, METH_VARARGS, "Compute the ADRT"},
     {nullptr, nullptr, 0, nullptr}
 };
 
-static struct PyModuleDef adrtc_cdefs_module = {
+static struct PyModuleDef adrt_cdefs_module = {
     PyModuleDef_HEAD_INIT,
-    "adrtc._adrtc_cdefs",
-    "C routines for ADRTC. These should not be called directly by module users.",
+    "adrt._adrt_cdefs",
+    "C routines for ADRT. These should not be called directly by module users.",
     0,
-    adrtc_cdefs_methods,
+    adrt_cdefs_methods,
     nullptr,
     // GC hooks below, unused
     nullptr, nullptr, nullptr
 };
 
 PyMODINIT_FUNC
-PyInit__adrtc_cdefs(void)
+PyInit__adrt_cdefs(void)
 {
-    PyObject *module = PyModule_Create(&adrtc_cdefs_module);
+    PyObject *module = PyModule_Create(&adrt_cdefs_module);
     if(!module) {
         return nullptr;
     }
