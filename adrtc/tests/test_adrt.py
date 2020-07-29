@@ -62,12 +62,15 @@ def _naive_adrt(a):
                             r[i-1, quad, y + 2**(i-1), x - ceil(a/2), floor(a/2)]  # noqa: E501
 
     # Copy out the result
-    return np.hstack([
-        r[-1, 0, 0, :n, :],
+    # We need to reverse the order of the angles since the indexing described
+    # when implemented directly as in the paper actually starts indexing down
+    # and left. So the "quadrants" are in reverse order
+    return np.fliplr(np.hstack([
+        r[-1, 0, 0, :n, :][:, 1:],
         r[-1, 1, 0, :n, ::-1][:, 1:],
         r[-1, 2, 0, :n, :][::-1, 1:],
         r[-1, 3, 0, :n, ::-1][::-1, 1:],
-    ])
+    ]))
 
 
 class TestAdrtCdefs(unittest.TestCase):
