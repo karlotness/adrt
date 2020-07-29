@@ -152,14 +152,14 @@ class TestAdrt(unittest.TestCase):
         _ = adrtc.adrt(inarr)
 
     def test_all_ones_square(self):
-        inarr = np.ones((64, 64))
+        inarr = np.ones((32, 32))
         c_out = adrtc.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
     def test_all_zeros_square(self):
-        inarr = np.zeros((64, 64))
+        inarr = np.zeros((32, 32))
         c_out = adrtc.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         self.assertEqual(c_out.shape, naive_out.shape)
