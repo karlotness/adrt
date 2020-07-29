@@ -158,6 +158,14 @@ class TestAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
+    def test_vertial_line(self):
+        inarr = np.zeros((32, 32))
+        inarr[:, 16] = 1
+        c_out = adrtc.adrt(inarr)
+        naive_out = _naive_adrt(inarr)
+        self.assertEqual(c_out.shape, naive_out.shape)
+        self.assertTrue(np.allclose(c_out, naive_out))
+
     def test_all_zeros_square(self):
         inarr = np.zeros((32, 32))
         c_out = adrtc.adrt(inarr)
