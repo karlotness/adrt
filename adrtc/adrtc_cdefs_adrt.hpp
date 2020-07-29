@@ -89,9 +89,10 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
             // Direct copy row by row
             for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
                 for(adrt_shape row = 0; row < corrected_shape[1]; ++row) {
-                    std::memcpy(&adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, row, zero, zero),
-                                &adrt_array_3d_access(data, corrected_shape, plane, row, zero),
-                                sizeof(adrt_scalar) * corrected_shape[2]);
+                    for(adrt_shape col = 0; col < corrected_shape[2]; ++col) {
+                        adrt_array_5d_mod_access(prev, prev_shape, quadrant, plane, row, col, zero) = \
+                            adrt_array_3d_access(data, corrected_shape, plane, row, col);
+                    }
                 }
             }
         }
