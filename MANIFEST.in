@@ -1,1 +1,2 @@
-include adrt/*.hpp
+include README.md MANIFEST.in LICENSE.txt setup.py pyproject.toml tox.ini
+recursive-include adrt/ *.py *.cpp *.hpp
