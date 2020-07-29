@@ -7,7 +7,9 @@ adrt_c_ext = Extension("adrt._adrt_cdefs",
                        depends=glob.glob('adrt/*.hpp'),
                        extra_compile_args=['-fopenmp'],
                        extra_link_args=['-fopenmp'],
-                       include_dirs=[numpy.get_include()])
+                       include_dirs=[numpy.get_include()],
+                       py_limited_api=True,
+                       define_macros=[("Py_LIMITED_API", "0x03040000")])
 
 setup(name="adrt",
       description="Fast approximate discrete Radon transform for NumPy arrays",
