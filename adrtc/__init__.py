@@ -39,4 +39,5 @@ def adrt(a):
     native_dtype = a.dtype.newbyteorder('=')
     a = np.require(a, dtype=native_dtype,
                    requirements=['C_CONTIGUOUS', 'ALIGNED'])
+    # TODO: Pad to be square and power of two
     return _adrtc_cdefs.adrt(a)
