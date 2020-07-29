@@ -47,7 +47,7 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
     const adrt_shape output_shape[3] =
         {corrected_shape[0],
          corrected_shape[1],
-         4 * corrected_shape[2]};
+         4 * (corrected_shape[2] - 1)};
 
     // Require that the matrix be square (power of two checked elsewhere)
     if(corrected_shape[1] != corrected_shape[2]) {
