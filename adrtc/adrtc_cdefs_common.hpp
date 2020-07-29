@@ -71,12 +71,12 @@ inline adrt_scalar& adrt_array_5d_mod_access(adrt_scalar *const buf, const adrt_
 }
 
 template <typename adrt_shape>
-inline adrt_shape adrt_floor_div2(adrt_shape val) {
+inline adrt_shape adrt_floor_div2(const adrt_shape val) {
     return val / 2;
 }
 
 template <typename adrt_shape>
-inline adrt_shape adrt_ceil_div2(adrt_shape val) {
+inline adrt_shape adrt_ceil_div2(const adrt_shape val) {
     adrt_shape div = val / 2;
     adrt_shape rem = val % 2;
     if(rem > 0) {
