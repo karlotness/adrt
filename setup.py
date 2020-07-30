@@ -3,7 +3,7 @@ import numpy
 import glob
 
 adrt_c_ext = Extension("adrt._adrt_cdefs",
-                       sources=["adrt/adrt_cdefs.cpp"],
+                       sources=glob.glob('adrt/*.cpp'),
                        depends=glob.glob('adrt/*.hpp'),
                        extra_compile_args=['-fopenmp'],
                        extra_link_args=['-fopenmp'],
