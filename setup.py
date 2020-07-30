@@ -9,13 +9,15 @@ adrt_c_ext = Extension("adrt._adrt_cdefs",
                        extra_link_args=['-fopenmp'],
                        include_dirs=[numpy.get_include()],
                        py_limited_api=True,
-                       define_macros=[("Py_LIMITED_API", "0x03040000")])
+                       define_macros=[
+                           ("Py_LIMITED_API", "0x03050000"),
+                           ("NPY_NO_DEPRECATED_API", "NPY_1_9_API_VERSION")])
 
 setup(name="adrt",
       description="Fast approximate discrete Radon transform for NumPy arrays",
       version="0.1.0",
       packages=find_packages(),
-      python_requires=">=3.4, <4",
-      install_requires=["numpy>=1.8"],
+      python_requires=">=3.5, <4",
+      install_requires=["numpy>=1.9"],
       license="BSD",
       ext_modules=[adrt_c_ext])

@@ -39,7 +39,9 @@
 #endif
 #include "Python.h"
 
-#define NPY_NO_DEPRECATED_API NPY_1_8_API_VERSION
+#ifndef NPY_NO_DEPRECATED_API
+#error "Must use NumPy API versioning"
+#endif
 #include "numpy/arrayobject.h"
 
 template <typename adrt_scalar, typename adrt_shape>
