@@ -31,7 +31,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-__all__ = ['adrt']
+import numpy as np
+from . import _adrt_cdefs
 
 
-from ._wrappers import adrt
+def adrt(a):
+    native_dtype = a.dtype.newbyteorder('=')
+    a = np.require(a, dtype=native_dtype,
+                   requirements=['C_CONTIGUOUS', 'ALIGNED'])
+    # TODO: Pad to be square and power of two
+    return _adrt_cdefs.adrt(a)
