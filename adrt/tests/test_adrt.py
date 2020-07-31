@@ -66,10 +66,10 @@ def _naive_adrt(a):
     # when implemented directly as in the paper actually starts indexing down
     # and left. So the "quadrants" are in reverse order
     return np.fliplr(np.hstack([
-        r[-1, 0, 0, :n, :][:, 1:],
-        r[-1, 1, 0, :n, ::-1][:, 1:],
-        r[-1, 2, 0, :n, :][::-1, 1:],
-        r[-1, 3, 0, :n, ::-1][::-1, 1:],
+        r[-1, 0, 0, :n, :],
+        r[-1, 1, 0, :n, ::-1],
+        r[-1, 2, 0, :n, :][::-1],
+        r[-1, 3, 0, :n, ::-1][::-1],
     ]))
 
 
