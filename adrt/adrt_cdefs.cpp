@@ -94,7 +94,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     for(int i = 0; i < ndim; ++i) {
         new_shape[i] = old_shape[i];
     }
-    new_shape[ndim - 1] = 4 * (new_shape[ndim - 1] - 1);
+    new_shape[ndim - 1] = 4 * new_shape[ndim - 1];
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
