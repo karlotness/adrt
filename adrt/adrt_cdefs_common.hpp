@@ -51,27 +51,14 @@ inline adrt_scalar& adrt_array_3d_access(adrt_scalar *const buf, const adrt_shap
 }
 
 template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_5d_mod_access(adrt_scalar *const buf, const adrt_shape shape[5],
-                                             const adrt_shape quadrant, const adrt_shape plane,
-                                             const adrt_shape row, const adrt_shape col, const adrt_shape a) {
-    adrt_shape mod_access[5] = {
-        quadrant % shape[0],
-        plane    % shape[1],
-        row      % shape[2],
-        col      % shape[3],
-        a        % shape[4]};
-    // Fix any negative values
-    for (int i = 0; i < 5; ++i) {
-        if (mod_access[i] < 0) {
-            mod_access[i] = shape[i] + mod_access[i];
-        }
-    }
-    adrt_scalar &res = buf[(shape[1] * shape[2] * shape[3] * shape[4]) * mod_access[0] + \
-               (shape[2] * shape[3] * shape[4]) * mod_access[1] + \
-               (shape[3] * shape[4]) * mod_access[2] + \
-               shape[4] * mod_access[3] + \
-               mod_access[4]];
-    return res;
+inline adrt_scalar& adrt_array_5d_access(adrt_scalar *const buf, const adrt_shape shape[5],
+                                         const adrt_shape quadrant, const adrt_shape plane,
+                                         const adrt_shape row, const adrt_shape col, const adrt_shape a) {
+    return buf[(shape[1] * shape[2] * shape[3] * shape[4]) * quadrant + \
+               (shape[2] * shape[3] * shape[4]) * plane + \
+               (shape[3] * shape[4]) * row + \
+               shape[4] * col + \
+               a];
 }
 
 template <typename adrt_shape>
