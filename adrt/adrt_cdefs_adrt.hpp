@@ -113,7 +113,7 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
                 for(adrt_shape row = 0; row < corrected_shape[1]; ++row) {
                     for(adrt_shape col = 0; col < corrected_shape[2]; ++col) {
                         adrt_array_5d_access(prev, prev_shape, quadrant, plane, row, col, zero) = \
-                            adrt_array_3d_access(data, corrected_shape, plane, col, corrected_shape[1] - row - 1);
+                            adrt_array_3d_access(data, corrected_shape, plane, corrected_shape[2] - col - 1, row);
                     }
                 }
             }
