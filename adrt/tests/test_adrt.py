@@ -173,6 +173,14 @@ class TestAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
+    def test_unique_values(self):
+        size = 32
+        inarr = np.arange(size**2).reshape((size, size)).astype('float32')
+        c_out = adrt.adrt(inarr)
+        naive_out = _naive_adrt(inarr)
+        self.assertEqual(c_out.shape, naive_out.shape)
+        self.assertTrue(np.allclose(c_out, naive_out))
+
 
 if __name__ == '__main__':
     unittest.main()
