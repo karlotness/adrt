@@ -19,4 +19,5 @@ setup(name="adrt",
       python_requires=">=3.5, <4",
       install_requires=["numpy>=1.9"],
       license="BSD",
-      ext_modules=[adrt_c_ext])
+      ext_modules=[adrt_c_ext],
+      zip_safe=False)
