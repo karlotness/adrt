@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages, Extension
 import numpy
 import glob
+import re
+
 
 adrt_c_ext = Extension("adrt._adrt_cdefs",
                        sources=glob.glob('adrt/*.cpp'),
@@ -12,9 +14,20 @@ adrt_c_ext = Extension("adrt._adrt_cdefs",
                            ("Py_LIMITED_API", "0x03050000"),
                            ("NPY_NO_DEPRECATED_API", "NPY_1_9_API_VERSION")])
 
+
+def find_version():
+    ver_re = re.compile(r"^\s*__version__\s*=\s*(?:'|\")(?P<ver>.+?)(?:'|\")")
+    with open("adrt/__init__.py", mode='r', encoding='utf8') as version_file:
+        for line in version_file:
+            ver_match = ver_re.match(line)
+            if ver_match:
+                return ver_match.group('ver')
+        raise ValueError("Could not find package version")
+
+
 setup(name="adrt",
       description="Fast approximate discrete Radon transform for NumPy arrays",
-      version="0.1.0",
+      version=find_version(),
       packages=find_packages(),
       python_requires=">=3.5, <4",
       install_requires=["numpy>=1.9"],
