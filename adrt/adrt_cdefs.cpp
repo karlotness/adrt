@@ -31,6 +31,7 @@
 
 #include "adrt_cdefs_common.hpp" // Include this first
 #include "adrt_cdefs_adrt.hpp"
+#include "adrt_cdefs_iadrt.hpp"
 
 static PyArrayObject *adrt_validate_array(PyObject *args) {
     PyArrayObject *I;
