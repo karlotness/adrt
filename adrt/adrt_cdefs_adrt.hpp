@@ -51,12 +51,14 @@ static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, cons
 
     // Require that the matrix be square (power of two checked elsewhere)
     if(corrected_shape[1] != corrected_shape[2]) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must be square");
         return false;
     }
 
     // Check that shape is sensible
     for(int i = 0; i < 3; ++i) {
         if(corrected_shape[i] <= 0) {
+            PyErr_SetString(PyExc_ValueError, "Provided array must have no axes of zero size");
             return false;
         }
     }
