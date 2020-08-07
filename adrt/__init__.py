@@ -32,6 +32,7 @@
 
 
 __all__ = ['adrt']
+__version__ = "0.1.0"
 
 
 from ._wrappers import adrt
