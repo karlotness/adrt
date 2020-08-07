@@ -48,8 +48,8 @@ def _naive_adrt(a):
     # Copy in the image
     r[0, 0, :, :n, 0] = a
     r[0, 1, :, :n, 0] = a.T
-    r[0, 2, :, :n, 0] = a[::-1].T
-    r[0, 3, :, :n, 0] = a[::-1]
+    r[0, 2, :, :n, 0] = np.flipud(a).T
+    r[0, 3, :, :n, 0] = np.flipud(a)
 
     # Perform the recurrence
     for i in range(1, niter + 1):
