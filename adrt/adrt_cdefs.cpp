@@ -103,7 +103,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
            !_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
-                  static_cast<npy_float32*>(PyArray_DATA((PyArrayObject *) ret)))) {
+                  static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))))) {
             goto fail;
         }
         break;
@@ -113,7 +113,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
            !_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
-                  static_cast<npy_float64*>(PyArray_DATA((PyArrayObject *) ret)))) {
+                  static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))))) {
             goto fail;
         }
         break;
