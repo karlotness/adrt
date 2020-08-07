@@ -132,6 +132,16 @@ class TestAdrtCdefs(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
+    def test_refuses_zero_axis_array(self):
+        inarr = np.zeros((0, 32, 32), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            _ = adrt._adrt_cdefs.adrt(inarr)
+
+    def test_refuses_zero_size_planes(self):
+        inarr = np.zeros((0, 0), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            _ = adrt._adrt_cdefs.adrt(inarr)
+
 
 class TestAdrt(unittest.TestCase):
     def test_accepts_float32(self):
