@@ -5,6 +5,7 @@ import glob
 adrt_c_ext = Extension("adrt._adrt_cdefs",
                        sources=glob.glob('adrt/*.cpp'),
                        depends=glob.glob('adrt/*.hpp'),
+                       language='c++',
                        include_dirs=[numpy.get_include()],
                        py_limited_api=True,
                        define_macros=[
