@@ -128,8 +128,22 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return nullptr;
 }
 
+static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
+    // Process function arguments
+    PyObject *ret = nullptr;
+    PyArrayObject *I = adrt_validate_array(args); // Input array
+    if(!I) {
+        goto fail;
+    }
+    return ret;
+  fail:
+    Py_XDECREF(ret);
+    return nullptr;
+}
+
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt, METH_VARARGS, "Compute the ADRT"},
+    {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
     {nullptr, nullptr, 0, nullptr}
 };
 
