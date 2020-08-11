@@ -43,7 +43,7 @@ def _naive_adrt(a):
     assert a.shape[0] == a.shape[1]  # nosec: B101
     n = a.shape[0]
     niter = int(np.log2(n))
-    r = np.zeros((niter+1, 4, a.shape[0], 2 * a.shape[1], a.shape[1]))
+    r = np.zeros((niter + 1, 4, a.shape[0], 2 * a.shape[1], a.shape[1]))
 
     # Copy in the image
     r[0, 0, :, :n, 0] = a
@@ -54,23 +54,34 @@ def _naive_adrt(a):
     # Perform the recurrence
     for i in range(1, niter + 1):
         for quad in range(4):
-            for a in range(2**i):
-                for y in range(0, n-2**i+1, 2**i):
-                    for x in range(2*n):
-                        r[i, quad, y, x, a] = \
-                            r[i-1, quad, y, x, floor(a/2)] + \
-                            r[i-1, quad, y + 2**(i-1), x - ceil(a/2), floor(a/2)]  # noqa: E501
+            for a in range(2 ** i):
+                for y in range(0, n - 2 ** i + 1, 2 ** i):
+                    for x in range(2 * n):
+                        r[i, quad, y, x, a] = (
+                            r[i - 1, quad, y, x, floor(a / 2)]
+                            + r[
+                                i - 1,
+                                quad,
+                                y + 2 ** (i - 1),
+                                x - ceil(a / 2),
+                                floor(a / 2),
+                            ]
+                        )
 
     # Copy out the result
     # We need to reverse the order of the angles since the indexing described
     # when implemented directly as in the paper actually starts indexing down
     # and left. So the "quadrants" are in reverse order
-    return np.fliplr(np.hstack([
-        r[-1, 0, 0, :n, :],
-        np.fliplr(r[-1, 1, 0, :n, :]),
-        np.flipud(r[-1, 2, 0, :n, :]),
-        np.rot90(r[-1, 3, 0, :n, :], k=2)
-    ]))
+    return np.fliplr(
+        np.hstack(
+            [
+                r[-1, 0, 0, :n, :],
+                np.fliplr(r[-1, 1, 0, :n, :]),
+                np.flipud(r[-1, 2, 0, :n, :]),
+                np.rot90(r[-1, 3, 0, :n, :], k=2),
+            ]
+        )
+    )
 
 
 class TestAdrtCdefs(unittest.TestCase):
@@ -110,20 +121,24 @@ class TestAdrtCdefs(unittest.TestCase):
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.adrt(None)
         with self.assertRaises(TypeError):
-            _ = adrt._adrt_cdefs.adrt([[1., 2., 3., 4.],
-                                       [1., 2., 3., 4.],
-                                       [1., 2., 3., 4.],
-                                       [1., 2., 3., 4.]])
+            _ = adrt._adrt_cdefs.adrt(
+                [
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                ]
+            )
 
     def test_refuses_fortran_order(self):
-        inarr = np.zeros((32, 32), dtype=np.float32, order='F')
+        inarr = np.zeros((32, 32), dtype=np.float32, order="F")
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
-        inarr = np.zeros((64, 32), dtype=np.float32, order='F')[::2]
+        inarr = np.zeros((64, 32), dtype=np.float32, order="F")[::2]
         self.assertEqual(inarr.shape, (32, 32))
-        self.assertFalse(inarr.flags['C_CONTIGUOUS'])
+        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
@@ -158,7 +173,7 @@ class TestAdrt(unittest.TestCase):
             _ = adrt.adrt(inarr)
 
     def test_accepts_fortran_order(self):
-        inarr = np.zeros((16, 16), dtype=np.float32, order='F')
+        inarr = np.zeros((16, 16), dtype=np.float32, order="F")
         _ = adrt.adrt(inarr)
 
     def test_all_ones_square(self):
@@ -185,20 +200,19 @@ class TestAdrt(unittest.TestCase):
 
     def test_unique_values(self):
         size = 32
-        inarr = np.arange(size**2).reshape((size, size)).astype('float32')
+        inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
         c_out = adrt.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
     def test_batch_dimension_unique_values(self):
-        inarr = np.arange(4 * 32 * 32).reshape((4, 32, 32)).astype('float32')
+        inarr = np.arange(4 * 32 * 32).reshape((4, 32, 32)).astype("float32")
         c_out = adrt.adrt(inarr)
-        naive_out = np.stack([_naive_adrt(inarr[i])
-                              for i in range(inarr.shape[0])])
+        naive_out = np.stack([_naive_adrt(inarr[i]) for i in range(inarr.shape[0])])
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

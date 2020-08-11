@@ -73,20 +73,24 @@ class TestIAdrtCdefs(unittest.TestCase):
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.iadrt(None)
         with self.assertRaises(TypeError):
-            _ = adrt._adrt_cdefs.iadrt([[1., 2., 3., 4.],
-                                        [1., 2., 3., 4.],
-                                        [1., 2., 3., 4.],
-                                        [1., 2., 3., 4.]])
+            _ = adrt._adrt_cdefs.iadrt(
+                [
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                ]
+            )
 
     def test_refuses_fortran_order(self):
-        inarr = np.zeros((32, 4 * 32), dtype=np.float32, order='F')
+        inarr = np.zeros((32, 4 * 32), dtype=np.float32, order="F")
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
-        inarr = np.zeros((2 * 32, 4 * 32), dtype=np.float32, order='F')[::2]
+        inarr = np.zeros((2 * 32, 4 * 32), dtype=np.float32, order="F")[::2]
         self.assertEqual(inarr.shape, (32, 4 * 32))
-        self.assertFalse(inarr.flags['C_CONTIGUOUS'])
+        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
@@ -106,5 +110,5 @@ class TestIAdrtCdefs(unittest.TestCase):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

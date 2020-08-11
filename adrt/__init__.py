@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-__all__ = ['adrt']
+__all__ = ["adrt"]
 __version__ = "0.1.0"
 
 
