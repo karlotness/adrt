@@ -132,6 +132,7 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
+    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
     if(!I) {
         goto fail;
     }
