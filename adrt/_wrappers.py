@@ -35,8 +35,11 @@ import numpy as np
 from . import _adrt_cdefs
 
 
-def adrt(a):
+def _normalize_array(a):
     native_dtype = a.dtype.newbyteorder("=")
-    a = np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
+    return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
+
+
+def adrt(a):
     # TODO: Pad to be square and power of two
-    return _adrt_cdefs.adrt(a)
+    return _adrt_cdefs.adrt(_normalize_array(a))
