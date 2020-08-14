@@ -37,7 +37,7 @@
 #include <cstring>
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool _adrt(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out) {
+static bool adrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out) {
     // Shape (plane, row, col)
     const adrt_shape corrected_shape[3] =
         {(ndims > 2 ? shape[0] : 1),

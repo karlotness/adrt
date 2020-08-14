@@ -101,7 +101,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     case NPY_FLOAT32:
         ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
         if(!ret ||
-           !_adrt(static_cast<npy_float32*>(PyArray_DATA(I)),
+           !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))))) {
@@ -111,7 +111,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     case NPY_FLOAT64:
         ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
         if(!ret ||
-           !_adrt(static_cast<npy_float64*>(PyArray_DATA(I)),
+           !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                   ndim,
                   PyArray_SHAPE(I),
                   static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))))) {
