@@ -9,6 +9,8 @@ __pycache__/
 
 # Build files and directories
 *.so
+*.dylib
+*.dll
 *.o
 *.whl
 *.tar
