@@ -41,7 +41,6 @@ def _normalize_array(a):
 
 
 def adrt(a):
-    # TODO: Pad to be square and power of two
     return _adrt_cdefs.adrt(_normalize_array(a))
 
 
