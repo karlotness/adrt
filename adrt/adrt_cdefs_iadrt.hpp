@@ -36,8 +36,9 @@
 #include "adrt_cdefs_common.hpp"
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out) {
-    return false;
+static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
+                       const adrt_shape *const base_output_shape) {
+    return true;
 }
 
 #endif // ADRTC_CDEFS_IADRT_H
