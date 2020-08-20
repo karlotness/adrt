@@ -46,11 +46,6 @@ static PyArrayObject *adrt_validate_array(PyObject *args) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have native byte order");
         return nullptr;
     }
-    int ndim = PyArray_NDIM(I);
-    if(ndim != 2 && ndim != 3) {
-        PyErr_Format(PyExc_ValueError, "Invalid dimensionality %d, array must have two or three dimensions", ndim);
-        return nullptr;
-    }
     return I;
 }
 
