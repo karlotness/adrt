@@ -157,6 +157,15 @@ class TestAdrtCdefs(unittest.TestCase):
 
 
 class TestAdrt(unittest.TestCase):
+    def _check_zero_stencil(self, a):
+        n = a.shape[-1]
+        return (
+            np.all(np.tril(a[0, -n:], k=-1) == 0)
+            and np.all(np.triu(a[1, :n], k=1) == 0)
+            and np.all(np.tril(a[2, -n:], k=-1) == 0)
+            and np.all(np.triu(a[3, :n], k=1) == 0)
+        )
+
     def test_accepts_float32(self):
         inarr = np.zeros((16, 16), dtype=np.float32)
         _ = adrt.adrt(inarr)
