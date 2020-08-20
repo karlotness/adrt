@@ -155,8 +155,54 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
+    npy_intp *old_shape = nullptr;
+    npy_intp new_shape[3] = {0};
+    int ndim = 3;
     if(!I) {
+        goto fail;
+    }
+    ndim = PyArray_NDIM(I);
+    old_shape = PyArray_SHAPE(I);
+    if(!adrt_is_valid_adrt_shape(ndim, PyArray_SHAPE(I))) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
+        goto fail;
+    }
+    // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
+    if(ndim == 3) {
+        new_shape[0] = old_shape[ndim - 1];
+        new_shape[1] = old_shape[ndim - 1];
+    }
+    else {
+        new_shape[0] = old_shape[ndim - 4];
+        new_shape[1] = old_shape[ndim - 1];
+        new_shape[2] = old_shape[ndim - 1];
+    }
+    // Process input array
+    switch(PyArray_TYPE(I)) {
+    case NPY_FLOAT32:
+        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        if(!ret ||
+           !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
+                      ndim,
+                      PyArray_SHAPE(I),
+                      static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
+                      new_shape)) {
+            goto fail;
+        }
+        break;
+    case NPY_FLOAT64:
+        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        if(!ret ||
+           !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
+                      ndim,
+                      PyArray_SHAPE(I),
+                      static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
+                      new_shape)) {
+            goto fail;
+        }
+        break;
+    default:
+        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
         goto fail;
     }
     return ret;
