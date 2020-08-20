@@ -1,5 +1,7 @@
 # Approximate Discrete Radon Transform
 
+[![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][ghtest]
+
 This library provides an implementation of an approximate discrete
 Radon transform (ADRT) and its inverse, as a Python module operating
 on NumPy arrays.
@@ -16,6 +18,7 @@ This implementation is based on descriptions in several publications:
 The code in this repository is licensed under a 3-clause BSD license.
 See [LICENSE.txt](LICENSE.txt) for the license text.
 
+[ghtest]: https://github.com/karlotness/adrt/actions
 [brady98]: https://doi.org/10.1137/S0097539793256673
 [press08]: https://doi.org/10.1073/pnas.0609228103
 [rim20]: https://doi.org/10.1016/j.aml.2019.106159
