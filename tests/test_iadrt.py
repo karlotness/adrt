@@ -38,74 +38,89 @@ import adrt
 
 class TestIAdrtCdefs(unittest.TestCase):
     def test_accepts_float32(self):
-        inarr = np.zeros((16, 4 * 16), dtype=np.float32)
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
         _ = adrt._adrt_cdefs.iadrt(inarr)
 
-    def test_accepts_float32_three_dim(self):
-        inarr = np.zeros((5, 16, 4 * 16), dtype=np.float32)
+    def test_accepts_float32_four_dim(self):
+        size = 16
+        inarr = np.zeros((5, 4, 2 * size - 1, size), dtype=np.float32)
         _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_accepts_float64(self):
-        inarr = np.zeros((16, 4 * 16), dtype=np.float64)
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float64)
+        _ = adrt._adrt_cdefs.iadrt(inarr)
+
+    def test_accepts_float64_four_dim(self):
+        size = 16
+        inarr = np.zeros((5, 4, 2 * size - 1, size), dtype=np.float64)
         _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_int32(self):
-        inarr = np.zeros((16, 4 * 16), dtype=np.int32)
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_mismatched_shape(self):
-        inarr = np.zeros((16, 4 * 32), dtype=np.float32)
+        size = 16
+        inarr_a = np.zeros((4, 2 * size - 1, size - 1), dtype=np.float32)
+        inarr_b = np.zeros((4, 2 * size - 2, size), dtype=np.float32)
         with self.assertRaises(ValueError):
-            _ = adrt._adrt_cdefs.iadrt(inarr)
+            _ = adrt._adrt_cdefs.iadrt(inarr_a)
+        with self.assertRaises(ValueError):
+            _ = adrt._adrt_cdefs.iadrt(inarr_b)
 
-    def test_refuses_four_dim(self):
-        inarr = np.zeros((5, 3, 16, 4 * 16), dtype=np.float32)
+    def test_refuses_five_dim(self):
+        size = 16
+        inarr = np.zeros((6, 5, 4, 2 * size - 1, size), dtype=np.float32)
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_non_power_of_two(self):
-        inarr = np.zeros((31, 4 * 31), dtype=np.float32)
+        size = 17
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_non_array(self):
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.iadrt(None)
+        base_list = [[1.0, 2.0, 3.0, 4.0]] * 7
+        arr_list = [base_list for _ in range(4)]
         with self.assertRaises(TypeError):
-            _ = adrt._adrt_cdefs.iadrt(
-                [
-                    [1.0, 2.0, 3.0, 4.0],
-                    [1.0, 2.0, 3.0, 4.0],
-                    [1.0, 2.0, 3.0, 4.0],
-                    [1.0, 2.0, 3.0, 4.0],
-                ]
-            )
+            _ = adrt._adrt_cdefs.iadrt(arr_list)
 
     def test_refuses_fortran_order(self):
-        inarr = np.zeros((32, 4 * 32), dtype=np.float32, order="F")
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
-        inarr = np.zeros((2 * 32, 4 * 32), dtype=np.float32, order="F")[::2]
-        self.assertEqual(inarr.shape, (32, 4 * 32))
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, 2 * size), dtype=np.float32, order="F")
+        inarr = inarr[:, :, ::2]
+        self.assertEqual(inarr.shape, (4, 31, 16))
         self.assertFalse(inarr.flags["C_CONTIGUOUS"])
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_byteswapped(self):
-        inarr = np.ones((16, 4 * 16), dtype=np.float32).newbyteorder()
+        size = 16
+        inarr = np.ones((4, 2 * size - 1, size), dtype=np.float32).newbyteorder()
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_zero_axis_array(self):
-        inarr = np.zeros((0, 32, 4 * 32), dtype=np.float32)
+        size = 16
+        inarr = np.zeros((0, 4, 2 * size - 1, size), dtype=np.float32)
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_zero_size_planes(self):
-        inarr = np.zeros((0, 0), dtype=np.float32)
+        inarr = np.zeros((4, 0, 0), dtype=np.float32)
         with self.assertRaises(ValueError):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
