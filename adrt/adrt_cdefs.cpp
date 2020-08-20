@@ -49,6 +49,25 @@ static PyArrayObject *adrt_validate_array(PyObject *args) {
     return I;
 }
 
+static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
+    if(ndim < 3 || ndim > 4 || shape[ndim-2] != (shape[ndim-1] * 2 - 1) || shape[ndim-3] != 4) {
+        return false;
+    }
+    for(int i = 0; i < ndim; ++i) {
+        if(shape[i] <= 0) {
+            return false;
+        }
+    }
+    npy_intp val = 1;
+    while(val < shape[ndim - 1] && val > 0) {
+        val *= 2;
+    }
+    if(val != shape[ndim - 1]) {
+        return false;
+    }
+    return true;
+}
+
 static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
     if(ndim < 2 || ndim > 3 || shape[ndim - 1] != shape[ndim - 2]) {
         return false;
