@@ -174,6 +174,16 @@ class TestAdrt(unittest.TestCase):
         inarr = np.zeros((16, 16), dtype=np.float64)
         _ = adrt.adrt(inarr)
 
+    def test_float32_returned_dtype(self):
+        inarr = np.zeros((16, 16), dtype=np.float32)
+        c_out = adrt.adrt(inarr)
+        self.assertEqual(c_out.dtype, np.float32)
+
+    def test_float64_returned_dtype(self):
+        inarr = np.zeros((16, 16), dtype=np.float64)
+        c_out = adrt.adrt(inarr)
+        self.assertEqual(c_out.dtype, np.float64)
+
     def test_refuses_int32(self):
         inarr = np.zeros((16, 16), dtype=np.int32)
         with self.assertRaises(TypeError):
