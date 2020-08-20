@@ -239,6 +239,118 @@ class TestAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
+    def test_spot_check_vertical_line_left(self):
+        inarr = np.zeros((8, 8))
+        inarr[:, 0] = 1
+        c_out = adrt.adrt(inarr)
+        # Check shape & stencil outline
+        self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
+        self.assertTrue(self._check_zero_stencil(c_out))
+        # Quadrant 0
+        self.assertEqual(c_out[0, 7, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[0, :, 0]), 1)
+        self.assertTrue(np.all(c_out[0, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[0, -8:, -1] == 1))
+        # Quadrant 1
+        self.assertTrue(np.all(c_out[1, :7, 0] == 0))
+        self.assertTrue(np.all(c_out[1, -8:, 0] == 1))
+        self.assertTrue(np.all(c_out[1, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[1, -8:, -1] == 1))
+        # Quadrant 2
+        self.assertTrue(np.all(c_out[2, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[2, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[2, :8, -1] == 1))
+        self.assertTrue(np.all(c_out[2, -7:, -1] == 0))
+        # Quadrant 3
+        self.assertTrue(np.all(c_out[3, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[3, -7:, 0] == 0))
+        self.assertEqual(c_out[3, 7, -1], 8)
+        self.assertEqual(np.count_nonzero(c_out[3, :, -1]), 1)
+
+    def test_spot_check_vertical_line_right(self):
+        inarr = np.zeros((8, 8))
+        inarr[:, -1] = 1
+        c_out = adrt.adrt(inarr)
+        # Check shape & stencil outline
+        self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
+        self.assertTrue(self._check_zero_stencil(c_out))
+        # Quadrant 0
+        self.assertEqual(c_out[0, 0, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[0, :, 0]), 1)
+        self.assertTrue(np.all(c_out[0, :8, -1] == 1))
+        self.assertTrue(np.all(c_out[0, -7:, -1] == 0))
+        # Quadrant 1
+        self.assertTrue(np.all(c_out[1, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[1, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[1, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[1, -8:, -1] == 1))
+        # Quadrant 2
+        self.assertTrue(np.all(c_out[2, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[2, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[2, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[2, -8:, -1] == 1))
+        # Quadrant 3
+        self.assertTrue(np.all(c_out[3, :7, 0] == 0))
+        self.assertTrue(np.all(c_out[3, -8:, 0] == 1))
+        self.assertEqual(c_out[3, -1, -1], 8)
+        self.assertEqual(np.count_nonzero(c_out[3, :, -1]), 1)
+
+    def test_spot_check_horizontal_line_top(self):
+        inarr = np.zeros((8, 8))
+        inarr[0, :] = 1
+        c_out = adrt.adrt(inarr)
+        # Check shape & stencil outline
+        self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
+        self.assertTrue(self._check_zero_stencil(c_out))
+        # Quadrant 0
+        self.assertTrue(np.all(c_out[0, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[0, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[0, :8, -1] == 1))
+        self.assertTrue(np.all(c_out[0, -7:, -1] == 0))
+        # Quadrant 1
+        self.assertTrue(np.all(c_out[1, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[1, -7:, 0] == 0))
+        self.assertEqual(c_out[1, 7, -1], 8)
+        self.assertEqual(np.count_nonzero(c_out[1, :, -1]), 1)
+        # Quadrant 2
+        self.assertEqual(c_out[2, 0, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[2, :, 0]), 1)
+        self.assertTrue(np.all(c_out[2, :8, -1] == 1))
+        self.assertTrue(np.all(c_out[2, -7:, -1] == 0))
+        # Quadrant 3
+        self.assertTrue(np.all(c_out[3, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[3, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[3, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[3, -8:, -1] == 1))
+
+    def test_spot_check_horizontal_line_bottom(self):
+        inarr = np.zeros((8, 8))
+        inarr[-1, :] = 1
+        c_out = adrt.adrt(inarr)
+        # Check shape & stencil outline
+        self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
+        self.assertTrue(self._check_zero_stencil(c_out))
+        # Quadrant 0
+        self.assertTrue(np.all(c_out[0, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[0, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[0, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[0, -8:, -1] == 1))
+        # Quadrant 1
+        self.assertTrue(np.all(c_out[1, :7, 0] == 0))
+        self.assertTrue(np.all(c_out[1, -8:, 0] == 1))
+        self.assertEqual(c_out[1, -1, -1], 8)
+        self.assertEqual(np.count_nonzero(c_out[1, :, -1]), 1)
+        # Quadrant 2
+        self.assertEqual(c_out[2, 7, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[2, :, 0]), 1)
+        self.assertTrue(np.all(c_out[2, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[2, -8:, -1] == 1))
+        # Quadrant 3
+        self.assertTrue(np.all(c_out[3, :7, 0] == 0))
+        self.assertTrue(np.all(c_out[3, -8:, 0] == 1))
+        self.assertTrue(np.all(c_out[3, :7, -1] == 0))
+        self.assertTrue(np.all(c_out[3, -8:, -1] == 1))
+
 
 if __name__ == "__main__":
     unittest.main()
