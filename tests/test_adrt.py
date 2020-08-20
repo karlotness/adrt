@@ -193,6 +193,12 @@ class TestAdrt(unittest.TestCase):
         inarr = np.zeros((16, 16), dtype=np.float32, order="F")
         _ = adrt.adrt(inarr)
 
+    def test_accepts_c_non_contiguous(self):
+        inarr = np.zeros((64, 32), dtype=np.float32, order="F")[::2]
+        self.assertEqual(inarr.shape, (32, 32))
+        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
+        _ = adrt.adrt(inarr)
+
     def test_all_ones_square(self):
         inarr = np.ones((32, 32))
         c_out = adrt.adrt(inarr)
