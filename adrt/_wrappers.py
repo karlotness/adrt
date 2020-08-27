@@ -41,6 +41,61 @@ def _normalize_array(a):
 
 
 def adrt(a):
+    r"""The Approximate Discrete Radon Transform (ADRT).
+
+    Computes the ADRT of the provided matrix, `a`. The matrix `a` may
+    have either two or three dimensions. If it has three dimensions,
+    the first dimension, is treated as a batch and the ADRT is
+    computed for each layer independently. The dimensions of the layer
+    data must have equal size N, where N is a power of two. The input
+    shape is ``(B?, N, N)``.
+
+    The returned array will have a shape of either three or four
+    dimensions. The optional fourth dimension has the same size as the
+    batch dimension of `a`, if present. The output is divided into
+    four quadrants each representing a range of angles. The third and
+    fourth axes index into Radon transform displacements and angles,
+    respectively. The output has shape: ``(B?, 4, 2 * N - 1, N)``.
+
+    For more information on the construction of the quadrants and the
+    contents of this array see: :ref:`adrt-description`.
+
+    Parameters
+    ----------
+    a : array_like of float
+        The array of data for which the ADRT should be computed.
+
+    Returns
+    -------
+    numpy.ndarray
+        The ADRT of the provided data.
+
+    Raises
+    ------
+    ValueError
+        If the array has an invalid shape.
+    TypeError
+        If the array has an unsupported (i.e. non-float) dtype.
+
+    Notes
+    -----
+    The transform implemented here is an approximation to the Radon
+    transform and *approximates* the sums along lines with carefully
+    chosen angles. Each quadrant slices along a range of :math:`\pi/4`
+    radians. For a detailed description of the algorithm see
+    :ref:`adrt-description` and refer to the source papers [press08]_,
+    [brady98]_.
+
+    References
+    ----------
+    .. [press08] William H. Press, *A Fast Discrete Approximation
+       Algorithm for the Radon Transform Related Databases*, SIAM Journal
+       on Computing, 27. https://doi.org/10.1073/pnas.0609228103
+    .. [brady98] Martin L. Brady, *Discrete Radon transform has an exact,
+       fast inverse and generalizes to operations other than sums along
+       lines*, Proceedings of the National Academy of Sciences, 103.
+       https://doi.org/10.1137/S0097539793256673
+    """
     return _adrt_cdefs.adrt(_normalize_array(a))
 
 
