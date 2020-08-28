@@ -50,6 +50,9 @@ def adrt(a):
     data must have equal size N, where N is a power of two. The input
     shape is ``(B?, N, N)``.
 
+    If padding is needed for the input array, consider
+    :func:`numpy.pad`.
+
     The returned array will have a shape of either three or four
     dimensions. The optional fourth dimension has the same size as the
     batch dimension of `a`, if present. The output is divided into
