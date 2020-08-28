@@ -43,7 +43,7 @@ def _normalize_array(a):
 def adrt(a):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
-    Computes the ADRT of the provided matrix, `a`. The matrix `a` may
+    Computes the ADRT of the provided array, `a`. The array `a` may
     have either two or three dimensions. If it has three dimensions,
     the first dimension, is treated as a batch and the ADRT is
     computed for each layer independently. The dimensions of the layer
@@ -96,7 +96,7 @@ def iadrt(a):
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
-    ADRT outputs. The matrix `a` may have either three or four
+    ADRT outputs. The array `a` may have either three or four
     dimensions. If present, the first dimension is a batch dimension.
     The remaining dimensions are the quadrants, and ADRT data. The
     array `a` must have shape ``(B?, 4, 2 * N - 1, N)``, where N is a
