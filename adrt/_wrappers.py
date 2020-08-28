@@ -100,4 +100,51 @@ def adrt(a):
 
 
 def iadrt(a):
+    r"""An exact inverse to the ADRT.
+
+    Computes an exact inverse to the ADRT, but only works for exact
+    ADRT outputs. The matrix `a` may have either three or four
+    dimensions. If present, the first dimension is a batch dimension.
+    The remaining dimensions are the quadrants, and ADRT data. The
+    array `a` must have shape ``(B?, 4, 2 * N - 1, N)``, where N is a
+    power of two.
+
+    The returned array has the same shape as the appropriate input to
+    the ADRT, ``(B?, N, N)``.
+
+    Parameters
+    ----------
+    a : array_like of float
+        An array storing the output of the forward ADRT.
+
+    Returns
+    -------
+    numpy.ndarray
+        The original ADRT input which produced `a`.
+
+    Raises
+    ------
+    ValueError
+        If the array has an invalid shape.
+    TypeError
+        If the array has an unsupported (i.e. non-float) dtype.
+
+    Warnings
+    --------
+    This inverse is exact *only* if `a` is an exact output of the
+    forward ADRT. In other cases this inverse is not appropriate.
+
+    Notes
+    -----
+    The inverse here only uses values stored in one of the quadrants.
+    For details of the algorithm see :ref:`iadrt-description` or the
+    source paper [rim20]_.
+
+    References
+    ----------
+    .. [rim20] Donsub Rim, *Exact and fast inversion of the
+       approximate discrete Radon transform from partial data*,
+       Applied Mathematics Letters, 102.
+       https://doi.org/10.1016/j.aml.2019.106159
+    """
     return _adrt_cdefs.iadrt(_normalize_array(a))
