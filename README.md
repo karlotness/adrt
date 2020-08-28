@@ -10,7 +10,7 @@ on NumPy arrays.
 
 This implementation is based on descriptions in several publications:
 - Martin L. Brady, [A Fast Discrete Approximation Algorithm for the Radon Transform Related Databases][brady98], SIAM Journal on Computing, 27.
-- William H. Press, [Discrete Radon transform has an exact, fast inverse and generalizes to operations other than sums along lines][press08], Proceedings of the National Academy of Sciences, 103.
+- William H. Press, [Discrete Radon transform has an exact, fast inverse and generalizes to operations other than sums along lines][press06], Proceedings of the National Academy of Sciences, 103.
 - Donsub Rim, [Exact and fast inversion of the approximate discrete Radon transform from partial data][rim20], Applied Mathematics Letters, 102.
 
 ## License
@@ -20,5 +20,5 @@ See [LICENSE.txt](LICENSE.txt) for the license text.
 
 [ghtest]: https://github.com/karlotness/adrt/actions
 [brady98]: https://doi.org/10.1137/S0097539793256673
-[press08]: https://doi.org/10.1073/pnas.0609228103
+[press06]: https://doi.org/10.1073/pnas.0609228103
 [rim20]: https://doi.org/10.1016/j.aml.2019.106159

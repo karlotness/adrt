@@ -79,12 +79,12 @@ def adrt(a):
     transform and *approximates* the sums along lines with carefully
     chosen angles. Each quadrant slices along a range of :math:`\pi/4`
     radians. For a detailed description of the algorithm see
-    :ref:`adrt-description` and refer to the source papers [press08]_,
+    :ref:`adrt-description` and refer to the source papers [press06]_,
     [brady98]_.
 
     References
     ----------
-    .. [press08] William H. Press, *A Fast Discrete Approximation
+    .. [press06] William H. Press, *A Fast Discrete Approximation
        Algorithm for the Radon Transform Related Databases*, SIAM Journal
        on Computing, 27. https://doi.org/10.1073/pnas.0609228103
     .. [brady98] Martin L. Brady, *Discrete Radon transform has an exact,
