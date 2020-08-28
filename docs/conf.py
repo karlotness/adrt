@@ -27,6 +27,9 @@ html_theme = "sphinx_rtd_theme"
 # Autodoc configuration
 autodoc_mock_imports = ["adrt._adrt_cdefs"]
 
+# Napoleon configuration
+napoleon_google_docstring = False
+
 # Intersphinx configuration
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
