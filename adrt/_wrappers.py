@@ -70,13 +70,6 @@ def adrt(a):
     numpy.ndarray
         The ADRT of the provided data.
 
-    Raises
-    ------
-    ValueError
-        If the array has an invalid shape.
-    TypeError
-        If the array has an unsupported (i.e. non-float) dtype.
-
     Notes
     -----
     The transform implemented here is an approximation to the Radon
@@ -121,13 +114,6 @@ def iadrt(a):
     -------
     numpy.ndarray
         The original ADRT input which produced `a`.
-
-    Raises
-    ------
-    ValueError
-        If the array has an invalid shape.
-    TypeError
-        If the array has an unsupported (i.e. non-float) dtype.
 
     Warnings
     --------
