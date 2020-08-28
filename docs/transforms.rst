@@ -6,5 +6,7 @@ Transforms
 Forward Radon Transform
 -----------------------
 
+.. _iadrt-description:
+
 Inverse Transforms
 ------------------
