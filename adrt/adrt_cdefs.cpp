@@ -211,9 +211,15 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return nullptr;
 }
 
+static PyObject *bdrt(__attribute__((unused)) PyObject *self, PyObject *args){
+    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
+    return nullptr;
+}
+
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt, METH_VARARGS, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
+    {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
     {nullptr, nullptr, 0, nullptr}
 };
 
