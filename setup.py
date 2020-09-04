@@ -18,9 +18,9 @@ adrt_c_ext = Extension(
 )
 
 
-def find_version():
-    ver_re = re.compile(r"^\s*__version__\s*=\s*(?:'|\")(?P<ver>.+?)(?:'|\")")
-    with open("adrt/__init__.py", mode="r", encoding="utf8") as version_file:
+def find_version(version_path):
+    ver_re = re.compile(r"^\s*__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
+    with open(version_path, mode="r", encoding="utf8") as version_file:
         for line in version_file:
             ver_match = ver_re.match(line)
             if ver_match:
@@ -31,7 +31,7 @@ def find_version():
 setup(
     name="adrt",
     description="Fast approximate discrete Radon transform for NumPy arrays",
-    version=find_version(),
+    version=find_version("adrt/__init__.py"),
     packages=find_packages(),
     python_requires=">=3.5, <4",
     install_requires=["numpy>=1.9"],
