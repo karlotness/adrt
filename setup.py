@@ -38,4 +38,5 @@ setup(
     license="BSD",
     ext_modules=[adrt_c_ext],
     zip_safe=False,
+    url="https://github.com/karlotness/adrt",
 )
