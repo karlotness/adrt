@@ -28,6 +28,11 @@ def find_version(version_path):
         raise ValueError("Could not find package version")
 
 
+def load_readme(readme_path):
+    with open(readme_path, mode="r", encoding="utf8") as readme_file:
+        return readme_file.read()
+
+
 setup(
     name="adrt",
     description="Fast approximate discrete Radon transform for NumPy arrays",
@@ -39,4 +44,6 @@ setup(
     ext_modules=[adrt_c_ext],
     zip_safe=False,
     url="https://github.com/karlotness/adrt",
+    long_description=load_readme("README.md"),
+    long_description_content_type="text/markdown",
 )
