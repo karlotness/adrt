@@ -26,6 +26,12 @@ installed, navigate to the root source code directory and run::
 
   pytest
 
+Alternatively, you can use the built-in :mod:`unittest` module to
+run the tests::
+
+  cd tests/
+  python -m unittest
+
 .. _openmp-build:
 
 OpenMP Support
