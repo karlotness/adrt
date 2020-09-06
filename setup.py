@@ -19,7 +19,7 @@ adrt_c_ext = Extension(
 
 
 def find_version(version_path):
-    ver_re = re.compile(r"^\s*__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
+    ver_re = re.compile(r"^__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
     with open(version_path, mode="r", encoding="utf8") as version_file:
         for line in version_file:
             ver_match = ver_re.match(line)
