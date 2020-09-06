@@ -31,8 +31,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-__all__ = ["adrt", "iadrt"]
+__all__ = ["adrt", "iadrt", "bdrt"]
 __version__ = "0.1.0"
 
 
-from ._wrappers import adrt, iadrt
+from ._wrappers import adrt, iadrt, bdrt

@@ -137,3 +137,7 @@ def iadrt(a):
        https://doi.org/10.1016/j.aml.2019.106159
     """
     return _adrt_cdefs.iadrt(_normalize_array(a))
+
+
+def bdrt(a):
+    return _adrt_cdefs.bdrt(_normalize_array(a))
