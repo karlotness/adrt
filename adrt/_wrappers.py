@@ -81,16 +81,6 @@ def adrt(a):
     radians. For a detailed description of the algorithm see
     :ref:`adrt-description` and refer to the source papers [press06]_,
     [brady98]_.
-
-    References
-    ----------
-    .. [press06] William H. Press, *A Fast Discrete Approximation
-       Algorithm for the Radon Transform Related Databases*, SIAM Journal
-       on Computing, 27. https://doi.org/10.1073/pnas.0609228103
-    .. [brady98] Martin L. Brady, *Discrete Radon transform has an exact,
-       fast inverse and generalizes to operations other than sums along
-       lines*, Proceedings of the National Academy of Sciences, 103.
-       https://doi.org/10.1137/S0097539793256673
     """
     return _adrt_cdefs.adrt(_normalize_array(a))
 
@@ -128,13 +118,6 @@ def iadrt(a):
     The inverse here only uses values stored in one of the quadrants.
     For details of the algorithm see :ref:`iadrt-description` or the
     source paper [rim20]_.
-
-    References
-    ----------
-    .. [rim20] Donsub Rim, *Exact and fast inversion of the
-       approximate discrete Radon transform from partial data*,
-       Applied Mathematics Letters, 102.
-       https://doi.org/10.1016/j.aml.2019.106159
     """
     return _adrt_cdefs.iadrt(_normalize_array(a))
 
