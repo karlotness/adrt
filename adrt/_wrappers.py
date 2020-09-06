@@ -123,4 +123,21 @@ def iadrt(a):
 
 
 def bdrt(a):
+    r"""Backprojection for the ADRT.
+
+    Parameters
+    ----------
+    a : array_like of float
+        An array storing the output of the forward ADRT.
+
+    Returns
+    -------
+    numpy.ndarray
+        The backprojection of array `a`.
+
+    Notes
+    -----
+    For more details on the backprojection implemented here see the
+    source paper [press06]_.
+    """
     return _adrt_cdefs.bdrt(_normalize_array(a))
