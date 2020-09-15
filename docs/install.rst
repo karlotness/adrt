@@ -3,6 +3,15 @@
 Installation
 ============
 
+PyPI
+----
+
+This package is available as "`adrt
+<https://pypi.org/project/adrt/>`__" on PyPI. You can install it using
+pip::
+
+  pip install adrt
+
 Source
 ------
 
