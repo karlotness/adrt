@@ -34,5 +34,4 @@ napoleon_google_docstring = False
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "pytest": ("https://docs.pytest.org/en/stable/", None),
 }
