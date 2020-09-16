@@ -30,7 +30,7 @@ Running Tests
 
 Once you have an installed version of the package, the test suite can
 help confirm whether the routines are operating correctly. We use
-:doc:`PyTest <pytest:index>` as a test runner. Once PyTest is
+`pytest <https://pytest.org/>`__ as a test runner. Once pytest is
 installed, navigate to the root source code directory and run::
 
   pytest
