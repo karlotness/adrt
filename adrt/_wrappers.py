@@ -92,7 +92,7 @@ def iadrt(a):
     ADRT outputs. The array `a` may have either three or four
     dimensions. If present, the first dimension is a batch dimension.
     The remaining dimensions are the quadrants, and ADRT data. The
-    array `a` must have shape ``(B?, 4, 2 * N - 1, N)``, where N is a
+    array `a` must have shape ``(B?, 2 * N - 1, N)``, where N is a
     power of two.
 
     The returned array has the same shape as the appropriate input to

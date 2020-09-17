@@ -51,7 +51,7 @@ static PyArrayObject *adrt_validate_array(PyObject *args) {
 }
 
 static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
-    if(ndim < 3 || ndim > 4 || shape[ndim-2] != (shape[ndim-1] * 2 - 1) || shape[ndim-3] != 4) {
+    if(ndim < 2 || ndim > 3 || shape[ndim-2] != (shape[ndim-1] * 2 - 1)) {
         return false;
     }
     for(int i = 0; i < ndim; ++i) {
@@ -159,6 +159,7 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[3] = {0};
     int ndim = 3;
+
     if(!I) {
         goto fail;
     }
@@ -168,20 +169,22 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
         goto fail;
     }
-    // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
-    if(ndim == 3) {
-        new_shape[0] = old_shape[ndim - 1];
-        new_shape[1] = old_shape[ndim - 1];
+
+    // Compute output shape: [plane?, N, N] (batch, row, col)
+    if(ndim == 2) {
+        new_shape[0] = old_shape[1];
+        new_shape[1] = old_shape[1];
     }
     else {
-        new_shape[0] = old_shape[ndim - 4];
-        new_shape[1] = old_shape[ndim - 1];
-        new_shape[2] = old_shape[ndim - 1];
+        new_shape[0] = old_shape[0];
+        new_shape[1] = old_shape[2];
+        new_shape[2] = old_shape[2];
     }
+
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
@@ -192,7 +195,7 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
