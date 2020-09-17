@@ -1,14 +1,17 @@
 # Utilities for ADRT
 
-def contiguous(A):
+import numpy as np
+
+
+def contiguous(a):
     r"""
-    Reshape 4-channel ADRT output to zero-padded 2D continguous array 
+    Reshape 4-channel ADRT output to zero-padded 2D continguous array
 
     Parameters
     ----------
-    A : array_like
+    a : array_like
         array of shape (4,2*N,N) in which N = 2**n
-    
+
     Returns
     -------
     Z : array_like
@@ -17,20 +20,21 @@ def contiguous(A):
 
     """
 
-    if not isinstance(A, np.ndarray) or (A.shape[0] != 4) \
-                    or ((A.shape[1] +1) != 2*A.shape[2]):
-         raise ValueError("Passed array is not of the right shape")
+    if (
+        not isinstance(a, np.ndarray)
+        or (a.shape[0] != 4)
+        or ((a.shape[1] + 1) != 2 * a.shape[2])
+    ):
+        raise ValueError("Passed array is not of the right shape")
 
-    dtype = A.dtype
-    N = A.shape[1]
-    M = A.shape[2]
+    dtype = a.dtype
+    m = a.shape[2]
 
-    Z = np.zeros((3*M-2,4*M))
+    z = np.zeros((3 * m - 2, 4 * m), dtype=dtype)
 
-    Z[:(2*M-1), :M] = A[0,:,:]
-    Z[:(2*M-1),M:(2*M)] = A[1,:,:]
-    Z[(M-1):,(2*M):(3*M)] = A[2,:,:]
-    Z[(M-1):,(3*M):(4*M)] = A[3,:,:]
+    z[: (2 * m - 1), :m] = a[0, :, :]
+    z[: (2 * m - 1), m : (2 * m)] = a[1, :, :]
+    z[(m - 1) :, (2 * m) : (3 * m)] = a[2, :, :]
+    z[(m - 1) :, (3 * m) : (4 * m)] = a[3, :, :]
 
-    return Z
-
+    return z
