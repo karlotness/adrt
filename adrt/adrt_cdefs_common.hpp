@@ -49,12 +49,12 @@
 template <typename adrt_scalar, typename adrt_shape, size_t N,
           typename... Idx>
 inline adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
-                                      Idx... idxs) {
+                                      const Idx... idxs) {
     size_t step_size = 1;
     size_t acc = 0;
 
     static_assert(sizeof...(idxs) == N, "Must provide N array indices");
-    std::array<adrt_shape, N> idx {idxs...};
+    const std::array<adrt_shape, N> idx {idxs...};
 
     for(size_t i = 0; i < N; ++i) {
         size_t idx_i = N - i - 1;
