@@ -65,39 +65,6 @@ inline adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<a
     return buf[acc];
 }
 
-
-template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_3d_access(adrt_scalar *const buf, const adrt_shape shape[3],
-                                         const adrt_shape plane, const adrt_shape row, const adrt_shape col) {
-    return buf[(shape[1] * shape[2]) * plane + shape[2] * row + col];
-}
-
-template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_4d_access(adrt_scalar *const buf, const adrt_shape shape[4],
-                                         const adrt_shape plane, const adrt_shape quadrant, const adrt_shape row, const adrt_shape col) {
-    return buf[(shape[1] * shape[2] * shape[3]) * plane + \
-               (shape[2] * shape[3]) * quadrant + \
-               shape[3] * row + \
-               col];
-}
-
-
-template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_4d_stride_access(adrt_scalar *const buf, const adrt_shape shape[4], const adrt_shape i, const adrt_shape j, const adrt_shape k, const adrt_shape l) {
-    return buf[shape[1]*i + shape[2]*j + shape[3]*k + l];
-}
-
-template <typename adrt_scalar, typename adrt_shape>
-inline adrt_scalar& adrt_array_5d_access(adrt_scalar *const buf, const adrt_shape shape[5],
-                                         const adrt_shape quadrant, const adrt_shape plane,
-                                         const adrt_shape row, const adrt_shape col, const adrt_shape a) {
-    return buf[(shape[1] * shape[2] * shape[3] * shape[4]) * quadrant + \
-               (shape[2] * shape[3] * shape[4]) * plane + \
-               (shape[3] * shape[4]) * row + \
-               shape[4] * col + \
-               a];
-}
-
 template <typename adrt_shape>
 inline adrt_shape adrt_floor_div2(const adrt_shape val) {
     return val / 2;
