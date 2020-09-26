@@ -112,7 +112,7 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
         curr_shape[3] = adrt_floor_div2(prev_shape[3]); // stride for section
 
         // Inner loops (these loops can be parallel)
-        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape, i)
+        #pragma omp parallel for collapse(4) default(none) shared(curr, prev, curr_shape, prev_shape, i)
         for(adrt_shape plane = 0; plane < curr_shape[0]; ++plane) {
             for(adrt_shape j = 0; j < curr_shape[4]; ++j) {
                 for(adrt_shape a = 0; a < curr_shape[3]; ++a) {
