@@ -44,6 +44,28 @@
 #endif
 #include "numpy/arrayobject.h"
 
+#include <array>
+
+template <typename adrt_scalar, typename adrt_shape, size_t N,
+          typename... Idx>
+inline adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
+                                      Idx... idxs) {
+    size_t step_size = 1;
+    size_t acc = 0;
+
+    static_assert(sizeof...(idxs) == N, "Must provide N array indices");
+    std::array<adrt_shape, N> idx {idxs...};
+
+    for(size_t i = 0; i < N; ++i) {
+        size_t idx_i = N - i - 1;
+        acc += step_size * idx[idx_i];
+        step_size *= shape[idx_i];
+    }
+
+    return buf[acc];
+}
+
+
 template <typename adrt_scalar, typename adrt_shape>
 inline adrt_scalar& adrt_array_3d_access(adrt_scalar *const buf, const adrt_shape shape[3],
                                          const adrt_shape plane, const adrt_shape row, const adrt_shape col) {
