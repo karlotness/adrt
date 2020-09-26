@@ -105,18 +105,4 @@ static adrt_shape adrt_num_iters(const adrt_shape shape) {
     return num_iters;
 }
 
-template <typename adrt_shape>
-static adrt_shape adrt_num_iters(const adrt_shape shape[3]) {
-    if(shape[1] <= 1 && shape[2] <= 1) {
-        return 0;
-    }
-    adrt_shape num_iters = 1;
-    adrt_shape segment_length = 2;
-    while(segment_length < shape[1] && segment_length < shape[2] && (segment_length * 2) > segment_length) {
-        ++num_iters;
-        segment_length *= 2;
-    }
-    return num_iters;
-}
-
 #endif //ADRTC_CDEFS_COMMON_H
