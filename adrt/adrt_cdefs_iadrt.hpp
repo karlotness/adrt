@@ -72,7 +72,7 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
-    const adrt_shape num_iters = adrt_num_iters(corrected_shape);
+    const adrt_shape num_iters = adrt_num_iters(corrected_shape[3]);
 
     adrt_scalar *curr = aux;
     adrt_scalar *prev = aux + buf_size;
