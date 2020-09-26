@@ -34,24 +34,25 @@
 #define ADRTC_CDEFS_IADRT_H
 
 #include "adrt_cdefs_common.hpp"
+#include <array>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
                        const adrt_shape *const base_output_shape) {
 
-    // Shape (plane, row, col)
-    const adrt_shape corrected_shape[3] =
-        {(ndims > 2 ? shape[0] : 1),
-         (ndims > 2 ? shape[1] : shape[0]),
-         (ndims > 2 ? shape[2] : shape[1])};
+    const std::array<adrt_shape, 4> corrected_shape =
+        {(ndims > 3 ? shape[0] : 1),
+         (ndims > 3 ? shape[1] : shape[0]),
+         (ndims > 3 ? shape[2] : shape[1]),
+         (ndims > 3 ? shape[3] : shape[2])};
 
-    const adrt_shape output_shape[3] =
-        {(ndims > 2 ? base_output_shape[0] : 1),
-         (ndims > 2 ? base_output_shape[1] : base_output_shape[0]),
-         (ndims > 2 ? base_output_shape[2] : base_output_shape[1])};
+    const std::array<adrt_shape, 3> output_shape =
+        {(ndims > 3 ? base_output_shape[0] : 1),
+         (ndims > 3 ? base_output_shape[1] : base_output_shape[0]),
+         (ndims > 3 ? base_output_shape[2] : base_output_shape[1])};
 
     // Check that shape is sensible
-    for(int i = 0; i < 3; ++i) {
+    for(int i = 0; i < 4; ++i) {
         if(corrected_shape[i] <= 0) {
             PyErr_SetString(PyExc_ValueError, "Provided array must have no axes of zero size");
             return false;
@@ -77,8 +78,9 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
     adrt_scalar *prev = aux + buf_size;
 
     // Each quadrant has a different shape (the padding goes in a different place)
-    adrt_shape buff_shape[5] = {corrected_shape[0],corrected_shape[1]+1,
-                                corrected_shape[2],corrected_shape[2],1};
+    const std::array<adrt_shape, 5> buff_shape =
+        {corrected_shape[0],corrected_shape[1]+1,
+         corrected_shape[2],corrected_shape[2],1};
 
     // First, memcpy in the base image into each buffer
     const adrt_shape zero = 0;
@@ -95,19 +97,13 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
         }
     }
 
-    adrt_shape prev_shape[5] = {corrected_shape[0],
-                               (corrected_shape[1]+1)*corrected_shape[2],
-                                corrected_shape[2],corrected_shape[2],1};
-    adrt_shape curr_shape[5] = {0};
-
-    // fixed shapes (does not change in loop)
-    curr_shape[0] = prev_shape[0]; // always have the same no. of planes
-    curr_shape[1] = prev_shape[1]; // plane stride
-    curr_shape[2] = prev_shape[2]; // row stride
-
-    // variable shapes
-    curr_shape[3] = prev_shape[3]; // section stride
-    curr_shape[4] = prev_shape[4]; // no. of sections
+    std::array<adrt_shape, 5> prev_shape =
+        {corrected_shape[0],
+         corrected_shape[2] * (corrected_shape[1] + 1),
+         corrected_shape[2],
+         corrected_shape[2],
+         1};
+    std::array<adrt_shape, 5> curr_shape = prev_shape;
 
     // Outer loop over iterations (this loop must be serial)
     for(adrt_shape i = 1; i <= num_iters; ++i) {
