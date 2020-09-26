@@ -46,23 +46,34 @@
 
 #include <array>
 
-template <typename adrt_scalar, typename adrt_shape, size_t N,
-          typename... Idx>
-inline adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
-                                      const Idx... idxs) {
-    size_t step_size = 1;
-    size_t acc = 0;
-
-    static_assert(sizeof...(idxs) == N, "Must provide N array indices");
-    const std::array<adrt_shape, N> idx {idxs...};
-
+template <typename adrt_shape, size_t N>
+static void adrt_compute_strides(std::array<adrt_shape, N> &strides_out, const std::array<adrt_shape, N> shape_in) {
+    adrt_shape step_size = 1;
     for(size_t i = 0; i < N; ++i) {
         size_t idx_i = N - i - 1;
-        acc += step_size * idx[idx_i];
-        step_size *= shape[idx_i];
+        strides_out[idx_i] = step_size;
+        step_size *= shape_in[idx_i];
     }
+}
 
+template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
+static adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &strides,
+                                             const Idx... idxs) {
+    static_assert(sizeof...(idxs) == N, "Must provide N array indices");
+    const std::array<adrt_shape, N> idx {idxs...};
+    size_t acc = 0;
+    for(size_t i = 0; i < N; ++i) {
+        acc += strides[i] * idx[i];
+    }
     return buf[acc];
+}
+
+template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
+static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
+                                      const Idx... idxs) {
+    std::array<adrt_shape, N> strides;
+    adrt_compute_strides(strides, shape);
+    return adrt_array_stride_access(buf, strides, idxs...);
 }
 
 template <typename adrt_shape>
