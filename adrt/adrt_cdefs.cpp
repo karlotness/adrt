@@ -171,20 +171,22 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     }
 
     // Compute output shape: [plane?, N, N] (batch, row, col)
-    if(ndim == 2) {
-        new_shape[0] = old_shape[1];
-        new_shape[1] = old_shape[1];
+    if(ndim == 3) {
+        // Output has size (N, N)
+        new_shape[0] = old_shape[2];
+        new_shape[1] = old_shape[2];
     }
     else {
+        // Output has size (batch, N, N)
         new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[2];
-        new_shape[2] = old_shape[2];
+        new_shape[1] = old_shape[3];
+        new_shape[2] = old_shape[3];
     }
 
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
@@ -195,7 +197,7 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
