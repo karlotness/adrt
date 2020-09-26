@@ -59,8 +59,8 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
     }
 
     // add extra row of buffers of size: planes*(2*N)*N
-    const size_t buf_size = corrected_shape[0]*(corrected_shape[1]+1)*corrected_shape[2]; 
-    
+    const size_t buf_size = corrected_shape[0]*(corrected_shape[1]+1)*corrected_shape[2];
+
     // Allocate two of these buffers
     adrt_scalar *const aux = PyMem_New(adrt_scalar, 2*buf_size);
     if(!aux) {
@@ -89,7 +89,7 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
             // pad extra row with zeros for inverse computation
             adrt_array_3d_access(prev, buff_shape, plane, zero, col) = 0;
             for(adrt_shape row = 0; row < corrected_shape[1]; ++row) {
-                adrt_array_3d_access(prev, buff_shape, plane, row+1, col) 
+                adrt_array_3d_access(prev, buff_shape, plane, row+1, col)
                 = adrt_array_3d_access(data, corrected_shape, plane, row, col);
             }
         }
@@ -102,12 +102,12 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
 
     // fixed shapes (does not change in loop)
     curr_shape[0] = prev_shape[0]; // always have the same no. of planes
-    curr_shape[1] = prev_shape[1]; // plane stride 
-    curr_shape[2] = prev_shape[2]; // row stride 
+    curr_shape[1] = prev_shape[1]; // plane stride
+    curr_shape[2] = prev_shape[2]; // row stride
 
     // variable shapes
-    curr_shape[3] = prev_shape[3]; // section stride 
-    curr_shape[4] = prev_shape[4]; // no. of sections 
+    curr_shape[3] = prev_shape[3]; // section stride
+    curr_shape[4] = prev_shape[4]; // no. of sections
 
     // Outer loop over iterations (this loop must be serial)
     for(adrt_shape i = 1; i <= num_iters; ++i) {
@@ -123,17 +123,17 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
 
                         // right image
                         adrt_scalar raval =
-                        adrt_array_4d_stride_access(prev,prev_shape, 
+                        adrt_array_4d_stride_access(prev,prev_shape,
                                                     plane, x, j, 2*a);
-                    
+
                         adrt_scalar rbval = 0;
-                        rbval = adrt_array_4d_stride_access(prev, prev_shape, 
+                        rbval = adrt_array_4d_stride_access(prev, prev_shape,
                                                     plane, x, j, 2*a + 1);
 
                         // check the index access for x
                         const adrt_shape xb = x - a - 1;
                         if(xb >= 0 && xb < corrected_shape[1]) {
-                        adrt_array_4d_stride_access(curr, curr_shape, 
+                        adrt_array_4d_stride_access(curr, curr_shape,
                                         plane, xb, 2*j + 1, a) = rbval - raval;
                         }
 
@@ -145,44 +145,44 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
                         adrt_scalar laval = 0;
                         if(xb1 >= 0 && xb1 < corrected_shape[1]+1) {
                             laval = adrt_array_4d_stride_access(
-                                    prev, prev_shape, 
+                                    prev, prev_shape,
                                     plane, xb1, j, 2*a + 1);
                         }
-                        adrt_array_4d_stride_access(curr, curr_shape, 
+                        adrt_array_4d_stride_access(curr, curr_shape,
                                     plane, x, 2*j, a) =  lbval - laval;
 
                     }
 
                     // set entries out of scope to zero
-                    for(adrt_shape y = corrected_shape[1]-a; 
+                    for(adrt_shape y = corrected_shape[1]-a;
                                     y < corrected_shape[1]+1; y++){
-                    adrt_array_4d_stride_access(curr, curr_shape, 
+                    adrt_array_4d_stride_access(curr, curr_shape,
                                     plane, y, 2*j+1, a) = 0;
                     }
-                    adrt_array_4d_stride_access(curr, curr_shape, 
+                    adrt_array_4d_stride_access(curr, curr_shape,
                                   plane, zero, (2*j), a) = 0;
                 }
             }
-        
+
         // summation sweep from below
         for(adrt_shape an = 0; an < corrected_shape[2]; ++an) {
             adrt_scalar sumval = 0.0;
             for(adrt_shape xn = corrected_shape[1]-1; xn >=0 ; --xn) {
-                sumval += adrt_array_4d_stride_access(curr,curr_shape, 
-                                                      plane, xn, zero, an);  
-                adrt_array_4d_stride_access(curr, curr_shape, 
-                                                plane, xn, zero, an) = sumval;  
+                sumval += adrt_array_4d_stride_access(curr,curr_shape,
+                                                      plane, xn, zero, an);
+                adrt_array_4d_stride_access(curr, curr_shape,
+                                                plane, xn, zero, an) = sumval;
             }
         }
-        } 
+        }
 
         curr_shape[4] = 2*prev_shape[4]; // limits for section index
-        
+
         // Swap the "curr" and "prev" buffers and shapes
         adrt_scalar *const tmp = curr;
         curr = prev;
         prev = tmp;
-        std::memcpy(prev_shape, curr_shape, 5*sizeof(adrt_shape));
+        memcpy(prev_shape, curr_shape, 5*sizeof(adrt_shape));
     }
 
     // Copy results to destination buffer
@@ -190,9 +190,9 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
         for(adrt_shape d = 0; d < output_shape[1]; ++d) {
             for(adrt_shape a = 0; a < output_shape[2]; ++a) {
                 // re-order to match input, avoiding buffer row
-                adrt_array_3d_access(out, output_shape, 
-                                     plane,   a, output_shape[1]-1-d)  
-                = adrt_array_3d_access(prev, buff_shape, 
+                adrt_array_3d_access(out, output_shape,
+                                     plane,   a, output_shape[1]-1-d)
+                = adrt_array_3d_access(prev, buff_shape,
                                      plane, d+1, a);
             }
         }
