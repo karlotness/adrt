@@ -35,6 +35,7 @@
 
 #include "adrt_cdefs_common.hpp"
 #include <array>
+#include <algorithm>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
@@ -175,10 +176,8 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
         curr_shape[4] = 2*prev_shape[4]; // limits for section index
 
         // Swap the "curr" and "prev" buffers and shapes
-        adrt_scalar *const tmp = curr;
-        curr = prev;
-        prev = tmp;
-        memcpy(prev_shape, curr_shape, 5*sizeof(adrt_shape));
+        std::swap(curr, prev);
+        prev_shape = curr_shape;
     }
 
     // Copy results to destination buffer
