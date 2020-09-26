@@ -47,7 +47,7 @@
 #include <array>
 
 template <typename adrt_shape, size_t N>
-static void adrt_compute_strides(std::array<adrt_shape, N> &strides_out, const std::array<adrt_shape, N> shape_in) {
+static void adrt_compute_strides(std::array<adrt_shape, N> &strides_out, const std::array<adrt_shape, N> &shape_in) {
     adrt_shape step_size = 1;
     for(size_t i = 0; i < N; ++i) {
         size_t idx_i = N - i - 1;
