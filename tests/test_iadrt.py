@@ -125,5 +125,84 @@ class TestIAdrtCdefs(unittest.TestCase):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
 
+class TestIAdrt(unittest.TestCase):
+    def test_accepts_float32(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
+        _ = adrt.iadrt(inarr)
+
+    def test_accepts_float64(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float64)
+        _ = adrt.iadrt(inarr)
+
+    def test_accepts_float32_returned_dtype(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
+        c_out = adrt.iadrt(inarr)
+        self.assertEqual(c_out.dtype, np.float32)
+
+    def test_accepts_float64_returned_dtype(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float64)
+        c_out = adrt.iadrt(inarr)
+        self.assertEqual(c_out.dtype, np.float64)
+
+    def test_refuses_int32(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
+        with self.assertRaises(TypeError):
+            _ = adrt.iadrt(inarr)
+
+    def test_accepts_fortran_order(self):
+        size = 16
+        inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
+        _ = adrt.iadrt(inarr)
+
+    def test_accepts_c_non_contiguous(self):
+        size = 16
+        inarr = np.zeros((4, 2 * (2 * size - 1), size), dtype=np.float32, order="F")
+        inarr = inarr[:, ::2]
+        self.assertEqual(inarr.shape, (4, 2 * size - 1, size))
+        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
+        _ = adrt.iadrt(inarr)
+
+    def test_all_zeros_square(self):
+        size = 16
+        inarr = np.zeros((size, size), dtype=np.float32)
+        adrt_out = adrt.adrt(inarr)
+        inv = adrt.iadrt(adrt_out)
+        self.assertEqual(inv.shape, inarr.shape)
+        self.assertEqual(inv.dtype, inarr.dtype)
+        self.assertTrue(np.allclose(inv, inarr))
+
+    def test_all_ones_square(self):
+        size = 16
+        inarr = np.ones((size, size), dtype=np.float32)
+        adrt_out = adrt.adrt(inarr)
+        inv = adrt.iadrt(adrt_out)
+        self.assertEqual(inv.shape, inarr.shape)
+        self.assertEqual(inv.dtype, inarr.dtype)
+        self.assertTrue(np.allclose(inv, inarr))
+
+    def test_unique_values(self):
+        size = 32
+        inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
+        adrt_out = adrt.adrt(inarr)
+        inv = adrt.iadrt(adrt_out)
+        self.assertEqual(inv.shape, inarr.shape)
+        self.assertEqual(inv.dtype, inarr.dtype)
+        self.assertTrue(np.allclose(inv, inarr))
+
+    def test_batch_dimension_unique_values(self):
+        size = 32
+        inarr = np.arange(4 * (size ** 2)).reshape((4, size, size)).astype("float32")
+        adrt_out = adrt.adrt(inarr)
+        inv = adrt.iadrt(adrt_out)
+        self.assertEqual(inv.shape, inarr.shape)
+        self.assertEqual(inv.dtype, inarr.dtype)
+        self.assertTrue(np.allclose(inv, inarr))
+
+
 if __name__ == "__main__":
     unittest.main()
