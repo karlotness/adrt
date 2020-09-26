@@ -164,7 +164,7 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
         }
         }
 
-        curr_shape[4] = 2*prev_shape[4]; // limits for section index
+        curr_shape[3] = 2*prev_shape[3]; // limits for section index
 
         // Swap the "curr" and "prev" buffers and shapes
         std::swap(curr, prev);
