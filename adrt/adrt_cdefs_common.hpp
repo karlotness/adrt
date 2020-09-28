@@ -45,6 +45,7 @@
 #include "numpy/arrayobject.h"
 
 #include <array>
+#include <limits>
 
 template <typename adrt_shape, size_t N>
 static void adrt_compute_strides(std::array<adrt_shape, N> &strides_out, const std::array<adrt_shape, N> &shape_in) {
@@ -96,11 +97,17 @@ static adrt_shape adrt_num_iters(const adrt_shape shape) {
     if(shape <= 1) {
         return 0;
     }
+    const adrt_shape shape_max_half = std::numeric_limits<adrt_shape>::max() / 2;
     adrt_shape num_iters = 1;
     adrt_shape segment_length = 2;
-    while(segment_length < shape && (segment_length * 2) > segment_length) {
+    while(segment_length < shape && segment_length <= shape_max_half) {
         ++num_iters;
         segment_length *= 2;
+    }
+    // If shape is larger than the max power of two fitting in adrt_shape
+    // we need one more doubling
+    if(segment_length < shape) {
+        ++num_iters;
     }
     return num_iters;
 }
