@@ -26,6 +26,9 @@ jobs:
       fail-fast: false
       matrix:
         python: [3.5, 3.6, 3.7, 3.8]
+        include:
+          - python: '3.x'
+            cflags: '-fopenmp'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -39,3 +42,5 @@ jobs:
       run: pip install --upgrade tox
     - name: Run tox tests
       run: tox -e py
+      env:
+        CFLAGS: ${{ matrix.cflags }}
