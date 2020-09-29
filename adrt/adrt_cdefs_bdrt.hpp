@@ -34,18 +34,19 @@
 #define ADRTC_CDEFS_BDRT_H
 
 #include "adrt_cdefs_common.hpp"
+#include <array>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
                       const adrt_shape *const base_output_shape) {
     // Shape (plane, row, col)
-    const adrt_shape corrected_shape[4] =
+    const std::array<adrt_shape, 4> corrected_shape =
         {(ndims > 3 ? shape[0] : 1),
          (ndims > 3 ? shape[1] : shape[0]),
          (ndims > 3 ? shape[2] : shape[1]),
          (ndims > 3 ? shape[3] : shape[2])};
 
-    const adrt_shape output_shape[3] =
+    const std::array<adrt_shape, 3> output_shape =
         {(ndims > 3 ? base_output_shape[0] : 1),
          (ndims > 3 ? base_output_shape[1] : base_output_shape[0]),
          (ndims > 3 ? base_output_shape[2] : base_output_shape[1])};
