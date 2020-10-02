@@ -128,16 +128,11 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
                         if(row + 1 < curr_shape[1]) {
                             val += adrt_array_access(curr, curr_shape, plane, row + 1, col, l);
                         }
-                        // Set to zero if necessary
-                        if(corrected_shape[3] + col < row + 1) {
-                            //val = 0;
-                        }
                         adrt_array_access(curr, curr_shape, plane, row, col, l) = val;
                     }
                 }
             }
         }
-
 
         // Swap the "curr" and "prev" buffers and shapes
         std::swap(curr, prev);
