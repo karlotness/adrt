@@ -111,7 +111,6 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
                         const adrt_shape prev_l = adrt_floor_div2(l);
                         if(l % 2 == 0) {
                             // l + 1 odd
-                            const adrt_shape prev_col = 2 * (col + 1) - 1;
                             val += adrt_array_access(prev, prev_shape, plane, row, 2 * col, prev_l);
                             if(row + 1 < prev_shape[1] && 2 * col + 1 < prev_shape[2]) {
                                 val -= adrt_array_access(prev, prev_shape, plane, row + 1, 2 * col + 1, prev_l);
