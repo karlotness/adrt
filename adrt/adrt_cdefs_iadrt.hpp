@@ -52,6 +52,12 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
          (ndims > 3 ? base_output_shape[1] : base_output_shape[0]),
          (ndims > 3 ? base_output_shape[2] : base_output_shape[1])};
 
+    // Require that the matrix be square (power of two checked elsewhere)
+    if(corrected_shape[2] != 2*corrected_shape[3]-1) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must be of dimensions (2*N - 1) x N");
+        return false;
+    }
+
     // Check that shape is sensible
     for(int i = 0; i < 4; ++i) {
         if(corrected_shape[i] <= 0) {

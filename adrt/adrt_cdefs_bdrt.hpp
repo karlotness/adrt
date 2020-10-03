@@ -39,18 +39,209 @@
 template <typename adrt_scalar, typename adrt_shape>
 static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
                       const adrt_shape *const base_output_shape) {
-    // Shape (plane, row, col)
+
+    // Shape (plane, quadrant, row, col)
     const std::array<adrt_shape, 4> corrected_shape =
         {(ndims > 3 ? shape[0] : 1),
          (ndims > 3 ? shape[1] : shape[0]),
          (ndims > 3 ? shape[2] : shape[1]),
          (ndims > 3 ? shape[3] : shape[2])};
 
+    // Output shape (plane, row, col)
     const std::array<adrt_shape, 3> output_shape =
         {(ndims > 3 ? base_output_shape[0] : 1),
-         (ndims > 3 ? base_output_shape[1] : base_output_shape[0]),
-         (ndims > 3 ? base_output_shape[2] : base_output_shape[1])};
+         (ndims > 3 ? base_output_shape[1] : base_output_shape[1]),
+         (ndims > 3 ? base_output_shape[2] : base_output_shape[2])};
 
+    // Require that the matrix be square (power of two checked elsewhere)
+    if(corrected_shape[2] != 2*corrected_shape[3]-1) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must be of dimension 2*N-1 x N");
+        return false;
+    }
+
+    // Require that second dimension corresp to quadrants
+    if(corrected_shape[1] != 4) {
+        PyErr_SetString(PyExc_ValueError, "Data for four quadrants must be provided");
+        return false;
+    }
+
+    // Check that shape is sensible
+    for(int i = 0; i < 3; ++i) {
+        if(corrected_shape[i] <= 0) {
+            PyErr_SetString(PyExc_ValueError, "Provided array must have no axes of zero size");
+            return false;
+        }
+    }
+
+    // Allocate auxiliary memory
+    const size_t img_size = corrected_shape[0] * corrected_shape[1]
+                          * corrected_shape[2] * corrected_shape[3];
+    const size_t buf_size = img_size; // One buffer per quadrant of size planes * N * N
+    // Allocate two of these buffers
+    adrt_scalar *const aux = PyMem_New(adrt_scalar, 2 * buf_size);
+    if(!aux) {
+        PyErr_NoMemory();
+        return false;
+    }
+
+    // NO PYTHON API BELOW THIS POINT
+    Py_BEGIN_ALLOW_THREADS;
+
+    const adrt_shape num_iters = adrt_num_iters(corrected_shape[3]);
+
+    adrt_scalar *curr = aux;
+    adrt_scalar *prev = aux + buf_size;
+
+    // Each quadrant has a different shape (the padding goes in a different place)
+    std::array<adrt_shape, 4> prev_shape = 
+                              {corrected_shape[0], corrected_shape[1],
+                               corrected_shape[2], corrected_shape[3]};
+
+    // First, memcpy in the base image into each buffer
+    for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
+        if((quadrant == 0) || (quadrant == 2)) {
+            // 
+            for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
+                for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
+                    for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
+                        adrt_array_access(prev, prev_shape, plane, 
+                                             quadrant, row, col) 
+                        = adrt_array_access(data, corrected_shape, 
+                                               plane, quadrant, row, col);
+                    }
+                }
+            }
+        }
+        else {
+            // 
+            for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
+                for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
+                    for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
+                        adrt_array_access(prev, prev_shape, 
+                                             plane, quadrant, row, col) 
+                        = adrt_array_access(data, corrected_shape, 
+                                               plane, quadrant,
+                                               corrected_shape[2] - row - 1, 
+                                               corrected_shape[3] - col - 1);
+                    }
+                }
+            }
+        }
+    }
+
+    std::array<adrt_shape, 5> prev_stride = {
+                    corrected_shape[1]*corrected_shape[2]*corrected_shape[3],
+                    corrected_shape[2]*corrected_shape[3],
+                    corrected_shape[3],corrected_shape[3],1};
+    std::array<adrt_shape, 5> curr_stride = {
+                    // fixed strides (does not change in loop)
+                    prev_stride[0], // plane stride 
+                    prev_stride[1], // quadrant stride 
+                    prev_stride[2], // row stride 
+                    // variable strides
+                    prev_stride[3], // section stride 
+                    prev_stride[4]};// no. of sections 
+
+    adrt_shape nsections = 1;
+    
+
+    // Outer loop over iterations (this loop must be serial)
+    for(adrt_shape i = 1; i <= num_iters; ++i) {
+        // Compute the curr_stride for the current buffer (based on prev shape)
+        curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
+
+        // Inner loops (these loops can be parallel)
+        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_stride, prev_stride, i)
+        for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
+            for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
+                for(adrt_shape j = 0; j < nsections; ++j) {
+                    for(adrt_shape a = 0; a < curr_stride[3]; ++a) {
+                        for(adrt_shape x = 0; x < corrected_shape[2]; ++x) {
+
+                            // right image
+                            // check the index access for x
+                            adrt_scalar raval = 0;
+                            const adrt_shape lxa = x + a;
+                            if(lxa >= 0 && lxa < corrected_shape[2]) {
+                                raval = adrt_array_stride_access(
+                                            prev, prev_stride, 
+                                            plane, quadrant, lxa, j, 2*a);
+                            }
+                            // check the index access for x
+                            adrt_scalar rbval = 0;
+                            const adrt_shape lxb = x + a + 1;
+                            if(lxb >= 0 && lxb < corrected_shape[2]) {
+                                rbval = adrt_array_stride_access(
+                                            prev,prev_stride,
+                                            plane, quadrant, lxb, j, 2*a + 1);
+                            }
+
+                            adrt_array_stride_access(curr, curr_stride, 
+                                          plane, quadrant, x, 2*j + 1, a) 
+                                = 0.5*(raval + rbval);
+
+                            // left image
+                            adrt_scalar lbval = adrt_array_stride_access(
+                                        prev, prev_stride, 
+                                        plane, quadrant, x, j, 2*a);
+
+                            adrt_scalar laval = adrt_array_stride_access(
+                                        prev, prev_stride, 
+                                        plane, quadrant, x, j, 2*a + 1);
+
+                            adrt_array_stride_access(curr, curr_stride, 
+                                        plane, quadrant, x, 2*j, a) 
+                                = 0.5*(laval + lbval);
+
+                        }
+                    }
+                }
+            }
+        }
+        nsections *= 2;
+        
+        // Swap the "curr" and "prev" buffers and shapes
+        std::swap(curr,prev);
+        prev_stride = curr_stride;
+    }
+
+    // Copy results to destination buffer
+    for(adrt_shape plane = 0; plane < output_shape[0]; ++plane) {
+        for(adrt_shape d = 0; d < output_shape[1]; ++d) {
+            for(adrt_shape a = 0; a < output_shape[2]; ++a) {
+                adrt_scalar val = 0.0;
+                for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
+                    adrt_shape acc_d = 0;
+                    adrt_shape acc_a = 0;
+                    if(quadrant == 0) {
+                        acc_d = output_shape[2] - a - 1;
+                        acc_a = d ;
+                    }
+                    else if(quadrant == 1) {
+                        acc_d = output_shape[2] - d - 1;
+                        acc_a = a;
+                    }
+                    else if(quadrant == 2) {
+                        acc_d = d;
+                        acc_a = a;
+                    }
+                    else {
+                        acc_d = output_shape[2] - a - 1;
+                        acc_a = output_shape[1] - d - 1;
+                    }
+                    val += 0.25*adrt_array_access(prev, prev_shape, plane,
+                                                quadrant, acc_d, acc_a);
+                }
+                adrt_array_access(out, output_shape, plane, d, a) = val;
+            }
+        }
+    }
+
+
+    // PYTHON API ALLOWED BELOW THIS POINT
+    Py_END_ALLOW_THREADS;
+
+    PyMem_Free(aux);
     return true;
 }
 
