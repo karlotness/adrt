@@ -239,6 +239,20 @@ class TestAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, naive_out.shape)
         self.assertTrue(np.allclose(c_out, naive_out))
 
+    def test_small_1x1(self):
+        inarr = np.ones((1, 1), dtype="float64")
+        expected_out = np.ones((4, 1, 1), dtype="float64")
+        c_out = adrt.adrt(inarr)
+        self.assertEqual(c_out.shape, expected_out.shape)
+        self.assertTrue(np.allclose(c_out, expected_out))
+
+    def test_small_1x1_batch(self):
+        inarr = np.arange(5, dtype="float64").reshape((5, 1, 1)) + 1
+        expected_out = np.stack([inarr] * 4, axis=1)
+        c_out = adrt.adrt(inarr)
+        self.assertEqual(c_out.shape, expected_out.shape)
+        self.assertTrue(np.allclose(c_out, expected_out))
+
     def test_spot_check_vertical_line_left(self):
         inarr = np.zeros((8, 8))
         inarr[:, 0] = 1

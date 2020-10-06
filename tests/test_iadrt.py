@@ -203,6 +203,20 @@ class TestIAdrt(unittest.TestCase):
         self.assertEqual(inv.dtype, inarr.dtype)
         self.assertTrue(np.allclose(inv, inarr))
 
+    def test_small_1x1(self):
+        inarr = np.ones((4, 1, 1), dtype="float64")
+        expected_out = np.ones((1, 1), dtype="float64")
+        c_out = adrt.iadrt(inarr)
+        self.assertEqual(c_out.shape, expected_out.shape)
+        self.assertTrue(np.allclose(c_out, expected_out))
+
+    def test_small_1x1_batch(self):
+        expected_out = np.arange(5, dtype="float64").reshape((5, 1, 1)) + 1
+        inarr = np.stack([expected_out] * 4, axis=1)
+        c_out = adrt.iadrt(inarr)
+        self.assertEqual(c_out.shape, expected_out.shape)
+        self.assertTrue(np.allclose(c_out, expected_out))
+
 
 if __name__ == "__main__":
     unittest.main()
