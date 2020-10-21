@@ -91,12 +91,14 @@ static bool iadrt_impl(const adrt_scalar *const data, const unsigned char ndims,
          1};
     std::array<adrt_shape, 4> curr_shape = prev_shape;
 
+    const adrt_shape selected_quadrant = 2;
+
     // Direct copy row by row
     for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
         for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
             for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
                 adrt_array_access(prev, prev_shape, plane, row, col, 0)
-                    = adrt_array_access(data, corrected_shape, plane, 2, row, col);
+                    = adrt_array_access(data, corrected_shape, plane, selected_quadrant, row, col);
             }
         }
     }
