@@ -1,6 +1,7 @@
 # Approximate Discrete Radon Transform
 
 [![adrt on PyPI](https://img.shields.io/pypi/v/adrt)][adrtpypi]
+[![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][ghtest]
 
 This library provides an implementation of an approximate discrete
@@ -20,6 +21,7 @@ The code in this repository is licensed under a 3-clause BSD license.
 See [LICENSE.txt](LICENSE.txt) for the license text.
 
 [adrtpypi]: https://pypi.org/project/adrt/
+[docs]: https://adrt.readthedocs.io/en/latest/
 [ghtest]: https://github.com/karlotness/adrt/actions
 [brady98]: https://doi.org/10.1137/S0097539793256673
 [press06]: https://doi.org/10.1073/pnas.0609228103
