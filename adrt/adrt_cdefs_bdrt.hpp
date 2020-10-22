@@ -151,7 +151,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
         curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
 
         // Inner loops (these loops can be parallel)
-        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_stride, prev_stride, i)
+        #pragma omp parallel for collapse(5) shared(curr, prev, curr_stride, prev_stride, nsections)
         for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
             for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
                 for(adrt_shape j = 0; j < nsections; ++j) {
