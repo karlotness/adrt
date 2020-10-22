@@ -153,7 +153,7 @@ static bool adrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
         curr_shape[4] = prev_shape[4] * 2; // The number of angles doubles
 
         // Inner loops (these loops can be parallel)
-        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape, i)
+        #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape)
         for(adrt_shape quadrant = 0; quadrant < curr_shape[0]; ++quadrant) {
             for(adrt_shape plane = 0; plane < curr_shape[1]; ++plane) {
                 for(adrt_shape j = 0; j < curr_shape[2]; ++j) {
