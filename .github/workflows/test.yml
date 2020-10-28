@@ -27,7 +27,7 @@ jobs:
       matrix:
         python: [3.5, 3.6, 3.7, 3.8]
         include:
-          - python: '3.x'
+          - python: '3.8'
             cflags: '-fopenmp'
     steps:
     - name: Checkout repository
