@@ -35,10 +35,13 @@
 
 #include "adrt_cdefs_common.hpp"
 #include <array>
+#include <type_traits>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
                       const adrt_shape *const base_output_shape) {
+    // The current implementation multiplies values by float constants and will not work correctly with integers
+    static_assert(std::is_floating_point<adrt_scalar>::value, "Backprojection requires floating point");
 
     // Shape (plane, quadrant, row, col)
     const std::array<adrt_shape, 4> corrected_shape =
@@ -178,7 +181,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
 
                             adrt_array_stride_access(curr, curr_stride, 
                                           plane, quadrant, x, 2*j + 1, a) 
-                                = 0.5*(raval + rbval);
+                                = static_cast<adrt_scalar>(0.5)*(raval + rbval);
 
                             // left image
                             adrt_scalar lbval = adrt_array_stride_access(
@@ -191,7 +194,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
 
                             adrt_array_stride_access(curr, curr_stride, 
                                         plane, quadrant, x, 2*j, a) 
-                                = 0.5*(laval + lbval);
+                                = static_cast<adrt_scalar>(0.5)*(laval + lbval);
 
                         }
                     }
@@ -209,7 +212,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
     for(adrt_shape plane = 0; plane < output_shape[0]; ++plane) {
         for(adrt_shape d = 0; d < output_shape[1]; ++d) {
             for(adrt_shape a = 0; a < output_shape[2]; ++a) {
-                adrt_scalar val = 0.0;
+                adrt_scalar val = 0;
                 for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
                     adrt_shape acc_d = 0;
                     adrt_shape acc_a = 0;
@@ -229,7 +232,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
                         acc_d = output_shape[2] - a - 1;
                         acc_a = output_shape[1] - d - 1;
                     }
-                    val += 0.25*adrt_array_access(prev, prev_shape, plane,
+                    val += static_cast<adrt_scalar>(0.25)*adrt_array_access(prev, prev_shape, plane,
                                                 quadrant, acc_d, acc_a);
                 }
                 adrt_array_access(out, output_shape, plane, d, a) = val;
