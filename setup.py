@@ -12,8 +12,8 @@ adrt_c_ext = Extension(
     include_dirs=[numpy.get_include()],
     py_limited_api=True,
     define_macros=[
-        ("Py_LIMITED_API", "0x03050000"),
-        ("NPY_NO_DEPRECATED_API", "NPY_1_9_API_VERSION"),
+        ("Py_LIMITED_API", "0x03060000"),
+        ("NPY_NO_DEPRECATED_API", "NPY_1_16_API_VERSION"),
     ],
 )
 
@@ -38,8 +38,8 @@ setup(
     description="Fast approximate discrete Radon transform for NumPy arrays",
     version=find_version("adrt/__init__.py"),
     packages=find_packages(),
-    python_requires=">=3.5, <4",
-    install_requires=["numpy>=1.9"],
+    python_requires=">=3.6, <4",
+    install_requires=["numpy>=1.16"],
     license="BSD",
     ext_modules=[adrt_c_ext],
     zip_safe=False,
