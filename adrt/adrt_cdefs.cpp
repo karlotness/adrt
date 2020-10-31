@@ -90,7 +90,7 @@ static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
 
 extern "C" {
 
-static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
+static PyObject *adrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
@@ -152,7 +152,7 @@ static PyObject *adrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return nullptr;
 }
 
-static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
+static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
@@ -217,7 +217,7 @@ static PyObject *iadrt(__attribute__((unused)) PyObject *self, PyObject *args){
     return nullptr;
 }
 
-static PyObject *bdrt(__attribute__((unused)) PyObject *self, PyObject *args){
+static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject *I = adrt_validate_array(args); // Input array
