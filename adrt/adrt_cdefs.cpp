@@ -34,20 +34,39 @@
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"
 
-static PyArrayObject *adrt_validate_array(PyObject *args) {
+static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
+                                     int& start_out, int& end_out) {
     PyArrayObject *I;
-    if(!PyArg_ParseTuple(args, "O!", &PyArray_Type, &I)) {
-        return nullptr;
+    int iter_start = 0, iter_end = -1;
+    
+    if(!PyArg_ParseTuple(args, "O!|ii", &PyArray_Type, &I, &iter_start, &iter_end)) {
+        return false;
     }
+
     if(!PyArray_CHKFLAGS(I, NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, and aligned");
-        return nullptr;
+        return false;
     }
+
     if(PyArray_ISBYTESWAPPED(I)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have native byte order");
-        return nullptr;
+        return false;
     }
-    return I;
+
+    //
+    int ndim = PyArray_NDIM(I);
+    npy_intp * I_shape = PyArray_SHAPE(I);
+    int num_iters = 1 + (int) adrt_num_iters(I_shape[ndim-1]);
+
+    if(iter_start < -num_iters || iter_start >= num_iters || iter_end < -num_iters || iter_end >= num_iters) {
+        PyErr_SetString(PyExc_ValueError,"Provided start and end iteration numbers are out of bounds");
+        return false;
+    }
+
+    array_out = I;
+    start_out = iter_start;
+    end_out = iter_end;
+    return true;
 }
 
 static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
@@ -93,50 +112,86 @@ extern "C" {
 static PyObject *adrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
-    PyArrayObject *I = adrt_validate_array(args); // Input array
+    PyArrayObject * I;
+    int iter_start, iter_end;
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[4] = {0};
+
     int ndim = 2;
+    int new_dim;
+
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+        goto fail;
+    }
+    
     if(!I) {
         goto fail;
     }
     ndim = PyArray_NDIM(I);
     old_shape = PyArray_SHAPE(I);
-    if(!adrt_is_square_power_of_two(ndim, PyArray_SHAPE(I))) {
+    if(iter_start == 0 && !adrt_is_square_power_of_two(ndim, PyArray_SHAPE(I))) {
         PyErr_SetString(PyExc_ValueError, "Provided array be square with power of two shapes");
         goto fail;
     }
-    // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
-    if(ndim == 2) {
-        new_shape[0] = 4;
-        new_shape[1] = 2 * old_shape[0] - 1;
-        new_shape[2] = old_shape[1];
+    else if (iter_start != 0 && !adrt_is_valid_adrt_shape(ndim, PyArray_SHAPE(I))) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
+        goto fail;
+    }
+
+    if (iter_start == 0){
+        // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
+        if(ndim == 2) {
+            new_shape[0] = 4;
+            new_shape[1] = 2 * old_shape[1] - 1; // TODO use old_shape[0]
+            new_shape[2] = old_shape[1];
+            new_dim = 3;
+        }
+        else {
+            new_shape[0] = old_shape[0];
+            new_shape[1] = 4;
+            new_shape[2] = 2 * old_shape[2] - 1; // TODO use old_shape[1]
+            new_shape[3] = old_shape[2];
+            new_dim = 4;
+        }
     }
     else {
-        new_shape[0] = old_shape[0];
-        new_shape[1] = 4;
-        new_shape[2] = 2 * old_shape[1] - 1;
-        new_shape[3] = old_shape[2];
+        // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
+        if(ndim == 3) {
+            new_shape[0] = 4;
+            new_shape[1] = old_shape[1]; 
+            new_shape[2] = old_shape[2];
+            new_dim = 3;
+        }
+        else {
+            new_shape[0] = old_shape[0];
+            new_shape[1] = 4;
+            new_shape[2] = old_shape[1]; 
+            new_shape[3] = old_shape[2];
+            new_dim = 4;
+        }
     }
+
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim + 1, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNewFromDescr(new_dim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
         if(!ret ||
            !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim + 1, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNewFromDescr(new_dim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
         if(!ret ||
            !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -155,10 +210,16 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
 static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
-    PyArrayObject *I = adrt_validate_array(args); // Input array
+    PyArrayObject * I;
+
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[3] = {0};
     int ndim = 3;
+
+    int iter_start, iter_end;
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+        goto fail;
+    }
 
     if(!I) {
         goto fail;
@@ -220,10 +281,15 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
 static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
-    PyArrayObject *I = adrt_validate_array(args); // Input array
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[3] = {0};
+    PyArrayObject * I;
     int ndim = 3;
+
+    int iter_start, iter_end;
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+        goto fail;
+    }
 
     if(!I) {
         goto fail;
