@@ -120,11 +120,14 @@ class TestAdrtCdefs(unittest.TestCase):
             _ = adrt._adrt_cdefs.adrt(None, 0, -1)
         with self.assertRaises(TypeError):
             _ = adrt._adrt_cdefs.adrt(
-                [[1.0, 2.0, 3.0, 4.0],
-                 [1.0, 2.0, 3.0, 4.0],
-                 [1.0, 2.0, 3.0, 4.0],
-                 [1.0, 2.0, 3.0, 4.0]],
-                0, -1
+                [
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                    [1.0, 2.0, 3.0, 4.0],
+                ],
+                0,
+                -1,
             )
 
     def test_refuses_fortran_order(self):
@@ -366,7 +369,7 @@ class TestAdrt(unittest.TestCase):
 
     def test_partial_composition_equals_complete(self):
         n = 4
-        inarr = np.random.rand(2**n, 2**n)
+        inarr = np.random.rand(2 ** n, 2 ** n)
         outarr_c = adrt.adrt(inarr)
         for i in range(n):
             outarr = adrt.adrt(inarr, start=i, end=i + 1)
