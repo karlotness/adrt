@@ -48,13 +48,15 @@
 #include <limits>
 
 template <typename adrt_shape, size_t N>
-static void adrt_compute_strides(std::array<adrt_shape, N> &strides_out, const std::array<adrt_shape, N> &shape_in) {
+static std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
+    std::array<adrt_shape, N> strides_out;
     adrt_shape step_size = 1;
     for(size_t i = 0; i < N; ++i) {
         size_t idx_i = N - i - 1;
         strides_out[idx_i] = step_size;
         step_size *= shape_in[idx_i];
     }
+    return strides_out;
 }
 
 template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
@@ -72,8 +74,7 @@ static adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::
 template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
 static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
                                             const Idx... idxs) {
-    std::array<adrt_shape, N> strides;
-    adrt_compute_strides(strides, shape);
+    const std::array<adrt_shape, N> strides {adrt_compute_strides(shape)};
     return adrt_array_stride_access(buf, strides, idxs...);
 }
 
