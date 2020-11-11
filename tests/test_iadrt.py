@@ -172,6 +172,7 @@ class TestIAdrt(unittest.TestCase):
         inarr = np.zeros((size, size), dtype=np.float32)
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
+        inv = np.mean(adrt.utils.truncate(inv), axis=0)
         self.assertEqual(inv.shape, inarr.shape)
         self.assertEqual(inv.dtype, inarr.dtype)
         self.assertTrue(np.allclose(inv, inarr))
@@ -181,6 +182,7 @@ class TestIAdrt(unittest.TestCase):
         inarr = np.ones((size, size), dtype=np.float32)
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
+        inv = np.mean(adrt.utils.truncate(inv), axis=0)
         self.assertEqual(inv.shape, inarr.shape)
         self.assertEqual(inv.dtype, inarr.dtype)
         self.assertTrue(np.allclose(inv, inarr))
@@ -190,6 +192,7 @@ class TestIAdrt(unittest.TestCase):
         inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
+        inv = np.mean(adrt.utils.truncate(inv), axis=0)
         self.assertEqual(inv.shape, inarr.shape)
         self.assertEqual(inv.dtype, inarr.dtype)
         self.assertTrue(np.allclose(inv, inarr))
@@ -199,6 +202,7 @@ class TestIAdrt(unittest.TestCase):
         inarr = np.arange(4 * (size ** 2)).reshape((4, size, size)).astype("float32")
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
+        inv = np.mean(adrt.utils.truncate(inv), axis=1)
         self.assertEqual(inv.shape, inarr.shape)
         self.assertEqual(inv.dtype, inarr.dtype)
         self.assertTrue(np.allclose(inv, inarr))
@@ -207,6 +211,7 @@ class TestIAdrt(unittest.TestCase):
         inarr = np.ones((4, 1, 1), dtype="float64")
         expected_out = np.ones((1, 1), dtype="float64")
         c_out = adrt.iadrt(inarr)
+        c_out = np.mean(adrt.utils.truncate(c_out), axis=0)
         self.assertEqual(c_out.shape, expected_out.shape)
         self.assertTrue(np.allclose(c_out, expected_out))
 
@@ -214,8 +219,19 @@ class TestIAdrt(unittest.TestCase):
         expected_out = np.arange(5, dtype="float64").reshape((5, 1, 1)) + 1
         inarr = np.stack([expected_out] * 4, axis=1)
         c_out = adrt.iadrt(inarr)
+        c_out = np.mean(adrt.utils.truncate(c_out), axis=1)
         self.assertEqual(c_out.shape, expected_out.shape)
         self.assertTrue(np.allclose(c_out, expected_out))
+
+    def test_partial_iadrts_equals_complete(self):
+        n = 3
+        adrt_in = np.random.rand(2 ** n, 2 ** n)
+        iadrt_in = adrt.adrt(adrt_in)
+        for i in range(n):
+            iadrt_out = adrt.iadrt(iadrt_in, start=i, end=i + 1)
+            iadrt_in = iadrt_out
+        iadrt_out = np.mean(adrt.utils.truncate(iadrt_out),axis=0)
+        self.assertTrue(np.allclose(adrt_in, iadrt_out))
 
 
 if __name__ == "__main__":

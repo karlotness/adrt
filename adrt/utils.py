@@ -69,3 +69,50 @@ def stitch_adrt(a):
     z[(m - 1) :, (3 * m) : (4 * m)] = a[3, :, :]
 
     return z
+
+
+def truncate(a, orient=1):
+    r"""
+    Truncate square domain from iadrt or bdrt output
+
+    Parameters
+    ----------
+    a : array_like
+        array of shape (4,2*N-1,N) or (?,4,2*N-1,N) in which N = 2**n
+
+    Returns
+    -------
+    out : array_like
+          array of shape (4,N,N) or (?,4,N,N) in which N = 2**n
+
+    """
+
+    if a.ndim == 3:
+        n = a.shape[-1]
+        out = np.zeros((4, n, n), dtype=a.dtype)
+        if orient % 2 == 0:
+            out[0, :, :] = a[0, :n, :n][::-1, :].T
+            out[1, :, :] = a[1, :n, :n][::-1, :]
+            out[2, :, :] = a[2, :n, :n]
+            out[3, :, :] = a[3, :n, :n][::-1, ::-1].T
+        elif orient % 2 == 1:
+            out[0, :, :] = a[0, :n, :n][::-1, :].T
+            out[1, :, :] = a[1, (n - 1) :, :n][:, ::-1]
+            out[2, :, :] = a[2, :n, :n]
+            out[3, :, :] = a[3, (n - 1) :, :n].T
+
+    elif a.ndim == 4:
+        n = a.shape[-1]
+        out = np.zeros((a.shape[0], 4, n, n), dtype=a.dtype)
+        if orient % 2 == 0:
+            out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
+            out[:, 1, :, :] = a[:, 1, :n, :n][:, ::-1, :]
+            out[:, 2, :, :] = a[:, 2, :n, :n]
+            out[:, 3, :, :] = a[:, 3, :n, :n][:, ::-1, ::-1].transpose((0, 2, 1))
+        elif orient % 2 == 1:
+            out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
+            out[:, 1, :, :] = a[:, 1, (n - 1) :, :n][:, :, ::-1]
+            out[:, 2, :, :] = a[:, 2, :n, :n]
+            out[:, 3, :, :] = a[:, 3, (n - 1) :, :n].transpose((0, 2, 1))
+
+    return out

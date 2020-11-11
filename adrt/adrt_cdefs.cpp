@@ -35,11 +35,11 @@
 #include "adrt_cdefs_bdrt.hpp"
 
 static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
-                                     int& start_out, int& end_out) {
+                  int& iter_start_out, int& iter_end_out, int& orient_out) {
     PyArrayObject *I;
-    int iter_start = 0, iter_end = -1;
+    int iter_start = 0, iter_end = -1, orient = 1;
     
-    if(!PyArg_ParseTuple(args, "O!|ii", &PyArray_Type, &I, &iter_start, &iter_end)) {
+    if(!PyArg_ParseTuple(args, "O!|iii", &PyArray_Type, &I, &iter_start, &iter_end, &orient)) {
         return false;
     }
 
@@ -63,9 +63,15 @@ static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
         return false;
     }
 
+    if(orient < 0 || orient > 4) {
+        PyErr_SetString(PyExc_ValueError,"Provided orientation is out of bounds");
+        return false;
+    }
+
     array_out = I;
-    start_out = iter_start;
-    end_out = iter_end;
+    iter_start_out = iter_start;
+    iter_end_out = iter_end;
+    orient_out = orient;
     return true;
 }
 
@@ -113,14 +119,14 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject * I;
-    int iter_start, iter_end;
+    int iter_start = 0, iter_end = -1, orient = 1;
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[4] = {0};
 
     int ndim = 2;
     int new_dim;
 
-    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
         goto fail;
     }
     
@@ -179,7 +185,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end,
+                      iter_start, iter_end, orient,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -191,7 +197,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end,
+                      iter_start, iter_end, orient,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -213,11 +219,11 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     PyArrayObject * I;
 
     npy_intp *old_shape = nullptr;
-    npy_intp new_shape[3] = {0};
+    npy_intp new_shape[4] = {0};
     int ndim = 3;
 
-    int iter_start, iter_end;
-    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+    int iter_start = 0, iter_end = -1, orient = 1;
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
         goto fail;
     }
 
@@ -231,38 +237,43 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
         goto fail;
     }
 
+
     // Compute output shape: [plane?, N, N] (batch, row, col)
     if(ndim == 3) {
-        // Output has size (N, N)
-        new_shape[0] = old_shape[2];
-        new_shape[1] = old_shape[2];
+        // Output has size (1,2*N-1, N)
+        new_shape[0] = old_shape[0];
+        new_shape[1] = old_shape[1];
+        new_shape[2] = old_shape[2];
     }
     else {
-        // Output has size (batch, N, N)
+        // Output has size (batch, 4, N, N)
         new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[3];
-        new_shape[2] = old_shape[3];
+        new_shape[1] = old_shape[1];
+        new_shape[2] = old_shape[2];
+        new_shape[3] = old_shape[3];
     }
 
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end, orient,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim - 1, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
         if(!ret ||
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end, orient,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -286,8 +297,8 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     PyArrayObject * I;
     int ndim = 3;
 
-    int iter_start, iter_end;
-    if(!adrt_validate_array(args, I, iter_start, iter_end)) { 
+    int iter_start = 0, iter_end = -1, orient = 1;
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
         goto fail;
     }
 
@@ -304,12 +315,12 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     // Compute output shape: [plane?, N, N] (batch, row, col)
     if(ndim == 3) {
         new_shape[0] = 1;
-        new_shape[1] = old_shape[2];
+        new_shape[1] = old_shape[1];
         new_shape[2] = old_shape[2];
     }
     else {
         new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[3];
+        new_shape[1] = old_shape[2];
         new_shape[2] = old_shape[3];
     }
 

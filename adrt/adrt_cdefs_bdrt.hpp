@@ -232,8 +232,7 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
                         acc_d = output_shape[2] - a - 1;
                         acc_a = output_shape[1] - d - 1;
                     }
-                    val += static_cast<adrt_scalar>(0.25)*adrt_array_access(prev, prev_shape, plane,
-                                                quadrant, acc_d, acc_a);
+                    val += static_cast<adrt_scalar>(0.25)*adrt_array_access(prev, prev_shape, plane,quadrant, acc_d, acc_a);
                 }
                 adrt_array_access(out, output_shape, plane, d, a) = val;
             }

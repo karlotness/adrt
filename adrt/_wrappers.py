@@ -40,7 +40,7 @@ def _normalize_array(a):
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
 
-def adrt(a, start=0, end=-1):
+def adrt(a, start=0, end=-1, orient=3):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
     Computes the ADRT of the provided array, `a`. The array `a` may
@@ -69,10 +69,14 @@ def adrt(a, start=0, end=-1):
         The array of data for which the ADRT should be computed.
 
     start : int, optional
-        Set the starting iteration number of the ADRT to be computed.
+        Set ADRT level expected for input
 
     end : int, optional
-        Set the final iteration number of the ADRT to be computed.
+        Set ADRT level for output
+
+    orient : int (optional)
+        set input and output orientation. Takes on values 0,1,2,3, each
+        designating orientation flags for input-output, 00,01,10,11.
 
     Returns
     -------
@@ -88,10 +92,10 @@ def adrt(a, start=0, end=-1):
     :ref:`adrt-description` and refer to the source papers [press06]_,
     [brady98]_.
     """
-    return _adrt_cdefs.adrt(_normalize_array(a), start, end)
+    return _adrt_cdefs.adrt(_normalize_array(a), start, end, orient)
 
 
-def iadrt(a):
+def iadrt(a, start=0, end=-1, orient=3):
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
@@ -101,13 +105,24 @@ def iadrt(a):
     array `a` must have shape ``(B?, 2 * N - 1, N)``, where N is a
     power of two.
 
-    The returned array has the same shape as the appropriate input to
-    the ADRT, ``(B?, N, N)``.
+    The returned array has the dimension as the ADRT, ``(B?, 2 * N - 1, N)``
+    If the input was the ADRT, the exact inverse can be extracted
+    by using the adrt.utils.truncate.
 
     Parameters
     ----------
     a : array_like of float
         An array storing the output of the forward ADRT.
+
+    start : int, optional
+        Set ADRT level expected for input
+
+    end : int, optional
+        Set ADRT level for output
+
+    orient : int (optional)
+        set input and output orientation. Takes on values 0,1,2,3, each
+        designating orientation flags for input-output, 00,01,10,11.
 
     Returns
     -------
@@ -125,7 +140,7 @@ def iadrt(a):
     For details of the algorithm see :ref:`iadrt-description` or the
     source paper [rim20]_.
     """
-    return _adrt_cdefs.iadrt(_normalize_array(a))
+    return _adrt_cdefs.iadrt(_normalize_array(a), start, end, orient)
 
 
 def bdrt(a):

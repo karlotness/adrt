@@ -367,7 +367,7 @@ class TestAdrt(unittest.TestCase):
         self.assertTrue(np.all(c_out[3, :7, -1] == 0))
         self.assertTrue(np.all(c_out[3, -8:, -1] == 1))
 
-    def test_partial_composition_equals_complete(self):
+    def test_partial_adrts_equals_complete(self):
         n = 4
         inarr = np.random.rand(2 ** n, 2 ** n)
         outarr_c = adrt.adrt(inarr)
