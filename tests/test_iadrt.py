@@ -230,7 +230,7 @@ class TestIAdrt(unittest.TestCase):
         for i in range(n):
             iadrt_out = adrt.iadrt(iadrt_in, start=i, end=i + 1)
             iadrt_in = iadrt_out
-        iadrt_out = np.mean(adrt.utils.truncate(iadrt_out),axis=0)
+        iadrt_out = np.mean(adrt.utils.truncate(iadrt_out), axis=0)
         self.assertTrue(np.allclose(adrt_in, iadrt_out))
 
 
