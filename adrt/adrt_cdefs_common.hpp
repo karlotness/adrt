@@ -74,7 +74,7 @@ static adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::
 template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
 static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
                                             const Idx... idxs) {
-    const std::array<adrt_shape, N> strides {adrt_compute_strides(shape)};
+    const std::array<adrt_shape, N> strides = adrt_compute_strides(shape);
     return adrt_array_stride_access(buf, strides, idxs...);
 }
 
