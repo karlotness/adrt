@@ -39,8 +39,7 @@ repository and run::
 Alternatively, you can use the built-in :mod:`unittest` module to
 run the tests::
 
-  cd tests/
-  python -m unittest
+  python -m unittest tests/*.py
 
 .. _openmp-build:
 
