@@ -1,7 +1,16 @@
 Package Reference
 =================
 
+Core Routines
+-------------
+
 .. automodule:: adrt
+   :members:
+
+Utilities
+---------
+
+.. automodule:: adrt.utils
    :members:
 
 .. only:: html
