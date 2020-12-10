@@ -34,41 +34,56 @@
 import numpy as np
 
 
-def stitch_adrt(a):
-    r"""
-    Reshape 4-channel ADRT output to zero-padded 2D continguous array
+def stitch_adrt(a, *, remove_repeated=False):
+    r"""Reshape and align ADRT channel-wise output into a contiguous image.
+
+    The ADRT routine, :func:`adrt.adrt`, produces an output array
+    which is divided into four separate quadrants, each containing the
+    Radon transform results for a range of angles. This routine
+    stitches these channels together so that they form a contiguous
+    output. This may be especially useful in order to visualize the
+    output as an image.
+
+    The input array must have shape (..., 4, 2*N-1, N). Extra leading
+    dimensions will be treated as batch dimensions and preserved in
+    the output.
+
+    The parameter ``remove_repeated`` controls whether this output
+    should have redundant columns (the last column in each quadrant)
+    removed.
+
+    See :ref:`adrt-description` for a description of the ADRT output
+    quadrants.
 
     Parameters
     ----------
     a : array_like
-        array of shape (4,2*N,N) in which N = 2**n
+        Array of ADRT output data. Shape (..., 4, 2*N-1, N) where
+        N is a power of two.
+    remove_repeated : bool, optional
+        Whether redundant columns should be removed. This removes the
+        last column from each quadrant.
 
     Returns
     -------
-    Z : array_like
-        array of shape (3*N-2,4*N) containing a zero-padded continguous array
-        with ADRT data
-
+    numpy.ndarray
+        The input data, combined into a contiguous array. This will be
+        an array with shape (..., 2*N-1, 4*N) or (..., 2*N-1, 4*N-4)
+        if ``remove_repeated`` is ``True``.
     """
 
-    if (
-        not isinstance(a, np.ndarray)
-        or (a.shape[0] != 4)
-        or ((a.shape[1] + 1) != 2 * a.shape[2])
-    ):
-        raise ValueError("Passed array is not of the right shape")
+    n = a.shape[-1]
+    if a.shape[-3:] != (4, 2 * n - 1, n):
+        raise ValueError(f"Unsuitable shape ADRT output processing: {a.shape}")
 
-    dtype = a.dtype
-    m = a.shape[2]
+    quadrants = []
+    for i in range(4):
+        quadrant = a[..., i, :, :]
+        if remove_repeated:
+            quadrant = quadrant[..., :-1]
+        quadrants.append(quadrant)
 
-    z = np.zeros((3 * m - 2, 4 * m), dtype=dtype)
-
-    z[: (2 * m - 1), :m] = a[0, :, :]
-    z[: (2 * m - 1), m : (2 * m)] = a[1, :, :]
-    z[(m - 1) :, (2 * m) : (3 * m)] = a[2, :, :]
-    z[(m - 1) :, (3 * m) : (4 * m)] = a[3, :, :]
-
-    return z
+    return np.concatenate(quadrants, axis=-1)
 
 
 def truncate(a, orient=1):
