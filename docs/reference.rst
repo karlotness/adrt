@@ -13,11 +13,6 @@ Utilities
 .. automodule:: adrt.utils
    :members:
 
-.. only:: html
-
-   References
-   ----------
-
 .. [brady98] Martin L. Brady, *Discrete Radon transform has an exact,
    fast inverse and generalizes to operations other than sums along
    lines*, Proceedings of the National Academy of Sciences, 103.
