@@ -6,8 +6,8 @@ import re
 
 adrt_c_ext = Extension(
     "adrt._adrt_cdefs",
-    sources=glob.glob("adrt/*.cpp"),
-    depends=glob.glob("adrt/*.hpp"),
+    sources=glob.glob("src/adrt/*.cpp"),
+    depends=glob.glob("src/adrt/*.hpp"),
     language="c++",
     include_dirs=[numpy.get_include()],
     py_limited_api=True,
@@ -36,8 +36,9 @@ def load_readme(readme_path):
 setup(
     name="adrt",
     description="Fast approximate discrete Radon transform for NumPy arrays",
-    version=find_version("adrt/__init__.py"),
-    packages=find_packages(),
+    version=find_version("src/adrt/__init__.py"),
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     python_requires=">=3.6, <4",
     install_requires=["numpy>=1.16"],
     license="BSD",

@@ -7,7 +7,7 @@ copyright = "2020, Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
 
 # Configure path to ADRT code
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../src"))
 
 # Other configuration
 extensions = [
