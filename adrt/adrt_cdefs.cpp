@@ -38,7 +38,7 @@ static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
                   int& iter_start_out, int& iter_end_out, int& orient_out) {
     PyArrayObject *I;
     int iter_start = 0, iter_end = -1, orient = 1;
-    
+
     if(!PyArg_ParseTuple(args, "O!|iii", &PyArray_Type, &I, &iter_start, &iter_end, &orient)) {
         return false;
     }
@@ -126,10 +126,10 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
     int ndim = 2;
     int new_dim;
 
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
         goto fail;
     }
-    
+
     if(!I) {
         goto fail;
     }
@@ -164,14 +164,14 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
         // Compute output shape: [plane?, 4, 2N, N] (batch, quadrant, row, col)
         if(ndim == 3) {
             new_shape[0] = 4;
-            new_shape[1] = old_shape[1]; 
+            new_shape[1] = old_shape[1];
             new_shape[2] = old_shape[2];
             new_dim = 3;
         }
         else {
             new_shape[0] = old_shape[0];
             new_shape[1] = 4;
-            new_shape[2] = old_shape[1]; 
+            new_shape[2] = old_shape[1];
             new_shape[3] = old_shape[2];
             new_dim = 4;
         }
@@ -223,7 +223,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     int ndim = 3;
 
     int iter_start = 0, iter_end = -1, orient = 1;
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
         goto fail;
     }
 
@@ -298,7 +298,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     int ndim = 3;
 
     int iter_start = 0, iter_end = -1, orient = 1;
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) { 
+    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
         goto fail;
     }
 
