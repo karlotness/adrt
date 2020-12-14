@@ -44,9 +44,9 @@ def stitch_adrt(a, *, remove_repeated=False):
     output. This may be especially useful in order to visualize the
     output as an image.
 
-    The input array must have shape (..., 4, 2*N-1, N). Extra leading
-    dimensions will be treated as batch dimensions and preserved in
-    the output.
+    The input array must have shape (..., 4, 2*N-1, N). The optional,
+    extra leading dimensions will be treated as batch dimensions and
+    will be preserved in the output.
 
     The parameter ``remove_repeated`` controls whether this output
     should have redundant columns (the last column in each quadrant)
@@ -58,8 +58,7 @@ def stitch_adrt(a, *, remove_repeated=False):
     Parameters
     ----------
     a : array_like
-        Array of ADRT output data. Shape (..., 4, 2*N-1, N) where
-        N is a power of two.
+        Array of ADRT output data. Shape (..., 4, 2*N-1, N).
     remove_repeated : bool, optional
         Whether redundant columns should be removed. This removes the
         last column from each quadrant.
@@ -68,22 +67,47 @@ def stitch_adrt(a, *, remove_repeated=False):
     -------
     numpy.ndarray
         The input data, combined into a contiguous array. This will be
-        an array with shape (..., 2*N-1, 4*N) or (..., 2*N-1, 4*N-4)
+        an array with shape (..., 4*N-3, 4*N) or (..., 4*N-3, 4*N-4)
         if ``remove_repeated`` is ``True``.
     """
 
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"Unsuitable shape ADRT output processing: {a.shape}")
+        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
 
-    quadrants = []
+    if len(a.shape) > 3:
+        had_batch = True
+        batch_size = a.shape[:-3]
+    else:
+        had_batch = False
+        batch_size = (1,)
+        a = np.expand_dims(a, 0)
+    # Compute working array shape
+    in_rows = 2 * n - 1
+    out_rows = 2 * in_rows - 1
+    out_cols = 4 * n - (4 if remove_repeated else 0)
+    output_shape = (*batch_size, out_rows, out_cols)
+
+    # Process input array
+    ret = np.zeros_like(a, shape=output_shape)
     for i in range(4):
         quadrant = a[..., i, :, :]
         if remove_repeated:
             quadrant = quadrant[..., :-1]
-        quadrants.append(quadrant)
+        if i < 2:
+            ret[
+                ..., :in_rows, i * (out_cols // 4) : (i + 1) * (out_cols // 4)
+            ] = quadrant
+        else:
+            ret[
+                ..., -in_rows:, i * (out_cols // 4) : (i + 1) * (out_cols // 4)
+            ] = quadrant
 
-    return np.concatenate(quadrants, axis=-1)
+    if had_batch:
+        return ret
+    else:
+        # Remove batch dimension
+        return ret[0]
 
 
 def truncate(a, orient=1):
