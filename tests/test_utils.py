@@ -37,6 +37,23 @@ import adrt
 
 
 class TestStitchAdrt(unittest.TestCase):
+    def _check_column_continuous(self, stitched):
+        n = stitched.shape[-1] // 4
+        self.assertTrue(np.allclose(stitched[..., :, n - 1], stitched[..., :, n]))
+        # Middle seam requires special treatment
+        self.assertTrue(
+            np.allclose(
+                stitched[..., :, 2 * n - 1],
+                np.roll(stitched[..., :, 2 * n], -1 * (n - 1), axis=-1),
+            )
+        )
+        self.assertTrue(
+            np.allclose(stitched[..., :, 3 * n - 1], stitched[..., :, 3 * n])
+        )
+        self.assertTrue(
+            np.allclose(stitched[..., :, -1], np.flip(stitched[..., :, 0], axis=-1))
+        )
+
     def test_accepts_adrt_output(self):
         n = 16
         inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
@@ -44,16 +61,7 @@ class TestStitchAdrt(unittest.TestCase):
         stitched = adrt.utils.stitch_adrt(out)
         self.assertEqual(stitched.shape, (4 * n - 3, 4 * n))
         # Check output columns are contiguous
-        self.assertTrue(np.allclose(stitched[:, n - 1], stitched[:, n]))
-        # Middle seam requires special treatment
-        self.assertTrue(
-            np.allclose(
-                stitched[:, 2 * n - 1],
-                np.roll(stitched[:, 2 * n], -1 * (n - 1), axis=0),
-            )
-        )
-        self.assertTrue(np.allclose(stitched[:, 3 * n - 1], stitched[:, 3 * n]))
-        self.assertTrue(np.allclose(stitched[:, -1], np.flipud(stitched[:, 0])))
+        self._check_column_continuous(stitched)
         # Check quadrant ordering
         self.assertTrue(np.allclose(stitched[:2 * n - 1, :n], out[0]))
         self.assertTrue(np.allclose(stitched[:2 * n - 1, n : 2 * n], out[1]))
@@ -67,16 +75,7 @@ class TestStitchAdrt(unittest.TestCase):
         stitched = adrt.utils.stitch_adrt(out)
         self.assertEqual(stitched.shape, (3, 4 * n - 3, 4 * n))
         # Check output columns are contiguous
-        self.assertTrue(np.allclose(stitched[:, :, n - 1], stitched[:, :, n]))
-        # Middle seam requires special treatment
-        self.assertTrue(
-            np.allclose(
-                stitched[:, :, 2 * n - 1],
-                np.roll(stitched[:, :, 2 * n], -1 * (n - 1), axis=-1),
-            )
-        )
-        self.assertTrue(np.allclose(stitched[:, :, 3 * n - 1], stitched[:, :, 3 * n]))
-        self.assertTrue(np.allclose(stitched[:, :, -1], stitched[:, ::-1, 0]))
+        self._check_column_continuous(stitched)
         # Check quadrant ordering
         self.assertTrue(np.allclose(stitched[:, :2 * n - 1, :n], out[:, 0]))
         self.assertTrue(np.allclose(stitched[:, :2 * n - 1, n : 2 * n], out[:, 1]))
