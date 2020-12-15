@@ -129,6 +129,32 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, stitch_repeat.shape)
         self.assertTrue(np.allclose(stitched, stitch_repeat))
 
+    def test_accepts_adrt_output_multi_batched(self):
+        n = 8
+        inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+        out_1 = adrt.adrt(inarr[0])
+        out_2 = adrt.adrt(inarr[1])
+        out = np.stack([out_1, out_2])
+        stitched = adrt.utils.stitch_adrt(out)
+        self.assertEqual(stitched.shape, (2, 3, 3 * n - 2, 4 * n))
+        self._check_column_contiguous(stitched)
+        self._check_quadrant_ordering(stitched, out)
+        self._check_zero_stencil(stitched)
+
+    def test_accepts_adrt_output_remove_repeated_multi_batched(self):
+        n = 8
+        inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+        out_1 = adrt.adrt(inarr[0])
+        out_2 = adrt.adrt(inarr[1])
+        out = np.stack([out_1, out_2])
+        stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
+        self.assertEqual(stitched.shape, (2, 3, 3 * n - 2, 4 * n - 4))
+        # Check deleting repeated columns
+        stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
+        stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(4)], axis=-1)
+        self.assertEqual(stitched.shape, stitch_repeat.shape)
+        self.assertTrue(np.allclose(stitched, stitch_repeat))
+
 
 if __name__ == "__main__":
     unittest.main()
