@@ -64,6 +64,27 @@ class TestStitchAdrt(unittest.TestCase):
             np.allclose(stitched[..., -2 * n + 1 :, 3 * n :], out[..., 3, :, :])
         )
 
+    def _check_zero_stencil(self, stitched):
+        n = stitched.shape[-1] // 4
+        # Test rectangular blocks of zeros
+        self.assertTrue(np.all(stitched[..., -n + 1 :, : 2 * n] == 0))
+        self.assertTrue(np.all(stitched[..., : n - 1, 2 * n :] == 0))
+        # Check triangles of zeros
+        triu_a, triu_b = np.triu_indices(2 * n - 1, m=n, k=1)
+        tril_a, tril_b = np.tril_indices(2 * n - 1, m=n, k=-n)
+        self.assertTrue(
+            np.all(stitched[..., : 2 * n - 1, :n][..., tril_a, tril_b] == 0)
+        )
+        self.assertTrue(
+            np.all(stitched[..., : 2 * n - 1, n : 2 * n][..., triu_a, triu_b] == 0)
+        )
+        self.assertTrue(
+            np.all(stitched[..., n - 1 :, 2 * n : 3 * n][..., tril_a, tril_b] == 0)
+        )
+        self.assertTrue(
+            np.all(stitched[..., n - 1 :, 3 * n :][..., triu_a, triu_b] == 0)
+        )
+
     def test_accepts_adrt_output(self):
         n = 16
         inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
@@ -72,6 +93,7 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
         self._check_column_contiguous(stitched)
         self._check_quadrant_ordering(stitched, out)
+        self._check_zero_stencil(stitched)
 
     def test_accepts_adrt_output_batched(self):
         n = 16
@@ -81,6 +103,7 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, (3, 3 * n - 2, 4 * n))
         self._check_column_contiguous(stitched)
         self._check_quadrant_ordering(stitched, out)
+        self._check_zero_stencil(stitched)
 
     def test_accepts_adrt_output_remove_repeated(self):
         n = 16
