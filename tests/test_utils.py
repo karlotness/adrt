@@ -37,7 +37,7 @@ import adrt
 
 
 class TestStitchAdrt(unittest.TestCase):
-    def _check_column_continuous(self, stitched):
+    def _check_column_contiguous(self, stitched):
         n = stitched.shape[-1] // 4
         self.assertTrue(np.allclose(stitched[..., :, n - 1], stitched[..., :, n]))
         self.assertTrue(
@@ -70,7 +70,7 @@ class TestStitchAdrt(unittest.TestCase):
         out = adrt.adrt(inarr)
         stitched = adrt.utils.stitch_adrt(out)
         self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
-        self._check_column_continuous(stitched)
+        self._check_column_contiguous(stitched)
         self._check_quadrant_ordering(stitched, out)
 
     def test_accepts_adrt_output_batched(self):
@@ -79,7 +79,7 @@ class TestStitchAdrt(unittest.TestCase):
         out = adrt.adrt(inarr)
         stitched = adrt.utils.stitch_adrt(out)
         self.assertEqual(stitched.shape, (3, 3 * n - 2, 4 * n))
-        self._check_column_continuous(stitched)
+        self._check_column_contiguous(stitched)
         self._check_quadrant_ordering(stitched, out)
 
     def test_accepts_adrt_output_remove_repeated(self):
