@@ -67,7 +67,7 @@ def stitch_adrt(a, *, remove_repeated=False):
     -------
     numpy.ndarray
         The input data, combined into a contiguous array. This will be
-        an array with shape (..., 4*N-3, 4*N) or (..., 4*N-3, 4*N-4)
+        an array with shape (..., 3*N-2, 4*N) or (..., 3*N-2, 4*N-4)
         if ``remove_repeated`` is ``True``.
     """
 
@@ -84,7 +84,7 @@ def stitch_adrt(a, *, remove_repeated=False):
         a = np.expand_dims(a, 0)
     # Compute working array shape
     in_rows = 2 * n - 1
-    out_rows = 2 * in_rows - 1
+    out_rows = 3 * n - 2
     out_cols = 4 * n - (4 if remove_repeated else 0)
     output_shape = (*batch_size, out_rows, out_cols)
 
