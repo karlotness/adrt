@@ -155,6 +155,37 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, stitch_repeat.shape)
         self.assertTrue(np.allclose(stitched, stitch_repeat))
 
+    def test_accepts_multiple_dtypes(self):
+        n = 8
+        inarr = np.ones((4, 2 * n - 1, n))
+        for dtype in ["float32", "float64", "int32", "int64"]:
+            stitched = adrt.utils.stitch_adrt(inarr.astype(dtype))
+            self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
+
+    def test_small_matrix(self):
+        n = 1
+        inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+        out = adrt.adrt(inarr)
+        stitched = adrt.utils.stitch_adrt(out)
+        self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
+        self._check_column_contiguous(stitched)
+        self._check_quadrant_ordering(stitched, out)
+        self._check_zero_stencil(stitched)
+
+    def test_rejects_invalid_sizes(self):
+        with self.assertRaises(ValueError):
+            # Zero dimensions
+            inarr = np.ones((4, 0, 0)).astype("float32")
+            _ = adrt.utils.stitch_adrt(inarr)
+        with self.assertRaises(ValueError):
+            # Incorrect relationship between dimensions
+            inarr = np.ones((4, 4, 2)).astype("float32")
+            _ = adrt.utils.stitch_adrt(inarr)
+        with self.assertRaises(ValueError):
+            # Too few dimensions
+            inarr = np.ones((7, 4)).astype("float32")
+            _ = adrt.utils.stitch_adrt(inarr)
+
 
 if __name__ == "__main__":
     unittest.main()
