@@ -113,7 +113,9 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, (3 * n - 2, 4 * n - 4))
         # Check deleting repeated columns
         stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(4)], axis=-1)
+        stitch_repeat = np.delete(
+            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
+        )
         self.assertEqual(stitched.shape, stitch_repeat.shape)
         self.assertTrue(np.allclose(stitched, stitch_repeat))
 
@@ -125,7 +127,9 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, (3, 3 * n - 2, 4 * n - 4))
         # Check deleting repeated columns
         stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(4)], axis=-1)
+        stitch_repeat = np.delete(
+            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
+        )
         self.assertEqual(stitched.shape, stitch_repeat.shape)
         self.assertTrue(np.allclose(stitched, stitch_repeat))
 
@@ -151,7 +155,9 @@ class TestStitchAdrt(unittest.TestCase):
         self.assertEqual(stitched.shape, (2, 3, 3 * n - 2, 4 * n - 4))
         # Check deleting repeated columns
         stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(4)], axis=-1)
+        stitch_repeat = np.delete(
+            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
+        )
         self.assertEqual(stitched.shape, stitch_repeat.shape)
         self.assertTrue(np.allclose(stitched, stitch_repeat))
 
