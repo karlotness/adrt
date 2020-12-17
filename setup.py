@@ -13,7 +13,7 @@ adrt_c_ext = Extension(
     py_limited_api=True,
     define_macros=[
         ("Py_LIMITED_API", "0x03060000"),
-        ("NPY_NO_DEPRECATED_API", "NPY_1_16_API_VERSION"),
+        ("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION"),
     ],
 )
 
@@ -40,7 +40,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     python_requires=">=3.6, <4",
-    install_requires=["numpy>=1.16"],
+    install_requires=["numpy>=1.17"],
     license="BSD",
     ext_modules=[adrt_c_ext],
     zip_safe=False,
