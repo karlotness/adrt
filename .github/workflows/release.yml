@@ -44,6 +44,7 @@ jobs:
       with:
         name: sdist
         path: dist/adrt-*.tar.gz
+        if-no-files-found: error
   wheel:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
@@ -99,6 +100,7 @@ jobs:
       with:
         name: wheel
         path: dist/adrt-*.whl
+        if-no-files-found: error
     - name: Install wheel
       run: python -m pip install dist/adrt-*.whl
       shell: bash
