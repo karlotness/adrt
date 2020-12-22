@@ -20,9 +20,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade flake8 pep8-naming flake8-bugbear black
     - name: Lint with flake8
-      run: flake8 src/adrt/ tests/ docs/ setup.py
+      run: flake8 src/adrt/ tests/ docs/ tools/ setup.py
     - name: Style check with black
-      run: black --check src/adrt/ tests/ docs/ setup.py
+      run: black --check src/adrt/ tests/ docs/ tools/ setup.py
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
