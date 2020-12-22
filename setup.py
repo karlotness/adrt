@@ -1,7 +1,6 @@
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, Extension
 import numpy
 import glob
-import re
 
 
 adrt_c_ext = Extension(
@@ -18,33 +17,6 @@ adrt_c_ext = Extension(
 )
 
 
-def find_version(version_path):
-    ver_re = re.compile(r"^__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
-    with open(version_path, mode="r", encoding="utf8") as version_file:
-        for line in version_file:
-            ver_match = ver_re.match(line)
-            if ver_match:
-                return ver_match.group("ver")
-        raise ValueError("Could not find package version")
-
-
-def load_readme(readme_path):
-    with open(readme_path, mode="r", encoding="utf8") as readme_file:
-        return readme_file.read()
-
-
 setup(
-    name="adrt",
-    description="Fast approximate discrete Radon transform for NumPy arrays",
-    version=find_version("src/adrt/__init__.py"),
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
-    python_requires=">=3.6, <4",
-    install_requires=["numpy>=1.17"],
-    license="BSD",
     ext_modules=[adrt_c_ext],
-    zip_safe=False,
-    url="https://github.com/karlotness/adrt",
-    long_description=load_readme("README.md"),
-    long_description_content_type="text/markdown",
 )
