@@ -10,20 +10,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Check version match
-      run: |
-        ADRT_RELEASE_TAG="${{ github.ref }}"
-        ADRT_RELEASE_VERSION="${ADRT_RELEASE_TAG#refs/tags/v}"
-        ADRT_PACKAGE_VERSION=$(sed --quiet --regexp-extended "s/^__version__[[:space:]]*=[[:space:]]*[\"'](.+?)[\"']/\1/p" src/adrt/__init__.py)
-        echo "GitHub tag version: $ADRT_RELEASE_VERSION"
-        echo "Package reported version: $ADRT_PACKAGE_VERSION"
-        if [ "$ADRT_RELEASE_VERSION" = "$ADRT_PACKAGE_VERSION" ]; then
-            echo "Versions match"
-            exit 0
-        else
-            echo "Versions differ and must be made consistent"
-            exit 1
-        fi
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
@@ -31,7 +17,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
+        python -m pip install --upgrade tox toml
+    - name: Check version strings
+      run: python tools/version_consistency.py --tag_ref "${{ github.ref }}"
     - name: Run tox tests
       run: tox -e py
   sdist:
