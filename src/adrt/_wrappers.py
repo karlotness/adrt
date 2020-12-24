@@ -40,7 +40,7 @@ def _normalize_array(a):
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
 
-def adrt(a, start=0, end=-1, orient=3):
+def adrt(a, start=0, end=-1):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
     Computes the ADRT of the provided array, `a`. The array `a` may
@@ -74,10 +74,6 @@ def adrt(a, start=0, end=-1, orient=3):
     end : int, optional
         Set ADRT level for output
 
-    orient : int (optional)
-        set input and output orientation. Takes on values 0,1,2,3, each
-        designating orientation flags for input-output, 00,01,10,11.
-
     Returns
     -------
     numpy.ndarray
@@ -92,10 +88,10 @@ def adrt(a, start=0, end=-1, orient=3):
     :ref:`adrt-description` and refer to the source papers [press06]_,
     [brady98]_.
     """
-    return _adrt_cdefs.adrt(_normalize_array(a), start, end, orient)
+    return _adrt_cdefs.adrt(_normalize_array(a), start, end)
 
 
-def iadrt(a, start=0, end=-1, orient=3):
+def iadrt(a, start=0, end=-1):
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
@@ -120,10 +116,6 @@ def iadrt(a, start=0, end=-1, orient=3):
     end : int, optional
         Set ADRT level for output
 
-    orient : int (optional)
-        set input and output orientation. Takes on values 0,1,2,3, each
-        designating orientation flags for input-output, 00,01,10,11.
-
     Returns
     -------
     numpy.ndarray
@@ -140,7 +132,7 @@ def iadrt(a, start=0, end=-1, orient=3):
     For details of the algorithm see :ref:`iadrt-description` or the
     source paper [rim20]_.
     """
-    return _adrt_cdefs.iadrt(_normalize_array(a), start, end, orient)
+    return _adrt_cdefs.iadrt(_normalize_array(a), start, end)
 
 
 def bdrt(a):

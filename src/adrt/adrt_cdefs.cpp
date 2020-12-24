@@ -35,11 +35,11 @@
 #include "adrt_cdefs_bdrt.hpp"
 
 static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
-                  int& iter_start_out, int& iter_end_out, int& orient_out) {
+                  int& iter_start_out, int& iter_end_out) {
     PyArrayObject *I;
-    int iter_start = 0, iter_end = -1, orient = 1;
+    int iter_start = 0, iter_end = -1;
 
-    if(!PyArg_ParseTuple(args, "O!|iii", &PyArray_Type, &I, &iter_start, &iter_end, &orient)) {
+    if(!PyArg_ParseTuple(args, "O!|ii", &PyArray_Type, &I, &iter_start, &iter_end)) {
         return false;
     }
 
@@ -63,15 +63,9 @@ static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
         return false;
     }
 
-    if(orient < 0 || orient > 4) {
-        PyErr_SetString(PyExc_ValueError,"Provided orientation is out of bounds");
-        return false;
-    }
-
     array_out = I;
     iter_start_out = iter_start;
     iter_end_out = iter_end;
-    orient_out = orient;
     return true;
 }
 
@@ -119,14 +113,14 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     PyArrayObject * I;
-    int iter_start = 0, iter_end = -1, orient = 1;
+    int iter_start = 0, iter_end = -1;
     npy_intp *old_shape = nullptr;
     npy_intp new_shape[4] = {0};
 
     int ndim = 2;
     int new_dim;
 
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) {
         goto fail;
     }
 
@@ -185,7 +179,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, orient,
+                      iter_start, iter_end, 
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -197,7 +191,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, orient,
+                      iter_start, iter_end, 
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -222,8 +216,8 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     npy_intp new_shape[4] = {0};
     int ndim = 3;
 
-    int iter_start = 0, iter_end = -1, orient = 1;
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
+    int iter_start = 0, iter_end = -1;
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) {
         goto fail;
     }
 
@@ -261,7 +255,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, orient,
+                      iter_start, iter_end, 
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -273,7 +267,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, orient,
+                      iter_start, iter_end, 
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -297,8 +291,8 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     PyArrayObject * I;
     int ndim = 3;
 
-    int iter_start = 0, iter_end = -1, orient = 1;
-    if(!adrt_validate_array(args, I, iter_start, iter_end, orient)) {
+    int iter_start = 0, iter_end = -1;
+    if(!adrt_validate_array(args, I, iter_start, iter_end)) {
         goto fail;
     }
 

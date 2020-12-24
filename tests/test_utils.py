@@ -55,13 +55,13 @@ class TestStitchAdrt(unittest.TestCase):
         n = stitched.shape[-1] // 4
         self.assertTrue(np.allclose(stitched[..., : 2 * n - 1, :n], out[..., 0, :, :]))
         self.assertTrue(
-            np.allclose(stitched[..., : 2 * n - 1, n : 2 * n], out[..., 1, :, :])
+            np.allclose(stitched[..., : 2 * n - 1, n : 2 * n], out[..., 1, ::-1, ::-1])
         )
         self.assertTrue(
             np.allclose(stitched[..., -2 * n + 1 :, 2 * n : 3 * n], out[..., 2, :, :])
         )
         self.assertTrue(
-            np.allclose(stitched[..., -2 * n + 1 :, 3 * n :], out[..., 3, :, :])
+            np.allclose(stitched[..., -2 * n + 1 :, 3 * n :], out[..., 3, ::-1, ::-1])
         )
 
     def _check_zero_stencil(self, stitched):

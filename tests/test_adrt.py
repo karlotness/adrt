@@ -77,8 +77,6 @@ def _naive_adrt(a):
                     v += img[i, j]
                 # Store result
                 res[quad, hi, si] = v
-    res[1] = np.rot90(res[1], k=2)
-    res[3] = np.rot90(res[3], k=2)
     return res
 
 
@@ -161,9 +159,9 @@ class TestAdrt(unittest.TestCase):
         n = a.shape[-1]
         return (
             np.all(np.tril(a[0, -n:], k=-1) == 0)
-            and np.all(np.triu(a[1, :n], k=1) == 0)
+            and np.all(np.tril(a[1, -n:], k=-1) == 0)
             and np.all(np.tril(a[2, -n:], k=-1) == 0)
-            and np.all(np.triu(a[3, :n], k=1) == 0)
+            and np.all(np.tril(a[3, -n:], k=-1) == 0)
         )
 
     def test_accepts_float32(self):
@@ -266,20 +264,20 @@ class TestAdrt(unittest.TestCase):
         self.assertTrue(np.all(c_out[0, :7, -1] == 0))
         self.assertTrue(np.all(c_out[0, -8:, -1] == 1))
         # Quadrant 1
-        self.assertTrue(np.all(c_out[1, :7, 0] == 0))
-        self.assertTrue(np.all(c_out[1, -8:, 0] == 1))
-        self.assertTrue(np.all(c_out[1, :7, -1] == 0))
-        self.assertTrue(np.all(c_out[1, -8:, -1] == 1))
+        self.assertTrue(np.all(c_out[1, 8:, 0] == 0))
+        self.assertTrue(np.all(c_out[1, :8, -1] == 1))
+        self.assertTrue(np.all(c_out[1, 8:, 0] == 0))
+        self.assertTrue(np.all(c_out[1, :8, 0] == 1))
         # Quadrant 2
         self.assertTrue(np.all(c_out[2, :8, 0] == 1))
         self.assertTrue(np.all(c_out[2, -7:, 0] == 0))
         self.assertTrue(np.all(c_out[2, :8, -1] == 1))
         self.assertTrue(np.all(c_out[2, -7:, -1] == 0))
         # Quadrant 3
-        self.assertTrue(np.all(c_out[3, :8, 0] == 1))
-        self.assertTrue(np.all(c_out[3, -7:, 0] == 0))
-        self.assertEqual(c_out[3, 7, -1], 8)
-        self.assertEqual(np.count_nonzero(c_out[3, :, -1]), 1)
+        self.assertTrue(np.all(c_out[3, 8:, -1] == 1))
+        self.assertTrue(np.all(c_out[3, :7, -1] == 0))
+        self.assertEqual(c_out[3, 7, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[3, :, 0]), 1)
 
     def test_spot_check_vertical_line_right(self):
         inarr = np.zeros((8, 8))
@@ -304,10 +302,10 @@ class TestAdrt(unittest.TestCase):
         self.assertTrue(np.all(c_out[2, :7, -1] == 0))
         self.assertTrue(np.all(c_out[2, -8:, -1] == 1))
         # Quadrant 3
-        self.assertTrue(np.all(c_out[3, :7, 0] == 0))
-        self.assertTrue(np.all(c_out[3, -8:, 0] == 1))
-        self.assertEqual(c_out[3, -1, -1], 8)
-        self.assertEqual(np.count_nonzero(c_out[3, :, -1]), 1)
+        self.assertTrue(np.all(c_out[3, 8:, -1] == 0))
+        self.assertTrue(np.all(c_out[3, :8, -1] == 1))
+        self.assertEqual(c_out[3, 0, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[3, :, 0]), 1)
 
     def test_spot_check_horizontal_line_top(self):
         inarr = np.zeros((8, 8))
@@ -322,10 +320,10 @@ class TestAdrt(unittest.TestCase):
         self.assertTrue(np.all(c_out[0, :8, -1] == 1))
         self.assertTrue(np.all(c_out[0, -7:, -1] == 0))
         # Quadrant 1
-        self.assertTrue(np.all(c_out[1, :8, 0] == 1))
-        self.assertTrue(np.all(c_out[1, -7:, 0] == 0))
-        self.assertEqual(c_out[1, 7, -1], 8)
-        self.assertEqual(np.count_nonzero(c_out[1, :, -1]), 1)
+        self.assertTrue(np.all(c_out[1, 7:, 7] == 1))
+        self.assertTrue(np.all(c_out[1, :7, 0] == 0))
+        self.assertEqual(c_out[1, 7, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[1, :, 0]), 1)
         # Quadrant 2
         self.assertEqual(c_out[2, 0, 0], 8)
         self.assertEqual(np.count_nonzero(c_out[2, :, 0]), 1)
@@ -334,8 +332,8 @@ class TestAdrt(unittest.TestCase):
         # Quadrant 3
         self.assertTrue(np.all(c_out[3, :8, 0] == 1))
         self.assertTrue(np.all(c_out[3, -7:, 0] == 0))
-        self.assertTrue(np.all(c_out[3, :7, -1] == 0))
-        self.assertTrue(np.all(c_out[3, -8:, -1] == 1))
+        self.assertTrue(np.all(c_out[3, -7:, 0] == 0))
+        self.assertTrue(np.all(c_out[3, :8, 0] == 1))
 
     def test_spot_check_horizontal_line_bottom(self):
         inarr = np.zeros((8, 8))
@@ -350,20 +348,20 @@ class TestAdrt(unittest.TestCase):
         self.assertTrue(np.all(c_out[0, :7, -1] == 0))
         self.assertTrue(np.all(c_out[0, -8:, -1] == 1))
         # Quadrant 1
-        self.assertTrue(np.all(c_out[1, :7, 0] == 0))
-        self.assertTrue(np.all(c_out[1, -8:, 0] == 1))
-        self.assertEqual(c_out[1, -1, -1], 8)
-        self.assertEqual(np.count_nonzero(c_out[1, :, -1]), 1)
+        self.assertTrue(np.all(c_out[1, 8:, 0] == 0))
+        self.assertTrue(np.all(c_out[1, :8, 7] == 1))
+        self.assertEqual(c_out[1, 0, 0], 8)
+        self.assertEqual(np.count_nonzero(c_out[1, :, 0]), 1)
         # Quadrant 2
         self.assertEqual(c_out[2, 7, 0], 8)
         self.assertEqual(np.count_nonzero(c_out[2, :, 0]), 1)
         self.assertTrue(np.all(c_out[2, :7, -1] == 0))
         self.assertTrue(np.all(c_out[2, -8:, -1] == 1))
         # Quadrant 3
-        self.assertTrue(np.all(c_out[3, :7, 0] == 0))
-        self.assertTrue(np.all(c_out[3, -8:, 0] == 1))
-        self.assertTrue(np.all(c_out[3, :7, -1] == 0))
-        self.assertTrue(np.all(c_out[3, -8:, -1] == 1))
+        self.assertTrue(np.all(c_out[3, 8:, 0] == 0))
+        self.assertTrue(np.all(c_out[3, :8, 0] == 1))
+        self.assertTrue(np.all(c_out[3, 8:, -1] == 0))
+        self.assertTrue(np.all(c_out[3, :8, -1] == 1))
 
     def test_partial_adrts_equals_complete(self):
         n = 4

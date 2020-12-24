@@ -91,7 +91,11 @@ def stitch_adrt(a, *, remove_repeated=False):
     # Process input array
     ret = np.zeros_like(a, shape=output_shape)
     for i in range(4):
-        quadrant = a[..., i, :, :]
+
+        if (i % 2) == 0:
+            quadrant = a[..., i, :, :]
+        else:
+            quadrant = a[..., i, ::-1, ::-1]
         if remove_repeated:
             quadrant = quadrant[..., :-1]
         if i < 2:
@@ -110,7 +114,7 @@ def stitch_adrt(a, *, remove_repeated=False):
         return ret[0]
 
 
-def truncate(a, orient=1):
+def truncate(a, orient=0):
     r"""
     Truncate square domain from iadrt or bdrt output
 

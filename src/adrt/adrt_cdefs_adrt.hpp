@@ -39,17 +39,12 @@
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool adrt_impl(const adrt_scalar *const data, const unsigned char ndims,
-const adrt_shape *const shape, const int iter_start, const int iter_end, const int orient, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
+const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
 
     std::array<adrt_shape, 2> iter_lvls = {iter_start, iter_end};
 
     // set orientation for input output: 
     // note input orientation is ignored when iter_start == 0
-    int orient_in; int orient_out;
-    if(orient == 0)      {orient_in = 0; orient_out = 0;}
-    else if(orient == 1) {orient_in = 0; orient_out = 1;}
-    else if(orient == 2) {orient_in = 1; orient_out = 0;}
-    else if(orient == 3) {orient_in = 1; orient_out = 1;}
 
     const std::array<adrt_shape, 3> corrected_shape = [&]{
             if (iter_lvls[0] == 0){
@@ -195,22 +190,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, const i
                     for(adrt_shape a = 0; a < prev_shape[4]; ++a) {
                         adrt_shape acc_d = d;
                         adrt_shape acc_a = a;
-                        if((orient_in != 0) && (quadrant == 0)) {
-                            acc_d = d;
-                            acc_a = a;
-                        }
-                        else if((orient_in != 0) && (quadrant == 1)) {
-                            acc_d = prev_shape[2] - d - 1;
-                            acc_a = prev_shape[4] - a - 1;
-                        }
-                        else if((orient_in != 0) && (quadrant == 2)) {
-                            acc_d = d;
-                            acc_a = a;
-                        }
-                        else if((orient_in != 0) && (quadrant == 3)) {
-                            acc_d = prev_shape[2] - d - 1;
-                            acc_a = prev_shape[4] - a - 1;
-                        }
+                        
                         const adrt_scalar val = adrt_array_access(data, 
                                     output_shape, plane, quadrant, a, d);
                         adrt_array_access(prev, prev_shape, quadrant, plane, 0, acc_d, acc_a) = val;
@@ -283,22 +263,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, const i
                 for(adrt_shape a = 0; a < prev_shape[4]; ++a) {
                     adrt_shape acc_d = d;
                     adrt_shape acc_a = a;
-                    if((orient_out != 0) && (quadrant == 0)) {
-                        acc_d = d;
-                        acc_a = a;
-                    }
-                    else if((orient_out != 0) && (quadrant == 1)) {
-                        acc_d = prev_shape[2] - d - 1;
-                        acc_a = prev_shape[4] - a - 1;
-                    }
-                    else if((orient_out != 0) && (quadrant == 2)) {
-                        acc_d = d;
-                        acc_a = a;
-                    }
-                    else if((orient_out != 0) && (quadrant == 3)) {
-                        acc_d = prev_shape[2] - d - 1;
-                        acc_a = prev_shape[4] - a - 1;
-                    }
+
                     const adrt_scalar val = adrt_array_access(prev, prev_shape, quadrant, plane, 0, acc_d, acc_a);
                     adrt_array_access(out, output_shape, plane, quadrant, a, d)
 = val;
