@@ -287,7 +287,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     // Process function arguments
     PyObject *ret = nullptr;
     npy_intp *old_shape = nullptr;
-    npy_intp new_shape[3] = {0};
+    npy_intp new_shape[4] = {0};
     PyArrayObject * I;
     int ndim = 3;
 
@@ -306,16 +306,17 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
         goto fail;
     }
 
-    // Compute output shape: [plane?, N, N] (batch, row, col)
+    // Compute output shape: [plane?, 2*N-1, N] (batch, row, col)
     if(ndim == 3) {
-        new_shape[0] = 1;
+        new_shape[0] = old_shape[0];
         new_shape[1] = old_shape[1];
         new_shape[2] = old_shape[2];
     }
     else {
         new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[2];
-        new_shape[2] = old_shape[3];
+        new_shape[1] = old_shape[1];
+        new_shape[2] = old_shape[2];
+        new_shape[3] = old_shape[3];
     }
 
     // Process input array
@@ -326,6 +327,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
            !bdrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end, 
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
         }
@@ -336,6 +338,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
            !bdrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
+                      iter_start, iter_end, 
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
         }

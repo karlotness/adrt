@@ -135,13 +135,19 @@ def iadrt(a, start=0, end=-1):
     return _adrt_cdefs.iadrt(_normalize_array(a), start, end)
 
 
-def bdrt(a):
+def bdrt(a, start=0, end=-1):
     r"""Backprojection for the ADRT.
 
     Parameters
     ----------
     a : array_like of float
         An array storing the output of the forward ADRT.
+
+    start : int, optional
+        Set ADRT level expected for input
+
+    end : int, optional
+        Set ADRT level for output
 
     Returns
     -------
@@ -153,4 +159,4 @@ def bdrt(a):
     For more details on the backprojection implemented here see the
     source paper [press06]_.
     """
-    return _adrt_cdefs.bdrt(_normalize_array(a))
+    return _adrt_cdefs.bdrt(_normalize_array(a), start, end)

@@ -38,7 +38,9 @@
 #include <type_traits>
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out,
+static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims,
+const adrt_shape *const shape, const int base_iter_start, const int
+base_iter_end, adrt_scalar *const out,
                       const adrt_shape *const base_output_shape) {
     // The current implementation multiplies values by float constants and will not work correctly with integers
     static_assert(std::is_floating_point<adrt_scalar>::value, "Backprojection requires floating point");
@@ -51,10 +53,11 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
          (ndims > 3 ? shape[3] : shape[2])};
 
     // Output shape (plane, row, col)
-    const std::array<adrt_shape, 3> output_shape =
+    const std::array<adrt_shape, 4> output_shape =
         {(ndims > 3 ? base_output_shape[0] : 1),
-         (ndims > 3 ? base_output_shape[1] : base_output_shape[1]),
-         (ndims > 3 ? base_output_shape[2] : base_output_shape[2])};
+         (ndims > 3 ? base_output_shape[1] : base_output_shape[0]),
+         (ndims > 3 ? base_output_shape[2] : base_output_shape[1]),
+         (ndims > 3 ? base_output_shape[3] : base_output_shape[2])};
 
     // Require that the matrix be square (power of two checked elsewhere)
     if(corrected_shape[2] != 2*corrected_shape[3]-1) {
@@ -92,6 +95,9 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
 
     const adrt_shape num_iters = adrt_num_iters(corrected_shape[3]);
 
+    int iter_end   = (base_iter_end < 0? base_iter_end + num_iters + 1: base_iter_end);
+    int iter_start = (base_iter_start < 0? base_iter_start + num_iters + 1: base_iter_start);
+    
     adrt_scalar *curr = aux;
     adrt_scalar *prev = aux + buf_size;
 
@@ -102,31 +108,13 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
 
     // First, memcpy in the base image into each buffer
     for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
-        if((quadrant == 0) || (quadrant == 2)) {
-            // 
-            for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
-                for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
-                    for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
-                        adrt_array_access(prev, prev_shape, plane, 
-                                             quadrant, row, col) 
-                        = adrt_array_access(data, corrected_shape, 
-                                               plane, quadrant, row, col);
-                    }
-                }
-            }
-        }
-        else {
-            // 
-            for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
-                for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
-                    for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
-                        adrt_array_access(prev, prev_shape, 
-                                             plane, quadrant, row, col) 
-                        = adrt_array_access(data, corrected_shape, 
-                                               plane, quadrant,
-                                               corrected_shape[2] - row - 1, 
-                                               corrected_shape[3] - col - 1);
-                    }
+        for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
+            for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
+                for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
+                    adrt_array_access(prev, prev_shape, plane, quadrant, 
+                                      row, col) 
+                    = adrt_array_access(data, corrected_shape, 
+                                           plane, quadrant, row, col);
                 }
             }
         }
@@ -146,10 +134,18 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
                     prev_stride[4]};// no. of sections 
 
     adrt_shape nsections = 1;
-    
+
+    for(adrt_shape i = 1; i <= iter_start; ++i) {
+        // Compute the curr_stride for the current buffer (based on prev shape)
+        curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
+        nsections *= 2;
+        
+        // Swap the "curr" and "prev" buffers and shapes
+        prev_stride = curr_stride;
+    }
 
     // Outer loop over iterations (this loop must be serial)
-    for(adrt_shape i = 1; i <= num_iters; ++i) {
+    for(adrt_shape i = iter_start + 1; i <= iter_end; ++i) {
         // Compute the curr_stride for the current buffer (based on prev shape)
         curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
 
@@ -210,31 +206,13 @@ static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims, 
 
     // Copy results to destination buffer
     for(adrt_shape plane = 0; plane < output_shape[0]; ++plane) {
-        for(adrt_shape d = 0; d < output_shape[1]; ++d) {
-            for(adrt_shape a = 0; a < output_shape[2]; ++a) {
-                adrt_scalar val = 0;
-                for(adrt_shape quadrant = 0; quadrant < corrected_shape[1]; ++quadrant) {
-                    adrt_shape acc_d = 0;
-                    adrt_shape acc_a = 0;
-                    if(quadrant == 0) {
-                        acc_d = output_shape[2] - a - 1;
-                        acc_a = d ;
-                    }
-                    else if(quadrant == 1) {
-                        acc_d = output_shape[2] - d - 1;
-                        acc_a = a;
-                    }
-                    else if(quadrant == 2) {
-                        acc_d = d;
-                        acc_a = a;
-                    }
-                    else {
-                        acc_d = output_shape[2] - a - 1;
-                        acc_a = output_shape[1] - d - 1;
-                    }
-                    val += static_cast<adrt_scalar>(0.25)*adrt_array_access(prev, prev_shape, plane,quadrant, acc_d, acc_a);
+        for(adrt_shape d = 0; d < output_shape[2]; ++d) {
+            for(adrt_shape a = 0; a < output_shape[3]; ++a) {
+                for(adrt_shape quadrant = 0; quadrant < output_shape[1]; ++quadrant) {
+
+                    adrt_array_access(out, prev_shape, plane, quadrant, d, a) 
+                    = adrt_array_access(prev, prev_shape,plane,quadrant, d, a);
                 }
-                adrt_array_access(out, output_shape, plane, d, a) = val;
             }
         }
     }
