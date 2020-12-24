@@ -65,7 +65,7 @@ def find_meta_min_python(setup_cfg):
 def find_wheel_limited_api(setup_cfg):
     cfg_file = configparser.ConfigParser()
     cfg_file.read(setup_cfg)
-    limited_ver = cfg_file["bdist_wheel"]["py-limited-api"].strip()
+    limited_ver = cfg_file["bdist_wheel"]["py_limited_api"].strip()
     if not limited_ver.startswith("cp"):
         raise ValueError(f"Could not parse limited API version: {limited_ver}")
     major = limited_ver[2]
