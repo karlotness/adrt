@@ -25,7 +25,7 @@ html_static_path = ["_static"]
 html_theme = "sphinx_rtd_theme"
 
 # Autodoc configuration
-autodoc_mock_imports = ["adrt._adrt_cdefs"]
+autodoc_mock_imports = ["adrt._adrt_cdefs", "numpy"]
 
 # Napoleon configuration
 napoleon_google_docstring = False
