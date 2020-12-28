@@ -177,7 +177,7 @@ base_iter_end, adrt_scalar *const out,
 
                             adrt_array_stride_access(curr, curr_stride, 
                                           plane, quadrant, x, 2*j + 1, a) 
-                                = static_cast<adrt_scalar>(0.5)*(raval + rbval);
+                                = raval + rbval;
 
                             // left image
                             adrt_scalar lbval = adrt_array_stride_access(
@@ -190,7 +190,7 @@ base_iter_end, adrt_scalar *const out,
 
                             adrt_array_stride_access(curr, curr_stride, 
                                         plane, quadrant, x, 2*j, a) 
-                                = static_cast<adrt_scalar>(0.5)*(laval + lbval);
+                                = laval + lbval;
 
                         }
                     }
