@@ -226,8 +226,8 @@ def interp_to_cart(adrt_out):
                     s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
                 )
             for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, :], z[j, :]) * np.cos(
-                    np.deg2rad(th_cart + 45.0)
+                w[j, :] = np.interp(th_cart, theta_loc[j, :], z[j, :]) / np.cos(
+                    np.deg2rad(th_cart[::-1] + 45.0)
                 )
 
             theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
@@ -248,8 +248,8 @@ def interp_to_cart(adrt_out):
                     s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
                 )
             for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) * np.cos(
-                    np.deg2rad(th_cart[::-1])
+                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) / np.cos(
+                    np.deg2rad(th_cart)
                 )
 
             theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
@@ -265,8 +265,8 @@ def interp_to_cart(adrt_out):
                     s_cart, s_canon[:, j], adrt_out[i, :, j], left=0.0, right=0.0
                 )
             for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_canon[j, :], z[j, :]) * np.cos(
-                    np.deg2rad(th_cart[::-1])
+                w[j, :] = np.interp(th_cart, theta_canon[j, :], z[j, :]) / np.cos(
+                    np.deg2rad(th_cart)
                 )
 
             theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
@@ -287,8 +287,8 @@ def interp_to_cart(adrt_out):
                     s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
                 )
             for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) * np.cos(
-                    np.deg2rad(th_cart - 45.0)
+                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) / np.cos(
+                    np.deg2rad(th_cart[::-1] - 45.0)
                 )
 
             theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
