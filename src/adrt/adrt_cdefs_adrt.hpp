@@ -222,7 +222,6 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
         curr_shape[2] = adrt_ceil_div2(prev_shape[2]); // We halve the number of rows
         curr_shape[3] = prev_shape[3] * 2; // The number of angles doubles
         curr_shape[4] = 2 * corrected_shape[2] - 1; // Keep the same number of columns
-        adrt_scalar half = 0.5;
 
         // Inner loops (these loops can be parallel)
         #pragma omp parallel for collapse(5) default(none) shared(curr, prev, curr_shape, prev_shape)
@@ -233,6 +232,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
                         for(adrt_shape x = 0; x < curr_shape[4]; ++x) {
                             // TODO: Adjust loop bounds to avoid operations on all zeros. This will make x depend on the angle.
                             // Will likely have to fuse the iterations by hand
+                            adrt_scalar half = 0.5;
                             adrt_scalar aval = adrt_array_access(prev, prev_shape, quadrant, plane, 2 * j, adrt_floor_div2(a),x);
                             // Need to check the index access for x
                             const adrt_shape xb_idx = x - adrt_ceil_div2(a);
