@@ -244,14 +244,13 @@ class TestBdrt(unittest.TestCase):
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
 
+        self.assertTrue(np.allclose(np.rot90(bdrt_sq[0, ...], k=1), bdrt_sq[2, ...]))
         self.assertTrue(
-            np.allclose(np.rot90(bdrt_sq[0, ...], k=1), bdrt_sq[2, ...]))
+            np.allclose(np.fliplr(np.rot90(bdrt_sq[1, ...], k=2)), bdrt_sq[2, ...])
+        )
         self.assertTrue(
-            np.allclose(np.fliplr(np.rot90(bdrt_sq[1, ...], k=2)),
-                        bdrt_sq[2, ...]))
-        self.assertTrue(
-            np.allclose(np.fliplr(np.rot90(bdrt_sq[3, ...], k=1)),
-                        bdrt_sq[2, ...]))
+            np.allclose(np.fliplr(np.rot90(bdrt_sq[3, ...], k=1)), bdrt_sq[2, ...])
+        )
 
     def test_all_ones(self):
         size = 16
@@ -282,7 +281,7 @@ class TestBdrt(unittest.TestCase):
 
         for i in range(4):
             zero_part = np.tril(bdrt_out[i, size:, ::-1])
-            self.assertTrue(np.linalg.norm(zero_part, ord='fro') == 0.0)
+            self.assertTrue(np.linalg.norm(zero_part, ord="fro") == 0.0)
 
     def test_small_1x1(self):
         inarr = np.ones((4, 1, 1), dtype="float64")
