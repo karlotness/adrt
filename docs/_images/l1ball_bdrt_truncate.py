@@ -11,9 +11,9 @@ Z = 1.0 * ((np.abs(X - 0.25) + np.abs(Y)) < 0.7).astype(np.float)
 xx1 = np.arange(N + 1)
 X1, Y1 = np.meshgrid(xx1, xx1)
 
-dZ = adrt.adrt(Z)
-bZ = adrt.bdrt(dZ)
-tZ = adrt.utils.truncate(bZ)
+DZ = adrt.adrt(Z)
+BZ = adrt.bdrt(DZ)
+TZ = adrt.utils.truncate(BZ)
 
 xx1 = np.arange(N + 1)
 X1, Y1 = np.meshgrid(xx1, xx1)
@@ -21,7 +21,7 @@ X1, Y1 = np.meshgrid(xx1, xx1)
 sc = 0.9
 fig, ax = plt.subplots(ncols=4, nrows=1, figsize=(sc * 14, sc * 3), sharey=True)
 for k in range(4):
-    im = ax[k].pcolormesh(X1, Y1, tZ[k, :, :], cmap="Blues")
+    im = ax[k].pcolormesh(X1, Y1, TZ[k, :, :], cmap="Blues")
     ax[k].set_title("quadrant {:d}".format(k + 1))
     ax[k].set_xlabel("$s$")
     fig.colorbar(im, ax=ax[k])
