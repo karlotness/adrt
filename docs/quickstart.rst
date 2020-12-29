@@ -38,6 +38,10 @@ Forward Transform
 The core transformation implemented in this package is the Approximate
 Discrete Radon Transform.
 
+.. figure:: _images/adrt-quadrants.*
+   :width: 600px
+   :align: center
+
 The result can be computed by :func:`adrt.adrt`.
 
 .. plot::
