@@ -15,7 +15,7 @@ Simple ADRT
 -----------
 
 .. plot::
-   :context:
+   :context: reset
    :align: center
 
    # Generate image
