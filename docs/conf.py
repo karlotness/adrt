@@ -6,6 +6,12 @@ project = "adrt"
 copyright = "2020, Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
 
+try:
+    import adrt
+    version = adrt.__version__
+except ImportError:
+    pass
+
 # Other configuration
 extensions = [
     "sphinx.ext.autodoc",
