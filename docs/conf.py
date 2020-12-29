@@ -8,6 +8,7 @@ author = "Karl Otness, Donsub Rim"
 
 try:
     import adrt
+
     version = adrt.__version__
 except ImportError:
     pass
