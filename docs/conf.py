@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "matplotlib.sphinxext.plot_directive",
     "sphinx_rtd_theme",
 ]
 
