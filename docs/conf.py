@@ -30,3 +30,14 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
 }
+
+# Matplotlib plot directive configuration
+plot_rcparams = {
+    "figure.autolayout": True,
+}
+
+plot_pre_code = """
+import numpy as np
+from matplotlib import pyplot as plt
+import adrt
+"""
