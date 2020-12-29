@@ -6,8 +6,8 @@ ADRT: Approximate Discrete Radon Transform
    :caption: Contents
 
    install
+   quickstart
    example
-   transforms
    reference
    license
 
