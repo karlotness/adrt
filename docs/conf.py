@@ -1,13 +1,7 @@
-import os
-import sys
-
 # Project information
 project = "adrt"
 copyright = "2020, Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
-
-# Configure path to ADRT code
-sys.path.insert(0, os.path.abspath("../src"))
 
 # Other configuration
 extensions = [
@@ -26,7 +20,7 @@ html_static_path = ["_static"]
 html_theme = "sphinx_rtd_theme"
 
 # Autodoc configuration
-autodoc_mock_imports = ["adrt._adrt_cdefs", "numpy"]
+autodoc_mock_imports = []
 
 # Napoleon configuration
 napoleon_google_docstring = False
