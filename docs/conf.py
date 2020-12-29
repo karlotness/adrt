@@ -7,7 +7,7 @@ copyright = "2020, Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
 
 # Configure path to ADRT code
-#sys.path.insert(0, os.path.abspath("../src"))
+# sys.path.insert(0, os.path.abspath("../src"))
 
 # Other configuration
 extensions = [
@@ -15,7 +15,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx_rtd_theme",
-    "matplotlib.sphinxext.plot_directive"
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 templates_path = ["_templates"]
