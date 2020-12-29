@@ -1,3 +1,6 @@
+import sys
+import shutil
+
 # Project information
 project = "adrt"
 copyright = "2020, Karl Otness, Donsub Rim"
@@ -44,3 +47,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 import adrt
 """
+
+
+# Image converter settings
+def adrt_magick_available():
+    if sys.platform == "win32":
+        return shutil.which("magick") is not None
+    return shutil.which("convert") is not None
+
+
+if adrt_magick_available():
+    extensions.append("sphinx.ext.imgconverter")
