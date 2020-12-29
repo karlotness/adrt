@@ -36,3 +36,17 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
 }
+
+# Matplotlib plot directive configuration
+plot_formats = [("png", 100), ("hires.png", 200)]
+plot_rcparams = {
+    "savefig.bbox": "tight",
+}
+plot_apply_rcparams = True
+plot_include_source = True
+plot_html_show_source_link = False
+plot_pre_code = """
+import numpy as np
+from matplotlib import pyplot as plt
+import adrt
+"""
