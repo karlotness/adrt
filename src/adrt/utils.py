@@ -298,3 +298,71 @@ def interp_to_cart(adrt_out):
         s_cart_out[:, i * n : (i + 1) * n] = s_cart
 
     return theta_cart_out, s_cart_out, adrt_cart_out
+
+
+def cgiadrt(da, **kwargs):
+    r"""
+    Use the conjugate gradient algorithm to invert the least-squares inverse of
+    the ADRT
+
+    Parameters
+    ----------
+    da : array_like
+        an array of ADRT shape (4,2*N-1,N)
+
+    **kwargs
+        Additional keyword arguments passed `scipy.sparse.linalg.cg`
+
+    Returns
+    -------
+    out : array_like
+        tuple out put of scipy.sparse.linalg.cg, first entry is a
+        (flattened) 1D array of shape (N**2,)
+
+    """
+
+    import adrt
+    from scipy.sparse.linalg import LinearOperator
+    from scipy.sparse.linalg import cg
+
+    def _matmul(x):
+        r"""
+        Computes the matrix multiplication R^T R where R is the full ADRT.
+
+        Parameters
+        ----------
+        x : array_like
+            (flattened) 1D array of shape (N**2,) where N = 2**n
+
+        Returns
+        -------
+        x_out :
+            (flattened) 1D array of shape (N**2,) where N = 2**n
+
+        """
+
+        n2 = x.shape[0]
+        n = int(np.round(np.sqrt(n2)))
+        x2 = x.reshape((n, n))
+
+        da = adrt.adrt(x2)
+        ba = adrt.bdrt(da)
+        ta = truncate(ba)
+        ma = np.mean(ta, axis=0).flatten()
+
+        return ma
+
+    n = da.shape[-1]
+
+    ba = adrt.bdrt(da)
+    ta = truncate(ba)
+    ta = np.mean(ta, axis=0)
+
+    if "x0" not in kwargs.keys():
+        kwargs["x0"] = ta.flatten()
+
+    ta = ta.flatten()
+    linop = LinearOperator((n ** 2, n ** 2), matvec=_matmul, dtype=da.dtype)
+    out = cg(linop, ta, **kwargs)
+
+    return out
