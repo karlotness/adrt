@@ -334,7 +334,7 @@ def cgiadrt(da, **kwargs):
     """
 
     if not _scipy_available:
-        raise ImportError("Missing scipy, install \"adrt[cg]\" to enable this function")
+        raise ImportError("Missing scipy, install adrt[cg] to enable this function")
 
     def _matmul(x):
         r"""
