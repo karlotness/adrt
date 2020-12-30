@@ -315,9 +315,10 @@ def cgiadrt(da, **kwargs):
 
     Returns
     -------
-    out : array_like
-        tuple out put of scipy.sparse.linalg.cg, first entry is a
-        (flattened) 1D array of shape (N**2,)
+    ia_out : array_like
+        inversion result, an array of size (N, N)
+    cg_out :
+        output of `scipy.sparse.linalg.cg`
 
     """
 
@@ -348,9 +349,9 @@ def cgiadrt(da, **kwargs):
         da = adrt.adrt(x2)
         ba = adrt.bdrt(da)
         ta = truncate(ba)
-        ma = np.mean(ta, axis=0).flatten()
+        x_out = np.mean(ta, axis=0).flatten()
 
-        return ma
+        return x_out
 
     n = da.shape[-1]
 
@@ -364,5 +365,7 @@ def cgiadrt(da, **kwargs):
     ta = ta.flatten()
     linop = LinearOperator((n ** 2, n ** 2), matvec=_matmul, dtype=da.dtype)
     out = cg(linop, ta, **kwargs)
+    ia_out = out[0].reshape(n, n)
+    cg_out = out[1:]
 
-    return out
+    return ia_out, cg_out

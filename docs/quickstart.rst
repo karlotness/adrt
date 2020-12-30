@@ -76,3 +76,56 @@ This result can be stitched together using :func:`adrt.utils.stitch_adrt`.
 
 Inverse Transforms
 ------------------
+
+The inverse of the ADRT can be computed by solving the normal equations using
+the conjugate gradient algorithm. This can be computed by
+:func:`adrt.utils.cgiadrt`.
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+   # Generate image
+   n = 16
+   xs = np.linspace(-1, 1, n)
+   x, y = np.meshgrid(xs, xs)
+   img = 0.5 * ((np.abs(x - 0.25) + np.abs(y)) < 0.7).astype(np.float32)
+   img[:, 3] = 1
+   img[1, :] = 1
+
+   adrt_result = adrt.adrt(img)
+   adrt_cginv, cg_info = adrt.utils.cgiadrt(adrt_result)
+   diff = adrt_cginv - img
+
+   results = [img, adrt_cginv, diff]
+
+   # Display
+   fig, axs = plt.subplots(1, 3)
+   for i, ax in enumerate(axs.ravel()):
+       im_plot = ax.imshow(results[i], vmin=0, vmax=np.max(img))
+   plt.tight_layout()
+   fig.colorbar(im_plot, ax=axs, orientation="horizontal")
+
+
+In the special case the image has quantized values, the exact ADRT formula
+applies. This can be computed by :func:`adrt.iadrt()`
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+   iadrt_out = adrt.iadrt(adrt_result)
+   iadrt_truncated = adrt.utils.truncate(iadrt_out)
+   iadrt_result = np.mean(iadrt_truncated, axis=0)
+
+   diff = iadrt_result - img
+
+   results = [img, iadrt_result, diff]
+
+   # Display
+   fig, axs = plt.subplots(1, 3)
+   for i, ax in enumerate(axs.ravel()):
+       im_plot = ax.imshow(results[i], vmin=0, vmax=np.max(img))
+   plt.tight_layout()
+   fig.colorbar(im_plot, ax=axs, orientation="horizontal")
+
