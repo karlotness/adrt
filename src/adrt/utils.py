@@ -32,6 +32,16 @@
 
 
 import numpy as np
+from . import adrt, bdrt
+
+try:
+    from scipy.sparse.linalg import LinearOperator, cg
+except ImportError:
+    _scipy_available = False
+else:
+    _scipy_available = True
+
+
 
 
 def stitch_adrt(a, *, remove_repeated=False):
@@ -322,9 +332,8 @@ def cgiadrt(da, **kwargs):
 
     """
 
-    import adrt
-    from scipy.sparse.linalg import LinearOperator
-    from scipy.sparse.linalg import cg
+    if not _scipy_available:
+        raise ImportError("Missing scipy, install \"adrt[cg]\" to enable this function")
 
     def _matmul(x):
         r"""
@@ -346,8 +355,8 @@ def cgiadrt(da, **kwargs):
         n = int(np.round(np.sqrt(n2)))
         x2 = x.reshape((n, n))
 
-        da = adrt.adrt(x2)
-        ba = adrt.bdrt(da)
+        da = adrt(x2)
+        ba = bdrt(da)
         ta = truncate(ba)
         x_out = np.mean(ta, axis=0).flatten()
 
@@ -355,7 +364,7 @@ def cgiadrt(da, **kwargs):
 
     n = da.shape[-1]
 
-    ba = adrt.bdrt(da)
+    ba = bdrt(da)
     ta = truncate(ba)
     ta = np.mean(ta, axis=0)
 
