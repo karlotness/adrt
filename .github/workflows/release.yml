@@ -21,7 +21,7 @@ jobs:
     - name: Check version strings
       run: python tools/version_consistency.py --tag_ref "${{ github.ref }}"
     - name: Run tox tests
-      run: tox -e py
+      run: tox -e py,py-noextras
   sdist:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -64,7 +64,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools wheel numpy==1.17 pytest
+        python -m pip install --upgrade setuptools wheel numpy==1.17
     - name: Extra dependencies (Linux)
       if: ${{ runner.os == 'Linux' }}
       run: python -m pip install --upgrade auditwheel
@@ -103,11 +103,16 @@ jobs:
         name: wheel
         path: dist/adrt-*.whl
         if-no-files-found: error
+    - name: Install test dependencies
+      run: python -m pip install --upgrade pytest tox
     - name: Install wheel
       run: python -m pip install dist/adrt-*.whl
       shell: bash
     - name: Run tests
       run: pytest
+    - name: Run tox tests
+      run: tox -e py,py-noextras --installpkg dist/adrt-*.whl
+      shell: bash
   test-ubuntu:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -125,16 +130,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade pytest
+        python -m pip install --upgrade tox
     - name: Download wheel
       uses: actions/download-artifact@v2
       with:
         name: wheel
         path: dist/
-    - name: Install wheel
-      run: python -m pip install dist/adrt-*-manylinux*.whl
-    - name: Run tests
-      run: pytest
+    - name: Run tox tests
+      run: tox -e py,py-noextras --installpkg dist/adrt-*-manylinux*.whl
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
