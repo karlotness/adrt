@@ -38,7 +38,7 @@ napoleon_google_docstring = False
 
 # Intersphinx configuration
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
+    "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
 }
 
