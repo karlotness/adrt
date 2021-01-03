@@ -20,7 +20,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade tox
     - name: Run linters
-      run: tox -e lint
+      run: tox -e lint,checkver
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
