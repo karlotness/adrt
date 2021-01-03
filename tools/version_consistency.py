@@ -36,6 +36,9 @@ import re
 import ast
 import configparser
 import toml
+from packaging.requirements import Requirement
+from packaging.version import Version
+from packaging.utils import canonicalize_name
 
 parser = argparse.ArgumentParser(description="Check version strings for consistency")
 parser.add_argument(
@@ -46,6 +49,21 @@ parser.add_argument(
 )
 
 
+def find_min_version(package, requirements):
+    min_operators = {">=", "~=", "=="}
+    for req_str in requirements:
+        req = Requirement(req_str)
+        if canonicalize_name(req.name) == package:
+            # This is the right package
+            found_versions = []
+            for spec in req.specifier:
+                if spec.operator in min_operators:
+                    ver = Version(spec.version)
+                    found_versions.append(ver)
+            return str(min(found_versions))
+    raise ValueError(f"Could not find minimum version for {package}")
+
+
 def find_build_macro_defs(setup_py):
     with open(setup_py, "r", encoding="utf8") as setup_file:
         content = setup_file.read()
@@ -54,7 +72,7 @@ def find_build_macro_defs(setup_py):
     )
     match = macros_re.search(content)
     if not match:
-        raise ValueError("Could not find macro definitions")
+        raise ValueError("Could not find build macro definitions")
     return dict(ast.literal_eval(match.group("defs")))
 
 
@@ -88,11 +106,7 @@ def find_meta_min_python(setup_cfg):
     cfg_file = configparser.ConfigParser()
     cfg_file.read(setup_cfg)
     ver_constraint = cfg_file["options"]["python_requires"]
-    ver_re = re.compile(r">=\s*(?P<ver>.+?)\s*,\s*")
-    match = ver_re.match(ver_constraint)
-    if not match:
-        raise ValueError("Could not parse constraint: {ver_constraint}")
-    return match.group("ver")
+    return find_min_version("python", ["python" + ver_constraint])
 
 
 def find_wheel_limited_api(setup_cfg):
@@ -127,22 +141,14 @@ def find_macro_min_python(setup_py):
 def find_package_min_numpy(setup_cfg):
     cfg_file = configparser.ConfigParser()
     cfg_file.read(setup_cfg)
-    ver_constraint = cfg_file["options"]["install_requires"].split()
-    for constaint in ver_constraint:
-        constaint = constaint.strip()
-        if constaint.startswith("numpy") and constaint[5:7] == ">=":
-            return constaint[7:]
-    raise ValueError("Could not find minimum NumPy version")
+    ver_constraint = cfg_file["options"]["install_requires"].split("\n")
+    return find_min_version("numpy", filter(bool, ver_constraint))
 
 
 def find_pyproject_min_numpy(pyproject_toml):
     with open(pyproject_toml, "r", encoding="utf8") as pyproj_file:
         defs = toml.load(pyproj_file)
-    for constaint in defs["build-system"]["requires"]:
-        constaint = constaint.strip()
-        if constaint.startswith("numpy") and constaint[5:7] == ">=":
-            return constaint[7:]
-    raise ValueError("Could not find minimum NumPy version")
+    return find_min_version("numpy", defs["build-system"]["requires"])
 
 
 def find_setup_numpy_api(setup_py):
