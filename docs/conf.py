@@ -3,7 +3,7 @@ import shutil
 
 # Project information
 project = "adrt"
-copyright = "2020, Karl Otness, Donsub Rim"
+copyright = "2020, 2021 Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
 
 try:
