@@ -76,12 +76,6 @@ def find_build_macro_defs(setup_py):
     return dict(ast.literal_eval(match.group("defs")))
 
 
-def find_package_meta_version(setup_cfg):
-    cfg_file = configparser.ConfigParser()
-    cfg_file.read(setup_cfg)
-    return cfg_file["metadata"]["version"]
-
-
 def find_package_var_version(version_path):
     ver_re = re.compile(r"^__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
     with open(version_path, mode="r", encoding="utf8") as version_file:
@@ -167,17 +161,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     failure = False
     # Check declared package version
-    meta_version = find_package_meta_version("setup.cfg")
     var_version = find_package_var_version("src/adrt/__init__.py")
     tag_version = find_release_tag_version(args.tag_ref)
-    print(f"Metadata version: {meta_version}")
     print(f"Package variable version: {var_version}")
     if tag_version is not None:
         print(f"Release tag version: {tag_version}")
     # Check consistency
-    if (meta_version != var_version) or (
-        tag_version is not None and tag_version != var_version
-    ):
+    if tag_version is not None and tag_version != var_version:
         print("Package version mismatch")
         failure = True
     print("")
