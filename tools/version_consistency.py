@@ -36,6 +36,7 @@ import re
 import ast
 import configparser
 import toml
+from setuptools.config import read_configuration
 from packaging.requirements import Requirement
 from packaging.version import Version
 from packaging.utils import canonicalize_name
@@ -76,14 +77,9 @@ def find_build_macro_defs(setup_py):
     return dict(ast.literal_eval(match.group("defs")))
 
 
-def find_package_var_version(version_path):
-    ver_re = re.compile(r"^__version__\s*=\s*['\"](?P<ver>.+?)['\"]")
-    with open(version_path, mode="r", encoding="utf8") as version_file:
-        for line in version_file:
-            ver_match = ver_re.match(line)
-            if ver_match:
-                return ver_match.group("ver")
-        raise ValueError("Could not find package version")
+def find_package_version(setup_cfg):
+    cfg_file = read_configuration(setup_cfg)
+    return str(cfg_file["metadata"]["version"])
 
 
 def find_release_tag_version(tag_string):
@@ -97,9 +93,8 @@ def find_release_tag_version(tag_string):
 
 
 def find_meta_min_python(setup_cfg):
-    cfg_file = configparser.ConfigParser()
-    cfg_file.read(setup_cfg)
-    ver_constraint = cfg_file["options"]["python_requires"]
+    cfg_file = read_configuration(setup_cfg)
+    ver_constraint = str(cfg_file["options"]["python_requires"])
     return find_min_version("python", ["python" + ver_constraint])
 
 
@@ -133,10 +128,9 @@ def find_macro_min_python(setup_py):
 
 
 def find_package_min_numpy(setup_cfg):
-    cfg_file = configparser.ConfigParser()
-    cfg_file.read(setup_cfg)
-    ver_constraint = cfg_file["options"]["install_requires"].split("\n")
-    return find_min_version("numpy", filter(bool, ver_constraint))
+    cfg_file = read_configuration(setup_cfg)
+    ver_constraint = cfg_file["options"]["install_requires"]
+    return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
 def find_pyproject_min_numpy(pyproject_toml):
@@ -161,7 +155,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     failure = False
     # Check declared package version
-    var_version = find_package_var_version("src/adrt/__init__.py")
+    var_version = find_package_version("setup.cfg")
     tag_version = find_release_tag_version(args.tag_ref)
     print(f"Package variable version: {var_version}")
     if tag_version is not None:
