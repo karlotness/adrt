@@ -179,7 +179,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -191,7 +191,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
            !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -255,7 +255,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -267,7 +267,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
                       new_shape)) {
             goto fail;
@@ -327,7 +327,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
            !bdrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
         }
@@ -338,7 +338,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
            !bdrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
                       PyArray_SHAPE(I),
-                      iter_start, iter_end, 
+                      iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
         }
