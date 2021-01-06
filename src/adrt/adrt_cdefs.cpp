@@ -174,7 +174,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(new_dim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNew(new_dim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
@@ -186,7 +186,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(new_dim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNew(new_dim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
@@ -250,7 +250,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
@@ -262,7 +262,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
@@ -322,7 +322,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     // Process input array
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT32));
+        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !bdrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
                       ndim,
@@ -333,7 +333,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
         }
         break;
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNewFromDescr(ndim, new_shape, PyArray_DescrFromType(NPY_FLOAT64));
+        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !bdrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
                       ndim,
