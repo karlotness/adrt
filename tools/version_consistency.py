@@ -39,7 +39,7 @@ import toml
 from setuptools.config import read_configuration
 from packaging.requirements import Requirement
 from packaging.version import Version
-from packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name, canonicalize_version
 
 parser = argparse.ArgumentParser(description="Check version strings for consistency")
 parser.add_argument(
@@ -61,7 +61,7 @@ def find_min_version(package, requirements):
                 if spec.operator in min_operators:
                     ver = Version(spec.version)
                     found_versions.append(ver)
-            return str(min(found_versions))
+            return str(canonicalize_version(min(found_versions)))
     raise ValueError(f"Could not find minimum version for {package}")
 
 
