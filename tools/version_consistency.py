@@ -119,12 +119,10 @@ def find_macro_min_python(setup_py):
     minor = (min_python >> 16) & 0xFF
     micro = (min_python >> 8) & 0xFF
     release = min_python & 0xFF
-    ver = f"{major}.{minor}"
-    if micro != 0 or release != 0:
-        ver += f".{micro}"
     if release != 0:
-        ver += f"{hex(release)[2:]}"
-    return ver
+        raise ValueError("Using pre-release version for limited API")
+    ver = f"{major}.{minor}.{micro}"
+    return str(canonicalize_version(ver))
 
 
 def find_package_min_numpy(setup_cfg):
