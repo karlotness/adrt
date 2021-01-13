@@ -143,8 +143,6 @@ jobs:
     timeout-minutes: 10
     needs: [sdist, wheel, test-ubuntu]
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
     - name: Download sdist
       uses: actions/download-artifact@v2
       with:
@@ -164,7 +162,7 @@ jobs:
     - name: Create release
       run: |
         ADRT_RELEASE_TAG="${{ github.ref }}"
-        gh release create ${ADRT_RELEASE_TAG#refs/tags/} dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md
+        gh release create ${ADRT_RELEASE_TAG#refs/tags/} dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md --repo "${{ github.repository }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Show release draft
