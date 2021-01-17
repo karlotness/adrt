@@ -35,6 +35,7 @@
 
 #include "adrt_cdefs_common.hpp"
 #include <array>
+#include <utility>
 #include <type_traits>
 
 template <typename adrt_scalar, typename adrt_shape>

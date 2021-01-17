@@ -35,7 +35,7 @@
 
 #include "adrt_cdefs_common.hpp"
 #include <array>
-#include <algorithm>
+#include <utility>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool adrt_impl(const adrt_scalar *const data, const unsigned char ndims,
