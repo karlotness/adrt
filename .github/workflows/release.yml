@@ -103,6 +103,11 @@ jobs:
         name: wheel
         path: dist/adrt-*.whl
         if-no-files-found: error
+    - name: Diagnostics (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        shopt -s globstar
+        readelf --wide --symbols --dynamic build/**/*.so
     - name: Install test dependencies
       run: python -m pip install --upgrade pytest tox
     - name: Install wheel
