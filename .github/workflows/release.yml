@@ -82,7 +82,7 @@ jobs:
       env:
         SETUPTOOLS_USE_DISTUTILS: local
         CFLAGS: '-std=c++11 -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wfloat-conversion -Wfloat-equal -Wimplicit-fallthrough -D_FORTIFY_SOURCE=2'
-        LDFLAGS: '-Wl,--strip-all,--as-needed,-O1,-z,relro,-z,now,-z,noexecstack'
+        LDFLAGS: '-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
     - name: Build wheel (Windows)
       if: ${{ runner.os == 'Windows' }}
       run: python setup.py bdist_wheel
