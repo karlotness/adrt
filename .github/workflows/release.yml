@@ -106,6 +106,7 @@ jobs:
         if-no-files-found: error
     - name: Diagnostics (Linux)
       if: ${{ runner.os == 'Linux' }}
+      continue-on-error: true
       run: |
         shopt -s globstar
         readelf --wide --symbols --dynamic build/**/*.so
