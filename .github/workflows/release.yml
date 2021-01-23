@@ -12,8 +12,17 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Python
       uses: actions/setup-python@v2
+      id: setup-python
       with:
         python-version: '3.x'
+    - name: Cache pip downloads
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: |
+          pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -22,6 +31,8 @@ jobs:
       run: tox -e checkver -- --tag_ref "${{ github.ref }}"
     - name: Run tox tests
       run: tox -e py,py-noextras
+    - name: Clean up
+      run: python -m pip cache remove adrt || true
   sdist:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -140,8 +151,17 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Python
       uses: actions/setup-python@v2
+      id: setup-python
       with:
         python-version: ${{ matrix.python }}
+    - name: Cache pip downloads
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: |
+          pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -153,6 +173,8 @@ jobs:
         path: dist/
     - name: Run tox tests
       run: tox -e py,py-noextras --installpkg dist/adrt-*-manylinux*.whl
+    - name: Clean up
+      run: python -m pip cache remove adrt || true
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
