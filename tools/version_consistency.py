@@ -52,17 +52,18 @@ parser.add_argument(
 
 def find_min_version(package, requirements):
     min_operators = {">=", "~=", "=="}
+    found_versions = []
     for req_str in requirements:
         req = Requirement(req_str)
         if canonicalize_name(req.name) == package:
             # This is the right package
-            found_versions = []
             for spec in req.specifier:
                 if spec.operator in min_operators:
                     ver = Version(spec.version)
                     found_versions.append(ver)
-            return str(canonicalize_version(min(found_versions)))
-    raise ValueError(f"Could not find minimum version for {package}")
+    if not found_versions:
+        raise ValueError(f"Could not find minimum version for {package}")
+    return str(canonicalize_version(min(found_versions)))
 
 
 def find_build_macro_defs(setup_py):
