@@ -15,7 +15,7 @@ jobs:
       uses: actions/setup-python@v2
       id: setup-python
       with:
-        python-version: '3.x'
+        python-version: '3.9'
     - name: Cache pip downloads
       uses: actions/cache@v2
       with:
@@ -38,7 +38,7 @@ jobs:
       matrix:
         python: ['3.6', '3.7', '3.8', '3.9']
         include:
-          - python: '3.x'
+          - python: '3.9'
             cflags: '-fopenmp'
     steps:
     - name: Checkout repository
