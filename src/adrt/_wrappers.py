@@ -35,11 +35,31 @@ import numpy as np
 from . import _adrt_cdefs
 
 
+def _set_module(module):
+    r"""Override ``__module__`` on functions for documentation.
+
+    This is an internal function. Users should not call it. This
+    changes the way :func:`help` describes the function. Without this,
+    functions in this module are listed as being in ``adrt._wrappers``
+    rather than the module that users observe them in. NumPy does this
+    for many of their functions which are defined in submodules but
+    appear at the top level.
+    """
+
+    def decorate(func):
+        if module is not None:
+            func.__module__ = module
+        return func
+
+    return decorate
+
+
 def _normalize_array(a):
     native_dtype = a.dtype.newbyteorder("=")
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
 
+@_set_module("adrt")
 def adrt(a, start=0, end=-1):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
@@ -91,6 +111,7 @@ def adrt(a, start=0, end=-1):
     return _adrt_cdefs.adrt(_normalize_array(a), start, end)
 
 
+@_set_module("adrt")
 def iadrt(a, start=0, end=-1):
     r"""An exact inverse to the ADRT.
 
@@ -135,6 +156,7 @@ def iadrt(a, start=0, end=-1):
     return _adrt_cdefs.iadrt(_normalize_array(a), start, end)
 
 
+@_set_module("adrt")
 def bdrt(a, start=0, end=-1):
     r"""Backprojection for the ADRT.
 
