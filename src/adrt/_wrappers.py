@@ -55,6 +55,12 @@ def _set_module(module):
 
 
 def _normalize_array(a):
+    r"""Ensure provided arrays are in a suitable layout.
+
+    This is an internal function. Users should not call it. Make sure
+    that arrays being passed to the extension module have the expected
+    memory layout.
+    """
     native_dtype = a.dtype.newbyteorder("=")
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
