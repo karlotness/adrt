@@ -125,8 +125,7 @@ def stitch_adrt(a, *, remove_repeated=False):
 
 
 def truncate(a, orient=0):
-    r"""
-    Truncate and rotate square domain from iadrt or bdrt output
+    r"""Truncate and rotate square domain from iadrt or bdrt output.
 
     Parameters
     ----------
@@ -172,7 +171,7 @@ def truncate(a, orient=0):
 
 
 def interp_to_cart(adrt_out):
-    r"""
+    r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
     Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
     of (theta, s): theta is the normal direction of the line and s is the
@@ -311,8 +310,10 @@ def interp_to_cart(adrt_out):
 
 
 def cgiadrt(da, **kwargs):
-    r"""Use the conjugate gradient algorithm to invert the least-squares inverse of
-    the ADRT
+    r"""Compute an ADRT inverse by conjugate gradients.
+
+    Use the conjugate gradient algorithm to compute the least-squares
+    inverse of the ADRT
 
     Parameters
     ----------
