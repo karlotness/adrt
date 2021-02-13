@@ -330,6 +330,12 @@ def cgiadrt(da, **kwargs):
     cg_out :
         output of :func:`scipy.sparse.linalg.cg`
 
+    Note
+    ----
+    This function requires SciPy, installed with the "cg" extra. See
+    :ref:`installation` for information on how to install the optional
+    dependencies.
+
     """
 
     if not _scipy_available:
