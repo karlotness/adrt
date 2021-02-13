@@ -102,7 +102,6 @@ def stitch_adrt(a, *, remove_repeated=False):
     # Process input array
     ret = np.zeros_like(a, shape=output_shape)
     for i in range(4):
-
         if (i % 2) == 0:
             quadrant = a[..., i, :, :]
         else:
@@ -312,8 +311,7 @@ def interp_to_cart(adrt_out):
 
 
 def cgiadrt(da, **kwargs):
-    r"""
-    Use the conjugate gradient algorithm to invert the least-squares inverse of
+    r"""Use the conjugate gradient algorithm to invert the least-squares inverse of
     the ADRT
 
     Parameters
