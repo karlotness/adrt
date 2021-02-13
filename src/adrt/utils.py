@@ -322,14 +322,14 @@ def cgiadrt(da, **kwargs):
         an array of ADRT shape (4,2*N-1,N)
 
     **kwargs
-        Additional keyword arguments passed `scipy.sparse.linalg.cg`
+        Additional keyword arguments passed :func:`scipy.sparse.linalg.cg`
 
     Returns
     -------
     ia_out : array_like
         inversion result, an array of size (N, N)
     cg_out :
-        output of `scipy.sparse.linalg.cg`
+        output of :func:`scipy.sparse.linalg.cg`
 
     """
 

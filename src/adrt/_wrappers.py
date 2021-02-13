@@ -130,7 +130,7 @@ def iadrt(a, start=0, end=-1):
 
     The returned array has the dimension as the ADRT, ``(B?, 2 * N - 1, N)``
     If the input was the ADRT, the exact inverse can be extracted
-    by using the adrt.utils.truncate.
+    by using :func:`adrt.utils.truncate`.
 
     Parameters
     ----------
