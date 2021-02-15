@@ -24,9 +24,10 @@ with::
 
 which will install SciPy along with the rest of adrt.
 
-Before installing it is best to ensure your package manager is up to
-date, for example `update pip
-<https://pip.pypa.io/en/stable/installing/#upgrading-pip>`__.
+.. note::
+   Before installing it is best to ensure your package manager is up
+   to date (in particular `upgrade pip
+   <https://pip.pypa.io/en/stable/installing/#upgrading-pip>`__).
 
 Source
 ------
