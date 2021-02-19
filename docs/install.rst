@@ -12,8 +12,12 @@ This package is available as "`adrt
 <https://pypi.org/project/adrt/>`__" on PyPI. You can install it using
 pip::
 
-  pip install adrt
+  python -m pip install adrt
+  # On Windows:
+  py -m pip install adrt
 
+For more details on pip, consult its `user guide
+<https://pip.pypa.io/en/stable/user_guide/>`__.
 
 .. note::
    Before installing it is best to ensure your package manager is up
@@ -29,9 +33,10 @@ This makes it possible to customize the compiler flags used when
 building the native extensions. In particular, OpenMP support can
 enabled as discussed :ref:`below <openmp-build>`.
 
-To install the package from source with default compiler flags run::
+To install the package from source with default compiler flags run
+(note the trailing ``.``)::
 
-  pip install .
+  python -m pip install .
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -64,7 +69,7 @@ To enable OpenMP you must pass the necessary flags to your C++
 compiler via the ``CFLAGS`` environment variable. For GCC the correct
 flag is ``-fopenmp``. In this case, run pip as::
 
-  CFLAGS="-fopenmp" pip install .
+  CFLAGS="-fopenmp" python -m pip install .
 
 This will install an OpenMP-enabled copy of the package. Other
 compilers will require different flags to be passed through ``CFLAGS``
