@@ -14,15 +14,6 @@ pip::
 
   pip install adrt
 
-Some functions in this package make use of extra dependencies, in
-particular :func:`adrt.utils.cgiadrt` which makes use of `SciPy
-<https://scipy.org/>`__. Dependencies for this function can be
-installed by requiring the ``cg`` extra, for example by installing
-with::
-
-  pip install adrt[cg]
-
-which will install SciPy along with the rest of adrt.
 
 .. note::
    Before installing it is best to ensure your package manager is up
