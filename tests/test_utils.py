@@ -32,17 +32,8 @@
 
 
 import unittest
-import importlib
 import numpy as np
 import adrt
-
-
-def _cg_extra_available():
-    try:
-        _ = importlib.import_module("scipy")
-        return True
-    except ImportError:
-        return False
 
 
 class TestStitchAdrt(unittest.TestCase):
@@ -200,19 +191,6 @@ class TestStitchAdrt(unittest.TestCase):
             # Too few dimensions
             inarr = np.ones((7, 4)).astype("float32")
             _ = adrt.utils.stitch_adrt(inarr)
-
-
-class TestCGIAdrt(unittest.TestCase):
-    @unittest.skipIf(_cg_extra_available(), "Extras for cg installed")
-    def test_cg_iadrt_missing_dependencies(self):
-        n = 16
-        inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
-        adrt_out = adrt.adrt(inarr)
-        with self.assertRaises(ImportError) as ex_ctx:
-            _ = adrt.utils.cgiadrt(adrt_out)
-        ex = ex_ctx.exception
-        self.assertRegex(ex.msg, r"adrt\[cg\]")
-        self.assertRegex(ex.msg, r"scipy")
 
 
 if __name__ == "__main__":

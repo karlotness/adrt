@@ -32,17 +32,9 @@
 
 
 import numpy as np
-from . import adrt, bdrt
-
-try:
-    from scipy.sparse.linalg import LinearOperator, cg
-except ImportError:
-    _scipy_available = False
-else:
-    _scipy_available = True
 
 
-__all__ = ["stitch_adrt", "truncate", "interp_to_cart", "cgiadrt"]
+__all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
 
 
 def stitch_adrt(a, *, remove_repeated=False):
@@ -307,80 +299,3 @@ def interp_to_cart(adrt_out):
         s_cart_out[:, i * n : (i + 1) * n] = s_cart
 
     return theta_cart_out, s_cart_out, adrt_cart_out
-
-
-def cgiadrt(da, **kwargs):
-    r"""Compute an ADRT inverse by conjugate gradients.
-
-    Use the conjugate gradient algorithm to compute the least-squares
-    inverse of the ADRT
-
-    Parameters
-    ----------
-    da : array_like
-        an array of ADRT shape (4,2*N-1,N)
-
-    **kwargs
-        Additional keyword arguments passed :func:`scipy.sparse.linalg.cg`
-
-    Returns
-    -------
-    ia_out : array_like
-        inversion result, an array of size (N, N)
-    cg_out :
-        output of :func:`scipy.sparse.linalg.cg`
-
-    Note
-    ----
-    This function requires SciPy, installed with the "cg" extra. See
-    :ref:`installation` for information on how to install the optional
-    dependencies.
-
-    """
-
-    if not _scipy_available:
-        raise ImportError("Missing scipy, install adrt[cg] to enable this function")
-
-    def _matmul(x):
-        r"""
-        Computes the matrix multiplication R^T R where R is the full ADRT.
-
-        Parameters
-        ----------
-        x : array_like
-            (flattened) 1D array of shape (N**2,) where N = 2**n
-
-        Returns
-        -------
-        x_out :
-            (flattened) 1D array of shape (N**2,) where N = 2**n
-
-        """
-
-        n2 = x.shape[0]
-        n = int(np.round(np.sqrt(n2)))
-        x2 = x.reshape((n, n))
-
-        da = adrt(x2)
-        ba = bdrt(da)
-        ta = truncate(ba)
-        x_out = np.mean(ta, axis=0).flatten()
-
-        return x_out
-
-    n = da.shape[-1]
-
-    ba = bdrt(da)
-    ta = truncate(ba)
-    ta = np.mean(ta, axis=0)
-
-    if "x0" not in kwargs.keys():
-        kwargs["x0"] = ta.flatten()
-
-    ta = ta.flatten()
-    linop = LinearOperator((n ** 2, n ** 2), matvec=_matmul, dtype=da.dtype)
-    out = cg(linop, ta, **kwargs)
-    ia_out = out[0].reshape(n, n)
-    cg_out = out[1:]
-
-    return ia_out, cg_out
