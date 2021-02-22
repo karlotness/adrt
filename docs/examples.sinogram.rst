@@ -1,8 +1,13 @@
-Examples
-========
+.. _sinogram:
 
-Here we demonstrate more involved use of the package. We make use of a
-few Python packages:
+Sinograms of an Image
+=====================
+
+As a more involved example we can consider the Shepp-Logan phantom
+(:download:`data file <data/shepp-logan.npz>`).
+
+We make use of this package as well as a few other fundamental
+libraries.
 
 .. code::
 
@@ -10,11 +15,7 @@ few Python packages:
    from matplotlib import pyplot as plt
    import adrt
 
-Sinograms of an Image
----------------------
-
-As a more involved example we can consider the Shepp-Logan phantom
-(:download:`data file <data/shepp-logan.npz>`).
+First, we load and preview the data.
 
 .. plot::
    :context: reset
