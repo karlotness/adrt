@@ -148,8 +148,8 @@ def iadrt(a, start=0, end=-1):
     numpy.ndarray
         The original ADRT input which produced `a`.
 
-    Warnings
-    --------
+    Warning
+    -------
     This inverse is exact *only* if `a` is an exact output of the
     forward ADRT. In other cases this inverse is not appropriate.
 
