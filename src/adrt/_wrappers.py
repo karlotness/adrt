@@ -153,6 +153,8 @@ def iadrt(a, start=0, end=-1):
     This inverse is exact *only* if `a` is an exact output of the
     forward ADRT. In other cases this inverse is not appropriate.
 
+    For an alternative, see the :ref:`cginverse` example.
+
     Notes
     -----
     The inverse here only uses values stored in one of the quadrants.
