@@ -17,12 +17,9 @@ pip::
   py -m pip install adrt
 
 For more details on pip, consult its `user guide
-<https://pip.pypa.io/en/stable/user_guide/>`__.
-
-.. note::
-   Before installing it is best to ensure your package manager is up
-   to date (in particular `upgrade pip
-   <https://pip.pypa.io/en/stable/installing/#upgrading-pip>`__).
+<https://pip.pypa.io/en/stable/user_guide/>`__. Before installing it
+is best to ensure your package manager is up to date (`upgrade pip
+<https://pip.pypa.io/en/stable/installing/#upgrading-pip>`__).
 
 Source
 ------
