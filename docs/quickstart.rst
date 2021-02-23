@@ -3,9 +3,7 @@ Quickstart
 
 Here we illustrate the basic usage of the ``adrt`` package as well as
 describe some of the transforms it implements. In the examples below,
-we will make use of a few basic Python libraries:
-
-.. code::
+we will make use of a few basic Python libraries::
 
    import numpy as np
    from matplotlib import pyplot as plt

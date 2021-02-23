@@ -7,9 +7,7 @@ As a more involved example we can consider the Shepp-Logan phantom
 (:download:`data file <data/shepp-logan.npz>`).
 
 We make use of this package as well as a few other fundamental
-libraries.
-
-.. code::
+libraries. ::
 
    import numpy as np
    from matplotlib import pyplot as plt

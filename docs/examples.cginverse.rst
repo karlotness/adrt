@@ -4,16 +4,12 @@ Iterative Inverse
 =================
 
 This example makes use of facilities from SciPy. In particular, its
-:func:`scipy.sparse.linalg.cg` routine.
-
-.. code::
+:func:`scipy.sparse.linalg.cg` routine. ::
 
    import numpy as np
    from scipy.sparse.linalg import LinearOperator, cg
    from matplotlib import pyplot as plt
    import adrt
-
-.. code::
 
    def cgiadrt(da, **kwargs):
        def _matmul(x):
