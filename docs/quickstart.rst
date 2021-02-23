@@ -26,6 +26,7 @@ As a running example, we will operate on the image below.
    img[1, :] = 1
 
    # Display
+   plt.figure(figsize=(5, 3))
    plt.imshow(img)
    plt.colorbar()
    plt.tight_layout()
