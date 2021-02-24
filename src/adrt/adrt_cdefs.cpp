@@ -96,11 +96,9 @@ static bool adrt_is_square_power_of_two(const int ndim, const npy_intp *shape) {
         if(shape[i] <= 0) {
             return false;
         }
-        npy_intp val = 1;
-        while(val < shape[i] && val > 0) {
-            val *= 2;
-        }
-        if(val != shape[i]) {
+        std::make_unsigned<npy_intp>::type shape_val = shape[i];
+        bool is_power_two = !(shape_val & (shape_val - 1));
+        if(!is_power_two) {
             return false;
         }
     }
