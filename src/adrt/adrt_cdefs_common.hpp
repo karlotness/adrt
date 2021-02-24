@@ -93,11 +93,8 @@ inline adrt_shape adrt_ceil_div2(const adrt_shape val) {
     return div;
 }
 
-template <typename adrt_shape>
-static adrt_shape adrt_num_iters(const adrt_shape shape) {
-    if(shape <= 1) {
-        return 0;
-    }
+template<typename adrt_shape>
+static adrt_shape adrt_num_iter_fallback(const adrt_shape shape) {
     const adrt_shape shape_max_half = std::numeric_limits<adrt_shape>::max() / 2;
     adrt_shape num_iters = 1;
     adrt_shape segment_length = 2;
@@ -111,6 +108,81 @@ static adrt_shape adrt_num_iters(const adrt_shape shape) {
         ++num_iters;
     }
     return num_iters;
+}
+
+#if defined(__GNUC__)
+
+// GCC intrinsics
+
+template<typename adrt_shape>
+static adrt_shape adrt_num_iter_impl(const adrt_shape shape) {
+    if(std::numeric_limits<adrt_shape>::max() <= std::numeric_limits<unsigned int>::max()) {
+        unsigned int ushape = shape;
+        int lead_zero = __builtin_clz(ushape);
+        bool is_power_of_two = !(ushape & (ushape - 1));
+        return (std::numeric_limits<unsigned int>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    else if(std::numeric_limits<adrt_shape>::max() <= std::numeric_limits<unsigned long>::max()) {
+        unsigned long ushape = shape;
+        int lead_zero = __builtin_clzl(ushape);
+        bool is_power_of_two = !(ushape & (ushape - 1));
+        return (std::numeric_limits<unsigned long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    else if(std::numeric_limits<adrt_shape>::max() <= std::numeric_limits<unsigned long long>::max()) {
+        unsigned long long ushape = shape;
+        int lead_zero = __builtin_clzll(ushape);
+        bool is_power_of_two = !(ushape & (ushape - 1));
+        return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    return adrt_num_iter_fallback(shape);
+}
+
+#elif defined(_MSC_VER)
+
+// MSVC intrinsics
+
+#include <intrin.h>
+
+template<typename adrt_shape>
+static adrt_shape adrt_num_iter_impl(const adrt_shape shape) {
+    if(std::numeric_limits<adrt_shape>::max() <= std::numeric_limits<unsigned long>::max()) {
+        unsigned long index;
+        unsigned long ushape = shape;
+        bool is_power_of_two = !(ushape & (ushape - 1));
+        _BitScanReverse(&index, ushape);
+        return index + (is_power_of_two ? 0 : 1);
+    }
+
+    #if defined(_M_X64) || defined(_M_ARM64)
+    else if(std::numeric_limits<adrt_shape>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+        unsigned long index;
+        unsigned __int64 ushape = shape;
+        bool is_power_of_two = !(ushape & (ushape - 1));
+        _BitScanReverse64(&index, ushape);
+        return index + (is_power_of_two ? 0 : 1);
+    }
+    #endif // End: 64bit arch
+
+    return adrt_num_iter_fallback(shape);
+}
+
+#else
+
+// Fallback
+
+template<typename adrt_shape>
+static adrt_shape adrt_num_iter_impl(const adrt_shape shape) {
+    return adrt_num_iter_fallback(shape);
+}
+
+#endif
+
+template <typename adrt_shape>
+static adrt_shape adrt_num_iters(const adrt_shape shape) {
+    if(shape <= 1) {
+        return 0;
+    }
+    return adrt_num_iter_impl(shape);
 }
 
 #endif //ADRTC_CDEFS_COMMON_H
