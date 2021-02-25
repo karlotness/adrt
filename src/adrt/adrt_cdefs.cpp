@@ -29,7 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "adrt_cdefs_common.hpp" // Include this first
+#include "adrt_cdefs_py.hpp" // Include this first
+#include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"

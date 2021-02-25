@@ -33,17 +33,6 @@
 #ifndef ADRTC_CDEFS_COMMON_H
 #define ADRTC_CDEFS_COMMON_H
 
-#define PY_SSIZE_T_CLEAN
-#ifndef Py_LIMITED_API
-#error "Must use limited API"
-#endif
-#include "Python.h"
-
-#ifndef NPY_NO_DEPRECATED_API
-#error "Must use NumPy API versioning"
-#endif
-#include "numpy/arrayobject.h"
-
 #include <array>
 #include <limits>
 
