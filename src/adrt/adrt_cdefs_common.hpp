@@ -37,7 +37,7 @@
 #define ADRT_HIDE __attribute__((visibility ("hidden")))
 #else
 #define ADRT_HIDE
-  #endif
+#endif
 
 #include <cstddef>
 #include <array>
