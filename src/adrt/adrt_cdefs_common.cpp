@@ -1,0 +1,120 @@
+/*
+ * Copyright (c) 2020, 2021 Karl Otness, Donsub Rim
+ * All rights reserved
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "adrt_cdefs_common.hpp"
+#include <limits>
+
+bool ADRT_HIDE adrt_is_pow2(size_t val) {
+    if(val == 0) {
+        return false;
+    }
+    return !(val & (val - 1));
+}
+
+static inline int adrt_num_iters_fallback(const size_t shape) {
+    const size_t shape_max_half = std::numeric_limits<size_t>::max() / 2;
+    int num_iters = 1;
+    size_t segment_length = 2;
+    while(segment_length < shape && segment_length <= shape_max_half) {
+        ++num_iters;
+        segment_length *= 2;
+    }
+    // If shape is larger than the max power of two fitting in adrt_shape
+    // we need one more doubling
+    if(segment_length < shape) {
+        ++num_iters;
+    }
+    return num_iters;
+}
+
+// Implementation of adrt_num_iters
+
+#if defined(__GNUC__) // GCC intrinsics
+
+static inline int adrt_num_iters_impl(const size_t shape) {
+    bool is_power_of_two = adrt_is_pow2(shape);
+    if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
+        unsigned int ushape = shape;
+        int lead_zero = __builtin_clz(ushape);
+        return (std::numeric_limits<unsigned int>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+        unsigned long ushape = shape;
+        int lead_zero = __builtin_clzl(ushape);
+        return (std::numeric_limits<unsigned long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long long>::max()) {
+        unsigned long long ushape = shape;
+        int lead_zero = __builtin_clzll(ushape);
+        return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    return adrt_num_iters_fallback(shape);
+}
+
+#elif defined(_MSC_VER) // MSVC intrinsics
+
+#include <intrin.h>
+
+static inline int adrt_num_iters_impl(const size_t shape) {
+    bool is_power_of_two = adrt_is_pow2(shape);
+    if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+        unsigned long index;
+        unsigned long ushape = shape;
+        _BitScanReverse(&index, ushape);
+        return index + (is_power_of_two ? 0 : 1);
+    }
+
+    #if defined(_M_X64) || defined(_M_ARM64)
+    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+        unsigned long index;
+        unsigned __int64 ushape = shape;
+        _BitScanReverse64(&index, ushape);
+        return index + (is_power_of_two ? 0 : 1);
+    }
+    #endif // End: 64bit arch
+
+    return adrt_num_iters_fallback(shape);
+}
+
+#else // Fallback only
+
+static inline int adrt_num_iters_impl(const size_t shape) {
+    return adrt_num_iters_fallback(shape);
+}
+
+#endif // End platform cases
+
+int ADRT_HIDE adrt_num_iters(const size_t shape) {
+    if(shape <= 1) {
+        return 0;
+    }
+    return adrt_num_iters_impl(shape);
+}
