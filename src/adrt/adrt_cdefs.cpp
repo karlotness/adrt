@@ -350,10 +350,19 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
     return nullptr;
 }
 
+static PyObject *num_iters(PyObject* /* self */, PyObject *arg){
+    size_t val = PyLong_AsSize_t(arg);
+    if(PyErr_Occurred()) {
+        return nullptr;
+    }
+    return PyLong_FromLong(adrt_num_iters(val));
+}
+
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt, METH_VARARGS, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
     {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
+    {"num_iters", num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {nullptr, nullptr, 0, nullptr}
 };
 
