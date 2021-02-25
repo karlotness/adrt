@@ -33,6 +33,12 @@
 #ifndef ADRTC_CDEFS_COMMON_H
 #define ADRTC_CDEFS_COMMON_H
 
+#if defined(__GNUC__)
+#define ADRT_HIDE __attribute__((visibility ("hidden")))
+#else
+#define ADRT_HIDE
+  #endif
+
 #include <cstddef>
 #include <array>
 #include <limits>
