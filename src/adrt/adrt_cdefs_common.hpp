@@ -33,6 +33,7 @@
 #ifndef ADRTC_CDEFS_COMMON_H
 #define ADRTC_CDEFS_COMMON_H
 
+#include <cstddef>
 #include <array>
 #include <limits>
 
