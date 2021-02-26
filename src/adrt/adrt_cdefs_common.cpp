@@ -59,7 +59,7 @@ static inline int adrt_num_iters_fallback(const size_t shape) {
 
 #if defined(__GNUC__) // GCC intrinsics
 
-static inline int adrt_num_iters_impl(const size_t shape) {
+static inline int adrt_num_iters_impl(size_t shape) {
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         unsigned int ushape = shape;
@@ -83,7 +83,7 @@ static inline int adrt_num_iters_impl(const size_t shape) {
 
 #include <intrin.h>
 
-static inline int adrt_num_iters_impl(const size_t shape) {
+static inline int adrt_num_iters_impl(size_t shape) {
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
@@ -106,13 +106,13 @@ static inline int adrt_num_iters_impl(const size_t shape) {
 
 #else // Fallback only
 
-static inline int adrt_num_iters_impl(const size_t shape) {
+static inline int adrt_num_iters_impl(size_t shape) {
     return adrt_num_iters_fallback(shape);
 }
 
 #endif // End platform cases
 
-int ADRT_HIDE adrt_num_iters(const size_t shape) {
+int ADRT_HIDE adrt_num_iters(size_t shape) {
     if(shape <= 1) {
         return 0;
     }
