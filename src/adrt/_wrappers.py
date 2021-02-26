@@ -190,3 +190,8 @@ def bdrt(a, start=0, end=-1):
     source paper [press06]_.
     """
     return _adrt_cdefs.bdrt(_normalize_array(a), start, end)
+
+
+@_set_module("adrt.core")
+def num_iters(n):
+    return _adrt_cdefs.num_iters(n)
