@@ -46,11 +46,6 @@ repository and run::
 
   pytest
 
-Alternatively, you can use the built-in :mod:`unittest` module to
-run the tests::
-
-  python -m unittest tests/*.py
-
 .. _openmp-build:
 
 OpenMP Support
