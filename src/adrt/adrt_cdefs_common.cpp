@@ -39,20 +39,15 @@ bool ADRT_HIDE adrt_is_pow2(size_t val) {
     return !(val & (val - 1));
 }
 
-static inline int adrt_num_iters_fallback(const size_t shape) {
-    const size_t shape_max_half = std::numeric_limits<size_t>::max() / 2;
-    int num_iters = 1;
-    size_t segment_length = 2;
-    while(segment_length < shape && segment_length <= shape_max_half) {
-        ++num_iters;
-        segment_length *= 2;
+static inline int adrt_num_iters_fallback(size_t shape) {
+    // Relies on earlier check that shape != 0
+    bool is_power_of_two = adrt_is_pow2(shape);
+    int r = 0;
+    while(shape != 0) {
+        ++r;
+        shape >>= 1;
     }
-    // If shape is larger than the max power of two fitting in adrt_shape
-    // we need one more doubling
-    if(segment_length < shape) {
-        ++num_iters;
-    }
-    return num_iters;
+    return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
 // Implementation of adrt_num_iters
