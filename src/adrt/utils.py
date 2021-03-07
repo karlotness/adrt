@@ -78,7 +78,7 @@ def stitch_adrt(a, *, remove_repeated=False):
     if a.shape[-3:] != (4, 2 * n - 1, n):
         raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
 
-    if len(a.shape) > 3:
+    if a.ndim > 3:
         had_batch = True
         batch_size = a.shape[:-3]
     else:
