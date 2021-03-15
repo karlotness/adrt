@@ -60,7 +60,7 @@ def stitch_adrt(a, *, remove_repeated=False):
 
     Parameters
     ----------
-    a : array_like
+    a : numpy.ndarray
         Array of ADRT output data. Shape (..., 4, 2*N-1, N).
     remove_repeated : bool, optional
         Whether redundant columns should be removed. This removes the
@@ -121,12 +121,12 @@ def truncate(a, orient=0):
 
     Parameters
     ----------
-    a : array_like
+    a : numpy.ndarray
         array of shape (4,2*N-1,N) or (?,4,2*N-1,N) in which N = 2**n
 
     Returns
     -------
-    out : array_like
+    out : numpy.ndarray
           array of shape (4,N,N) or (?,4,N,N) in which N = 2**n
 
     """
@@ -171,16 +171,16 @@ def interp_to_cart(adrt_out):
 
     Parameters
     ----------
-    a : array_like
+    a : numpy.ndarray of float
         array of shape (4,2*N-1,N)
 
     Returns
     -------
-    theta_cart_out : array_like
+    theta_cart_out : numpy.ndarray
           array of shape (N,4*N) containing coordinates theta (angles)
-    s_cart_out : array_like
+    s_cart_out : numpy.ndarray
           array of shape (N,4*N) containing coordinates s (offsets)
-    adrt_cart_out : array_like
+    adrt_cart_out : numpy.ndarray
           array of shape (N,4*N) containing interpolated data
 
     """

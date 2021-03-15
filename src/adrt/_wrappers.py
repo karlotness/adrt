@@ -91,7 +91,7 @@ def adrt(a, start=0, end=-1):
 
     Parameters
     ----------
-    a : array_like of float
+    a : numpy.ndarray of float
         The array of data for which the ADRT should be computed.
 
     start : int, optional
@@ -134,7 +134,7 @@ def iadrt(a, start=0, end=-1):
 
     Parameters
     ----------
-    a : array_like of float
+    a : numpy.ndarray of float
         An array storing the output of the forward ADRT.
 
     start : int, optional
@@ -170,7 +170,7 @@ def bdrt(a, start=0, end=-1):
 
     Parameters
     ----------
-    a : array_like of float
+    a : numpy.ndarray of float
         An array storing the output of the forward ADRT.
 
     start : int, optional
