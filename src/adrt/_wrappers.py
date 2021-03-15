@@ -61,6 +61,10 @@ def _normalize_array(a):
     that arrays being passed to the extension module have the expected
     memory layout.
     """
+    if not isinstance(a, np.ndarray):
+        # Explicitly fail if not ndarray (or subclass).
+        # Users otherwise may get a confusing error related to the dtype attribute.
+        raise TypeError("Provided array must be an instance of numpy.ndarray")
     native_dtype = a.dtype.newbyteorder("=")
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
