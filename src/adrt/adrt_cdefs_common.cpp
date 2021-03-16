@@ -52,7 +52,7 @@ static inline int adrt_num_iters_fallback(size_t shape) {
 
 // Implementation of adrt_num_iters
 
-#if defined(__GNUC__) // GCC intrinsics
+#if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
 static inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
