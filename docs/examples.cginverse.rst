@@ -57,3 +57,54 @@ performs the actual inversion operation using conjugate gradients.
        if info != 0:
            raise ValueError(f"Convergence failed (cg status {info})")
        return x.reshape((img_size, img_size))
+
+We'll use the same starting image as in the :ref:`quickstart`, but we
+will apply a small amount of normal noise to its adrt to illustrate
+the difference in behavior between the iterative inverse here and
+:func:`adrt.iadrt`.
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+   # Generate input image
+   n = 16
+   xs = np.linspace(-1, 1, n)
+   x, y = np.meshgrid(xs, xs)
+   img = 0.5 * ((np.abs(x - 0.25) + np.abs(y)) < 0.7).astype(np.float32)
+   img[:, 3] = 1
+   img[1, :] = 1
+
+   # Compute ADRT and add noise
+   img_plain_adrt = adrt.adrt(img)
+   noise_mask = np.random.default_rng().normal(scale=1e-3, size=img_plain_adrt.shape)
+   img_noise_adrt = img_plain_adrt + noise_mask
+
+   # Plot noisy ADRT
+   vmin = np.min(img_noise_adrt)
+   vmax = np.max(img_noise_adrt)
+   fig, axs = plt.subplots(1, 4, sharey=True)
+   for i, ax in enumerate(axs.ravel()):
+       im_plot = ax.imshow(img_noise_adrt[i], vmin=vmin, vmax=vmax)
+   plt.tight_layout()
+   fig.colorbar(im_plot, ax=axs, orientation="horizontal")
+
+
+If you compare this against the ADRT in :ref:`quickstart`, you should
+see that the differences are visually imperceptible. However, the two
+inverses produce very different results.
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+   iadrt_inv = adrt.iadrt(img_noise_adrt)[2, :n, :n]
+   cg_inv = cgiadrt(img_noise_adrt)
+
+   fig, axs = plt.subplots(1, 3, sharey=True)
+   plot_elements = [(img, "Original"), (cg_inv, "CG Inverse"), (iadrt_inv, "iadrt Inverse")]
+   for ax, (data, title) in zip(axs.ravel(), plot_elements):
+       im_plot = ax.imshow(data)
+       fig.colorbar(im_plot, ax=ax, orientation="horizontal", pad=0.08)
+       ax.set_title(title)
+   plt.tight_layout()
