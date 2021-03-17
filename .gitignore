@@ -1,6 +1,7 @@
-# Emacs files
+# Editor files
 *~
 .dir-locals-2.el
+.vscode/
 
 # Python scratch files
 __pycache__/
