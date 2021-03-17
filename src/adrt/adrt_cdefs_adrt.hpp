@@ -43,7 +43,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
 
     std::array<adrt_shape, 2> iter_lvls = {iter_start, iter_end};
 
-    // set orientation for input output: 
+    // set orientation for input output:
     // note input orientation is ignored when iter_start == 0
 
     const std::array<adrt_shape, 3> corrected_shape = [&]{
@@ -114,7 +114,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
 
     if (iter_lvls[1] < 0){
         // e.g. when lvls[1] = -1 compute full ADRT
-        iter_lvls[1] += num_iters + 1; 
+        iter_lvls[1] += num_iters + 1;
     }
 
     adrt_scalar *curr = aux;
@@ -175,7 +175,7 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
         for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
             for(adrt_shape row = 0; row < corrected_shape[1]; ++row) {
                 for(adrt_shape col = corrected_shape[2]; col < 2 * corrected_shape[2] - 1; ++col) {
-                    adrt_array_access(prev, prev_shape, quadrant, plane, 
+                    adrt_array_access(prev, prev_shape, quadrant, plane,
                                          0, row, col) = 0;
                 }
             }
@@ -190,8 +190,8 @@ const adrt_shape *const shape, const int iter_start, const int iter_end, adrt_sc
                     for(adrt_shape a = 0; a < prev_shape[4]; ++a) {
                         adrt_shape acc_d = d;
                         adrt_shape acc_a = a;
-                        
-                        const adrt_scalar val = adrt_array_access(data, 
+
+                        const adrt_scalar val = adrt_array_access(data,
                                     output_shape, plane, quadrant, a, d);
                         adrt_array_access(prev, prev_shape, quadrant, plane, 0, acc_d, acc_a) = val;
                     }

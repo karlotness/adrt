@@ -55,7 +55,7 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
          (ndim > 3 ? base_output_shape[2] : base_output_shape[1]),
          (ndim > 3 ? base_output_shape[3] : base_output_shape[2])};
 
-    // set orientation for input output: 
+    // set orientation for input output:
     // note input orientation is ignored when iter_start == 0
 
     // Require that the matrix have right dimensions
@@ -111,8 +111,8 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
                 for(adrt_shape a = 0; a < prev_shape[4]; ++a) {
                     adrt_shape acc_d = d;
                     adrt_shape acc_a = a;
-                    
-                    const adrt_scalar val = adrt_array_access(data, 
+
+                    const adrt_scalar val = adrt_array_access(data,
                                 corrected_shape, plane, quadrant, a, d);
                     adrt_array_access(prev, prev_shape, quadrant, plane, 0, acc_d, acc_a) = val;
                     adrt_array_access(curr, prev_shape, quadrant, plane, 0, acc_d, acc_a) = 0.0;
@@ -192,7 +192,7 @@ col, row) = val;
                 for(adrt_shape a = 0; a < prev_shape[4]; ++a) {
                     adrt_shape acc_d = d;
                     adrt_shape acc_a = a;
-                    
+
                     const adrt_scalar val = adrt_array_access(prev, prev_shape, quadrant, plane, 0, acc_d, acc_a);
                     adrt_array_access(out, output_shape, plane, quadrant, a, d) = val;
                 }

@@ -98,12 +98,12 @@ base_iter_end, adrt_scalar *const out,
 
     int iter_end   = (base_iter_end < 0? base_iter_end + num_iters + 1: base_iter_end);
     int iter_start = (base_iter_start < 0? base_iter_start + num_iters + 1: base_iter_start);
-    
+
     adrt_scalar *curr = aux;
     adrt_scalar *prev = aux + buf_size;
 
     // Each quadrant has a different shape (the padding goes in a different place)
-    std::array<adrt_shape, 4> prev_shape = 
+    std::array<adrt_shape, 4> prev_shape =
                               {corrected_shape[0], corrected_shape[1],
                                corrected_shape[2], corrected_shape[3]};
 
@@ -112,9 +112,9 @@ base_iter_end, adrt_scalar *const out,
         for(adrt_shape plane = 0; plane < corrected_shape[0]; ++plane) {
             for(adrt_shape row = 0; row < corrected_shape[2]; ++row) {
                 for(adrt_shape col = 0; col < corrected_shape[3]; ++col) {
-                    adrt_array_access(prev, prev_shape, plane, quadrant, 
-                                      row, col) 
-                    = adrt_array_access(data, corrected_shape, 
+                    adrt_array_access(prev, prev_shape, plane, quadrant,
+                                      row, col)
+                    = adrt_array_access(data, corrected_shape,
                                            plane, quadrant, row, col);
                 }
             }
@@ -127,12 +127,12 @@ base_iter_end, adrt_scalar *const out,
                     corrected_shape[3],corrected_shape[3],1};
     std::array<adrt_shape, 5> curr_stride = {
                     // fixed strides (does not change in loop)
-                    prev_stride[0], // plane stride 
-                    prev_stride[1], // quadrant stride 
-                    prev_stride[2], // row stride 
+                    prev_stride[0], // plane stride
+                    prev_stride[1], // quadrant stride
+                    prev_stride[2], // row stride
                     // variable strides
-                    prev_stride[3], // section stride 
-                    prev_stride[4]};// no. of sections 
+                    prev_stride[3], // section stride
+                    prev_stride[4]};// no. of sections
 
     adrt_shape nsections = 1;
 
@@ -140,7 +140,7 @@ base_iter_end, adrt_scalar *const out,
         // Compute the curr_stride for the current buffer (based on prev shape)
         curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
         nsections *= 2;
-        
+
         // Swap the "curr" and "prev" buffers and shapes
         prev_stride = curr_stride;
     }
@@ -164,7 +164,7 @@ base_iter_end, adrt_scalar *const out,
                             const adrt_shape lxa = x + a;
                             if(lxa >= 0 && lxa < corrected_shape[2]) {
                                 raval = adrt_array_stride_access(
-                                            prev, prev_stride, 
+                                            prev, prev_stride,
                                             plane, quadrant, lxa, j, 2*a);
                             }
                             // check the index access for x
@@ -176,21 +176,21 @@ base_iter_end, adrt_scalar *const out,
                                             plane, quadrant, lxb, j, 2*a + 1);
                             }
 
-                            adrt_array_stride_access(curr, curr_stride, 
-                                          plane, quadrant, x, 2*j + 1, a) 
+                            adrt_array_stride_access(curr, curr_stride,
+                                          plane, quadrant, x, 2*j + 1, a)
                                 = raval + rbval;
 
                             // left image
                             adrt_scalar lbval = adrt_array_stride_access(
-                                        prev, prev_stride, 
+                                        prev, prev_stride,
                                         plane, quadrant, x, j, 2*a);
 
                             adrt_scalar laval = adrt_array_stride_access(
-                                        prev, prev_stride, 
+                                        prev, prev_stride,
                                         plane, quadrant, x, j, 2*a + 1);
 
-                            adrt_array_stride_access(curr, curr_stride, 
-                                        plane, quadrant, x, 2*j, a) 
+                            adrt_array_stride_access(curr, curr_stride,
+                                        plane, quadrant, x, 2*j, a)
                                 = laval + lbval;
 
                         }
@@ -199,7 +199,7 @@ base_iter_end, adrt_scalar *const out,
             }
         }
         nsections *= 2;
-        
+
         // Swap the "curr" and "prev" buffers and shapes
         std::swap(curr,prev);
         prev_stride = curr_stride;
@@ -211,7 +211,7 @@ base_iter_end, adrt_scalar *const out,
             for(adrt_shape a = 0; a < output_shape[3]; ++a) {
                 for(adrt_shape quadrant = 0; quadrant < output_shape[1]; ++quadrant) {
 
-                    adrt_array_access(out, prev_shape, plane, quadrant, d, a) 
+                    adrt_array_access(out, prev_shape, plane, quadrant, d, a)
                     = adrt_array_access(prev, prev_shape,plane,quadrant, d, a);
                 }
             }
