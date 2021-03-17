@@ -43,7 +43,7 @@
 #include <array>
 
 bool ADRT_HIDE adrt_is_pow2(size_t val);
-int ADRT_HIDE adrt_num_iters(const size_t shape);
+int ADRT_HIDE adrt_num_iters(size_t shape);
 
 template <typename adrt_shape, size_t N>
 static std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
