@@ -198,4 +198,23 @@ def bdrt(a, start=0, end=-1):
 
 @_set_module("adrt.core")
 def num_iters(n):
+    r"""Number of adrt iterations needed for an image of size n.
+
+    Many of the algorithms in this package are iterative. For an image
+    of size :math:`n \times n` (powers of two), the core loop must be
+    run :math:`\log_2(n)` times. This function computes the number of
+    iterations necessary and is equivalent to
+    :math:`\lceil{\log_2(n)}\rceil`.
+
+    Parameters
+    ----------
+    n : int
+        The integer size of the image array which is to be processed.
+
+    Returns
+    -------
+    int
+        The number of iterations needed to fully process the image of
+        size ``n``.
+    """
     return _adrt_cdefs.num_iters(n)
