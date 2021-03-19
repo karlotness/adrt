@@ -3,8 +3,14 @@
 Iterative Inverse
 =================
 
-This example makes use of facilities from SciPy. In particular, its
-:func:`scipy.sparse.linalg.cg` routine. ::
+This example presents a method for inverting the forward ADRT which
+takes a different approach to the inverse implemented in
+:func:`adrt.iadrt`. The inverse here uses an iterative solver, in
+particular the SciPy's :func:`scipy.sparse.linalg.cg` routine, but
+another implementation could be used instead, if desired.
+
+To begin our implementation we import the modules we need, including
+values from :mod:`scipy.sparse.linalg`. ::
 
    import numpy as np
    from scipy.sparse.linalg import LinearOperator, cg
@@ -108,3 +114,10 @@ inverses produce very different results.
        fig.colorbar(im_plot, ax=ax, orientation="horizontal", pad=0.08)
        ax.set_title(title)
    plt.tight_layout()
+
+The inverse provided by :func:`adrt.iadrt` is an exact inverse to the
+forward ADRT, but it is very sensitive to noise in its input. It is
+therefore not suitable for cases where the forward ADRT was not
+exactly applied, or where noise may be present. In such cases, a
+different approach such as the ``cgiadrt`` illustrated here may be
+more suitable.
