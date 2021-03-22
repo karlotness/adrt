@@ -43,7 +43,7 @@ performs the actual inversion operation using conjugate gradients.
 
    class AdrtNormalOperator(LinearOperator):
        def __init__(self, img_size, dtype=None):
-           super().__init__(dtype=dtype, shape=(img_size**2, img_size**2))
+           super().__init__(dtype=dtype, shape=(img_size ** 2, img_size ** 2))
            self._img_size = img_size
 
        def _matvec(self, x):
