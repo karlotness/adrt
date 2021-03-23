@@ -70,7 +70,7 @@ def _normalize_array(a):
 
 
 @_set_module("adrt")
-def adrt(a, start=0, end=-1):
+def adrt(a):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
     Computes the ADRT of the provided array, `a`. The array `a` may
@@ -98,12 +98,6 @@ def adrt(a, start=0, end=-1):
     a : numpy.ndarray of float
         The array of data for which the ADRT should be computed.
 
-    start : int, optional
-        Set ADRT level expected for input
-
-    end : int, optional
-        Set ADRT level for output
-
     Returns
     -------
     numpy.ndarray
@@ -118,7 +112,7 @@ def adrt(a, start=0, end=-1):
     :ref:`adrt-description` and refer to the source papers [press06]_,
     [brady98]_.
     """
-    return _adrt_cdefs.adrt(_normalize_array(a), start, end)
+    return _adrt_cdefs.adrt(_normalize_array(a))
 
 
 @_set_module("adrt")
