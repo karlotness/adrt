@@ -34,6 +34,61 @@
 #include "adrt_cdefs_adrt.hpp"
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"
+#include <array>
+
+static PyArrayObject *adrt_extract_array(PyObject *arg) {
+    if(!PyArray_Check(arg)) {
+        // This isn't an array
+        PyErr_SetString(PyExc_TypeError, "Argument must be a NumPy array or compatible subclass");
+        return nullptr;
+    }
+    PyArrayObject *arr = reinterpret_cast<PyArrayObject*>(arg);
+    if(!PyArray_ISCARRAY_RO(arr)) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, aligned, and native byte order");
+        return nullptr;
+    }
+    return arr;
+}
+
+template <size_t min_dim, size_t max_dim>
+static bool adrt_shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> &shape_arr) {
+    static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
+    int sndim = PyArray_NDIM(arr);
+    size_t ndim = sndim;
+    if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
+        PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
+        return false;
+    }
+    npy_intp *numpy_shape = PyArray_SHAPE(arr);
+    // Prepend trivial dimensions
+    for(size_t i = 0; i < max_dim - ndim; ++i) {
+        shape_arr[i] = 1;
+    }
+    // Fill rest of array
+    for(size_t i = 0; i < ndim; ++i) {
+        npy_intp shape = numpy_shape[i];
+        if(shape <= 0) {
+            PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
+            return false;
+        }
+        shape_arr[i + (max_dim - ndim)] = shape;
+    }
+    return true;
+}
+
+template <size_t n_virtual_dim>
+static PyArrayObject *adrt_new_array(int ndim, std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+    if(ndim > static_cast<int>(n_virtual_dim)) {
+        PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions computed for output array");
+        return nullptr;
+    }
+    npy_intp new_shape[n_virtual_dim] = {0};
+    for(int i = 0; i < ndim; ++i) {
+        new_shape[i] = virtual_shape[(n_virtual_dim - ndim) + i];
+    }
+    PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
+    return reinterpret_cast<PyArrayObject*>(arr);
+}
 
 static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out,
                   int& iter_start_out, int& iter_end_out) {
