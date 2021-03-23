@@ -74,7 +74,7 @@ def _naive_adrt(a):
                     if i >= n or i < 0 or j >= n or j < 0:
                         # Skip values out of range
                         continue
-                    v += img[i, j] / n
+                    v += img[i, j]
                 # Store result
                 res[quad, hi, si] = v
     return res
@@ -253,7 +253,7 @@ class TestAdrt(unittest.TestCase):
 
     def test_spot_check_vertical_line_left(self):
         inarr = np.zeros((8, 8))
-        inarr[:, 0] = 8
+        inarr[:, 0] = 1
         c_out = adrt.adrt(inarr)
         # Check shape & stencil outline
         self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
@@ -281,7 +281,7 @@ class TestAdrt(unittest.TestCase):
 
     def test_spot_check_vertical_line_right(self):
         inarr = np.zeros((8, 8))
-        inarr[:, -1] = 8
+        inarr[:, -1] = 1
         c_out = adrt.adrt(inarr)
         # Check shape & stencil outline
         self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
@@ -309,7 +309,7 @@ class TestAdrt(unittest.TestCase):
 
     def test_spot_check_horizontal_line_top(self):
         inarr = np.zeros((8, 8))
-        inarr[0, :] = 8
+        inarr[0, :] = 1
         c_out = adrt.adrt(inarr)
         # Check shape & stencil outline
         self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
@@ -337,7 +337,7 @@ class TestAdrt(unittest.TestCase):
 
     def test_spot_check_horizontal_line_bottom(self):
         inarr = np.zeros((8, 8))
-        inarr[-1, :] = 8
+        inarr[-1, :] = 1
         c_out = adrt.adrt(inarr)
         # Check shape & stencil outline
         self.assertEqual(c_out.shape, (4, 2 * 8 - 1, 8))
