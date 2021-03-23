@@ -201,7 +201,7 @@ class TestBdrt(unittest.TestCase):
             dline[sh0[0], sh0[1]] = 0.25
         bdrt_in = np.zeros((4, 2 * size - 1, size))
         bdrt_in[0, 4, 3] = 1.0
-        bdrt_out = adrt.bdrt(bdrt_in)
+        bdrt_out = adrt.bdrt(bdrt_in) * size
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
         self.assertTrue(np.allclose(bdrt_sq, dline))
         # Quadrant 1
@@ -211,7 +211,7 @@ class TestBdrt(unittest.TestCase):
             dline[sh0[1], sh0[0]] = 0.25
         bdrt_in = np.zeros((4, 2 * size - 1, size))
         bdrt_in[1, 4, 3] = 1.0
-        bdrt_out = adrt.bdrt(bdrt_in)
+        bdrt_out = adrt.bdrt(bdrt_in) * size
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
         self.assertTrue(np.allclose(bdrt_sq, dline))
         # Quadrant 2
@@ -221,7 +221,7 @@ class TestBdrt(unittest.TestCase):
             dline[size - sh0[1], sh0[0]] = 0.25
         bdrt_in = np.zeros((4, 2 * size - 1, size))
         bdrt_in[2, 4, 3] = 1.0
-        bdrt_out = adrt.bdrt(bdrt_in)
+        bdrt_out = adrt.bdrt(bdrt_in) * size
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
         self.assertTrue(np.allclose(bdrt_sq, dline))
         # Quadrant 3
@@ -231,7 +231,7 @@ class TestBdrt(unittest.TestCase):
             dline[sh0[0], size - sh0[1]] = 0.25
         bdrt_in = np.zeros((4, 2 * size - 1, size))
         bdrt_in[3, 4, 3] = 1.0
-        bdrt_out = adrt.bdrt(bdrt_in)
+        bdrt_out = adrt.bdrt(bdrt_in) * size
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
         self.assertTrue(np.allclose(bdrt_sq, dline))
 
@@ -258,8 +258,8 @@ class TestBdrt(unittest.TestCase):
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
 
-        self.assertTrue(np.allclose(bdrt_sq.min(), 1.0))
-        self.assertTrue(np.allclose(bdrt_sq.max(), 1.0))
+        self.assertTrue(np.allclose(bdrt_sq.min(), 1 / size))
+        self.assertTrue(np.allclose(bdrt_sq.max(), 1 / size))
 
     def test_backprojected_delta_levels(self):
         size = 16

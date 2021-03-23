@@ -144,7 +144,6 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
                 for(adrt_shape col = 0; col < curr_shape[3]; ++col) {
                     for(adrt_shape l = 0; l < curr_shape[2]; ++l) {
                         adrt_scalar val = 0;
-                        adrt_scalar two = 2.0;
                         const adrt_shape prev_l = adrt_floor_div2(l);
                         if(l % 2 == 0) {
                             // l + 1 odd
@@ -162,7 +161,6 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
                                 val -= adrt_array_access(prev, prev_shape, quadrant, plane, prev_l, 2 * col, row + 1 + col);
                             }
                         }
-                        val *= two;
                         if(row + 1 < curr_shape[4]) {
                             val += adrt_array_access(curr, curr_shape, quadrant, plane, l, col, row + 1);
                         }
