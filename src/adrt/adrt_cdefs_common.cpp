@@ -32,13 +32,6 @@
 #include "adrt_cdefs_common.hpp"
 #include <limits>
 
-bool ADRT_HIDE adrt_is_pow2(size_t val) {
-    if(val == 0) {
-        return false;
-    }
-    return !(val & (val - 1));
-}
-
 static inline int adrt_num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);

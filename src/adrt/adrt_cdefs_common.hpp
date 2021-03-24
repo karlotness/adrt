@@ -42,7 +42,6 @@
 #include <cstddef>
 #include <array>
 
-bool ADRT_HIDE adrt_is_pow2(size_t val);
 int ADRT_HIDE adrt_num_iters(size_t shape);
 
 template <typename adrt_shape, size_t N>
@@ -74,6 +73,13 @@ static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<a
                                       const Idx... idxs) {
     const std::array<adrt_shape, N> strides = adrt_compute_strides(shape);
     return adrt_array_stride_access(buf, strides, idxs...);
+}
+
+inline bool adrt_is_pow2(size_t val) {
+    if(val == 0) {
+        return false;
+    }
+    return !(val & (val - 1));
 }
 
 inline size_t adrt_floor_div2(size_t val) {
