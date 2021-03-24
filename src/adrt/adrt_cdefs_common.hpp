@@ -76,14 +76,12 @@ static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<a
     return adrt_array_stride_access(buf, strides, idxs...);
 }
 
-template <typename adrt_shape>
-inline adrt_shape adrt_floor_div2(const adrt_shape val) {
+inline size_t adrt_floor_div2(size_t val) {
     // Only for non-negative values
     return val / 2;
 }
 
-template <typename adrt_shape>
-inline adrt_shape adrt_ceil_div2(const adrt_shape val) {
+inline size_t adrt_ceil_div2(size_t val) {
     // Only for non-negative values
     return (val / 2) + (val % 2);
 }
