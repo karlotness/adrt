@@ -78,17 +78,14 @@ static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<a
 
 template <typename adrt_shape>
 inline adrt_shape adrt_floor_div2(const adrt_shape val) {
+    // Only for non-negative values
     return val / 2;
 }
 
 template <typename adrt_shape>
 inline adrt_shape adrt_ceil_div2(const adrt_shape val) {
-    adrt_shape div = val / 2;
-    adrt_shape rem = val % 2;
-    if(rem > 0) {
-        return div + 1;
-    }
-    return div;
+    // Only for non-negative values
+    return (val / 2) + (val % 2);
 }
 
 #endif //ADRTC_CDEFS_COMMON_H
