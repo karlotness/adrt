@@ -395,6 +395,9 @@ static struct PyModuleDef adrt_cdefs_module = {
     nullptr, nullptr, nullptr
 };
 
+// Support Python<3.9 which doesn't set visibility
+#pragma GCC visibility push(default)
+
 PyMODINIT_FUNC
 PyInit__adrt_cdefs(void)
 {
@@ -405,5 +408,7 @@ PyInit__adrt_cdefs(void)
     import_array();
     return module;
 }
+
+#pragma GCC visibility pop
 
 } // extern "C"
