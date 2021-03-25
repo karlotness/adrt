@@ -39,7 +39,7 @@
 #include <utility>
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool iadrt_impl(const adrt_scalar *const data, const unsigned char
+bool iadrt_impl(const adrt_scalar *const data, const unsigned char
 ndim, const adrt_shape *const shape, const int base_iter_start, const int base_iter_end, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
 
     // Shape (plane, quadrant, row, col)

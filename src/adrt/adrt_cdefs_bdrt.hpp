@@ -40,7 +40,7 @@
 #include <type_traits>
 
 template <typename adrt_scalar, typename adrt_shape>
-static bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims,
+bool bdrt_impl(const adrt_scalar *const data, const unsigned char ndims,
 const adrt_shape *const shape, const int base_iter_start, const int
 base_iter_end, adrt_scalar *const out,
                       const adrt_shape *const base_output_shape) {

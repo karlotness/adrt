@@ -102,7 +102,7 @@ static inline int adrt_num_iters_impl(size_t shape) {
 
 #endif // End platform cases
 
-int ADRT_HIDE adrt_num_iters(size_t shape) {
+int adrt_num_iters(size_t shape) {
     if(shape <= 1) {
         return 0;
     }

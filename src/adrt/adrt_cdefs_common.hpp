@@ -33,19 +33,13 @@
 #ifndef ADRTC_CDEFS_COMMON_H
 #define ADRTC_CDEFS_COMMON_H
 
-#if defined(__GNUC__)
-#define ADRT_HIDE __attribute__((visibility ("hidden")))
-#else
-#define ADRT_HIDE
-#endif
-
 #include <cstddef>
 #include <array>
 
-int ADRT_HIDE adrt_num_iters(size_t shape);
+int adrt_num_iters(size_t shape);
 
 template <typename adrt_shape, size_t N>
-static std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
+std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
     std::array<adrt_shape, N> strides_out;
     adrt_shape step_size = 1;
     for(size_t i = 0; i < N; ++i) {
@@ -57,7 +51,7 @@ static std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shap
 }
 
 template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
-static adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &strides,
+adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &strides,
                                              const Idx... idxs) {
     static_assert(sizeof...(idxs) == N, "Must provide N array indices");
     const std::array<adrt_shape, N> idx {idxs...};
@@ -69,7 +63,7 @@ static adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::
 }
 
 template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
-static adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
+adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
                                       const Idx... idxs) {
     const std::array<adrt_shape, N> strides = adrt_compute_strides(shape);
     return adrt_array_stride_access(buf, strides, idxs...);

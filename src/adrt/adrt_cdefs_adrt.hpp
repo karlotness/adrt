@@ -39,7 +39,7 @@
 #include <utility>
 
 template <typename adrt_scalar>
-static bool adrt_impl(const adrt_scalar *const data, const std::array<size_t, 3> &corrected_shape, adrt_scalar *const out, const std::array<size_t, 4> &output_shape) {
+bool adrt_impl(const adrt_scalar *const data, const std::array<size_t, 3> &corrected_shape, adrt_scalar *const out, const std::array<size_t, 4> &output_shape) {
     using adrt_shape = size_t;
     // Require that the matrix be square (power of two checked elsewhere)
     if(corrected_shape[1] != corrected_shape[2]) {
