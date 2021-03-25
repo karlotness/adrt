@@ -101,7 +101,7 @@ jobs:
         mv wheelhouse/adrt-*-manylinux*.whl dist/
       env:
         SETUPTOOLS_USE_DISTUTILS: local
-        CFLAGS: '-std=c++11 -flto -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wfloat-conversion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -D_FORTIFY_SOURCE=2'
+        CFLAGS: '-std=c++11 -flto -fvisibility=hidden -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wfloat-conversion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -D_FORTIFY_SOURCE=2'
         LDFLAGS: '-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         LDSHARED: 'gcc -pthread -shared'
     - name: Build wheel (Windows)
@@ -117,7 +117,7 @@ jobs:
         delocate-wheel -v dist/adrt-*.whl
       env:
         SETUPTOOLS_USE_DISTUTILS: local
-        CFLAGS: '-std=c++11 -flto -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wfloat-conversion -Wfloat-equal -Wimplicit-fallthrough'
+        CFLAGS: '-std=c++11 -flto -fvisibility=hidden -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wfloat-conversion -Wfloat-equal -Wimplicit-fallthrough'
     - name: Store artifact
       uses: actions/upload-artifact@v2
       with:
