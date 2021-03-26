@@ -190,6 +190,28 @@ def bdrt(a, start=0, end=-1):
     return _adrt_cdefs.bdrt(_normalize_array(a), start, end)
 
 
+@_set_module("adrt")
+def interp_adrtcart(a):
+    r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
+
+    Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
+    of (theta, s): theta is the normal direction of the line and s is the
+    distance of the line to the origin.
+
+    Parameters
+    ----------
+    a : numpy.ndarray of float
+        array of shape ``(B?, 4, 2 * N - 1, N)``
+
+    Returns
+    -------
+    numpy.ndarray
+          array of shape ``(B?, 4, N, N)`` containing interpolated data
+
+    """
+    return _adrt_cdefs.interp_adrtcart(_normalize_array(a))
+
+
 @_set_module("adrt.core")
 def num_iters(n):
     r"""Number of adrt iterations needed for an image of size n.
