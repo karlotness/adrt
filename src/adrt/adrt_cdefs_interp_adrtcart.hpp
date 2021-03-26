@@ -169,7 +169,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
 
             const adrt_shape d = j;
             const adrt_shape a = i;
-            int hi = Nf - h - 1;
+            int hi = Nf - h;
 
             if (hi > 2*N - 1 || hi < 1) 
             adrt_array_access(out, output_shape, plane, quadrant, d, a) = 0.0;
