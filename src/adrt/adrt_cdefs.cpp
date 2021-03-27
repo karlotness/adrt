@@ -200,7 +200,7 @@ static PyObject *adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt_is_square_power_of_two(input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array be square with power of two shapes");
+        PyErr_SetString(PyExc_ValueError, "Provided array must be square with a power of two shape");
         return nullptr;
     }
     // Compute effective output shape
