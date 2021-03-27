@@ -51,17 +51,17 @@ static inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
-        unsigned int ushape = shape;
+        unsigned int ushape = static_cast<unsigned int>(shape);
         int lead_zero = __builtin_clz(ushape);
         return (std::numeric_limits<unsigned int>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
     else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
-        unsigned long ushape = shape;
+        unsigned long ushape = static_cast<unsigned long>(shape);
         int lead_zero = __builtin_clzl(ushape);
         return (std::numeric_limits<unsigned long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
     else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long long>::max()) {
-        unsigned long long ushape = shape;
+        unsigned long long ushape = static_cast<unsigned long long>(shape);
         int lead_zero = __builtin_clzll(ushape);
         return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
@@ -77,7 +77,7 @@ static inline int adrt_num_iters_impl(size_t shape) {
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
-        unsigned long ushape = shape;
+        unsigned long ushape = static_cast<unsigned long>(shape);
         _BitScanReverse(&index, ushape);
         return index + (is_power_of_two ? 0 : 1);
     }
@@ -85,7 +85,7 @@ static inline int adrt_num_iters_impl(size_t shape) {
     #if defined(_M_X64) || defined(_M_ARM64)
     else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
         unsigned long index;
-        unsigned __int64 ushape = shape;
+        unsigned __int64 ushape = static_cast<unsigned __int64>(shape);
         _BitScanReverse64(&index, ushape);
         return index + (is_power_of_two ? 0 : 1);
     }
