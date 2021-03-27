@@ -61,6 +61,6 @@ jobs:
     - name: Run tox tests
       run: tox -e py
       env:
-        CFLAGS: '-std=c++11 -flto -fvisibility=hidden ${{ matrix.cflags }}'
+        CFLAGS: '-std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden ${{ matrix.cflags }}'
     - name: Clean up
       run: python -m pip cache remove adrt || true
