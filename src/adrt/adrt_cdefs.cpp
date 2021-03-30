@@ -291,7 +291,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !iadrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
@@ -303,7 +303,7 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !iadrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))),
@@ -363,7 +363,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !bdrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       iter_start, iter_end,
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
@@ -374,7 +374,7 @@ static PyObject *bdrt(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !bdrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       iter_start, iter_end,
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
@@ -434,7 +434,7 @@ static PyObject *interp_adrtcart(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
         if(!ret ||
            !interp_adrtcart_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
@@ -444,7 +444,7 @@ static PyObject *interp_adrtcart(PyObject* /* self */, PyObject *args){
         ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
         if(!ret ||
            !interp_adrtcart_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      ndim,
+                      static_cast<unsigned char>(ndim),
                       PyArray_SHAPE(I),
                       static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
             goto fail;
