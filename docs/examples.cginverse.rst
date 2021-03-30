@@ -49,7 +49,7 @@ performs the actual inversion operation using conjugate gradients.
        def _matvec(self, x):
            sqmat = x.reshape((self._img_size, self._img_size))
            ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(sqmat)))
-           return np.mean(ret, axis=0).ravel()
+           return np.sum(ret, axis=0).ravel()
 
        def _adjoint(self):
            return self
@@ -58,7 +58,7 @@ performs the actual inversion operation using conjugate gradients.
    def cgiadrt(b, **kwargs):
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
-       tb = np.mean(adrt.utils.truncate(adrt.bdrt(b)), axis=0).ravel()
+       tb = np.sum(adrt.utils.truncate(adrt.bdrt(b)), axis=0).ravel()
        x, info = cg(linop, tb, x0=tb, **kwargs)
        if info != 0:
            raise ValueError(f"Convergence failed (cg status {info})")
