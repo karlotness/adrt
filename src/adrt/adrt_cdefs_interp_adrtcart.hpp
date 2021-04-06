@@ -110,9 +110,9 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     for(adrt_shape i = 0; i < N; i++){
         adrt_scalar theta = i * dtheta;
 
-        adrt_scalar s = ceil((Nf - 1) * tan(theta));
-        adrt_scalar theta_lower = atan((s - 1) / (Nf - 1));
-        adrt_scalar theta_upper = atan((s      ) / (Nf - 1));
+        adrt_scalar s = std::ceil((Nf - 1) * std::tan(theta));
+        adrt_scalar theta_lower = std::atan((s - 1) / (Nf - 1));
+        adrt_scalar theta_upper = std::atan((s      ) / (Nf - 1));
 
         adrt_scalar wgt = (theta - theta_lower) / (theta_upper - theta_lower);
 
@@ -135,8 +135,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             buf_col[j] = (1 - wgt) * val_left + wgt * val_right;
         }
 
-        adrt_scalar h_star = (1 - tan(theta)) / 2;
-        adrt_scalar cos_factor = cos(theta);
+        adrt_scalar h_star = (1 - std::tan(theta)) / 2;
+        adrt_scalar cos_factor = std::cos(theta);
 
         adrt_scalar h = 1 - Nf;
 
@@ -145,7 +145,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
 
             adrt_scalar t = t_lb + j * dt;
 
-            h = round(Nf * (t / cos_factor + h_star));
+            h = std::round(Nf * (t / cos_factor + h_star));
             adrt_scalar t_lower = cos_factor * ((h - adrt_scalar{0.5}) / Nf - h_star);
             adrt_scalar t_upper = cos_factor * ((h + adrt_scalar{0.5}) / Nf - h_star);
 
