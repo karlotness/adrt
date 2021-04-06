@@ -101,20 +101,16 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     // uniform angle grid
     const adrt_scalar dtheta = static_cast<adrt_scalar>(adrt_pi_4) / Nf;
     const adrt_scalar theta_lb = adrt_scalar{0} + dtheta / adrt_scalar{2};
-    adrt_scalar theta = theta_lb;
 
     // uniform offset grid
     adrt_scalar sqrt_two = sqrt(2.0);
     adrt_scalar dt = sqrt_two / Nf;
     adrt_scalar t_lb = (-sqrt_two + dt) / 2.0;
-    adrt_scalar t = t_lb;
-
-    adrt_scalar wgt = 0.0;
 
     for(adrt_shape plane = 0; plane < output_shape[0]; plane++){
     for(adrt_shape quadrant = 0; quadrant < output_shape[1]; quadrant++){
     for(int i = 0; i < N; i++){
-        theta = theta_lb + i * dtheta;
+        adrt_scalar theta = theta_lb + i * dtheta;
 
         adrt_scalar s = 1.0;
         adrt_scalar theta_lower = atan((s - 0.5) / Nf);
@@ -126,9 +122,9 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             theta_upper = atan((s + 0.5) / Nf);
         }
 
-        wgt = (theta - theta_lower) / (theta_upper - theta_lower);
-        wgt *= (wgt >= 0.0);
-        
+        adrt_scalar wgt = (theta - theta_lower) / (theta_upper - theta_lower);
+        wgt = (wgt >= 0 ? wgt : 0);
+
         // compute, store interpolated column in buffer
         for(int j = 0; j < 2 * N - 1; j++){
 
@@ -153,7 +149,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
         // do column (buffer) interpolation
         for (int j = 0; j < N; j++){
 
-            t = t_lb + j * dt;
+            adrt_scalar t = t_lb + j * dt;
 
             adrt_scalar t_lower = cos_factor * ((h - 0.5) / Nf - h_star);
             adrt_scalar t_upper = cos_factor * ((h + 0.5) / Nf - h_star);      
