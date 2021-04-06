@@ -103,23 +103,23 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     const adrt_scalar theta_lb = adrt_scalar{0} + dtheta / adrt_scalar{2};
 
     // uniform offset grid
-    adrt_scalar sqrt_two = sqrt(2.0);
-    adrt_scalar dt = sqrt_two / Nf;
-    adrt_scalar t_lb = (-sqrt_two + dt) / 2.0;
+    const adrt_scalar sqrt_two = sqrt(adrt_scalar{2});
+    const adrt_scalar dt = sqrt_two / Nf;
+    const adrt_scalar t_lb = (-sqrt_two + dt) / 2;
 
     for(adrt_shape plane = 0; plane < output_shape[0]; plane++){
     for(adrt_shape quadrant = 0; quadrant < output_shape[1]; quadrant++){
     for(int i = 0; i < N; i++){
         adrt_scalar theta = theta_lb + i * dtheta;
 
-        adrt_scalar s = 1.0;
-        adrt_scalar theta_lower = atan((s - 0.5) / Nf);
-        adrt_scalar theta_upper = atan((s + 0.5) / Nf);
+        adrt_scalar s = 1;
+        adrt_scalar theta_lower = atan((s - adrt_scalar{0.5}) / Nf);
+        adrt_scalar theta_upper = atan((s + adrt_scalar{0.5}) / Nf);
 
         while(theta_upper < theta){
             s++;
-            theta_lower = atan((s - 0.5) / Nf);
-            theta_upper = atan((s + 0.5) / Nf);
+            theta_lower = atan((s - adrt_scalar{0.5}) / Nf);
+            theta_upper = atan((s + adrt_scalar{0.5}) / Nf);
         }
 
         adrt_scalar wgt = (theta - theta_lower) / (theta_upper - theta_lower);
@@ -138,26 +138,26 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             const adrt_scalar val_right = adrt_array_access(data, 
                 corrected_shape, plane, quadrant, d, a_right);
 
-            buf_col[j] = (1.0 - wgt) * val_left + wgt * val_right;
+            buf_col[j] = (1 - wgt) * val_left + wgt * val_right;
         }
 
-        adrt_scalar h_star = (1.0 - tan(theta)) / 2.0;
+        adrt_scalar h_star = (1 - tan(theta)) / 2;
         adrt_scalar cos_factor = cos(theta);
 
-        adrt_scalar h = 1.0 - Nf;
+        adrt_scalar h = 1 - Nf;
 
         // do column (buffer) interpolation
         for (int j = 0; j < N; j++){
 
             adrt_scalar t = t_lb + j * dt;
 
-            adrt_scalar t_lower = cos_factor * ((h - 0.5) / Nf - h_star);
-            adrt_scalar t_upper = cos_factor * ((h + 0.5) / Nf - h_star);      
+            adrt_scalar t_lower = cos_factor * ((h - adrt_scalar{0.5}) / Nf - h_star);
+            adrt_scalar t_upper = cos_factor * ((h + adrt_scalar{0.5}) / Nf - h_star);
 
             while(t_upper < t){
                 h++;
-                t_lower = cos_factor * ((h - 0.5) / Nf - h_star);
-                t_upper = cos_factor * ((h + 0.5) / Nf - h_star);
+                t_lower = cos_factor * ((h - adrt_scalar{0.5}) / Nf - h_star);
+                t_upper = cos_factor * ((h + adrt_scalar{0.5}) / Nf - h_star);
             }
             
             wgt = (t - t_lower) / (t_upper - t_lower);
@@ -171,7 +171,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             else {
             // put inteprolated value to destination buffer
             adrt_array_access(out, output_shape, plane, quadrant, d, a)
-            = ((1.0 - wgt) * buf_col[hi - 1] + wgt * buf_col[hi])/cos(theta);
+            = ((1 - wgt) * buf_col[hi - 1] + wgt * buf_col[hi])/cos(theta);
             }
         }
     }
