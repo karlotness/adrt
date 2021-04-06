@@ -87,7 +87,7 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
-    const adrt_shape num_iters = adrt_num_iters(corrected_shape[3]);
+    const int num_iters = adrt_num_iters(corrected_shape[3]);
 
     int iter_end   = (base_iter_end < 0? base_iter_end + num_iters + 1: base_iter_end);
     int iter_start = (base_iter_start < 0? base_iter_start + num_iters + 1: base_iter_start);
@@ -122,7 +122,7 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
         }
     }
 
-    for(adrt_shape i = 1; i <= iter_start; ++i) {
+    for(int i = 1; i <= iter_start; ++i) {
         curr_shape[2] = 2 * prev_shape[2];
         curr_shape[3] = adrt_floor_div2(prev_shape[3]);
 
@@ -132,7 +132,7 @@ ndim, const adrt_shape *const shape, const int base_iter_start, const int base_i
 
 
     // Outer loop over iterations (this loop must be serial)
-    for(adrt_shape i = iter_start+1; i <= iter_end; ++i) {
+    for(int i = iter_start+1; i <= iter_end; ++i) {
         curr_shape[2] = 2 * prev_shape[2];
         curr_shape[3] = adrt_floor_div2(prev_shape[3]);
         for(adrt_shape rev_row = 0; rev_row < curr_shape[4]; ++rev_row) {

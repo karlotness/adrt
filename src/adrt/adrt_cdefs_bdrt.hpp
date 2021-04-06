@@ -95,7 +95,7 @@ base_iter_end, adrt_scalar *const out,
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
-    const adrt_shape num_iters = adrt_num_iters(corrected_shape[3]);
+    const int num_iters = adrt_num_iters(corrected_shape[3]);
 
     int iter_end   = (base_iter_end < 0? base_iter_end + num_iters + 1: base_iter_end);
     int iter_start = (base_iter_start < 0? base_iter_start + num_iters + 1: base_iter_start);
@@ -137,7 +137,7 @@ base_iter_end, adrt_scalar *const out,
 
     adrt_shape nsections = 1;
 
-    for(adrt_shape i = 1; i <= iter_start; ++i) {
+    for(int i = 1; i <= iter_start; ++i) {
         // Compute the curr_stride for the current buffer (based on prev shape)
         curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
         nsections *= 2;
@@ -147,7 +147,7 @@ base_iter_end, adrt_scalar *const out,
     }
 
     // Outer loop over iterations (this loop must be serial)
-    for(adrt_shape i = iter_start + 1; i <= iter_end; ++i) {
+    for(int i = iter_start + 1; i <= iter_end; ++i) {
         // Compute the curr_stride for the current buffer (based on prev shape)
         curr_stride[3] = adrt_floor_div2(prev_stride[3]); // stride for section
 
