@@ -109,7 +109,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
 
     for(adrt_shape plane = 0; plane < output_shape[0]; plane++){
     for(adrt_shape quadrant = 0; quadrant < output_shape[1]; quadrant++){
-    for(int i = 0; i < N; i++){
+    for(adrt_shape i = 0; i < N; i++){
         adrt_scalar theta = theta_lb + i * dtheta;
 
         adrt_scalar s = 1;
@@ -126,7 +126,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
         wgt = (wgt >= 0 ? wgt : 0);
 
         // compute, store interpolated column in buffer
-        for(int j = 0; j < 2 * N - 1; j++){
+        for(adrt_shape j = 0; j < 2 * N - 1; j++){
 
             const adrt_shape d = j;
             const adrt_shape a_left  = s - 1;
@@ -147,7 +147,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
         adrt_scalar h = 1 - Nf;
 
         // do column (buffer) interpolation
-        for (int j = 0; j < N; j++){
+        for (adrt_shape j = 0; j < N; j++){
 
             adrt_scalar t = t_lb + j * dt;
 
