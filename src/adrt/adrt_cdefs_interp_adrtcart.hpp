@@ -101,9 +101,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
         static_cast<adrt_scalar>(adrt_pi_4) / (Nf - adrt_scalar{1.0});
 
     // uniform offset grid
-    const adrt_scalar sqrt_two = sqrt(adrt_scalar{2});
-    const adrt_scalar dt = sqrt_two / Nf;
-    const adrt_scalar t_lb = (-sqrt_two + dt) / 2;
+    const adrt_scalar dt = static_cast<adrt_scalar>(adrt_sqrt2) / Nf;
+    const adrt_scalar t_lb = (-1 * static_cast<adrt_scalar>(adrt_sqrt2) + dt) / 2;
 
     for(adrt_shape plane = 0; plane < output_shape[0]; plane++){
     for(adrt_shape quadrant = 0; quadrant < output_shape[1]; quadrant++){

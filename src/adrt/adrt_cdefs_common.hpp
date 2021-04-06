@@ -37,6 +37,7 @@
 #include <array>
 
 const long double adrt_pi_4 = 0.785398163397448309615660845819875721L;
+const long double adrt_sqrt2 = 1.414213562373095048801688724209698079L;
 
 int adrt_num_iters(size_t shape);
 
