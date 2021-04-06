@@ -94,8 +94,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     // NO PYTHON API BELOW THIS POINT
     Py_BEGIN_ALLOW_THREADS;
 
-    const int N = corrected_shape[3];
-    const adrt_scalar Nf = (adrt_scalar) N;
+    const adrt_shape N = corrected_shape[3];
+    const adrt_scalar Nf = static_cast<adrt_scalar>(N);
 
     adrt_scalar pi = 3.141592653589793;
     
