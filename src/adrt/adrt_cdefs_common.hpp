@@ -36,6 +36,8 @@
 #include <cstddef>
 #include <array>
 
+const long double adrt_pi_4 = 0.785398163397448309615660845819875721L;
+
 int adrt_num_iters(size_t shape);
 
 template <typename adrt_shape, size_t N>

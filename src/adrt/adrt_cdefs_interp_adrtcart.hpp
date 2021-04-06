@@ -40,8 +40,6 @@
 #include <utility>
 #include <type_traits>
 
-const long double adrt_pi_4 = 0.785398163397448309615660845819875721L;
-
 template <typename adrt_scalar, typename adrt_shape>
 static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
     // The current implementation uses floating point constants and will not work correctly with integers
