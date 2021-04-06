@@ -97,8 +97,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     const adrt_scalar Nf = static_cast<adrt_scalar>(N);
 
     // uniform angle grid
-    const adrt_scalar dtheta = 
-        static_cast<adrt_scalar>(adrt_pi_4) / (Nf - adrt_scalar{1.0});
+    const adrt_scalar dtheta =
+        static_cast<adrt_scalar>(adrt_pi_4) / (Nf - 1);
 
     // uniform offset grid
     const adrt_scalar dt = static_cast<adrt_scalar>(adrt_sqrt2) / Nf;
@@ -109,18 +109,16 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
 
     for(adrt_shape i = 0; i < N; i++){
         adrt_scalar theta = i * dtheta;
-        adrt_scalar one = 1.0;
-        adrt_scalar hlf = 0.5;
 
-        adrt_scalar s = ceil((Nf - one) * tan(theta));
-        adrt_scalar theta_lower = atan((s - one) / (Nf - one));
-        adrt_scalar theta_upper = atan((s      ) / (Nf - one));
+        adrt_scalar s = ceil((Nf - 1) * tan(theta));
+        adrt_scalar theta_lower = atan((s - 1) / (Nf - 1));
+        adrt_scalar theta_upper = atan((s      ) / (Nf - 1));
 
         adrt_scalar wgt = (theta - theta_lower) / (theta_upper - theta_lower);
 
-        wgt = (wgt > 1.0 ? 1.0 : wgt);
-        wgt = (wgt < 0.0 ? 0.0 : wgt);
-        
+        wgt = (wgt > 1 ? 1 : wgt);
+        wgt = (wgt < 0 ? 0 : wgt);
+
         // compute, store interpolated column in buffer
         for(adrt_shape j = 0; j < 2 * N - 1; j++){
 
@@ -148,8 +146,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             adrt_scalar t = t_lb + j * dt;
 
             h = round(Nf * (t / cos_factor + h_star));
-            adrt_scalar t_lower = cos_factor * ((h - hlf) / Nf - h_star);
-            adrt_scalar t_upper = cos_factor * ((h + hlf) / Nf - h_star);      
+            adrt_scalar t_lower = cos_factor * ((h - adrt_scalar{0.5}) / Nf - h_star);
+            adrt_scalar t_upper = cos_factor * ((h + adrt_scalar{0.5}) / Nf - h_star);
 
             wgt = (t - t_lower) / (t_upper - t_lower);
 
