@@ -43,8 +43,8 @@
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
-    // The current implementation multiplies values by float constants and will not work correctly with integers
-    static_assert(std::is_floating_point<adrt_scalar>::value, "Backprojection requires floating point");
+    // The current implementation uses floating point constants and will not work correctly with integers
+    static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
 
     // Shape (plane, quadrant, row, col)
     const std::array<adrt_shape, 4> corrected_shape =
