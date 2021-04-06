@@ -40,6 +40,7 @@
 #include <utility>
 #include <type_traits>
 
+const long double adrt_pi_4 = 0.785398163397448309615660845819875721L;
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
@@ -97,11 +98,9 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     const adrt_shape N = corrected_shape[3];
     const adrt_scalar Nf = static_cast<adrt_scalar>(N);
 
-    adrt_scalar pi = 3.141592653589793;
-    
     // uniform angle grid
-    adrt_scalar dtheta = pi / 4.0 / Nf;
-    adrt_scalar theta_lb = 0.0 + dtheta / 2.0;
+    const adrt_scalar dtheta = static_cast<adrt_scalar>(adrt_pi_4) / Nf;
+    const adrt_scalar theta_lb = adrt_scalar{0} + dtheta / adrt_scalar{2};
     adrt_scalar theta = theta_lb;
 
     // uniform offset grid
