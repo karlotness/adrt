@@ -33,7 +33,6 @@
 #ifndef ADRTC_CDEFS_ADRT_H
 #define ADRTC_CDEFS_ADRT_H
 
-#include "adrt_cdefs_py.hpp"
 #include "adrt_cdefs_common.hpp"
 #include <array>
 #include <utility>
