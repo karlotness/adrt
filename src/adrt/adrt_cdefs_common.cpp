@@ -105,9 +105,12 @@ inline int adrt_num_iters_impl(size_t shape) {
 #endif // End platform cases
 
 } // End anonymous namespace
-int adrt_num_iters(size_t shape) {
-    if(shape <= 1) {
-        return 0;
+
+namespace adrt {
+    int num_iters(size_t shape) {
+        if(shape <= 1) {
+            return 0;
+        }
+        return adrt_num_iters_impl(shape);
     }
-    return adrt_num_iters_impl(shape);
 }

@@ -36,10 +36,96 @@
 #include <cstddef>
 #include <array>
 
-const long double adrt_pi_4 = 0.785398163397448309615660845819875721L;
-const long double adrt_sqrt2 = 1.414213562373095048801688724209698079L;
+namespace adrt {
+    int num_iters(size_t shape);
 
-int adrt_num_iters(size_t shape);
+    namespace _const {
+        const long double pi_4 = 0.785398163397448309615660845819875721L;
+        const long double sqrt2 = 1.414213562373095048801688724209698079L;
+    } // end namespace adrt::_const
+
+    namespace _common {
+
+        inline bool is_pow2(size_t val) {
+            if(val == 0) {
+                return false;
+            }
+            return !(val & (val - 1));
+        }
+
+        inline size_t floor_div2(size_t val) {
+            // Only for non-negative values
+            return val / 2;
+        }
+
+        inline size_t ceil_div2(size_t val) {
+            // Only for non-negative values
+            return (val / 2) + (val % 2);
+        }
+
+        template <size_t ndim>
+        bool is_square_power_of_two(std::array<size_t, ndim> shape) {
+            static_assert(ndim >= 2, "Must have at least two dimensions.");
+            if(shape[ndim - 1] != shape[ndim - 2]) {
+                // Array is not square
+                return false;
+            }
+            for(size_t i = ndim - 2; i < ndim; ++i) {
+                // Check if all are powers of two
+                if(shape[i] <= 0) {
+                    return false;
+                }
+                if(!is_pow2(shape[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        template<typename scalar, size_t N>
+        scalar array_product(const std::array<scalar, N> arr) {
+            scalar acc = 1;
+            for(size_t i = 0; i < N; ++i) {
+                acc *= arr[i];
+            }
+            return acc;
+        }
+
+        template<size_t N>
+        std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
+            std::array<size_t, N> strides_out;
+            size_t step_size = 1;
+            for(size_t i = 0; i < N; ++i) {
+                size_t idx_i = N - i - 1;
+                strides_out[idx_i] = step_size;
+                step_size *= shape_in[idx_i];
+            }
+            return strides_out;
+        }
+
+        template <typename scalar, size_t N, typename... Idx>
+        scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, const Idx... idxs) {
+            static_assert(sizeof...(idxs) == N, "Must provide N array indices");
+            const std::array<size_t, N> idx {idxs...};
+            size_t acc = 0;
+            for(size_t i = 0; i < N; ++i) {
+                acc += strides[i] * idx[i];
+            }
+            return buf[acc];
+        }
+
+        template <typename scalar, size_t N, typename... Idx>
+        scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, const Idx... idxs) {
+            const std::array<size_t, N> strides = compute_strides(shape);
+            return array_stride_access(buf, strides, idxs...);
+        }
+
+    } // end namespace adrt::_common
+} // end namespace adrt
+
+inline int adrt_num_iters(size_t shape) {
+    return adrt::num_iters(shape);
+}
 
 template <typename adrt_shape, size_t N>
 std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
@@ -73,20 +159,17 @@ adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_sha
 }
 
 inline bool adrt_is_pow2(size_t val) {
-    if(val == 0) {
-        return false;
-    }
-    return !(val & (val - 1));
+    return adrt::_common::is_pow2(val);
 }
 
 inline size_t adrt_floor_div2(size_t val) {
     // Only for non-negative values
-    return val / 2;
+    return adrt::_common::floor_div2(val);
 }
 
 inline size_t adrt_ceil_div2(size_t val) {
     // Only for non-negative values
-    return (val / 2) + (val % 2);
+    return adrt::_common::ceil_div2(val);
 }
 
 #endif //ADRTC_CDEFS_COMMON_H
