@@ -78,7 +78,7 @@ static bool adrt_shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> 
 }
 
 template <size_t n_virtual_dim>
-static PyArrayObject *adrt_new_array(int ndim, std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+static PyArrayObject *adrt_new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     if(ndim > static_cast<int>(n_virtual_dim)) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions computed for output array");
         return nullptr;
