@@ -197,6 +197,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         if(!ret || !tmp_buf) {
             PyMem_Free(tmp_buf);
             Py_XDECREF(ret);
+            PyErr_NoMemory();
             return nullptr;
         }
         // NO PYTHON API BELOW THIS POINT
@@ -214,6 +215,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         if(!ret || !tmp_buf) {
             PyMem_Free(tmp_buf);
             Py_XDECREF(ret);
+            PyErr_NoMemory();
             return nullptr;
         }
         // NO PYTHON API BELOW THIS POINT
