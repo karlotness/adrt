@@ -445,7 +445,7 @@ static PyObject *interp_adrtcart(PyObject* /* self */, PyObject *args){
     return nullptr;
 }
 
-static PyObject *num_iters(PyObject* /* self */, PyObject *arg){
+static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
     size_t val = PyLong_AsSize_t(arg);
     if(PyErr_Occurred()) {
         return nullptr;
@@ -457,7 +457,7 @@ static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
     {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
-    {"num_iters", num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
+    {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {"interp_adrtcart", interp_adrtcart, METH_VARARGS, 
      "Interpolate ADRT output to Cartesian coordinate system"},
     {nullptr, nullptr, 0, nullptr}
