@@ -450,7 +450,7 @@ static PyObject *num_iters(PyObject* /* self */, PyObject *arg){
     if(PyErr_Occurred()) {
         return nullptr;
     }
-    return PyLong_FromLong(adrt_num_iters(val));
+    return PyLong_FromLong(adrt::num_iters(val));
 }
 
 static PyMethodDef adrt_cdefs_methods[] = {
