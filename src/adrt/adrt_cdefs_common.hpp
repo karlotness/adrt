@@ -37,6 +37,9 @@
 #include <array>
 
 namespace adrt {
+
+    using std::size_t;
+
     int num_iters(size_t shape);
 
     namespace _const {
