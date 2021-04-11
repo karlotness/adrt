@@ -107,10 +107,38 @@ inline int adrt_num_iters_impl(size_t shape) {
 } // End anonymous namespace
 
 namespace adrt {
+
     int num_iters(size_t shape) {
         if(shape <= 1) {
             return 0;
         }
         return adrt_num_iters_impl(shape);
     }
+
+    // Implementation for adrt
+    bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
+        return adrt::_common::is_square_power_of_two(shape);
+    }
+
+    // Implementation for adrt
+    std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape) {
+        std::array<size_t, 5> expanded_shape = {
+            shape[0],
+            4,
+            shape[1],
+            2 * shape[2] - 1,
+            1};
+        return expanded_shape;
+    }
+
+    // Implementation for adrt
+    std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape) {
+        std::array<size_t, 4> result_shape = {
+            shape[0],
+            4,
+            2 * shape[2] - 1,
+            shape[1]};
+        return result_shape;
+    }
+
 }

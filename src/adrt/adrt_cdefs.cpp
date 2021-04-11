@@ -167,28 +167,9 @@ static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
     return true;
 }
 
-template <size_t ndim>
-static bool adrt_is_square_power_of_two(const std::array<size_t, ndim> &shape) {
-    static_assert(ndim >= 2, "Must have at least two dimensions.");
-    if(shape[ndim - 1] != shape[ndim - 2]) {
-        // Array is not square
-        return false;
-    }
-    for(size_t i = ndim - 2; i < ndim; ++i) {
-        // Check if all are powers of two
-        if(shape[i] <= 0) {
-            return false;
-        }
-        if(!adrt_is_pow2(shape[i])) {
-            return false;
-        }
-    }
-    return true;
-}
-
 extern "C" {
 
-static PyObject *adrt(PyObject* /* self */, PyObject *arg) {
+static PyObject *adrt_py(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
     PyArrayObject *I = adrt_extract_array(arg);
     if(!I) {
@@ -199,50 +180,54 @@ static PyObject *adrt(PyObject* /* self */, PyObject *arg) {
     if(!adrt_shape_to_array<2, 3>(I, input_shape)) {
         return nullptr;
     }
-    if(!adrt_is_square_power_of_two(input_shape)) {
+    if(!adrt::adrt_is_valid_shape(input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must be square with a power of two shape");
         return nullptr;
     }
     // Compute effective output shape
-    std::array<size_t, 4> output_shape = {
-        input_shape[0],
-        4,
-        2 * input_shape[2] - 1,
-        input_shape[2]
-    };
+    const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(input_shape);
+    const size_t tmp_buf_elems = adrt::_common::array_product(adrt::adrt_buffer_shape(input_shape));
     // Process input array
-    PyArrayObject *ret = nullptr;
     int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT32);
-        if(!ret ||
-           !adrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      input_shape,
-                      static_cast<npy_float32*>(PyArray_DATA(ret)),
-                      output_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT32);
+        npy_float32 *tmp_buf = PyMem_New(npy_float32, tmp_buf_elems);
+        if(!ret || !tmp_buf) {
+            PyMem_Free(tmp_buf);
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::adrt_basic(static_cast<npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        PyMem_Free(tmp_buf);
+        return reinterpret_cast<PyObject*>(ret);
+    }
     case NPY_FLOAT64:
-        ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT64);
-        if(!ret ||
-           !adrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      input_shape,
-                      static_cast<npy_float64*>(PyArray_DATA(ret)),
-                      output_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT64);
+        npy_float64 *tmp_buf = PyMem_New(npy_float64, tmp_buf_elems);
+        if(!ret || !tmp_buf) {
+            PyMem_Free(tmp_buf);
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::adrt_basic(static_cast<npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        PyMem_Free(tmp_buf);
+        return reinterpret_cast<PyObject*>(ret);
+    }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
-        goto fail;
+        return nullptr;
     }
-    return reinterpret_cast<PyObject*>(ret);
-  fail:
-    // Failure, free array and return null
-    Py_XDECREF(ret);
-    return nullptr;
 }
 
 static PyObject *iadrt(PyObject* /* self */, PyObject *args){
@@ -469,7 +454,7 @@ static PyObject *num_iters(PyObject* /* self */, PyObject *arg){
 }
 
 static PyMethodDef adrt_cdefs_methods[] = {
-    {"adrt", adrt, METH_O, "Compute the ADRT"},
+    {"adrt", adrt_py, METH_O, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
     {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
     {"num_iters", num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
