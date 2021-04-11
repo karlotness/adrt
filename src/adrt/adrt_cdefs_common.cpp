@@ -38,7 +38,7 @@ using std::size_t;
 
 inline int adrt_num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt_is_pow2(shape);
+    bool is_power_of_two = adrt::_common::is_pow2(shape);
     int r = 0;
     while(shape != 0) {
         ++r;
@@ -53,7 +53,7 @@ inline int adrt_num_iters_fallback(size_t shape) {
 
 inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt_is_pow2(shape);
+    bool is_power_of_two = adrt::_common::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         unsigned int ushape = static_cast<unsigned int>(shape);
         int lead_zero = __builtin_clz(ushape);
@@ -78,7 +78,7 @@ inline int adrt_num_iters_impl(size_t shape) {
 
 inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt_is_pow2(shape);
+    bool is_power_of_two = adrt::_common::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
         unsigned long ushape = static_cast<unsigned long>(shape);
