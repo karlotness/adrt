@@ -169,7 +169,7 @@ static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
 
 extern "C" {
 
-static PyObject *adrt_py(PyObject* /* self */, PyObject *arg) {
+static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
     PyArrayObject *I = adrt_extract_array(arg);
     if(!I) {
@@ -454,7 +454,7 @@ static PyObject *num_iters(PyObject* /* self */, PyObject *arg){
 }
 
 static PyMethodDef adrt_cdefs_methods[] = {
-    {"adrt", adrt_py, METH_O, "Compute the ADRT"},
+    {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
     {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
     {"num_iters", num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
