@@ -32,7 +32,9 @@
 #include "adrt_cdefs_common.hpp"
 #include <limits>
 
-static inline int adrt_num_iters_fallback(size_t shape) {
+namespace {
+
+inline int adrt_num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);
     int r = 0;
@@ -47,7 +49,7 @@ static inline int adrt_num_iters_fallback(size_t shape) {
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
-static inline int adrt_num_iters_impl(size_t shape) {
+inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
@@ -72,7 +74,7 @@ static inline int adrt_num_iters_impl(size_t shape) {
 
 #include <intrin.h>
 
-static inline int adrt_num_iters_impl(size_t shape) {
+inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
@@ -96,12 +98,13 @@ static inline int adrt_num_iters_impl(size_t shape) {
 
 #else // Fallback only
 
-static inline int adrt_num_iters_impl(size_t shape) {
+inline int adrt_num_iters_impl(size_t shape) {
     return adrt_num_iters_fallback(shape);
 }
 
 #endif // End platform cases
 
+} // End anonymous namespace
 int adrt_num_iters(size_t shape) {
     if(shape <= 1) {
         return 0;
