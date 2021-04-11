@@ -37,7 +37,9 @@
 #include "adrt_cdefs_interp_adrtcart.hpp"
 #include <array>
 
-static PyArrayObject *adrt_extract_array(PyObject *arg) {
+namespace adrt { namespace _py {
+
+static PyArrayObject *extract_array(PyObject *arg) {
     if(!PyArray_Check(arg)) {
         // This isn't an array
         PyErr_SetString(PyExc_TypeError, "Argument must be a NumPy array or compatible subclass");
@@ -52,7 +54,7 @@ static PyArrayObject *adrt_extract_array(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-static bool adrt_shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> &shape_arr) {
+static bool shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> &shape_arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     int sndim = PyArray_NDIM(arr);
     size_t ndim = sndim;
@@ -78,7 +80,7 @@ static bool adrt_shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> 
 }
 
 template <size_t n_virtual_dim>
-static PyArrayObject *adrt_new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     if(ndim > static_cast<int>(n_virtual_dim)) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions computed for output array");
         return nullptr;
@@ -90,6 +92,8 @@ static PyArrayObject *adrt_new_array(int ndim, const std::array<size_t, n_virtua
     PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
     return reinterpret_cast<PyArrayObject*>(arr);
 }
+
+}} // End namespace adrt::_py
 
 static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out) {
     // validate_array without iteration bounds
@@ -171,13 +175,13 @@ extern "C" {
 
 static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *I = adrt_extract_array(arg);
+    PyArrayObject *I = adrt::_py::extract_array(arg);
     if(!I) {
         return nullptr;
     }
     // Extract shapes and check sizes
     std::array<size_t, 3> input_shape;
-    if(!adrt_shape_to_array<2, 3>(I, input_shape)) {
+    if(!adrt::_py::shape_to_array<2, 3>(I, input_shape)) {
         return nullptr;
     }
     if(!adrt::adrt_is_valid_shape(input_shape)) {
@@ -192,7 +196,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT32);
+        PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT32);
         npy_float32 *tmp_buf = PyMem_New(npy_float32, tmp_buf_elems);
         if(!ret || !tmp_buf) {
             PyMem_Free(tmp_buf);
@@ -210,7 +214,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *ret = adrt_new_array(ndim + 1, output_shape, NPY_FLOAT64);
+        PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT64);
         npy_float64 *tmp_buf = PyMem_New(npy_float64, tmp_buf_elems);
         if(!ret || !tmp_buf) {
             PyMem_Free(tmp_buf);
