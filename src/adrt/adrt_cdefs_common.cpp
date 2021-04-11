@@ -34,6 +34,8 @@
 
 namespace {
 
+using std::size_t;
+
 inline int adrt_num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt_is_pow2(shape);
