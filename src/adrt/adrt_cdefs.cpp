@@ -90,7 +90,25 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
         new_shape[i] = virtual_shape[(n_virtual_dim - ndim) + i];
     }
     PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
+    if(!arr) {
+        PyErr_NoMemory();
+        return nullptr;
+    }
     return reinterpret_cast<PyArrayObject*>(arr);
+}
+
+template <typename scalar>
+static scalar *py_malloc(size_t n_elem) {
+    void *ret = PyMem_Malloc(sizeof(scalar) * n_elem);
+    if(!ret) {
+        PyErr_NoMemory();
+        return nullptr;
+    }
+    return static_cast<scalar*>(ret);
+}
+
+static void py_free(void *ptr) {
+    PyMem_Free(ptr);
 }
 
 }} // End namespace adrt::_py
@@ -197,11 +215,10 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     case NPY_FLOAT32:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT32);
-        npy_float32 *tmp_buf = PyMem_New(npy_float32, tmp_buf_elems);
+        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(tmp_buf_elems);
         if(!ret || !tmp_buf) {
-            PyMem_Free(tmp_buf);
+            adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
-            PyErr_NoMemory();
             return nullptr;
         }
         // NO PYTHON API BELOW THIS POINT
@@ -209,17 +226,16 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         adrt::adrt_basic(static_cast<npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
-        PyMem_Free(tmp_buf);
+        adrt::_py::py_free(tmp_buf);
         return reinterpret_cast<PyObject*>(ret);
     }
     case NPY_FLOAT64:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT64);
-        npy_float64 *tmp_buf = PyMem_New(npy_float64, tmp_buf_elems);
+        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(tmp_buf_elems);
         if(!ret || !tmp_buf) {
-            PyMem_Free(tmp_buf);
+            adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
-            PyErr_NoMemory();
             return nullptr;
         }
         // NO PYTHON API BELOW THIS POINT
@@ -227,7 +243,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         adrt::adrt_basic(static_cast<npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
-        PyMem_Free(tmp_buf);
+        adrt::_py::py_free(tmp_buf);
         return reinterpret_cast<PyObject*>(ret);
     }
     default:
