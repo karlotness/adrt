@@ -67,7 +67,7 @@ namespace adrt {
         }
 
         template <size_t ndim>
-        bool is_square_power_of_two(std::array<size_t, ndim> shape) {
+        bool is_square_power_of_two(const std::array<size_t, ndim> &shape) {
             static_assert(ndim >= 2, "Must have at least two dimensions.");
             if(shape[ndim - 1] != shape[ndim - 2]) {
                 // Array is not square
@@ -86,7 +86,7 @@ namespace adrt {
         }
 
         template<typename scalar, size_t N>
-        scalar array_product(const std::array<scalar, N> arr) {
+        scalar array_product(const std::array<scalar, N> &arr) {
             scalar acc = 1;
             for(size_t i = 0; i < N; ++i) {
                 acc *= arr[i];
