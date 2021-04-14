@@ -36,6 +36,7 @@
 #include "adrt_cdefs_bdrt.hpp"
 #include "adrt_cdefs_interp_adrtcart.hpp"
 #include <array>
+#include <tuple>
 
 namespace adrt { namespace _py {
 
@@ -54,13 +55,14 @@ static PyArrayObject *extract_array(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-static bool shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> &shape_arr) {
+static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
+    std::array<size_t, max_dim> shape_arr;
     int sndim = PyArray_NDIM(arr);
     size_t ndim = sndim;
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
-        return false;
+        return std::make_tuple(false, shape_arr);
     }
     npy_intp *numpy_shape = PyArray_SHAPE(arr);
     // Prepend trivial dimensions
@@ -72,11 +74,11 @@ static bool shape_to_array(PyArrayObject *arr, std::array<size_t, max_dim> &shap
         npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
-            return false;
+            return std::make_tuple(false, shape_arr);
         }
         shape_arr[i + (max_dim - ndim)] = shape;
     }
-    return true;
+    return std::make_tuple(true, shape_arr);
 }
 
 template <size_t n_virtual_dim>
@@ -198,8 +200,10 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
+    bool valid_in_shape;
     std::array<size_t, 3> input_shape;
-    if(!adrt::_py::shape_to_array<2, 3>(I, input_shape)) {
+    std::tie(valid_in_shape, input_shape) = adrt::_py::shape_to_array<2, 3>(I);
+    if(!valid_in_shape) {
         return nullptr;
     }
     if(!adrt::adrt_is_valid_shape(input_shape)) {
