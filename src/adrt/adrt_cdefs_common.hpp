@@ -73,16 +73,13 @@ namespace adrt {
                 // Array is not square
                 return false;
             }
-            for(size_t i = ndim - 2; i < ndim; ++i) {
-                // Check if all are powers of two
+            // Ensure no zero dimensions
+            for(size_t i = 0; i < ndim; ++i) {
                 if(shape[i] <= 0) {
                     return false;
                 }
-                if(!is_pow2(shape[i])) {
-                    return false;
-                }
             }
-            return true;
+            return is_pow2(shape[ndim - 2]) && is_pow2(shape[ndim - 1]);
         }
 
         template<typename scalar, size_t N>
