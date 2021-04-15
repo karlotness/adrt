@@ -32,6 +32,11 @@
 #include "adrt_cdefs_common.hpp"
 #include <limits>
 
+#ifdef _MSC_VER
+// MSVC intrinsics
+#include <intrin.h>
+#endif
+
 namespace {
 
 using std::size_t;
@@ -73,8 +78,6 @@ inline int adrt_num_iters_impl(size_t shape) {
 }
 
 #elif defined(_MSC_VER) // MSVC intrinsics
-
-#include <intrin.h>
 
 inline int adrt_num_iters_impl(size_t shape) {
     // Relies on earlier check that shape != 0
