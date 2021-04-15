@@ -47,7 +47,7 @@ namespace adrt {
 
     template <typename adrt_scalar>
     std::array<size_t, 5> adrt_core(const adrt_scalar *const data, const std::array<size_t, 5> &in_shape, adrt_scalar *const out) {
-        std::array<size_t, 5> curr_shape = {
+        const std::array<size_t, 5> curr_shape = {
             in_shape[0], // Keep batch dimension
             4, // Always 4 quadrants
             adrt::_common::ceil_div2(in_shape[2]), // We halve the number of rows
