@@ -84,7 +84,8 @@ static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObjec
 template <size_t n_virtual_dim>
 static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     if(ndim > static_cast<int>(n_virtual_dim)) {
-        PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions computed for output array");
+        // This would be a bug and should have been caught earlier. Handle it as well as we can.
+        PyErr_SetString(PyExc_RuntimeError, "Invalid number of dimensions computed for output array");
         return nullptr;
     }
     npy_intp new_shape[n_virtual_dim] = {0};
