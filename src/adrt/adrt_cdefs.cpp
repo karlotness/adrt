@@ -332,74 +332,67 @@ static PyObject *iadrt(PyObject* /* self */, PyObject *args){
     return nullptr;
 }
 
-static PyObject *bdrt(PyObject* /* self */, PyObject *args){
+static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyObject *ret = nullptr;
-    npy_intp *old_shape = nullptr;
-    npy_intp new_shape[4] = {0};
-    PyArrayObject * I;
-    int ndim = 3;
-
-    int iter_start = 0, iter_end = -1;
-    if(!adrt_validate_array_iters(args, I, iter_start, iter_end)) {
-        goto fail;
-    }
-
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
     if(!I) {
-        goto fail;
+        return nullptr;
     }
-    ndim = PyArray_NDIM(I);
-    old_shape = PyArray_SHAPE(I);
-    if(!adrt_is_valid_adrt_shape(ndim, PyArray_SHAPE(I))) {
+    // Extract shapes and check sizes
+    bool valid_in_shape;
+    std::array<size_t, 4> input_shape;
+    std::tie(valid_in_shape, input_shape) = adrt::_py::shape_to_array<3, 4>(I);
+    if(!valid_in_shape) {
+        return nullptr;
+    }
+    if(!adrt::bdrt_is_valid_shape(input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
-        goto fail;
+        return nullptr;
     }
-
-    // Compute output shape: [plane?, 2*N-1, N] (batch, row, col)
-    if(ndim == 3) {
-        new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[1];
-        new_shape[2] = old_shape[2];
-    }
-    else {
-        new_shape[0] = old_shape[0];
-        new_shape[1] = old_shape[1];
-        new_shape[2] = old_shape[2];
-        new_shape[3] = old_shape[3];
-    }
-
+    // Compute effective output shape
+    const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(input_shape);
+    const size_t tmp_buf_elems = adrt::_common::array_product(adrt::bdrt_buffer_shape(input_shape));
     // Process input array
+    const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
-        if(!ret ||
-           !bdrt_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      static_cast<unsigned char>(ndim),
-                      PyArray_SHAPE(I),
-                      iter_start, iter_end,
-                      static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(tmp_buf_elems);
+        if(!ret || !tmp_buf) {
+            adrt::_py::py_free(tmp_buf);
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::bdrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        adrt::_py::py_free(tmp_buf);
+        return reinterpret_cast<PyObject*>(ret);
+    }
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
-        if(!ret ||
-           !bdrt_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      static_cast<unsigned char>(ndim),
-                      PyArray_SHAPE(I),
-                      iter_start, iter_end,
-                      static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(tmp_buf_elems);
+        if(!ret || !tmp_buf) {
+            adrt::_py::py_free(tmp_buf);
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::bdrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        adrt::_py::py_free(tmp_buf);
+        return reinterpret_cast<PyObject*>(ret);
+    }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
-        goto fail;
+        return nullptr;
     }
-    return ret;
-  fail:
-    Py_XDECREF(ret);
-    return nullptr;
 }
 
 static PyObject *interp_adrtcart(PyObject* /* self */, PyObject *args){
@@ -482,7 +475,7 @@ static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
     {"iadrt", iadrt, METH_VARARGS, "Compute the inverse ADRT"},
-    {"bdrt", bdrt, METH_VARARGS, "Compute the backprojection of the ADRT"},
+    {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
     {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {"interp_adrtcart", interp_adrtcart, METH_VARARGS, 
      "Interpolate ADRT output to Cartesian coordinate system"},

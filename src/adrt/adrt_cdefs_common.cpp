@@ -143,4 +143,34 @@ namespace adrt {
         return result_shape;
     }
 
+    // Implementation for bdrt
+    bool bdrt_is_valid_shape(const std::array<size_t, 4> &shape) {
+        // Make sure all shapes are nonzero
+        for(size_t i = 0; i < 4; ++i) {
+            if(shape[i] <= 0) {
+                return false;
+            }
+        }
+        // Check if the rows & cols are shaped like an ADRT output
+        return ((shape[1] == 4) &&
+                (shape[2] == (shape[3] * 2 - 1)) &&
+                (adrt::_common::is_pow2(shape[3])));
+    }
+
+    // Implementation for bdrt
+    std::array<size_t, 5> bdrt_buffer_shape(const std::array<size_t, 4> &shape) {
+        std::array<size_t, 5> result_shape = {
+            shape[0], // batch
+            4,  // quadrant
+            shape[2], // row
+            shape[3], // col
+            1}; // sections
+        return result_shape;
+    }
+
+    // Implementation for bdrt
+    std::array<size_t, 4> bdrt_result_shape(const std::array<size_t, 4> &shape) {
+        return shape;
+    }
+
 }
