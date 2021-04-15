@@ -299,16 +299,6 @@ class TestBdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, expected_out.shape)
         self.assertTrue(np.allclose(c_out, expected_out))
 
-    def test_partial_bdrts_equals_complete(self):
-        n = 3
-        adrt_in = np.random.rand(2 ** n, 2 ** n)
-        bdrt_in = adrt.adrt(adrt_in)
-        bdrt_one = adrt.bdrt(bdrt_in)
-        for i in range(n):
-            bdrt_out = adrt.bdrt(bdrt_in, start=i, end=i + 1)
-            bdrt_in = bdrt_out
-        self.assertTrue(np.allclose(bdrt_one, bdrt_out))
-
     def test_materialize_array_size_4(self):
         n = 4
         full_size = n ** 2

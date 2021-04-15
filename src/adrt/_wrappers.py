@@ -163,7 +163,7 @@ def iadrt(a, start=0, end=-1):
 
 
 @_set_module("adrt")
-def bdrt(a, start=0, end=-1):
+def bdrt(a):
     r"""Backprojection for the ADRT.
 
     Parameters
@@ -187,7 +187,7 @@ def bdrt(a, start=0, end=-1):
     For more details on the backprojection implemented here see the
     source paper [press06]_.
     """
-    return _adrt_cdefs.bdrt(_normalize_array(a), start, end)
+    return _adrt_cdefs.bdrt(_normalize_array(a))
 
 
 @_set_module("adrt")
