@@ -195,7 +195,7 @@ extern "C" {
 
 static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *I = adrt::_py::extract_array(arg);
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
     if(!I) {
         return nullptr;
     }
@@ -214,7 +214,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(input_shape);
     const size_t tmp_buf_elems = adrt::_common::array_product(adrt::adrt_buffer_shape(input_shape));
     // Process input array
-    int ndim = PyArray_NDIM(I);
+    const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
@@ -227,7 +227,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -244,7 +244,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
