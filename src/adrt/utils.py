@@ -31,10 +31,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import numpy as np
-
-
 __all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
+
+
+import numpy as np
 
 
 def stitch_adrt(a, *, remove_repeated=False):
