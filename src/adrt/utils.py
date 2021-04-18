@@ -116,7 +116,7 @@ def stitch_adrt(a, *, remove_repeated=False):
         return ret[0]
 
 
-def truncate(a, orient=0):
+def truncate(a):
     r"""Truncate and rotate square domain from iadrt or bdrt output.
 
     Parameters
@@ -128,36 +128,23 @@ def truncate(a, orient=0):
     -------
     out : numpy.ndarray
           array of shape (4,N,N) or (?,4,N,N) in which N = 2**n
-
     """
 
     if a.ndim == 3:
         n = a.shape[-1]
         out = np.zeros((4, n, n), dtype=a.dtype)
-        if orient % 2 == 0:
-            out[0, :, :] = a[0, :n, :n][::-1, :].T
-            out[1, :, :] = a[1, :n, :n][::-1, :]
-            out[2, :, :] = a[2, :n, :n]
-            out[3, :, :] = a[3, :n, :n][::-1, ::-1].T
-        elif orient % 2 == 1:
-            out[0, :, :] = a[0, :n, :n][::-1, :].T
-            out[1, :, :] = a[1, (n - 1) :, :n][:, ::-1]
-            out[2, :, :] = a[2, :n, :n]
-            out[3, :, :] = a[3, (n - 1) :, :n].T
+        out[0, :, :] = a[0, :n, :n][::-1, :].T
+        out[1, :, :] = a[1, :n, :n][::-1, :]
+        out[2, :, :] = a[2, :n, :n]
+        out[3, :, :] = a[3, :n, :n][::-1, ::-1].T
 
     elif a.ndim == 4:
         n = a.shape[-1]
         out = np.zeros((a.shape[0], 4, n, n), dtype=a.dtype)
-        if orient % 2 == 0:
-            out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
-            out[:, 1, :, :] = a[:, 1, :n, :n][:, ::-1, :]
-            out[:, 2, :, :] = a[:, 2, :n, :n]
-            out[:, 3, :, :] = a[:, 3, :n, :n][:, ::-1, ::-1].transpose((0, 2, 1))
-        elif orient % 2 == 1:
-            out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
-            out[:, 1, :, :] = a[:, 1, (n - 1) :, :n][:, :, ::-1]
-            out[:, 2, :, :] = a[:, 2, :n, :n]
-            out[:, 3, :, :] = a[:, 3, (n - 1) :, :n].transpose((0, 2, 1))
+        out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
+        out[:, 1, :, :] = a[:, 1, :n, :n][:, ::-1, :]
+        out[:, 2, :, :] = a[:, 2, :n, :n]
+        out[:, 3, :, :] = a[:, 3, :n, :n][:, ::-1, ::-1].transpose((0, 2, 1))
 
     return out
 
