@@ -190,8 +190,8 @@ def bdrt(a):
     return _adrt_cdefs.bdrt(_normalize_array(a))
 
 
-@_set_module("adrt")
-def interp_adrtcart(a):
+@_set_module("adrt.utils")
+def interp_to_cart(a):
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
     Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
