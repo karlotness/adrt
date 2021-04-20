@@ -93,7 +93,7 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
     npy_intp new_shape[n_virtual_dim] = {0};
     for(size_t i = 0; i < undim; ++i) {
         const size_t shape_val = virtual_shape[(n_virtual_dim - undim) + i];
-        if(shape_val <= static_cast<size_t>(std::numeric_limits<npy_intp>::max())) {
+        if(shape_val <= static_cast<npy_uintp>(std::numeric_limits<npy_intp>::max())) {
             new_shape[i] = static_cast<npy_intp>(shape_val);
         }
         else {
