@@ -94,7 +94,10 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
     }
     PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
     if(!arr) {
-        PyErr_NoMemory();
+        if(!PyErr_Occurred()) {
+            // Don't shadow errors that NumPy may have set
+            PyErr_NoMemory();
+        }
         return nullptr;
     }
     return reinterpret_cast<PyArrayObject*>(arr);
