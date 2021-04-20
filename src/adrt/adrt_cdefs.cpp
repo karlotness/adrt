@@ -60,7 +60,7 @@ static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObjec
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
-    const size_t ndim = static_cast<size_t>(sndim);
+    const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
         return std::make_tuple(false, shape_arr);
@@ -84,7 +84,7 @@ static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObjec
 
 template <size_t n_virtual_dim>
 static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
-    const size_t undim = static_cast<size_t>(ndim);
+    const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
         PyErr_SetString(PyExc_RuntimeError, "Invalid number of dimensions computed for output array");
