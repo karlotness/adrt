@@ -131,7 +131,7 @@ namespace adrt {
             shape[0],
             4,
             shape[1],
-            2 * shape[2] - 1,
+            2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
             1};
         return expanded_shape;
     }
@@ -141,7 +141,7 @@ namespace adrt {
         std::array<size_t, 4> result_shape = {
             shape[0],
             4,
-            2 * shape[2] - 1,
+            2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
             shape[1]};
         return result_shape;
     }
