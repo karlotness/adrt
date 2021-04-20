@@ -35,6 +35,7 @@
 
 #include <cstddef>
 #include <array>
+#include <tuple>
 
 namespace adrt {
 
@@ -48,6 +49,8 @@ namespace adrt {
     } // end namespace adrt::_const
 
     namespace _common {
+
+        std::tuple<bool, size_t> mul_check(size_t a, size_t b);
 
         inline bool is_pow2(size_t val) {
             if(val == 0) {

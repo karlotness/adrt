@@ -52,6 +52,12 @@ inline int adrt_num_iters_fallback(size_t shape) {
     return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
+inline bool adrt_mul_check_fallback(size_t a, size_t b, size_t &prod) {
+    prod = a * b;
+    const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
+    return !overflow;
+}
+
 // Implementation of adrt_num_iters
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
@@ -75,6 +81,13 @@ inline int adrt_num_iters_impl(size_t shape) {
         return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
     return adrt_num_iters_fallback(shape);
+}
+
+inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
+    size_t prod_out = 0;
+    const bool overflow = __builtin_mul_overflow(a, b, &prod_out);
+    prod = prod_out;
+    return !overflow;
 }
 
 #elif defined(_MSC_VER) // MSVC intrinsics
@@ -101,10 +114,18 @@ inline int adrt_num_iters_impl(size_t shape) {
     return adrt_num_iters_fallback(shape);
 }
 
+inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
+    return adrt_mul_check_fallback(a, b, prod);
+}
+
 #else // Fallback only
 
 inline int adrt_num_iters_impl(size_t shape) {
     return adrt_num_iters_fallback(shape);
+}
+
+inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
+    return adrt_mul_check_fallback(a, b, prod);
 }
 
 #endif // End platform cases
@@ -119,6 +140,16 @@ namespace adrt {
         }
         return adrt_num_iters_impl(shape);
     }
+
+    namespace _common {
+
+        std::tuple<bool, size_t> mul_check(size_t a, size_t b) {
+            size_t prod;
+            bool ok = adrt_mul_check_impl(a, b, prod);
+            return std::make_tuple(ok, prod);
+        }
+
+    } // End adrt::_common
 
     // Implementation for adrt
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
