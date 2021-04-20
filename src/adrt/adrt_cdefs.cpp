@@ -58,20 +58,20 @@ template <size_t min_dim, size_t max_dim>
 static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     std::array<size_t, max_dim> shape_arr;
-    int sndim = PyArray_NDIM(arr);
-    size_t ndim = sndim;
+    const int sndim = PyArray_NDIM(arr);
+    const size_t ndim = static_cast<size_t>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
         return std::make_tuple(false, shape_arr);
     }
-    npy_intp *numpy_shape = PyArray_SHAPE(arr);
+    const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
     // Prepend trivial dimensions
     for(size_t i = 0; i < max_dim - ndim; ++i) {
         shape_arr[i] = 1;
     }
     // Fill rest of array
     for(size_t i = 0; i < ndim; ++i) {
-        npy_intp shape = numpy_shape[i];
+        const npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
             return std::make_tuple(false, shape_arr);
