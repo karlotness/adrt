@@ -50,7 +50,7 @@ namespace adrt {
         const std::array<size_t, 5> curr_shape = {
             in_shape[0], // Keep batch dimension
             4, // Always 4 quadrants
-            adrt::_common::ceil_div2(in_shape[2]), // We halve the number of rows
+            adrt::_common::floor_div2(in_shape[2]), // We halve the number of rows
             in_shape[3], // Keep the same number of columns
             in_shape[4] * 2, // The number of angles doubles
         };
