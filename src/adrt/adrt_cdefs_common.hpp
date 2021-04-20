@@ -85,15 +85,6 @@ namespace adrt {
             return is_pow2(shape[ndim - 2]) && is_pow2(shape[ndim - 1]);
         }
 
-        template<typename scalar, size_t N>
-        scalar array_product(const std::array<scalar, N> &arr) {
-            scalar acc = 1;
-            for(size_t i = 0; i < N; ++i) {
-                acc *= arr[i];
-            }
-            return acc;
-        }
-
         template<size_t N>
         std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             std::array<size_t, N> strides_out;

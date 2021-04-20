@@ -100,6 +100,21 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
     return reinterpret_cast<PyArrayObject*>(arr);
 }
 
+template <size_t ndim>
+static std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &shape) {
+    static_assert(ndim > 0, "Need at least one shape dimension");
+    size_t n_elem = shape[0];
+    for(size_t i = 1; i < ndim; ++i) {
+        bool ok;
+        std::tie(ok, n_elem) = adrt::_common::mul_check(n_elem, shape[i]);
+        if(!ok) {
+            PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
+            return std::make_tuple(false, size_t{0});
+        }
+    }
+    return std::make_tuple(true, n_elem);
+}
+
 template <typename scalar>
 static scalar *py_malloc(size_t n_elem) {
     bool ok;
@@ -220,7 +235,12 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(input_shape);
-    const size_t tmp_buf_elems = adrt::_common::array_product(adrt::adrt_buffer_shape(input_shape));
+    bool valid_temp_shape;
+    size_t tmp_buf_elems;
+    std::tie(valid_temp_shape, tmp_buf_elems) = adrt::_py::shape_product(adrt::adrt_buffer_shape(input_shape));
+    if(!valid_temp_shape) {
+        return nullptr;
+    }
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -359,7 +379,12 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(input_shape);
-    const size_t tmp_buf_elems = adrt::_common::array_product(adrt::bdrt_buffer_shape(input_shape));
+    bool valid_temp_shape;
+    std::size_t tmp_buf_elems;
+    std::tie(valid_temp_shape, tmp_buf_elems) = adrt::_py::shape_product(adrt::bdrt_buffer_shape(input_shape));
+    if(!valid_temp_shape) {
+        return nullptr;
+    }
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
