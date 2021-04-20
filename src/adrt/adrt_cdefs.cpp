@@ -102,7 +102,14 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
 
 template <typename scalar>
 static scalar *py_malloc(size_t n_elem) {
-    void *ret = PyMem_Malloc(sizeof(scalar) * n_elem);
+    bool ok;
+    size_t alloc_size;
+    std::tie(ok, alloc_size) = adrt::_common::mul_check(sizeof(scalar), n_elem);
+    if(!ok) {
+        PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
+        return nullptr;
+    }
+    void *ret = PyMem_Malloc(alloc_size);
     if(!ret) {
         PyErr_NoMemory();
         return nullptr;
