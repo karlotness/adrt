@@ -37,6 +37,7 @@
 #include "adrt_cdefs_interp_adrtcart.hpp"
 #include <array>
 #include <tuple>
+#include <limits>
 
 namespace adrt { namespace _py {
 
@@ -76,21 +77,29 @@ static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObjec
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
             return std::make_tuple(false, shape_arr);
         }
-        shape_arr[i + (max_dim - ndim)] = shape;
+        shape_arr[i + (max_dim - ndim)] = static_cast<size_t>(shape);
     }
     return std::make_tuple(true, shape_arr);
 }
 
 template <size_t n_virtual_dim>
 static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
-    if(ndim > static_cast<int>(n_virtual_dim)) {
+    const size_t undim = static_cast<size_t>(ndim);
+    if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
         PyErr_SetString(PyExc_RuntimeError, "Invalid number of dimensions computed for output array");
         return nullptr;
     }
     npy_intp new_shape[n_virtual_dim] = {0};
-    for(int i = 0; i < ndim; ++i) {
-        new_shape[i] = virtual_shape[(n_virtual_dim - ndim) + i];
+    for(size_t i = 0; i < undim; ++i) {
+        const size_t shape_val = virtual_shape[(n_virtual_dim - undim) + i];
+        if(shape_val <= static_cast<size_t>(std::numeric_limits<npy_intp>::max())) {
+            new_shape[i] = static_cast<npy_intp>(shape_val);
+        }
+        else {
+            PyErr_SetString(PyExc_ValueError, "Maximum allowed dimension exceeded");
+            return nullptr;
+        }
     }
     PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
     if(!arr) {
