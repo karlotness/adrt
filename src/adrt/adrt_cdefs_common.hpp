@@ -69,22 +69,6 @@ namespace adrt {
             return (val / 2) + (val % 2);
         }
 
-        template <size_t ndim>
-        bool is_square_power_of_two(const std::array<size_t, ndim> &shape) {
-            static_assert(ndim >= 2, "Must have at least two dimensions.");
-            if(shape[ndim - 1] != shape[ndim - 2]) {
-                // Array is not square
-                return false;
-            }
-            // Ensure no zero dimensions
-            for(size_t i = 0; i < ndim; ++i) {
-                if(shape[i] <= 0) {
-                    return false;
-                }
-            }
-            return is_pow2(shape[ndim - 2]) && is_pow2(shape[ndim - 1]);
-        }
-
         template<size_t N>
         std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             std::array<size_t, N> strides_out;

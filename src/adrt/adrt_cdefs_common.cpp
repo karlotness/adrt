@@ -153,7 +153,15 @@ namespace adrt {
 
     // Implementation for adrt
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
-        return adrt::_common::is_square_power_of_two(shape);
+        // Make sure all shapes are nonzero
+        for(size_t i = 0; i < 3; ++i) {
+            if(shape[i] <= 0) {
+                return false;
+            }
+        }
+        // Make sure array is square
+        return ((shape[1] == shape[2]) && // Must be square
+                (adrt::_common::is_pow2(shape[2]))); // Must have power of two shape
     }
 
     // Implementation for adrt
