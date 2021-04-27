@@ -56,7 +56,7 @@ static PyArrayObject *extract_array(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-static std::tuple<bool, std::array<size_t, max_dim>> shape_to_array(PyArrayObject *arr) {
+static std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
@@ -237,7 +237,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Extract shapes and check sizes
     bool valid_in_shape;
     std::array<size_t, 3> input_shape;
-    std::tie(valid_in_shape, input_shape) = adrt::_py::shape_to_array<2, 3>(I);
+    std::tie(valid_in_shape, input_shape) = adrt::_py::array_shape<2, 3>(I);
     if(!valid_in_shape) {
         return nullptr;
     }
@@ -381,7 +381,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     // Extract shapes and check sizes
     bool valid_in_shape;
     std::array<size_t, 4> input_shape;
-    std::tie(valid_in_shape, input_shape) = adrt::_py::shape_to_array<3, 4>(I);
+    std::tie(valid_in_shape, input_shape) = adrt::_py::array_shape<3, 4>(I);
     if(!valid_in_shape) {
         return nullptr;
     }
