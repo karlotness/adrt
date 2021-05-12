@@ -127,11 +127,10 @@ static std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &sh
     return std::make_tuple(true, n_elem);
 }
 
-template <typename scalar>
-static scalar *py_malloc(size_t n_elem) {
+static void *py_malloc(size_t n_elem, size_t elem_size) {
     bool ok;
     size_t alloc_size;
-    std::tie(ok, alloc_size) = adrt::_common::mul_check(sizeof(scalar), n_elem);
+    std::tie(ok, alloc_size) = adrt::_common::mul_check(n_elem, elem_size);
     if(!ok) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
         return nullptr;
@@ -141,7 +140,12 @@ static scalar *py_malloc(size_t n_elem) {
         PyErr_NoMemory();
         return nullptr;
     }
-    return static_cast<scalar*>(ret);
+    return ret;
+}
+
+template <typename scalar>
+static scalar *py_malloc(size_t n_elem) {
+    return static_cast<scalar*>(adrt::_py::py_malloc(n_elem, sizeof(scalar)));
 }
 
 static void py_free(void *ptr) {
