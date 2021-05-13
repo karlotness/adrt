@@ -1,5 +1,5 @@
-sphinx>=3.5.3,<4
-sphinx-rtd-theme>=0.5.1
+sphinx>=4.0.1,<5
+sphinx-rtd-theme>=0.5.2
 numpy
 scipy
 matplotlib>=3.4.0
