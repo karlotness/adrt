@@ -52,11 +52,14 @@ inline int adrt_num_iters_fallback(size_t shape) {
     return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
+#if !defined(__GNUC__) && !defined(__clang__)
+// Fallback only needed if no GCC intrinsics
 inline bool adrt_mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
 }
+#endif
 
 // Implementation of adrt_num_iters
 
