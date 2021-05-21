@@ -39,9 +39,9 @@
 #include <tuple>
 #include <limits>
 
-namespace adrt { namespace _py {
+namespace adrt { namespace _py { namespace {
 
-static PyArrayObject *extract_array(PyObject *arg) {
+PyArrayObject *extract_array(PyObject *arg) {
     if(!PyArray_Check(arg)) {
         // This isn't an array
         PyErr_SetString(PyExc_TypeError, "Argument must be a NumPy array or compatible subclass");
@@ -56,7 +56,7 @@ static PyArrayObject *extract_array(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-static std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
+std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
@@ -83,7 +83,7 @@ static std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *
 }
 
 template <size_t n_virtual_dim>
-static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
@@ -113,7 +113,7 @@ static PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim
 }
 
 template <size_t ndim>
-static std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &shape) {
+std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &shape) {
     static_assert(ndim > 0, "Need at least one shape dimension");
     size_t n_elem = shape[0];
     for(size_t i = 1; i < ndim; ++i) {
@@ -127,7 +127,7 @@ static std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &sh
     return std::make_tuple(true, n_elem);
 }
 
-static void *py_malloc(size_t n_elem, size_t elem_size) {
+void *py_malloc(size_t n_elem, size_t elem_size) {
     bool ok;
     size_t alloc_size;
     std::tie(ok, alloc_size) = adrt::_common::mul_check(n_elem, elem_size);
@@ -144,15 +144,15 @@ static void *py_malloc(size_t n_elem, size_t elem_size) {
 }
 
 template <typename scalar>
-static scalar *py_malloc(size_t n_elem) {
+scalar *py_malloc(size_t n_elem) {
     return static_cast<scalar*>(adrt::_py::py_malloc(n_elem, sizeof(scalar)));
 }
 
-static void py_free(void *ptr) {
+void py_free(void *ptr) {
     PyMem_Free(ptr);
 }
 
-}} // End namespace adrt::_py
+}}} // End namespace adrt::_py
 
 static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out) {
     // validate_array without iteration bounds
