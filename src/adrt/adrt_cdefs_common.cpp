@@ -216,4 +216,4 @@ namespace adrt {
         return shape;
     }
 
-}
+} // End namespace adrt
