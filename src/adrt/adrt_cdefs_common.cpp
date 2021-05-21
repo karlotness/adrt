@@ -167,23 +167,23 @@ namespace adrt {
 
     // Implementation for adrt
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape) {
-        std::array<size_t, 5> expanded_shape = {
+        return {
             shape[0],
             4,
             shape[1],
             2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
-            1};
-        return expanded_shape;
+            1
+        };
     }
 
     // Implementation for adrt
     std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape) {
-        std::array<size_t, 4> result_shape = {
+        return {
             shape[0],
             4,
             2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
-            shape[1]};
-        return result_shape;
+            shape[1]
+        };
     }
 
     // Implementation for bdrt
@@ -202,13 +202,13 @@ namespace adrt {
 
     // Implementation for bdrt
     std::array<size_t, 5> bdrt_buffer_shape(const std::array<size_t, 4> &shape) {
-        std::array<size_t, 5> result_shape = {
+        return {
             shape[0], // batch
             4,  // quadrant
             shape[2], // row
             shape[3], // col
-            1}; // sections
-        return result_shape;
+            1 // sections
+        };
     }
 
     // Implementation for bdrt
