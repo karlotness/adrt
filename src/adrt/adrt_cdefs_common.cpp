@@ -37,11 +37,9 @@
 #include <intrin.h>
 #endif
 
-namespace {
+namespace adrt { namespace _impl { namespace {
 
-using std::size_t;
-
-inline int adrt_num_iters_fallback(size_t shape) {
+inline int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_common::is_pow2(shape);
     int r = 0;
@@ -54,7 +52,7 @@ inline int adrt_num_iters_fallback(size_t shape) {
 
 #if !defined(__GNUC__) && !defined(__clang__)
 // Fallback only needed if no GCC intrinsics
-inline bool adrt_mul_check_fallback(size_t a, size_t b, size_t &prod) {
+inline bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
@@ -65,7 +63,7 @@ inline bool adrt_mul_check_fallback(size_t a, size_t b, size_t &prod) {
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
-inline int adrt_num_iters_impl(size_t shape) {
+inline int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_common::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
@@ -83,10 +81,10 @@ inline int adrt_num_iters_impl(size_t shape) {
         int lead_zero = __builtin_clzll(ushape);
         return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
-    return adrt_num_iters_fallback(shape);
+    return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
+inline bool mul_check(size_t a, size_t b, size_t &prod) {
     size_t prod_out = 0;
     const bool overflow = __builtin_mul_overflow(a, b, &prod_out);
     prod = prod_out;
@@ -95,7 +93,7 @@ inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
 
 #elif defined(_MSC_VER) // MSVC intrinsics
 
-inline int adrt_num_iters_impl(size_t shape) {
+inline int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_common::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
@@ -114,26 +112,26 @@ inline int adrt_num_iters_impl(size_t shape) {
     }
     #endif // End: 64bit arch
 
-    return adrt_num_iters_fallback(shape);
+    return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
-    return adrt_mul_check_fallback(a, b, prod);
+inline bool mul_check(size_t a, size_t b, size_t &prod) {
+    return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
 #else // Fallback only
 
-inline int adrt_num_iters_impl(size_t shape) {
-    return adrt_num_iters_fallback(shape);
+inline int num_iters(size_t shape) {
+    return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool adrt_mul_check_impl(size_t a, size_t b, size_t &prod) {
-    return adrt_mul_check_fallback(a, b, prod);
+inline bool mul_check(size_t a, size_t b, size_t &prod) {
+    return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
 #endif // End platform cases
 
-} // End anonymous namespace
+}}} // End namespace adrt::_impl
 
 namespace adrt {
 
@@ -141,14 +139,14 @@ namespace adrt {
         if(shape <= 1) {
             return 0;
         }
-        return adrt_num_iters_impl(shape);
+        return adrt::_impl::num_iters(shape);
     }
 
     namespace _common {
 
         std::tuple<bool, size_t> mul_check(size_t a, size_t b) {
             size_t prod;
-            bool ok = adrt_mul_check_impl(a, b, prod);
+            bool ok = adrt::_impl::mul_check(a, b, prod);
             return std::make_tuple(ok, prod);
         }
 
