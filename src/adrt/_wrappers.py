@@ -116,7 +116,7 @@ def adrt(a):
 
 
 @_set_module("adrt")
-def iadrt(a, start=0, end=-1):
+def iadrt(a):
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
@@ -134,12 +134,6 @@ def iadrt(a, start=0, end=-1):
     ----------
     a : numpy.ndarray of float
         An array storing the output of the forward ADRT.
-
-    start : int, optional
-        Set ADRT level expected for input
-
-    end : int, optional
-        Set ADRT level for output
 
     Returns
     -------
@@ -159,7 +153,7 @@ def iadrt(a, start=0, end=-1):
     For details of the algorithm see :ref:`iadrt-description` or the
     source paper [rim20]_.
     """
-    return _adrt_cdefs.iadrt(_normalize_array(a), start, end)
+    return _adrt_cdefs.iadrt(_normalize_array(a))
 
 
 @_set_module("adrt")

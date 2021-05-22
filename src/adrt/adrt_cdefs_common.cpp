@@ -216,4 +216,23 @@ namespace adrt {
         return shape;
     }
 
+    bool iadrt_is_valid_shape(const std::array<size_t, 4> &shape) {
+        // bdrt also requires its input to have the shape of an adrt result, reuse
+        return adrt::bdrt_is_valid_shape(shape);
+    }
+
+    std::array<size_t, 5> iadrt_buffer_shape(const std::array<size_t, 4> &shape) {
+        return {
+            4, // Quadrants (shape[1])
+            shape[0], // planes
+            1,
+            shape[3], // N
+            shape[2], // 2 * N - 1
+        };
+    }
+
+    std::array<size_t, 4> iadrt_result_shape(const std::array<size_t, 4> &shape) {
+        return shape;
+    }
+
 } // End namespace adrt

@@ -223,16 +223,6 @@ class TestIAdrt(unittest.TestCase):
         self.assertEqual(c_out.shape, expected_out.shape)
         self.assertTrue(np.allclose(c_out, expected_out))
 
-    def test_partial_iadrts_equals_complete(self):
-        n = 3
-        adrt_in = np.random.rand(2 ** n, 2 ** n)
-        iadrt_in = adrt.adrt(adrt_in)
-        for i in range(n):
-            iadrt_out = adrt.iadrt(iadrt_in, start=i, end=i + 1)
-            iadrt_in = iadrt_out
-        iadrt_out = np.mean(adrt.utils.truncate(iadrt_out), axis=0)
-        self.assertTrue(np.allclose(adrt_in, iadrt_out))
-
 
 if __name__ == "__main__":
     unittest.main()
