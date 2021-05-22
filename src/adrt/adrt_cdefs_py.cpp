@@ -176,41 +176,6 @@ static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out) {
     return true;
 }
 
-static bool adrt_validate_array_iters(PyObject *args, PyArrayObject*& array_out,
-                  int& iter_start_out, int& iter_end_out) {
-    PyArrayObject *I;
-    int iter_start = 0, iter_end = -1;
-
-    if(!PyArg_ParseTuple(args, "O!|ii", &PyArray_Type, &I, &iter_start, &iter_end)) {
-        return false;
-    }
-
-    if(!PyArray_CHKFLAGS(I, NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, and aligned");
-        return false;
-    }
-
-    if(PyArray_ISBYTESWAPPED(I)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have native byte order");
-        return false;
-    }
-
-    //
-    int ndim = PyArray_NDIM(I);
-    npy_intp * I_shape = PyArray_SHAPE(I);
-    int num_iters = 1 + (int) adrt_num_iters(I_shape[ndim-1]);
-
-    if(iter_start < -num_iters || iter_start >= num_iters || iter_end < -num_iters || iter_end >= num_iters) {
-        PyErr_SetString(PyExc_ValueError,"Provided start and end iteration numbers are out of bounds");
-        return false;
-    }
-
-    array_out = I;
-    iter_start_out = iter_start;
-    iter_end_out = iter_end;
-    return true;
-}
-
 static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
     if(ndim < 3 || ndim > 4 || shape[ndim-2] != (shape[ndim-1] * 2 - 1)) {
         return false;
