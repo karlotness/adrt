@@ -103,7 +103,7 @@ jobs:
         mv wheelhouse/adrt-*-manylinux*.whl dist/
       env:
         SETUPTOOLS_USE_DISTUTILS: local
-        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wconversion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -D_FORTIFY_SOURCE=2'
+        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -D_FORTIFY_SOURCE=2'
         LDFLAGS: '-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         CC: 'gcc-11 -pthread'
         CXX: 'g++-11 -pthread'
@@ -121,7 +121,7 @@ jobs:
         delocate-wheel -v dist/adrt-*.whl
       env:
         SETUPTOOLS_USE_DISTUTILS: local
-        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wconversion -Wfloat-equal -Wimplicit-fallthrough'
+        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough'
     - name: Store artifact
       uses: actions/upload-artifact@v2
       with:
