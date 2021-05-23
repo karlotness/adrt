@@ -30,8 +30,8 @@
  */
 
 #pragma once
-#ifndef ADRTC_CDEFS_COMMON_H
-#define ADRTC_CDEFS_COMMON_H
+#ifndef ADRT_CDEFS_COMMON_H
+#define ADRT_CDEFS_COMMON_H
 
 #include <cstddef>
 #include <array>
@@ -150,4 +150,4 @@ inline size_t adrt_ceil_div2(size_t val) {
     return adrt::_common::ceil_div2(val);
 }
 
-#endif //ADRTC_CDEFS_COMMON_H
+#endif //ADRT_CDEFS_COMMON_H

@@ -30,8 +30,8 @@
  */
 
 #pragma once
-#ifndef ADRTC_CDEFS_ADRT_H
-#define ADRTC_CDEFS_ADRT_H
+#ifndef ADRT_CDEFS_ADRT_H
+#define ADRT_CDEFS_ADRT_H
 
 #include "adrt_cdefs_common.hpp"
 #include <array>
@@ -163,4 +163,4 @@ namespace adrt {
 
 }
 
-#endif // ADRTC_CDEFS_ADRT_H
+#endif // ADRT_CDEFS_ADRT_H

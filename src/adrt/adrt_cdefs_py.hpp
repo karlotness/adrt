@@ -30,8 +30,8 @@
  */
 
 #pragma once
-#ifndef ADRTC_CDEFS_PY_H
-#define ADRTC_CDEFS_PY_H
+#ifndef ADRT_CDEFS_PY_H
+#define ADRT_CDEFS_PY_H
 
 #define PY_SSIZE_T_CLEAN
 #ifndef Py_LIMITED_API
@@ -44,4 +44,4 @@
 #endif
 #include "numpy/arrayobject.h"
 
-#endif //ADRTC_CDEFS_PY_H
+#endif //ADRT_CDEFS_PY_H

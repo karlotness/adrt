@@ -30,8 +30,8 @@
  */
 
 #pragma once
-#ifndef ADRTC_CDEFS_INTERP_ADRTCART_H
-#define ADRTC_CDEFS_INTERP_ADRTCART_H
+#ifndef ADRT_CDEFS_INTERP_ADRTCART_H
+#define ADRT_CDEFS_INTERP_ADRTCART_H
 
 #include "adrt_cdefs_py.hpp"
 #include "adrt_cdefs_common.hpp"
@@ -174,4 +174,4 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
     return true;
 }
 
-#endif // ADRTC_CDEFS_INTERP_ADRTCART_H
+#endif // ADRT_CDEFS_INTERP_ADRTCART_H
