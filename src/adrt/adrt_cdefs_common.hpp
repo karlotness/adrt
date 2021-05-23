@@ -37,6 +37,12 @@
 #include <array>
 #include <tuple>
 
+#ifdef _OPENMP
+#define ADRT_OPENMP(def) _Pragma(def)
+#else
+#define ADRT_OPENMP(def)
+#endif
+
 namespace adrt {
 
     using std::size_t;

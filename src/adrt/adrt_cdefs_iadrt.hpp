@@ -58,7 +58,7 @@ namespace adrt {
         for(size_t rev_row = 0; rev_row < curr_shape[4]; ++rev_row) {
             const size_t row = curr_shape[4] - rev_row - 1;
 
-            #pragma omp parallel for collapse(4) default(none) shared(data, out, in_shape, curr_shape, row)
+            ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, out, in_shape, curr_shape, row)")
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t batch = 0; batch < curr_shape[1]; ++batch) {
                     for(size_t l = 0; l < curr_shape[2]; ++l) {

@@ -55,7 +55,7 @@ namespace adrt {
             in_shape[4] * 2, // The number of angles doubles
         };
 
-        #pragma omp parallel for collapse(5) default(none) shared(data, out, in_shape, curr_shape)
+        ADRT_OPENMP("omp parallel for collapse(5) default(none) shared(data, out, in_shape, curr_shape)")
         for(size_t batch = 0; batch < curr_shape[0]; ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < curr_shape[2]; ++row) {
