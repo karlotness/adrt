@@ -44,4 +44,13 @@
 #endif
 #include "numpy/arrayobject.h"
 
+#if defined(__GNUC__) || defined(__clang__)
+// GCC visibility
+#define ADRT_BEGIN_EXPORT _Pragma("GCC visibility push(default)")
+#define ADRT_END_EXPORT _Pragma("GCC visibility pop")
+#else
+#define ADRT_BEGIN_EXPORT
+#define ADRT_END_EXPORT
+#endif
+
 #endif //ADRT_CDEFS_PY_H
