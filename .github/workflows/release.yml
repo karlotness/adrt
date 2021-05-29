@@ -196,10 +196,29 @@ jobs:
       run: tox -e py --installpkg dist/adrt-*-manylinux*.whl
     - name: Clean up
       run: python -m pip cache remove adrt || true
+  test-manylinux:
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+    timeout-minutes: 20
+    needs: wheel
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - name: Download wheel
+      uses: actions/download-artifact@v2
+      with:
+        name: wheel
+        path: dist/
+    - name: Install dependencies
+      run: pipx install tox
+    - name: Run tox tests
+      run: tox -e py36,py37,py38,py39 --installpkg dist/adrt-*-manylinux*_x86_64.whl
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [sdist, wheel, test-ubuntu]
+    needs: [sdist, wheel, test-ubuntu, test-manylinux]
     permissions:
       contents: write
     steps:
