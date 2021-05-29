@@ -105,9 +105,9 @@ jobs:
         SETUPTOOLS_USE_DISTUTILS: local
         CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -D_FORTIFY_SOURCE=2'
         LDFLAGS: '-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
-        CC: 'gcc-11 -pthread'
-        CXX: 'g++-11 -pthread'
-        LDSHARED: 'g++-11 -pthread -shared'
+        CC: 'gcc-10 -pthread'
+        CXX: 'g++-10 -pthread'
+        LDSHARED: 'g++-10 -pthread -shared'
     - name: Build wheel (Windows)
       if: ${{ runner.os == 'Windows' }}
       run: python setup.py bdist_wheel
