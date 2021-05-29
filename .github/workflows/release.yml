@@ -193,7 +193,7 @@ jobs:
         name: wheel
         path: dist/
     - name: Run tox tests
-      run: tox -e py --installpkg dist/adrt-*-manylinux*.whl
+      run: tox -e py --installpkg dist/adrt-*-manylinux*_x86_64.whl
     - name: Clean up
       run: python -m pip cache remove adrt || true
   test-manylinux:
