@@ -68,6 +68,36 @@ namespace adrt {
     namespace _common {
 
         std::tuple<bool, size_t> mul_check(size_t a, size_t b);
+        template <typename V>
+        class Optional {
+            bool ok;
+            V val;
+
+        public:
+            Optional(): ok{false} {}
+
+            Optional(V value): ok{true}, val{value} {}
+
+            bool has_value() const {
+                return ok;
+            }
+
+            V value() const {
+                return val;
+            }
+
+            ADRT_NODISCARD
+            bool store_value(V &dest) const {
+                if(has_value()) {
+                    dest = value();
+                }
+                return has_value();
+            }
+
+            explicit operator bool() const {
+                return has_value();
+            }
+        };
 
         inline bool is_pow2(size_t val) {
             if(val == 0) {
