@@ -386,73 +386,58 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
 }
 
-static PyObject *interp_adrtcart(PyObject* /* self */, PyObject *args){
-    // interpolate adrt data to Cartesian coordinates 
-
+static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyObject *ret = nullptr;
-    npy_intp *old_shape = nullptr;
-    npy_intp new_shape[4] = {0};
-    PyArrayObject * I;
-    int ndim = 3;
-
-    if(!adrt_validate_array(args, I)) {
-        goto fail;
-    }
-
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
     if(!I) {
-        goto fail;
+        return nullptr;
     }
-    ndim = PyArray_NDIM(I);
-    old_shape = PyArray_SHAPE(I);
-    if(!adrt_is_valid_adrt_shape(ndim, PyArray_SHAPE(I))) {
+    // Extract shapes and check sizes
+    std::array<size_t, 4> input_shape;
+    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
+        return nullptr;
+    }
+    if(!adrt::interp_adrtcart_is_valid_shape(input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
-        goto fail;
+        return nullptr;
     }
-
-    // Compute output shape: [plane?, 4, N, N] (batch, row, col)
-    if(ndim == 3) {
-        new_shape[0] = old_shape[0];    // 4
-        new_shape[1] = old_shape[2];    // N
-        new_shape[2] = old_shape[2];    // N
-    }
-    else {
-        new_shape[0] = old_shape[0];    // plane?
-        new_shape[1] = old_shape[1];    // 4
-        new_shape[2] = old_shape[3];    // N
-        new_shape[3] = old_shape[3];    // N
-    }
-
+    // Compute effective output shape
+    const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(input_shape);
     // Process input array
+    const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
-        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT32);
-        if(!ret ||
-           !interp_adrtcart_impl(static_cast<npy_float32*>(PyArray_DATA(I)),
-                      static_cast<unsigned char>(ndim),
-                      PyArray_SHAPE(I),
-                      static_cast<npy_float32*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT32);
+        if(!ret) {
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::interp_adrtcart(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        return reinterpret_cast<PyObject*>(ret);
+    }
     case NPY_FLOAT64:
-        ret = PyArray_SimpleNew(ndim, new_shape, NPY_FLOAT64);
-        if(!ret ||
-           !interp_adrtcart_impl(static_cast<npy_float64*>(PyArray_DATA(I)),
-                      static_cast<unsigned char>(ndim),
-                      PyArray_SHAPE(I),
-                      static_cast<npy_float64*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))), new_shape)) {
-            goto fail;
+    {
+        PyArrayObject *ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT64);
+        if(!ret) {
+            Py_XDECREF(ret);
+            return nullptr;
         }
-        break;
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS;
+        adrt::interp_adrtcart(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS;
+        return reinterpret_cast<PyObject*>(ret);
+    }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
-        goto fail;
+        return nullptr;
     }
-    return ret;
-  fail:
-    Py_XDECREF(ret);
-    return nullptr;
 }
 
 static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
@@ -468,8 +453,7 @@ static PyMethodDef adrt_cdefs_methods[] = {
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
     {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
-    {"interp_adrtcart", interp_adrtcart, METH_VARARGS, 
-     "Interpolate ADRT output to Cartesian coordinate system"},
+    {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
     {nullptr, nullptr, 0, nullptr}
 };
 

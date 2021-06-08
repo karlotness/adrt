@@ -33,12 +33,30 @@
 #ifndef ADRT_CDEFS_INTERP_ADRTCART_H
 #define ADRT_CDEFS_INTERP_ADRTCART_H
 
-#include "adrt_cdefs_py.hpp"
-#include "adrt_cdefs_common.hpp"
 #include <cmath>
 #include <array>
 #include <utility>
 #include <type_traits>
+#include "adrt_cdefs_common.hpp"
+
+namespace adrt {
+
+    // Defined in: adrt_cdefs_common.cpp
+    bool interp_adrtcart_is_valid_shape(const std::array<size_t, 4> &shape);
+    std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape);
+
+    template <typename adrt_scalar>
+    void interp_adrtcart(const adrt_scalar *const data, const std::array<size_t, 4> &shape, adrt_scalar *const out) {
+        // The current implementation performs floating point arithmetic
+        static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
+
+        const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(shape);
+
+    }
+
+}
+
+#include "adrt_cdefs_py.hpp"
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
