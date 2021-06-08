@@ -148,10 +148,6 @@ namespace adrt {
     } // end namespace adrt::_common
 } // end namespace adrt
 
-inline int adrt_num_iters(size_t shape) {
-    return adrt::num_iters(shape);
-}
-
 template <typename adrt_shape, size_t N>
 std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
     std::array<adrt_shape, N> strides_out;
@@ -181,10 +177,6 @@ adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_sha
                                       const Idx... idxs) {
     const std::array<adrt_shape, N> strides = adrt_compute_strides(shape);
     return adrt_array_stride_access(buf, strides, idxs...);
-}
-
-inline bool adrt_is_pow2(size_t val) {
-    return adrt::_common::is_pow2(val);
 }
 
 inline size_t adrt_floor_div2(size_t val) {
