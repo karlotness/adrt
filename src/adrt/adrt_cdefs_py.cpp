@@ -151,47 +151,6 @@ void py_free(void *ptr) {
 
 }}} // End namespace adrt::_py
 
-static bool adrt_validate_array(PyObject *args, PyArrayObject*& array_out) {
-    // validate_array without iteration bounds
-    PyArrayObject *I;
-
-    if(!PyArg_ParseTuple(args, "O!", &PyArray_Type, &I)) {
-        return false;
-    }
-
-    if(!PyArray_CHKFLAGS(I, NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_ALIGNED)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, and aligned");
-        return false;
-    }
-
-    if(PyArray_ISBYTESWAPPED(I)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have native byte order");
-        return false;
-    }
-
-    array_out = I;
-    return true;
-}
-
-static bool adrt_is_valid_adrt_shape(const int ndim, const npy_intp *shape) {
-    if(ndim < 3 || ndim > 4 || shape[ndim-2] != (shape[ndim-1] * 2 - 1)) {
-        return false;
-    }
-    for(int i = 0; i < ndim; ++i) {
-        if(shape[i] <= 0) {
-            return false;
-        }
-    }
-    npy_intp val = 1;
-    while(val < shape[ndim - 1] && val > 0) {
-        val *= 2;
-    }
-    if(val != shape[ndim - 1]) {
-        return false;
-    }
-    return true;
-}
-
 extern "C" {
 
 static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
