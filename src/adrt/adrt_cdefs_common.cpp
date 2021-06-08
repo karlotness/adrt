@@ -85,9 +85,7 @@ inline int num_iters(size_t shape) {
 }
 
 inline bool mul_check(size_t a, size_t b, size_t &prod) {
-    size_t prod_out = 0;
-    const bool overflow = __builtin_mul_overflow(a, b, &prod_out);
-    prod = prod_out;
+    const bool overflow = __builtin_mul_overflow(a, b, &prod);
     return !overflow;
 }
 
