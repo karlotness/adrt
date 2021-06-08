@@ -33,9 +33,9 @@
 #ifndef ADRT_CDEFS_BDRT_H
 #define ADRT_CDEFS_BDRT_H
 
-#include "adrt_cdefs_common.hpp"
 #include <array>
 #include <utility>
+#include "adrt_cdefs_common.hpp"
 
 namespace adrt {
 

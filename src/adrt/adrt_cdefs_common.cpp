@@ -29,13 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "adrt_cdefs_common.hpp"
 #include <limits>
 
 #ifdef _MSC_VER
 // MSVC intrinsics
 #include <intrin.h>
 #endif
+
+#include "adrt_cdefs_common.hpp"
 
 namespace adrt { namespace _impl { namespace {
 

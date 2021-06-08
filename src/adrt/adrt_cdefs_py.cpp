@@ -30,14 +30,15 @@
  */
 
 #include "adrt_cdefs_py.hpp" // Include this first
+
+#include <array>
+#include <limits>
+
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"
 #include "adrt_cdefs_interp_adrtcart.hpp"
-#include <array>
-#include <tuple>
-#include <limits>
 
 namespace adrt { namespace _py { namespace {
 
