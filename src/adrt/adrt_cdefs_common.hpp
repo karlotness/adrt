@@ -43,6 +43,17 @@
 #define ADRT_OPENMP(def)
 #endif
 
+// Attribute support
+#if defined(__GNUC__) || defined(__clang__)
+// Use GCC-style attributes
+#define ADRT_NODISCARD __attribute__((warn_unused_result))
+#elif defined(_MSC_VER)
+// Use MSVC-style attributes
+#define ADRT_NODISCARD _Check_return_
+#else
+#define ADRT_NODISCARD
+#endif
+
 namespace adrt {
 
     using std::size_t;
