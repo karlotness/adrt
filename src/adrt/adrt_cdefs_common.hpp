@@ -35,7 +35,6 @@
 
 #include <cstddef>
 #include <array>
-#include <tuple>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -67,7 +66,6 @@ namespace adrt {
 
     namespace _common {
 
-        std::tuple<bool, size_t> mul_check(size_t a, size_t b);
         template <typename V>
         class Optional {
             bool ok;
@@ -98,6 +96,8 @@ namespace adrt {
                 return has_value();
             }
         };
+
+        adrt::_common::Optional<size_t> mul_check(size_t a, size_t b);
 
         inline bool is_pow2(size_t val) {
             if(val == 0) {

@@ -56,14 +56,14 @@ PyArrayObject *extract_array(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
+adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
-        return std::make_tuple(false, shape_arr);
+        return {};
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
     // Prepend trivial dimensions
@@ -75,11 +75,11 @@ std::tuple<bool, std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
         const npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
-            return std::make_tuple(false, shape_arr);
+            return {};
         }
         shape_arr[i + (max_dim - ndim)] = static_cast<size_t>(shape);
     }
-    return std::make_tuple(true, shape_arr);
+    return {shape_arr};
 }
 
 template <size_t n_virtual_dim>
@@ -113,25 +113,21 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
 }
 
 template <size_t ndim>
-std::tuple<bool, size_t> shape_product(const std::array<size_t, ndim> &shape) {
+adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
     static_assert(ndim > 0, "Need at least one shape dimension");
     size_t n_elem = shape[0];
     for(size_t i = 1; i < ndim; ++i) {
-        bool ok;
-        std::tie(ok, n_elem) = adrt::_common::mul_check(n_elem, shape[i]);
-        if(!ok) {
+        if(!adrt::_common::mul_check(n_elem, shape[i]).store_value(n_elem)) {
             PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
-            return std::make_tuple(false, size_t{0});
+            return {};
         }
     }
-    return std::make_tuple(true, n_elem);
+    return {n_elem};
 }
 
 void *py_malloc(size_t n_elem, size_t elem_size) {
-    bool ok;
     size_t alloc_size;
-    std::tie(ok, alloc_size) = adrt::_common::mul_check(n_elem, elem_size);
-    if(!ok) {
+    if(!adrt::_common::mul_check(n_elem, elem_size).store_value(alloc_size)) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
         return nullptr;
     }
@@ -204,10 +200,8 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    bool valid_in_shape;
     std::array<size_t, 3> input_shape;
-    std::tie(valid_in_shape, input_shape) = adrt::_py::array_shape<2, 3>(I);
-    if(!valid_in_shape) {
+    if(!adrt::_py::array_shape<2, 3>(I).store_value(input_shape)) {
         return nullptr;
     }
     if(!adrt::adrt_is_valid_shape(input_shape)) {
@@ -216,10 +210,8 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(input_shape);
-    bool valid_temp_shape;
     size_t tmp_buf_elems;
-    std::tie(valid_temp_shape, tmp_buf_elems) = adrt::_py::shape_product(adrt::adrt_buffer_shape(input_shape));
-    if(!valid_temp_shape) {
+    if(!adrt::_py::shape_product(adrt::adrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
         return nullptr;
     }
     // Process input array
@@ -272,10 +264,8 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     // Extract shapes and check sizes
-    bool valid_in_shape;
     std::array<size_t, 4> input_shape;
-    std::tie(valid_in_shape, input_shape) = adrt::_py::array_shape<3, 4>(I);
-    if(!valid_in_shape) {
+    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
         return nullptr;
     }
     if(!adrt::iadrt_is_valid_shape(input_shape)) {
@@ -284,10 +274,8 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(input_shape);
-    bool valid_temp_shape;
     std::size_t tmp_buf_elems;
-    std::tie(valid_temp_shape, tmp_buf_elems) = adrt::_py::shape_product(adrt::iadrt_buffer_shape(input_shape));
-    if(!valid_temp_shape) {
+    if(!adrt::_py::shape_product(adrt::iadrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
         return nullptr;
     }
     // Process input array
@@ -340,10 +328,8 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    bool valid_in_shape;
     std::array<size_t, 4> input_shape;
-    std::tie(valid_in_shape, input_shape) = adrt::_py::array_shape<3, 4>(I);
-    if(!valid_in_shape) {
+    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
         return nullptr;
     }
     if(!adrt::bdrt_is_valid_shape(input_shape)) {
@@ -352,10 +338,8 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(input_shape);
-    bool valid_temp_shape;
     std::size_t tmp_buf_elems;
-    std::tie(valid_temp_shape, tmp_buf_elems) = adrt::_py::shape_product(adrt::bdrt_buffer_shape(input_shape));
-    if(!valid_temp_shape) {
+    if(!adrt::_py::shape_product(adrt::bdrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
         return nullptr;
     }
     // Process input array

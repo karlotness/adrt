@@ -141,11 +141,14 @@ namespace adrt {
     }
 
     namespace _common {
-
-        std::tuple<bool, size_t> mul_check(size_t a, size_t b) {
+        adrt::_common::Optional<size_t> mul_check(size_t a, size_t b) {
             size_t prod;
-            bool ok = adrt::_impl::mul_check(a, b, prod);
-            return std::make_tuple(ok, prod);
+            if(adrt::_impl::mul_check(a, b, prod)) {
+                return {prod};
+            }
+            else {
+                return {};
+            }
         }
 
     } // End adrt::_common
