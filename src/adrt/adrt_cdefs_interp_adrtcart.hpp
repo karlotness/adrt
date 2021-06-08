@@ -81,8 +81,8 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
 
     // Allocate auxiliary memory
     const size_t col_size = corrected_shape[2];  // 2N-1
-    const size_t buf_size = col_size;            // One buffer per a column    
-    
+    const size_t buf_size = col_size;            // One buffer per a column
+
     // Allocate two of these buffers
     adrt_scalar *const buf_col = PyMem_New(adrt_scalar, buf_size);
     if(!buf_col) {
@@ -126,10 +126,10 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             const adrt_shape a_left  = s - 1;
             const adrt_shape a_right = s;
 
-            const adrt_scalar val_left = adrt_array_access(data, 
+            const adrt_scalar val_left = adrt_array_access(data,
                 corrected_shape, plane, quadrant, d, a_left);
 
-            const adrt_scalar val_right = adrt_array_access(data, 
+            const adrt_scalar val_right = adrt_array_access(data,
                 corrected_shape, plane, quadrant, d, a_right);
 
             buf_col[j] = (1 - wgt) * val_left + wgt * val_right;
@@ -155,7 +155,7 @@ static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned c
             const adrt_shape a = i;
             int hi = Nf - h;
 
-            if (hi > 2*N - 1 || hi < 1) 
+            if (hi > 2*N - 1 || hi < 1)
             adrt_array_access(out, output_shape, plane, quadrant, d, a) = 0.0;
             else {
             // put inteprolated value to destination buffer
