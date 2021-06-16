@@ -128,7 +128,7 @@ jobs:
       env:
         SETUPTOOLS_USE_DISTUTILS: local
         CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough'
-        LDFLAGS: '-Wl,-dead_strip_dylibs'
+        LDFLAGS: '-Wl,-S,-x,-dead_strip_dylibs'
     - name: Store artifact
       uses: actions/upload-artifact@v2
       with:
