@@ -138,6 +138,15 @@ def find_pyproject_min_numpy(pyproject_toml):
     return find_min_version("numpy", defs["build-system"]["requires"])
 
 
+def find_constraint_min_numpy(constraint_txt):
+    comment_re = re.compile(r"(?:^|\s)#.+$")
+    constraints = []
+    with open(constraint_txt, "r", encoding="utf8") as constraint_file:
+        for line in constraint_file:
+            constraints.append(comment_re.sub("", line.strip()))
+    return find_min_version("numpy", filter(bool, constraints))
+
+
 def find_setup_numpy_api(setup_py):
     macros = find_build_macro_defs(setup_py)
     min_numpy = macros["NPY_NO_DEPRECATED_API"]
@@ -182,10 +191,14 @@ if __name__ == "__main__":
     package_min_numpy = find_package_min_numpy("setup.cfg")
     pyproj_min_numpy = find_pyproject_min_numpy("pyproject.toml")
     macro_min_numpy = find_setup_numpy_api("setup.py")
+    constraint_min_numpy = find_constraint_min_numpy("tools/constraints.txt")
     print(f"Package min NumPy: {package_min_numpy}")
     print(f"PyProject min NumPy: {pyproj_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")
-    if not (package_min_numpy == pyproj_min_numpy == macro_min_numpy):
+    print(f"Constraints min NumPy: {constraint_min_numpy}")
+    if not (
+        package_min_numpy == pyproj_min_numpy == macro_min_numpy == constraint_min_numpy
+    ):
         print("NumPy version mismatch")
         failure = True
 
