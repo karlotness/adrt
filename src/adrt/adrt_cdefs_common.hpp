@@ -145,45 +145,4 @@ namespace adrt {
     } // end namespace adrt::_common
 } // end namespace adrt
 
-template <typename adrt_shape, size_t N>
-std::array<adrt_shape, N> adrt_compute_strides(const std::array<adrt_shape, N> &shape_in) {
-    std::array<adrt_shape, N> strides_out;
-    adrt_shape step_size = 1;
-    for(size_t i = 0; i < N; ++i) {
-        size_t idx_i = N - i - 1;
-        strides_out[idx_i] = step_size;
-        step_size *= shape_in[idx_i];
-    }
-    return strides_out;
-}
-
-template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
-adrt_scalar& adrt_array_stride_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &strides,
-                                             const Idx... idxs) {
-    static_assert(sizeof...(idxs) == N, "Must provide N array indices");
-    const std::array<adrt_shape, N> idx {idxs...};
-    size_t acc = 0;
-    for(size_t i = 0; i < N; ++i) {
-        acc += strides[i] * idx[i];
-    }
-    return buf[acc];
-}
-
-template <typename adrt_scalar, typename adrt_shape, size_t N, typename... Idx>
-adrt_scalar& adrt_array_access(adrt_scalar *const buf, const std::array<adrt_shape, N> &shape,
-                                      const Idx... idxs) {
-    const std::array<adrt_shape, N> strides = adrt_compute_strides(shape);
-    return adrt_array_stride_access(buf, strides, idxs...);
-}
-
-inline size_t adrt_floor_div2(size_t val) {
-    // Only for non-negative values
-    return adrt::_common::floor_div2(val);
-}
-
-inline size_t adrt_ceil_div2(size_t val) {
-    // Only for non-negative values
-    return adrt::_common::ceil_div2(val);
-}
-
 #endif //ADRT_CDEFS_COMMON_H
