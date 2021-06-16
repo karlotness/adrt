@@ -123,7 +123,7 @@ jobs:
       if: ${{ runner.os == 'macOS' }}
       run: |
         python setup.py bdist_wheel
-        delocate-listdeps dist/adrt-*.whl
+        delocate-listdeps --all dist/adrt-*.whl
         delocate-wheel -v dist/adrt-*.whl
       env:
         SETUPTOOLS_USE_DISTUTILS: local
