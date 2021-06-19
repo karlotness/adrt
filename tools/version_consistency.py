@@ -139,11 +139,11 @@ def find_pyproject_min_numpy(pyproject_toml):
 
 
 def find_constraint_min_numpy(constraint_txt):
-    comment_re = re.compile(r"(?:^|\s)#.+$")
+    comment_re = re.compile(r"(?:^|\s)#.*$")
     constraints = []
     with open(constraint_txt, "r", encoding="utf8") as constraint_file:
         for line in constraint_file:
-            constraints.append(comment_re.sub("", line.strip()))
+            constraints.append(comment_re.sub("", line.strip()).strip())
     return find_min_version("numpy", filter(bool, constraints))
 
 
