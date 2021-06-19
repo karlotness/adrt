@@ -59,6 +59,7 @@ PyArrayObject *extract_array(PyObject *arg) {
 template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
+    static_assert(min_dim > 0, "Min dimensions must be positive.");
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
@@ -85,6 +86,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
 
 template <size_t n_virtual_dim>
 PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+    static_assert(n_virtual_dim > 0, "Need at least one shape dimension");
     const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
