@@ -121,6 +121,7 @@ jobs:
       env:
         SETUPTOOLS_USE_DISTUTILS: local
         PIP_CONSTRAINT: 'tools/constraints.txt'
+        CL: '/std:c++14 /permissive- /Zc:inline,preprocessor,__cplusplus'
     - name: Build wheel (macOS)
       if: ${{ runner.os == 'macOS' }}
       run: |
