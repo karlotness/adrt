@@ -31,167 +31,175 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import unittest
+import pytest
 import numpy as np
 import adrt
 
 
-class TestStitchAdrt(unittest.TestCase):
-    def _check_column_contiguous(self, stitched):
-        n = stitched.shape[-1] // 4
-        self.assertTrue(np.allclose(stitched[..., :, n - 1], stitched[..., :, n]))
-        self.assertTrue(
-            np.allclose(stitched[..., :, 2 * n - 1], stitched[..., :, 2 * n])
-        )
-        self.assertTrue(
-            np.allclose(stitched[..., :, 3 * n - 1], stitched[..., :, 3 * n])
-        )
-        # Last column needs to be flipped
-        self.assertTrue(
-            np.allclose(stitched[..., :, -1], np.flip(stitched[..., :, 0], axis=-1))
-        )
-
-    def _check_quadrant_ordering(self, stitched, out):
-        n = stitched.shape[-1] // 4
-        self.assertTrue(np.allclose(stitched[..., : 2 * n - 1, :n], out[..., 0, :, :]))
-        self.assertTrue(
-            np.allclose(stitched[..., : 2 * n - 1, n : 2 * n], out[..., 1, ::-1, ::-1])
-        )
-        self.assertTrue(
-            np.allclose(stitched[..., -2 * n + 1 :, 2 * n : 3 * n], out[..., 2, :, :])
-        )
-        self.assertTrue(
-            np.allclose(stitched[..., -2 * n + 1 :, 3 * n :], out[..., 3, ::-1, ::-1])
-        )
-
-    def _check_zero_stencil(self, stitched):
-        n = stitched.shape[-1] // 4
-        # Test rectangular blocks of zeros
-        self.assertTrue(np.all(stitched[..., -n + 1 :, : 2 * n] == 0))
-        self.assertTrue(np.all(stitched[..., : n - 1, 2 * n :] == 0))
-        # Check triangles of zeros
-        triu_a, triu_b = np.triu_indices(2 * n - 1, m=n, k=1)
-        tril_a, tril_b = np.tril_indices(2 * n - 1, m=n, k=-n)
-        self.assertTrue(
-            np.all(stitched[..., : 2 * n - 1, :n][..., tril_a, tril_b] == 0)
-        )
-        self.assertTrue(
-            np.all(stitched[..., : 2 * n - 1, n : 2 * n][..., triu_a, triu_b] == 0)
-        )
-        self.assertTrue(
-            np.all(stitched[..., n - 1 :, 2 * n : 3 * n][..., tril_a, tril_b] == 0)
-        )
-        self.assertTrue(
-            np.all(stitched[..., n - 1 :, 3 * n :][..., triu_a, triu_b] == 0)
-        )
-
-    def test_accepts_adrt_output(self):
-        n = 16
-        inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
-        out = adrt.adrt(inarr)
-        stitched = adrt.utils.stitch_adrt(out)
-        self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
-        self._check_column_contiguous(stitched)
-        self._check_quadrant_ordering(stitched, out)
-        self._check_zero_stencil(stitched)
-
-    def test_accepts_adrt_output_batched(self):
-        n = 16
-        inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
-        out = adrt.adrt(inarr)
-        stitched = adrt.utils.stitch_adrt(out)
-        self.assertEqual(stitched.shape, (3, 3 * n - 2, 4 * n))
-        self._check_column_contiguous(stitched)
-        self._check_quadrant_ordering(stitched, out)
-        self._check_zero_stencil(stitched)
-
-    def test_accepts_adrt_output_remove_repeated(self):
-        n = 16
-        inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
-        out = adrt.adrt(inarr)
-        stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
-        self.assertEqual(stitched.shape, (3 * n - 2, 4 * n - 4))
-        # Check deleting repeated columns
-        stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(
-            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
-        )
-        self.assertEqual(stitched.shape, stitch_repeat.shape)
-        self.assertTrue(np.allclose(stitched, stitch_repeat))
-
-    def test_accepts_adrt_output_remove_repeated_batched(self):
-        n = 16
-        inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
-        out = adrt.adrt(inarr)
-        stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
-        self.assertEqual(stitched.shape, (3, 3 * n - 2, 4 * n - 4))
-        # Check deleting repeated columns
-        stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(
-            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
-        )
-        self.assertEqual(stitched.shape, stitch_repeat.shape)
-        self.assertTrue(np.allclose(stitched, stitch_repeat))
-
-    def test_accepts_adrt_output_multi_batched(self):
-        n = 8
-        inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
-        out_1 = adrt.adrt(inarr[0])
-        out_2 = adrt.adrt(inarr[1])
-        out = np.stack([out_1, out_2])
-        stitched = adrt.utils.stitch_adrt(out)
-        self.assertEqual(stitched.shape, (2, 3, 3 * n - 2, 4 * n))
-        self._check_column_contiguous(stitched)
-        self._check_quadrant_ordering(stitched, out)
-        self._check_zero_stencil(stitched)
-
-    def test_accepts_adrt_output_remove_repeated_multi_batched(self):
-        n = 8
-        inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
-        out_1 = adrt.adrt(inarr[0])
-        out_2 = adrt.adrt(inarr[1])
-        out = np.stack([out_1, out_2])
-        stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
-        self.assertEqual(stitched.shape, (2, 3, 3 * n - 2, 4 * n - 4))
-        # Check deleting repeated columns
-        stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
-        stitch_repeat = np.delete(
-            stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1
-        )
-        self.assertEqual(stitched.shape, stitch_repeat.shape)
-        self.assertTrue(np.allclose(stitched, stitch_repeat))
-
-    def test_accepts_multiple_dtypes(self):
-        n = 8
-        inarr = np.ones((4, 2 * n - 1, n))
-        for dtype in ["float32", "float64", "int32", "int64"]:
-            stitched = adrt.utils.stitch_adrt(inarr.astype(dtype))
-            self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
-
-    def test_small_matrix(self):
-        n = 1
-        inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
-        out = adrt.adrt(inarr)
-        stitched = adrt.utils.stitch_adrt(out)
-        self.assertEqual(stitched.shape, (3 * n - 2, 4 * n))
-        self._check_column_contiguous(stitched)
-        self._check_quadrant_ordering(stitched, out)
-        self._check_zero_stencil(stitched)
-
-    def test_rejects_invalid_sizes(self):
-        with self.assertRaises(ValueError):
-            # Zero dimensions
-            inarr = np.ones((4, 0, 0)).astype("float32")
-            _ = adrt.utils.stitch_adrt(inarr)
-        with self.assertRaises(ValueError):
-            # Incorrect relationship between dimensions
-            inarr = np.ones((4, 4, 2)).astype("float32")
-            _ = adrt.utils.stitch_adrt(inarr)
-        with self.assertRaises(ValueError):
-            # Too few dimensions
-            inarr = np.ones((7, 4)).astype("float32")
-            _ = adrt.utils.stitch_adrt(inarr)
+def _check_column_contiguous(stitched):
+    n = stitched.shape[-1] // 4
+    assert np.allclose(
+        stitched[..., :, n - 1], stitched[..., :, n]
+    ), "First seam does not match"
+    assert np.allclose(
+        stitched[..., :, 2 * n - 1], stitched[..., :, 2 * n]
+    ), "Second seam does not match"
+    assert np.allclose(
+        stitched[..., :, 3 * n - 1], stitched[..., :, 3 * n]
+    ), "Third seam does not match"
+    # Last column needs to be flipped
+    assert np.allclose(
+        stitched[..., :, -1], np.flip(stitched[..., :, 0], axis=-1)
+    ), "Start and end are not flipped copies of one another"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _check_quadrant_ordering(stitched, out):
+    n = stitched.shape[-1] // 4
+    assert np.allclose(
+        stitched[..., : 2 * n - 1, :n], out[..., 0, :, :]
+    ), "Quadrant 0 positioned out of order"
+    assert np.allclose(
+        stitched[..., : 2 * n - 1, n : 2 * n], out[..., 1, ::-1, ::-1]
+    ), "Quadrant 1 positioned out of order"
+    assert np.allclose(
+        stitched[..., -2 * n + 1 :, 2 * n : 3 * n], out[..., 2, :, :]
+    ), "Quadrant 2 positioned out of order"
+    assert np.allclose(
+        stitched[..., -2 * n + 1 :, 3 * n :], out[..., 3, ::-1, ::-1]
+    ), "Quadrant 3 positioned out of order"
+
+
+def _check_zero_stencil(stitched):
+    n = stitched.shape[-1] // 4
+    # Test rectangular blocks of zeros
+    assert np.all(
+        stitched[..., -n + 1 :, : 2 * n] == 0
+    ), "Non-zero value in lower left rectangular block"
+    assert np.all(
+        stitched[..., : n - 1, 2 * n :] == 0
+    ), "Non-zero value in upper right rectangular block"
+    # Check triangles of zeros
+    triu_a, triu_b = np.triu_indices(2 * n - 1, m=n, k=1)
+    tril_a, tril_b = np.tril_indices(2 * n - 1, m=n, k=-n)
+    assert np.all(
+        stitched[..., : 2 * n - 1, :n][..., tril_a, tril_b] == 0
+    ), "Non-zero value in band 0 triangle"
+    assert np.all(
+        stitched[..., : 2 * n - 1, n : 2 * n][..., triu_a, triu_b] == 0
+    ), "Non-zero value in band 1 triangle"
+    assert np.all(
+        stitched[..., n - 1 :, 2 * n : 3 * n][..., tril_a, tril_b] == 0
+    ), "Non-zero value in band 2 triangle"
+    assert np.all(
+        stitched[..., n - 1 :, 3 * n :][..., triu_a, triu_b] == 0
+    ), "Non-zero value in band 3 triangle"
+
+
+def test_accepts_adrt_output():
+    n = 16
+    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    out = adrt.adrt(inarr)
+    stitched = adrt.utils.stitch_adrt(out)
+    assert stitched.shape == (3 * n - 2, 4 * n)
+    _check_column_contiguous(stitched)
+    _check_quadrant_ordering(stitched, out)
+    _check_zero_stencil(stitched)
+
+
+def test_accepts_adrt_output_batched():
+    n = 16
+    inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
+    out = adrt.adrt(inarr)
+    stitched = adrt.utils.stitch_adrt(out)
+    assert stitched.shape == (3, 3 * n - 2, 4 * n)
+    _check_column_contiguous(stitched)
+    _check_quadrant_ordering(stitched, out)
+    _check_zero_stencil(stitched)
+
+
+def test_accepts_adrt_output_remove_repeated():
+    n = 16
+    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    out = adrt.adrt(inarr)
+    stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
+    assert stitched.shape == (3 * n - 2, 4 * n - 4)
+    # Check deleting repeated columns
+    stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
+    stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1)
+    assert stitched.shape == stitch_repeat.shape
+    assert np.allclose(stitched, stitch_repeat)
+
+
+def test_accepts_adrt_output_remove_repeated_batched():
+    n = 16
+    inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
+    out = adrt.adrt(inarr)
+    stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
+    assert stitched.shape == (3, 3 * n - 2, 4 * n - 4)
+    # Check deleting repeated columns
+    stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
+    stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1)
+    assert stitched.shape == stitch_repeat.shape
+    assert np.allclose(stitched, stitch_repeat)
+
+
+def test_accepts_adrt_output_multi_batched():
+    n = 8
+    inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+    out_1 = adrt.adrt(inarr[0])
+    out_2 = adrt.adrt(inarr[1])
+    out = np.stack([out_1, out_2])
+    stitched = adrt.utils.stitch_adrt(out)
+    assert stitched.shape == (2, 3, 3 * n - 2, 4 * n)
+    _check_column_contiguous(stitched)
+    _check_quadrant_ordering(stitched, out)
+    _check_zero_stencil(stitched)
+
+
+def test_accepts_adrt_output_remove_repeated_multi_batched():
+    n = 8
+    inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+    out_1 = adrt.adrt(inarr[0])
+    out_2 = adrt.adrt(inarr[1])
+    out = np.stack([out_1, out_2])
+    stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
+    assert stitched.shape == (2, 3, 3 * n - 2, 4 * n - 4)
+    # Check deleting repeated columns
+    stitch_repeat = adrt.utils.stitch_adrt(out, remove_repeated=False)
+    stitch_repeat = np.delete(stitch_repeat, [i * n - 1 for i in range(1, 5)], axis=-1)
+    assert stitched.shape == stitch_repeat.shape
+    assert np.allclose(stitched, stitch_repeat)
+
+
+@pytest.mark.parametrize("dtype", ["float32", "float64", "int32", "int64"])
+def test_accepts_multiple_dtypes(dtype):
+    n = 8
+    inarr = np.ones((4, 2 * n - 1, n))
+    stitched = adrt.utils.stitch_adrt(inarr.astype(dtype))
+    assert stitched.shape == (3 * n - 2, 4 * n)
+
+
+def test_small_matrix():
+    n = 1
+    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    out = adrt.adrt(inarr)
+    stitched = adrt.utils.stitch_adrt(out)
+    assert stitched.shape == (3 * n - 2, 4 * n)
+    _check_column_contiguous(stitched)
+    _check_quadrant_ordering(stitched, out)
+    _check_zero_stencil(stitched)
+
+
+def test_rejects_invalid_sizes():
+    with pytest.raises(ValueError):
+        # Zero dimensions
+        inarr = np.ones((4, 0, 0)).astype("float32")
+        _ = adrt.utils.stitch_adrt(inarr)
+    with pytest.raises(ValueError):
+        # Incorrect relationship between dimensions
+        inarr = np.ones((4, 4, 2)).astype("float32")
+        _ = adrt.utils.stitch_adrt(inarr)
+    with pytest.raises(ValueError):
+        # Too few dimensions
+        inarr = np.ones((7, 4)).astype("float32")
+        _ = adrt.utils.stitch_adrt(inarr)

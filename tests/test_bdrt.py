@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import unittest
+import pytest
 import numpy as np
 import adrt
 
@@ -51,7 +51,7 @@ def _gen_dline(n, h, ds):
     return a.union(b)
 
 
-class TestBdrtCdefs(unittest.TestCase):
+class TestBdrtCdefs:
     def test_accepts_float32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
@@ -75,72 +75,72 @@ class TestBdrtCdefs(unittest.TestCase):
     def test_refuses_int32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_mismatched_shape(self):
         size = 16
         inarr_a = np.zeros((4, 2 * size - 1, size - 1), dtype=np.float32)
         inarr_b = np.zeros((4, 2 * size - 2, size), dtype=np.float32)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr_a)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr_b)
 
     def test_refuses_five_dim(self):
         size = 16
         inarr = np.zeros((6, 5, 4, 2 * size - 1, size), dtype=np.float32)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_non_power_of_two(self):
         size = 17
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_non_array(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             _ = adrt._adrt_cdefs.bdrt(None)
         base_list = [[1.0, 2.0, 3.0, 4.0]] * 7
         arr_list = [base_list for _ in range(4)]
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             _ = adrt._adrt_cdefs.bdrt(arr_list)
 
     def test_refuses_fortran_order(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, 2 * size), dtype=np.float32, order="F")
         inarr = inarr[:, :, ::2]
-        self.assertEqual(inarr.shape, (4, 31, 16))
-        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
-        with self.assertRaises(ValueError):
+        assert inarr.shape == (4, 31, 16)
+        assert not inarr.flags["C_CONTIGUOUS"]
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_byteswapped(self):
         size = 16
         inarr = np.ones((4, 2 * size - 1, size), dtype=np.float32).newbyteorder()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_zero_axis_array(self):
         size = 16
         inarr = np.zeros((0, 4, 2 * size - 1, size), dtype=np.float32)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_zero_size_planes(self):
         inarr = np.zeros((4, 0, 0), dtype=np.float32)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
 
-class TestBdrt(unittest.TestCase):
+class TestBdrt:
     def test_accepts_float32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
@@ -155,18 +155,18 @@ class TestBdrt(unittest.TestCase):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
         c_out = adrt.bdrt(inarr)
-        self.assertEqual(c_out.dtype, np.float32)
+        assert c_out.dtype == np.float32
 
     def test_accepts_float64_returned_dtype(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float64)
         c_out = adrt.bdrt(inarr)
-        self.assertEqual(c_out.dtype, np.float64)
+        assert c_out.dtype == np.float64
 
     def test_refuses_int32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             _ = adrt.bdrt(inarr)
 
     def test_accepts_fortran_order(self):
@@ -178,8 +178,8 @@ class TestBdrt(unittest.TestCase):
         size = 16
         inarr = np.zeros((4, 2 * (2 * size - 1), size), dtype=np.float32, order="F")
         inarr = inarr[:, ::2]
-        self.assertEqual(inarr.shape, (4, 2 * size - 1, size))
-        self.assertFalse(inarr.flags["C_CONTIGUOUS"])
+        assert inarr.shape == (4, 2 * size - 1, size)
+        assert not inarr.flags["C_CONTIGUOUS"]
         _ = adrt.bdrt(inarr)
 
     def test_all_zeros_square(self):
@@ -188,9 +188,9 @@ class TestBdrt(unittest.TestCase):
         adrt_out = adrt.adrt(inarr)
         bdrt_out = adrt.bdrt(adrt_out)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-        self.assertEqual(bdrt_out.shape, adrt_out.shape)
-        self.assertEqual(bdrt_sq.shape, inarr.shape)
-        self.assertEqual(bdrt_sq.dtype, inarr.dtype)
+        assert bdrt_out.shape == adrt_out.shape
+        assert bdrt_sq.shape == inarr.shape
+        assert bdrt_sq.dtype == inarr.dtype
 
     def test_digital_lines(self):
         size = 16
@@ -203,7 +203,7 @@ class TestBdrt(unittest.TestCase):
         bdrt_in[0, 4, 3] = 1.0
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-        self.assertTrue(np.allclose(bdrt_sq, dline))
+        assert np.allclose(bdrt_sq, dline)
         # Quadrant 1
         sh = _gen_dline(size, size - 5, 3)
         dline = np.zeros((size, size))
@@ -213,7 +213,7 @@ class TestBdrt(unittest.TestCase):
         bdrt_in[1, 4, 3] = 1.0
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-        self.assertTrue(np.allclose(bdrt_sq, dline))
+        assert np.allclose(bdrt_sq, dline)
         # Quadrant 2
         sh = _gen_dline(size, size - 4, 3)
         dline = np.zeros((size, size))
@@ -223,7 +223,7 @@ class TestBdrt(unittest.TestCase):
         bdrt_in[2, 4, 3] = 1.0
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-        self.assertTrue(np.allclose(bdrt_sq, dline))
+        assert np.allclose(bdrt_sq, dline)
         # Quadrant 3
         sh = _gen_dline(size, 2, 3)
         dline = np.zeros((size, size))
@@ -233,7 +233,7 @@ class TestBdrt(unittest.TestCase):
         bdrt_in[3, 4, 3] = 1.0
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-        self.assertTrue(np.allclose(bdrt_sq, dline))
+        assert np.allclose(bdrt_sq, dline)
 
     def test_digital_line_rotations(self):
         size = 16
@@ -243,23 +243,17 @@ class TestBdrt(unittest.TestCase):
             bdrt_in[i, i, h, s] = 1.0
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-
-        self.assertTrue(np.allclose(np.rot90(bdrt_sq[0, ...], k=1), bdrt_sq[2, ...]))
-        self.assertTrue(
-            np.allclose(np.fliplr(np.rot90(bdrt_sq[1, ...], k=2)), bdrt_sq[2, ...])
-        )
-        self.assertTrue(
-            np.allclose(np.fliplr(np.rot90(bdrt_sq[3, ...], k=1)), bdrt_sq[2, ...])
-        )
+        assert np.allclose(np.rot90(bdrt_sq[0, ...], k=1), bdrt_sq[2, ...])
+        assert np.allclose(np.fliplr(np.rot90(bdrt_sq[1, ...], k=2)), bdrt_sq[2, ...])
+        assert np.allclose(np.fliplr(np.rot90(bdrt_sq[3, ...], k=1)), bdrt_sq[2, ...])
 
     def test_all_ones(self):
         size = 16
         bdrt_in = np.ones((4, 4, 2 * size - 1, size)) / size
         bdrt_out = adrt.bdrt(bdrt_in)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-
-        self.assertTrue(np.allclose(bdrt_sq.min(), 1.0))
-        self.assertTrue(np.allclose(bdrt_sq.max(), 1.0))
+        assert np.allclose(bdrt_sq.min(), 1.0)
+        assert np.allclose(bdrt_sq.max(), 1.0)
 
     def test_backprojected_delta_levels(self):
         size = 16
@@ -268,36 +262,34 @@ class TestBdrt(unittest.TestCase):
         adrt_out = adrt.adrt(adrt_in)
         bdrt_out = adrt.bdrt(adrt_out)
         bdrt_sq = np.mean(adrt.utils.truncate(bdrt_out), axis=0)
-
-        self.assertTrue(np.allclose(1.0 * (bdrt_sq == 16.0), adrt_in))
-        self.assertTrue(np.sum(bdrt_sq == 4) == 8)
-        self.assertTrue(np.sum(bdrt_sq == 2) == 19)
+        assert np.allclose(1.0 * (bdrt_sq == 16.0), adrt_in)
+        assert np.sum(bdrt_sq == 4) == 8
+        assert np.sum(bdrt_sq == 2) == 19
 
     def test_bdrt_zeros(self):
         size = 16
         adrt_in = np.ones((size, size))
         adrt_out = adrt.adrt(adrt_in)
         bdrt_out = adrt.bdrt(adrt_out)
-
         for i in range(4):
             zero_part = np.tril(bdrt_out[i, size:, ::-1])
-            self.assertTrue(np.linalg.norm(zero_part, ord="fro") == 0.0)
+            assert np.linalg.norm(zero_part, ord="fro") == 0.0
 
     def test_small_1x1(self):
         inarr = np.ones((4, 1, 1), dtype="float64")
         expected_out = np.ones((1, 1), dtype="float64")
         c_out = adrt.bdrt(inarr)
         c_out = np.mean(adrt.utils.truncate(c_out), axis=0)
-        self.assertEqual(c_out.shape, expected_out.shape)
-        self.assertTrue(np.allclose(c_out, expected_out))
+        assert c_out.shape == expected_out.shape
+        assert np.allclose(c_out, expected_out)
 
     def test_small_1x1_batch(self):
         expected_out = np.arange(5, dtype="float64").reshape((5, 1, 1)) + 1
         inarr = np.stack([expected_out] * 4, axis=1)
         c_out = adrt.bdrt(inarr)
         c_out = np.mean(adrt.utils.truncate(c_out), axis=1)
-        self.assertEqual(c_out.shape, expected_out.shape)
-        self.assertTrue(np.allclose(c_out, expected_out))
+        assert c_out.shape == expected_out.shape
+        assert np.allclose(c_out, expected_out)
 
     def test_materialize_array_size_4(self):
         n = 4
@@ -312,8 +304,8 @@ class TestBdrt(unittest.TestCase):
         bdrt_arr = np.sum(adrt.utils.truncate(bdrt_out), axis=1).reshape(
             (adrt_size, full_size)
         )
-        self.assertEqual(adrt_arr.shape, bdrt_arr.shape)
-        self.assertTrue(np.allclose(adrt_arr, bdrt_arr))
+        assert adrt_arr.shape == bdrt_arr.shape
+        assert np.allclose(adrt_arr, bdrt_arr)
 
     def test_materialize_array_size_2(self):
         n = 2
@@ -328,9 +320,5 @@ class TestBdrt(unittest.TestCase):
         bdrt_arr = np.sum(adrt.utils.truncate(bdrt_out), axis=1).reshape(
             (adrt_size, full_size)
         )
-        self.assertEqual(adrt_arr.shape, bdrt_arr.shape)
-        self.assertTrue(np.allclose(adrt_arr, bdrt_arr))
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert adrt_arr.shape == bdrt_arr.shape
+        assert np.allclose(adrt_arr, bdrt_arr)
