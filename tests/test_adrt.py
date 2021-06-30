@@ -204,7 +204,7 @@ class TestAdrt:
         _ = adrt.adrt(inarr)
 
     def test_all_ones_square(self):
-        inarr = np.ones((32, 32))
+        inarr = np.ones((16, 16))
         c_out = adrt.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         assert c_out.shape == naive_out.shape
@@ -212,8 +212,8 @@ class TestAdrt:
         self._check_zero_stencil(c_out)
 
     def test_vertical_line(self):
-        inarr = np.zeros((32, 32))
-        inarr[:, 16] = 1
+        inarr = np.zeros((16, 16))
+        inarr[:, 8] = 1
         c_out = adrt.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         assert c_out.shape == naive_out.shape
@@ -223,12 +223,11 @@ class TestAdrt:
     def test_all_zeros_square(self):
         inarr = np.zeros((32, 32))
         c_out = adrt.adrt(inarr)
-        naive_out = _naive_adrt(inarr)
-        assert c_out.shape == naive_out.shape
-        assert np.allclose(c_out, naive_out)
+        assert c_out.shape == (4, 2 * 32 - 1, 32)
+        assert np.all(c_out == 0)
 
     def test_unique_values(self):
-        size = 32
+        size = 16
         inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
         c_out = adrt.adrt(inarr)
         naive_out = _naive_adrt(inarr)
@@ -237,7 +236,7 @@ class TestAdrt:
         self._check_zero_stencil(c_out)
 
     def test_batch_dimension_unique_values(self):
-        inarr = np.arange(4 * 32 * 32).reshape((4, 32, 32)).astype("float32")
+        inarr = np.arange(4 * 8 * 8).reshape((4, 8, 8)).astype("float32")
         c_out = adrt.adrt(inarr)
         naive_out = np.stack([_naive_adrt(inarr[i]) for i in range(inarr.shape[0])])
         assert c_out.shape == naive_out.shape
