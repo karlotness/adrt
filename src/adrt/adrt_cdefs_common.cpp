@@ -143,13 +143,10 @@ namespace adrt {
 
     namespace _common {
         adrt::_common::Optional<size_t> mul_check(size_t a, size_t b) {
-            size_t prod;
-            if(adrt::_impl::mul_check(a, b, prod)) {
-                return {prod};
-            }
-            else {
-                return {};
-            }
+            adrt::_common::Optional<size_t> prod;
+            const bool ok = adrt::_impl::mul_check(a, b, *prod);
+            prod.set_ok(ok);
+            return prod;
         }
 
     } // End adrt::_common

@@ -60,28 +60,31 @@ template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     static_assert(min_dim > 0, "Min dimensions must be positive.");
-    std::array<size_t, max_dim> shape_arr;
+    adrt::_common::Optional<std::array<size_t, max_dim>> shape_arr;
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
-        return {};
+        shape_arr.set_ok(false);
+        return shape_arr;
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
     // Prepend trivial dimensions
     for(size_t i = 0; i < max_dim - ndim; ++i) {
-        shape_arr[i] = 1;
+        (*shape_arr)[i] = 1;
     }
     // Fill rest of array
     for(size_t i = 0; i < ndim; ++i) {
         const npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
-            return {};
+            shape_arr.set_ok(false);
+            return shape_arr;
         }
-        shape_arr[i + (max_dim - ndim)] = static_cast<size_t>(shape);
+        (*shape_arr)[i + (max_dim - ndim)] = static_cast<size_t>(shape);
     }
-    return {shape_arr};
+    shape_arr.set_ok(true);
+    return shape_arr;
 }
 
 template <size_t n_virtual_dim>
@@ -118,23 +121,24 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
 template <size_t ndim>
 adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
     static_assert(ndim > 0, "Need at least one shape dimension");
-    size_t n_elem = shape[0];
+    adrt::_common::Optional<size_t> n_elem = shape[0];
     for(size_t i = 1; i < ndim; ++i) {
-        if(!adrt::_common::mul_check(n_elem, shape[i]).store_value(n_elem)) {
+        n_elem = adrt::_common::mul_check(*n_elem, shape[i]);
+        if(!n_elem) {
             PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
-            return {};
+            return n_elem;
         }
     }
-    return {n_elem};
+    return n_elem;
 }
 
 void *py_malloc(size_t n_elem, size_t elem_size) {
-    size_t alloc_size;
-    if(!adrt::_common::mul_check(n_elem, elem_size).store_value(alloc_size)) {
+    const adrt::_common::Optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
+    if(!alloc_size) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
         return nullptr;
     }
-    void *ret = PyMem_Malloc(alloc_size);
+    void *ret = PyMem_Malloc(*alloc_size);
     if(!ret) {
         PyErr_NoMemory();
         return nullptr;
@@ -162,18 +166,18 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    std::array<size_t, 3> input_shape;
-    if(!adrt::_py::array_shape<2, 3>(I).store_value(input_shape)) {
+    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    if(!input_shape) {
         return nullptr;
     }
-    if(!adrt::adrt_is_valid_shape(input_shape)) {
+    if(!adrt::adrt_is_valid_shape(*input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must be square with a power of two shape");
         return nullptr;
     }
     // Compute effective output shape
-    const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(input_shape);
-    size_t tmp_buf_elems;
-    if(!adrt::_py::shape_product(adrt::adrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
+    const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(*input_shape);
+    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::adrt_buffer_shape(*input_shape));
+    if(!tmp_buf_elems) {
         return nullptr;
     }
     // Process input array
@@ -182,7 +186,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     case NPY_FLOAT32:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT32);
-        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(tmp_buf_elems);
+        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -190,7 +194,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -199,7 +203,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     case NPY_FLOAT64:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT64);
-        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(tmp_buf_elems);
+        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -207,7 +211,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -226,18 +230,18 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     // Extract shapes and check sizes
-    std::array<size_t, 4> input_shape;
-    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
+    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    if(!input_shape) {
         return nullptr;
     }
-    if(!adrt::iadrt_is_valid_shape(input_shape)) {
+    if(!adrt::iadrt_is_valid_shape(*input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
         return nullptr;
     }
     // Compute effective output shape
-    const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(input_shape);
-    std::size_t tmp_buf_elems;
-    if(!adrt::_py::shape_product(adrt::iadrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
+    const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(*input_shape);
+    const adrt::_common::Optional<std::size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
+    if(!tmp_buf_elems) {
         return nullptr;
     }
     // Process input array
@@ -246,7 +250,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     case NPY_FLOAT32:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
-        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(tmp_buf_elems);
+        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -254,7 +258,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::iadrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::iadrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -263,7 +267,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     case NPY_FLOAT64:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
-        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(tmp_buf_elems);
+        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -271,7 +275,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::iadrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::iadrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -290,18 +294,18 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    std::array<size_t, 4> input_shape;
-    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
+    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    if(!input_shape) {
         return nullptr;
     }
-    if(!adrt::bdrt_is_valid_shape(input_shape)) {
+    if(!adrt::bdrt_is_valid_shape(*input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
         return nullptr;
     }
     // Compute effective output shape
-    const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(input_shape);
-    std::size_t tmp_buf_elems;
-    if(!adrt::_py::shape_product(adrt::bdrt_buffer_shape(input_shape)).store_value(tmp_buf_elems)) {
+    const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(*input_shape);
+    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::bdrt_buffer_shape(*input_shape));
+    if(!tmp_buf_elems) {
         return nullptr;
     }
     // Process input array
@@ -310,7 +314,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     case NPY_FLOAT32:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
-        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(tmp_buf_elems);
+        npy_float32 *tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -318,7 +322,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::bdrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::bdrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -327,7 +331,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     case NPY_FLOAT64:
     {
         PyArrayObject *ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
-        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(tmp_buf_elems);
+        npy_float64 *tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
             Py_XDECREF(ret);
@@ -335,7 +339,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::bdrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::bdrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -354,16 +358,16 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    std::array<size_t, 4> input_shape;
-    if(!adrt::_py::array_shape<3, 4>(I).store_value(input_shape)) {
+    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    if(!input_shape) {
         return nullptr;
     }
-    if(!adrt::interp_adrtcart_is_valid_shape(input_shape)) {
+    if(!adrt::interp_adrtcart_is_valid_shape(*input_shape)) {
         PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
         return nullptr;
     }
     // Compute effective output shape
-    const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(input_shape);
+    const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(*input_shape);
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -376,7 +380,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::interp_adrtcart(static_cast<const npy_float32*>(PyArray_DATA(I)), input_shape, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::interp_adrtcart(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, static_cast<npy_float32*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         return reinterpret_cast<PyObject*>(ret);
@@ -390,7 +394,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         }
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::interp_adrtcart(static_cast<const npy_float64*>(PyArray_DATA(I)), input_shape, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::interp_adrtcart(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, static_cast<npy_float64*>(PyArray_DATA(ret)));
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         return reinterpret_cast<PyObject*>(ret);

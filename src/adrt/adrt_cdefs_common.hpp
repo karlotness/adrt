@@ -42,14 +42,6 @@
 #define ADRT_OPENMP(def)
 #endif
 
-// Attribute support
-#if defined(__GNUC__) || defined(__clang__)
-// Use GCC-style attributes
-#define ADRT_NODISCARD __attribute__((warn_unused_result))
-#else
-#define ADRT_NODISCARD
-#endif
-
 namespace adrt {
 
     using std::size_t;
@@ -63,6 +55,7 @@ namespace adrt {
 
     namespace _common {
 
+        // Simple optional type that always default-initializes its value
         template <typename V>
         class Optional {
             bool ok;
@@ -77,16 +70,16 @@ namespace adrt {
                 return ok;
             }
 
-            V value() const {
+            void set_ok(bool flag) {
+                ok = flag;
+            }
+
+            V &operator*() {
                 return val;
             }
 
-            ADRT_NODISCARD
-            bool store_value(V &dest) const {
-                if(has_value()) {
-                    dest = value();
-                }
-                return has_value();
+            const V &operator*() const {
+                return val;
             }
 
             explicit operator bool() const {
