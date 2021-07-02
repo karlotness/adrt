@@ -240,7 +240,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(*input_shape);
-    const adrt::_common::Optional<std::size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
+    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
     if(!tmp_buf_elems) {
         return nullptr;
     }
