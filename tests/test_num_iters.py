@@ -51,7 +51,9 @@ def test_reject_overflow():
         adrt.core.num_iters(SIZE_T_MAX + 1)
 
 
-@pytest.mark.parametrize("in_val", [4.0, None, (), []])
+@pytest.mark.parametrize(
+    "in_val", [4.0, None, pytest.param((), id="tuple"), pytest.param([], id="list")]
+)
 def test_reject_non_integer(in_val):
     with pytest.raises(TypeError):
         adrt.core.num_iters(in_val)

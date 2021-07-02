@@ -190,16 +190,15 @@ def test_small_matrix():
     _check_zero_stencil(stitched)
 
 
-def test_rejects_invalid_sizes():
+@pytest.mark.parametrize(
+    "shape",
+    [
+        pytest.param((4, 0, 0), id="zero_dims"),
+        pytest.param((4, 4, 2), id="mismatched_sizes"),
+        pytest.param((7, 4), id="too_few_dims"),
+    ],
+)
+def test_rejects_invalid_sizes(shape):
+    inarr = np.ones(shape).astype("float32")
     with pytest.raises(ValueError):
-        # Zero dimensions
-        inarr = np.ones((4, 0, 0)).astype("float32")
-        _ = adrt.utils.stitch_adrt(inarr)
-    with pytest.raises(ValueError):
-        # Incorrect relationship between dimensions
-        inarr = np.ones((4, 4, 2)).astype("float32")
-        _ = adrt.utils.stitch_adrt(inarr)
-    with pytest.raises(ValueError):
-        # Too few dimensions
-        inarr = np.ones((7, 4)).astype("float32")
         _ = adrt.utils.stitch_adrt(inarr)
