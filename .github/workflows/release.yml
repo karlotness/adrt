@@ -150,8 +150,7 @@ jobs:
       continue-on-error: true
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
-        Import-Module $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Microsoft.VisualStudio.DevShell.dll)
-        Enter-VsDevShell $vsinstance.InstanceId
+        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1)
         dumpbin /exports /imports $((Get-ChildItem -Path build -Filter *.pyd -Recurse).FullName)
     - name: Diagnostics (macOS)
       if: ${{ runner.os == 'macOS' }}
