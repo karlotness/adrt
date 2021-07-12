@@ -47,7 +47,7 @@ bool is_pow2(size_t val) {
     return (val & (val - 1)) == 0;
 }
 
-inline int num_iters_fallback(size_t shape) {
+int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
@@ -60,7 +60,7 @@ inline int num_iters_fallback(size_t shape) {
 
 #if !defined(__GNUC__) && !defined(__clang__)
 // Fallback only needed if no GCC intrinsics
-inline bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
+bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
@@ -71,7 +71,7 @@ inline bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
-inline int num_iters(size_t shape) {
+int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
@@ -92,14 +92,14 @@ inline int num_iters(size_t shape) {
     return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool mul_check(size_t a, size_t b, size_t &prod) {
+bool mul_check(size_t a, size_t b, size_t &prod) {
     const bool overflow = __builtin_mul_overflow(a, b, &prod);
     return !overflow;
 }
 
 #elif defined(_MSC_VER) // MSVC intrinsics
 
-inline int num_iters(size_t shape) {
+int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
@@ -121,17 +121,17 @@ inline int num_iters(size_t shape) {
     return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool mul_check(size_t a, size_t b, size_t &prod) {
+bool mul_check(size_t a, size_t b, size_t &prod) {
     return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
 #else // Fallback only
 
-inline int num_iters(size_t shape) {
+int num_iters(size_t shape) {
     return adrt::_impl::num_iters_fallback(shape);
 }
 
-inline bool mul_check(size_t a, size_t b, size_t &prod) {
+bool mul_check(size_t a, size_t b, size_t &prod) {
     return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
