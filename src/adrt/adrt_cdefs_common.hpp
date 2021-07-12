@@ -89,13 +89,6 @@ namespace adrt {
 
         adrt::_common::Optional<size_t> mul_check(size_t a, size_t b);
 
-        inline bool is_pow2(size_t val) {
-            if(val == 0) {
-                return false;
-            }
-            return !(val & (val - 1));
-        }
-
         inline size_t floor_div2(size_t val) {
             // Only for non-negative values
             return val / 2;

@@ -40,9 +40,16 @@
 
 namespace adrt { namespace _impl { namespace {
 
+bool is_pow2(size_t val) {
+    if(val == 0) {
+        return false;
+    }
+    return (val & (val - 1)) == 0;
+}
+
 inline int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_common::is_pow2(shape);
+    bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
     while(shape != 0) {
         ++r;
@@ -66,7 +73,7 @@ inline bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
 
 inline int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_common::is_pow2(shape);
+    bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         unsigned int ushape = static_cast<unsigned int>(shape);
         int lead_zero = __builtin_clz(ushape);
@@ -94,7 +101,7 @@ inline bool mul_check(size_t a, size_t b, size_t &prod) {
 
 inline int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_common::is_pow2(shape);
+    bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
         unsigned long ushape = static_cast<unsigned long>(shape);
@@ -161,7 +168,7 @@ namespace adrt {
         }
         // Make sure array is square
         return ((shape[1] == shape[2]) && // Must be square
-                (adrt::_common::is_pow2(shape[2]))); // Must have power of two shape
+                (adrt::_impl::is_pow2(shape[2]))); // Must have power of two shape
     }
 
     // Implementation for adrt
@@ -196,7 +203,7 @@ namespace adrt {
         // Check if the rows & cols are shaped like an ADRT output
         return ((shape[1] == 4) &&
                 (shape[2] == (shape[3] * 2 - 1)) &&
-                (adrt::_common::is_pow2(shape[3])));
+                (adrt::_impl::is_pow2(shape[3])));
     }
 
     // Implementation for bdrt
