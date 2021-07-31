@@ -99,6 +99,13 @@ namespace adrt {
             return (val / 2) + (val % 2);
         }
 
+        inline size_t min(size_t a, size_t b) {
+            if(a < b) {
+                return a;
+            }
+            return b;
+        }
+
         template<size_t N>
         std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             std::array<size_t, N> strides_out;
