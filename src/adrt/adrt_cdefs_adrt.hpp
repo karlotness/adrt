@@ -55,7 +55,7 @@ namespace adrt {
             in_shape[4] * 2, // The number of angles doubles
         };
 
-        ADRT_OPENMP("omp parallel for collapse(5) default(none) shared(data, out, in_shape, curr_shape)")
+        ADRT_OPENMP("omp for collapse(5)")
         for(size_t batch = 0; batch < curr_shape[0]; ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < curr_shape[2]; ++row) {
@@ -84,77 +84,86 @@ namespace adrt {
     template <typename adrt_scalar>
     void adrt_basic(const adrt_scalar *const data, const std::array<size_t, 3> &shape, adrt_scalar *const tmp, adrt_scalar *const out) {
         const int num_iters = adrt::num_iters(shape[1]);
+        const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(shape);
 
-        // Choose the ordering of the two buffers so that we always end with result in tmp (ready to copy out)
-        adrt_scalar *buf_a = tmp;
-        adrt_scalar *buf_b = out;
-        if(num_iters % 2 != 0) {
-            std::swap(buf_a, buf_b);
-        }
-        std::array<size_t, 5> buf_shape = adrt::adrt_buffer_shape(shape);
+        ADRT_OPENMP("omp parallel default(none) shared(data, shape, tmp, out, num_iters, output_shape)")
+        {
+            // Choose the ordering of the two buffers so that we always end with result in tmp (ready to copy out)
+            adrt_scalar *buf_a = tmp;
+            adrt_scalar *buf_b = out;
+            if(num_iters % 2 != 0) {
+                std::swap(buf_a, buf_b);
+            }
+            std::array<size_t, 5> buf_shape = adrt::adrt_buffer_shape(shape);
 
-        // Copy data to tmp buffer (always load into buf_a)
-        // QUADRANT 0 (Direct copy row by row)
-        for(size_t batch = 0; batch < shape[0]; ++batch) {
-            for(size_t row = 0; row < shape[1]; ++row) {
-                for(size_t col = 0; col < shape[2]; ++col) {
-                    adrt::_common::array_access(buf_a, buf_shape, batch, size_t{0}, row, shape[2] - col - 1, size_t{0}) = \
-                        adrt::_common::array_access(data, shape, batch, row, col);
-                }
-            }
-        }
-        // QUADRANT 1 (Transpose the squares)
-        for(size_t batch = 0; batch < shape[0]; ++batch) {
-            for(size_t row = 0; row < shape[1]; ++row) {
-                for(size_t col = 0; col < shape[2]; ++col) {
-                    adrt::_common::array_access(buf_a, buf_shape, batch, size_t{1}, shape[1] - row - 1, shape[2] - col - 1, size_t{0}) = \
-                        adrt::_common::array_access(data, shape, batch, col, shape[1] - row - 1);
-                }
-            }
-        }
-        // QUADRANT 2 (Transpose the squares and flip along x)
-        for(size_t batch = 0; batch < shape[0]; ++batch) {
-            for(size_t row = 0; row < shape[1]; ++row) {
-                for(size_t col = 0; col < shape[2]; ++col) {
-                    adrt::_common::array_access(buf_a, buf_shape, batch, size_t{2}, shape[1] - row - 1, shape[2] - col - 1, size_t{0}) = \
-                        adrt::_common::array_access(data, shape, batch, shape[2] - col - 1, shape[1] - row - 1);
-                }
-            }
-        }
-        // QUADRANT 3 (Flip along y)
-        for(size_t batch = 0; batch < shape[0]; ++batch) {
-            for(size_t row = 0; row < shape[1]; ++row) {
-                for(size_t col = 0; col < shape[2]; ++col) {
-                    adrt::_common::array_access(buf_a, buf_shape, batch, size_t{3}, row, shape[2] - col - 1, size_t{0}) = \
-                        adrt::_common::array_access(data, shape, batch, shape[1] - row - 1, col);
-                }
-            }
-        }
-        // Fill rest with zeros
-        for(size_t batch = 0; batch < shape[0]; ++batch) {
-            for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
+            // Copy data to tmp buffer (always load into buf_a)
+            // QUADRANT 0 (Direct copy row by row)
+            ADRT_OPENMP("omp for collapse(3) nowait")
+            for(size_t batch = 0; batch < shape[0]; ++batch) {
                 for(size_t row = 0; row < shape[1]; ++row) {
-                    for(size_t col = shape[2]; col < 2 * shape[2] - 1; ++col) {
-                        adrt::_common::array_access(buf_a, buf_shape, batch, quadrant, row, col, size_t{0}) = 0;
+                    for(size_t col = 0; col < shape[2]; ++col) {
+                        adrt::_common::array_access(buf_a, buf_shape, batch, size_t{0}, row, shape[2] - col - 1, size_t{0}) = \
+                            adrt::_common::array_access(data, shape, batch, row, col);
                     }
                 }
             }
-        }
+            // QUADRANT 1 (Transpose the squares)
+            ADRT_OPENMP("omp for collapse(3) nowait")
+            for(size_t batch = 0; batch < shape[0]; ++batch) {
+                for(size_t row = 0; row < shape[1]; ++row) {
+                    for(size_t col = 0; col < shape[2]; ++col) {
+                        adrt::_common::array_access(buf_a, buf_shape, batch, size_t{1}, shape[1] - row - 1, shape[2] - col - 1, size_t{0}) = \
+                            adrt::_common::array_access(data, shape, batch, col, shape[1] - row - 1);
+                    }
+                }
+            }
+            // QUADRANT 2 (Transpose the squares and flip along x)
+            ADRT_OPENMP("omp for collapse(3) nowait")
+            for(size_t batch = 0; batch < shape[0]; ++batch) {
+                for(size_t row = 0; row < shape[1]; ++row) {
+                    for(size_t col = 0; col < shape[2]; ++col) {
+                        adrt::_common::array_access(buf_a, buf_shape, batch, size_t{2}, shape[1] - row - 1, shape[2] - col - 1, size_t{0}) = \
+                            adrt::_common::array_access(data, shape, batch, shape[2] - col - 1, shape[1] - row - 1);
+                    }
+                }
+            }
+            // QUADRANT 3 (Flip along y)
+            ADRT_OPENMP("omp for collapse(3) nowait")
+            for(size_t batch = 0; batch < shape[0]; ++batch) {
+                for(size_t row = 0; row < shape[1]; ++row) {
+                    for(size_t col = 0; col < shape[2]; ++col) {
+                        adrt::_common::array_access(buf_a, buf_shape, batch, size_t{3}, row, shape[2] - col - 1, size_t{0}) = \
+                            adrt::_common::array_access(data, shape, batch, shape[1] - row - 1, col);
+                    }
+                }
+            }
+            // Fill rest with zeros
+            ADRT_OPENMP("omp for collapse(4)")
+            for(size_t batch = 0; batch < shape[0]; ++batch) {
+                for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
+                    for(size_t row = 0; row < shape[1]; ++row) {
+                        for(size_t col = shape[2]; col < 2 * shape[2] - 1; ++col) {
+                            adrt::_common::array_access(buf_a, buf_shape, batch, quadrant, row, col, size_t{0}) = 0;
+                        }
+                    }
+                }
+            }
 
-        // Perform computations
-        for(int i = 0; i < num_iters; ++i) {
-            buf_shape = adrt::adrt_core(buf_a, buf_shape, buf_b);
-            std::swap(buf_a, buf_b);
-        }
+            // Perform computations
+            for(int i = 0; i < num_iters; ++i) {
+                buf_shape = adrt::adrt_core(buf_a, buf_shape, buf_b);
+                std::swap(buf_a, buf_b);
+            }
 
-        // Copy result to out buffer (always tmp -> out)
-        std::array<size_t, 4> output_shape = adrt::adrt_result_shape(shape);
-        for(size_t batch = 0; batch < output_shape[0]; ++batch) {
-            for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                for(size_t d = 0; d < output_shape[2]; ++d) {
-                    for(size_t a = 0; a < output_shape[3]; ++a) {
-                        const adrt_scalar val = adrt::_common::array_access(tmp, buf_shape, batch, quadrant, size_t{0}, d, a);
-                        adrt::_common::array_access(out, output_shape, batch, quadrant, d, a) = val;
+            // Copy result to out buffer (always tmp -> out)
+            ADRT_OPENMP("omp for collapse(4) nowait")
+            for(size_t batch = 0; batch < output_shape[0]; ++batch) {
+                for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
+                    for(size_t d = 0; d < output_shape[2]; ++d) {
+                        for(size_t a = 0; a < output_shape[3]; ++a) {
+                            const adrt_scalar val = adrt::_common::array_access(tmp, buf_shape, batch, quadrant, size_t{0}, d, a);
+                            adrt::_common::array_access(out, output_shape, batch, quadrant, d, a) = val;
+                        }
                     }
                 }
             }
