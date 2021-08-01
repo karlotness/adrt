@@ -46,7 +46,7 @@ namespace adrt {
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape);
 
     template <typename adrt_scalar>
-    void interp_adrtcart(const adrt_scalar *const data, const std::array<size_t, 4> &shape, adrt_scalar *const out) {
+    void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic
         static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
 

@@ -46,7 +46,7 @@ namespace adrt {
     // TODO: bool bdrt_core_is_valid_shape(const std::array<size_t, 5> &shape);
 
     template <typename adrt_scalar>
-    std::array<size_t, 5> bdrt_core(const adrt_scalar *const data, const std::array<size_t, 5> &in_shape, adrt_scalar *const out) {
+    std::array<size_t, 5> bdrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         const std::array<size_t, 5> curr_shape = {
             in_shape[0], // Keep batch dimension
             4, // Always 4 quadrants
@@ -88,7 +88,7 @@ namespace adrt {
     }
 
     template <typename adrt_scalar>
-    void bdrt_basic(const adrt_scalar *const data, const std::array<size_t, 4> &shape, adrt_scalar *const tmp, adrt_scalar *const out) {
+    void bdrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
         const int num_iters = adrt::num_iters(shape[3]);
         const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(shape);
 

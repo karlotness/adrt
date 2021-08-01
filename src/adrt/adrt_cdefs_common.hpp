@@ -42,6 +42,12 @@
 #define ADRT_OPENMP(def)
 #endif
 
+#if defined(__GNUC__) || defined(__clang__) || defined(_MSC_VER)
+#define ADRT_RESTRICT __restrict
+#else
+#define ADRT_RESTRICT
+#endif
+
 namespace adrt {
 
     using std::size_t;
