@@ -66,17 +66,15 @@ namespace adrt {
                             // Inner loops inside each bock
                             for(size_t col = col_start; col < adrt::_common::min(col_start + block_stride, curr_shape[3]); ++col) {
                                 for(size_t angle = angle_start; angle < adrt::_common::min(angle_start + block_stride, curr_shape[4]); ++angle) {
-                                    const size_t j = row, x = col, a = angle;
-                                    // TODO: Adjust loop bounds to avoid operations on all zeros. This will make x depend on the angle.
-                                    // Will likely have to fuse the iterations by hand
-                                    adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2 * j, x, adrt::_common::floor_div2(a));
+                                    // TODO: Adjust loop bounds to avoid operations on all zeros. Will likely have to fuse the iterations by hand.
+                                    adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2 * row, col, adrt::_common::floor_div2(angle));
                                     // Need to check the index access for x
-                                    const size_t xb_idx = x - adrt::_common::ceil_div2(a);
+                                    const size_t b_col_idx = col - adrt::_common::ceil_div2(angle);
                                     adrt_scalar bval = 0;
-                                    if(x >= adrt::_common::ceil_div2(a) && xb_idx < curr_shape[3]) {
-                                        bval = adrt::_common::array_access(data, in_shape, batch, quadrant, (2 * j) + 1, xb_idx, adrt::_common::floor_div2(a));
+                                    if(col >= adrt::_common::ceil_div2(angle) && b_col_idx < curr_shape[3]) {
+                                        bval = adrt::_common::array_access(data, in_shape, batch, quadrant, (2 * row) + 1, b_col_idx, adrt::_common::floor_div2(angle));
                                     }
-                                    adrt::_common::array_access(out, curr_shape, batch, quadrant, j, x, a) = aval + bval;
+                                    adrt::_common::array_access(out, curr_shape, batch, quadrant, row, col, angle) = aval + bval;
                                 }
                             }
                         }
