@@ -130,8 +130,7 @@ namespace adrt {
 
         template <typename scalar, size_t N, typename... Idx>
         scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, const Idx... idxs) {
-            const std::array<size_t, N> strides = compute_strides(shape);
-            return array_stride_access(buf, strides, idxs...);
+            return array_stride_access(buf, compute_strides(shape), idxs...);
         }
 
     } // end namespace adrt::_common
