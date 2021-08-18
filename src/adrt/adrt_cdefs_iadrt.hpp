@@ -58,7 +58,13 @@ namespace adrt {
         for(size_t rev_row = 0; rev_row < curr_shape[4]; ++rev_row) {
             const size_t row = curr_shape[4] - rev_row - 1;
 
-            ADRT_OPENMP("omp for collapse(4)")
+            // We rely on the OpenMP static schedule to ensure that each
+            // thread will execute the same set of iterations each time we
+            // enter this loop. That way all previous corresponding entries in
+            // the previous row will be written by the same thread and we can
+            // avoid additional barriers. See the comment in the loop body
+            // below.
+            ADRT_OPENMP("omp for collapse(4) schedule(static) nowait")
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t batch = 0; batch < curr_shape[1]; ++batch) {
                     for(size_t l = 0; l < curr_shape[2]; ++l) {
@@ -82,6 +88,7 @@ namespace adrt {
                                 }
                             }
                             if(row + 1 < curr_shape[4]) {
+                                // Must ensure previous values are written before reading below (relies on static schedule).
                                 val += adrt::_common::array_access(out, curr_shape, quadrant, batch, l, col, row + 1);
                             }
                             adrt::_common::array_access(out, curr_shape, quadrant, batch, l, col, row) = val;
@@ -90,6 +97,9 @@ namespace adrt {
                 }
             }
         }
+
+        // Explicit barrier needed here to ensure all data is written to out
+        ADRT_OPENMP("omp barrier")
 
         return curr_shape;
     }
