@@ -55,22 +55,16 @@ namespace adrt {
             in_shape[4], // Keep the same number of "rows"
         };
 
-        for(size_t rev_row = 0; rev_row < curr_shape[4]; ++rev_row) {
-            const size_t row = curr_shape[4] - rev_row - 1;
-
-            // We rely on the OpenMP static schedule to ensure that each
-            // thread will execute the same set of iterations each time we
-            // enter this loop. That way all previous corresponding entries in
-            // the previous row will be written by the same thread and we can
-            // avoid additional barriers. See the comment in the loop body
-            // below.
-            ADRT_OPENMP("omp for collapse(4) schedule(static) nowait")
-            for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                for(size_t batch = 0; batch < curr_shape[1]; ++batch) {
-                    for(size_t l = 0; l < curr_shape[2]; ++l) {
-                        for(size_t col = 0; col < curr_shape[3]; ++col) {
+        ADRT_OPENMP("omp for collapse(4)")
+        for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
+            for(size_t batch = 0; batch < curr_shape[1]; ++batch) {
+                for(size_t l = 0; l < curr_shape[2]; ++l) {
+                    for(size_t col = 0; col < curr_shape[3]; ++col) {
+                        const size_t prev_l = adrt::_common::floor_div2(l);
+                        // The loop below must be serial
+                        for(size_t rev_row = 0; rev_row < curr_shape[4]; ++rev_row) {
+                            const size_t row = curr_shape[4] - rev_row - 1;
                             adrt_scalar val = 0;
-                            const size_t prev_l = adrt::_common::floor_div2(l);
                             if(l % 2 == 0) {
                                 // l + 1 odd
                                 val += adrt::_common::array_access(data, in_shape, quadrant, batch, prev_l, 2 * col, row);
@@ -88,7 +82,7 @@ namespace adrt {
                                 }
                             }
                             if(row + 1 < curr_shape[4]) {
-                                // Must ensure previous values are written before reading below (relies on static schedule).
+                                // Must ensure previous values are written before reading below (requires row loop to be serial)
                                 val += adrt::_common::array_access(out, curr_shape, quadrant, batch, l, col, row + 1);
                             }
                             adrt::_common::array_access(out, curr_shape, quadrant, batch, l, col, row) = val;
@@ -97,9 +91,6 @@ namespace adrt {
                 }
             }
         }
-
-        // Explicit barrier needed here to ensure all data is written to out
-        ADRT_OPENMP("omp barrier")
 
         return curr_shape;
     }
