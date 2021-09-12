@@ -182,6 +182,14 @@ class TestBdrt:
         assert not inarr.flags["C_CONTIGUOUS"]
         _ = adrt.bdrt(inarr)
 
+    def test_accepts_byteswapped(self):
+        size = 16
+        inarr_native = np.ones((4, 2 * size - 1, size), dtype=np.float32)
+        inarr_swapped = inarr_native.astype(inarr_native.dtype.newbyteorder("S"))
+        out_native = adrt.bdrt(inarr_native)
+        out_swapped = adrt.bdrt(inarr_swapped)
+        assert np.all(out_native == out_swapped)
+
     def test_all_zeros_square(self):
         size = 16
         inarr = np.zeros((size, size), dtype=np.float32)

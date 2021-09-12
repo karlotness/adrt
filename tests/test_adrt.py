@@ -203,6 +203,13 @@ class TestAdrt:
         assert not inarr.flags["C_CONTIGUOUS"]
         _ = adrt.adrt(inarr)
 
+    def test_accepts_byteswapped(self):
+        inarr_native = np.ones((16, 16), dtype=np.float32)
+        inarr_swapped = inarr_native.astype(inarr_native.dtype.newbyteorder("S"))
+        out_native = adrt.adrt(inarr_native)
+        out_swapped = adrt.adrt(inarr_swapped)
+        assert np.all(out_native == out_swapped)
+
     def test_all_ones_square(self):
         inarr = np.ones((16, 16))
         c_out = adrt.adrt(inarr)
