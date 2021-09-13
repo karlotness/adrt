@@ -167,10 +167,15 @@ namespace adrt {
             ADRT_OPENMP("omp for collapse(4) nowait")
             for(size_t batch = 0; batch < output_shape[0]; ++batch) {
                 for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                    for(size_t d = 0; d < output_shape[2]; ++d) {
-                        for(size_t a = 0; a < output_shape[3]; ++a) {
-                            const adrt_scalar val = adrt::_common::array_access(tmp, buf_shape, batch, quadrant, size_t{0}, a, d);
-                            adrt::_common::array_access(out, output_shape, batch, quadrant, d, a) = val;
+                    for(size_t d_start = 0; d_start < output_shape[2]; d_start += block_stride) {
+                        for(size_t a_start = 0; a_start < output_shape[3]; a_start += block_stride) {
+                            // Inner blocks serial
+                            for(size_t d = d_start; d < std::min(d_start + block_stride, output_shape[2]); ++d) {
+                                for(size_t a = a_start; a < std::min(a_start + block_stride, output_shape[3]); ++a) {
+                                    const adrt_scalar val = adrt::_common::array_access(tmp, buf_shape, batch, quadrant, size_t{0}, a, d);
+                                    adrt::_common::array_access(out, output_shape, batch, quadrant, d, a) = val;
+                                }
+                            }
                         }
                     }
                 }
