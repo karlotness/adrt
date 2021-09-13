@@ -177,8 +177,8 @@ namespace adrt {
             shape[0],
             4,
             shape[1],
+            1,
             2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
-            1
         };
     }
 
