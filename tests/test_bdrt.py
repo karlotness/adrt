@@ -199,6 +199,7 @@ class TestBdrt:
         assert bdrt_out.shape == adrt_out.shape
         assert bdrt_sq.shape == inarr.shape
         assert bdrt_sq.dtype == inarr.dtype
+        assert np.all(bdrt_out == 0)
 
     def test_digital_lines(self):
         size = 16
