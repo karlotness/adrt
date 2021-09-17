@@ -299,24 +299,9 @@ class TestBdrt:
         assert c_out.shape == expected_out.shape
         assert np.allclose(c_out, expected_out)
 
-    def test_materialize_array_size_4(self):
-        n = 4
-        full_size = n ** 2
-        adrt_size = 4 * n * (2 * n - 1)
-        adrt_in = np.eye(full_size, dtype=np.float32).reshape((full_size, n, n))
-        bdrt_in = np.eye(adrt_size, dtype=np.float32).reshape(
-            (adrt_size, 4, 2 * n - 1, n)
-        )
-        adrt_arr = adrt.adrt(adrt_in).reshape((full_size, -1)).T
-        bdrt_out = adrt.bdrt(bdrt_in)
-        bdrt_arr = np.sum(adrt.utils.truncate(bdrt_out), axis=1).reshape(
-            (adrt_size, full_size)
-        )
-        assert adrt_arr.shape == bdrt_arr.shape
-        assert np.allclose(adrt_arr, bdrt_arr)
-
-    def test_materialize_array_size_2(self):
-        n = 2
+    @pytest.mark.parametrize("size", [1, 2, 4, 8])
+    def test_materialize_array(self, size):
+        n = size
         full_size = n ** 2
         adrt_size = 4 * n * (2 * n - 1)
         adrt_in = np.eye(full_size, dtype=np.float32).reshape((full_size, n, n))
