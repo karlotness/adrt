@@ -407,7 +407,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
     size_t val = PyLong_AsSize_t(arg);
-    if(PyErr_Occurred()) {
+    if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
         return nullptr;
     }
     return PyLong_FromLong(adrt::num_iters(val));
