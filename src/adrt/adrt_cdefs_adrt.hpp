@@ -56,18 +56,24 @@ namespace adrt {
             in_shape[4], // Keep the same number of columns
         };
 
-        ADRT_OPENMP("omp for collapse(5)")
+        ADRT_OPENMP("omp for collapse(4)")
         for(size_t batch = 0; batch < curr_shape[0]; ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < curr_shape[2]; ++row) {
                     for(size_t angle = 0; angle < curr_shape[3]; ++angle) {
-                        for(size_t col = 0; col < curr_shape[4]; ++col) {
+                        // Pair of loops below split at ceil(angle/2) to avoid extra bounds check in loop body
+                        const size_t ceil_div2_angle = adrt::_common::ceil_div2(angle);
+                        ADRT_OPENMP("omp simd")
+                        for(size_t col = 0; col < ceil_div2_angle; ++col) {
                             const adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2 * row, adrt::_common::floor_div2(angle), col);
-                            adrt_scalar bval = 0;
-                            if(col >= adrt::_common::ceil_div2(angle)) {
-                                const size_t b_col_idx = col - adrt::_common::ceil_div2(angle);
-                                bval = adrt::_common::array_access(data, in_shape, batch, quadrant, (2 * row) + 1, adrt::_common::floor_div2(angle), b_col_idx);
-                            }
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, row, angle, col) = aval;
+                        }
+                        // This second loop requires col >= ceil(angle/2) to avoid bounds check
+                        ADRT_OPENMP("omp simd")
+                        for(size_t col = ceil_div2_angle; col < curr_shape[4]; ++col) {
+                            const adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2 * row, adrt::_common::floor_div2(angle), col);
+                            const size_t b_col_idx = col - ceil_div2_angle;
+                            const adrt_scalar bval = adrt::_common::array_access(data, in_shape, batch, quadrant, (2 * row) + 1, adrt::_common::floor_div2(angle), b_col_idx);
                             adrt::_common::array_access(out, curr_shape, batch, quadrant, row, angle, col) = aval + bval;
                         }
                     }
