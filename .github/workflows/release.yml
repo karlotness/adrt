@@ -104,7 +104,7 @@ jobs:
       env:
         SETUPTOOLS_USE_DISTUTILS: local
         PIP_CONSTRAINT: 'tools/constraints.txt'
-        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -D_FORTIFY_SOURCE=2'
+        CFLAGS: '-O3 -g0 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -D_FORTIFY_SOURCE=2'
         LDFLAGS: '-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         CC: 'gcc-10 -pthread'
         CXX: 'g++-10 -pthread'
@@ -125,7 +125,7 @@ jobs:
       env:
         SETUPTOOLS_USE_DISTUTILS: local
         PIP_CONSTRAINT: 'tools/constraints.txt'
-        CFLAGS: '-O3 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough'
+        CFLAGS: '-O3 -g0 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough'
         LDFLAGS: '-Wl,-S,-x,-dead_strip_dylibs'
     - name: Store artifact
       uses: actions/upload-artifact@v2
