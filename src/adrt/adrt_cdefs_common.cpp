@@ -49,7 +49,7 @@ bool is_pow2(size_t val) {
 
 int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_impl::is_pow2(shape);
+    const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
     while(shape != 0) {
         ++r;
@@ -73,7 +73,7 @@ bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_impl::is_pow2(shape);
+    const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         unsigned int ushape = static_cast<unsigned int>(shape);
         int lead_zero = __builtin_clz(ushape);
@@ -101,7 +101,7 @@ bool mul_check(size_t a, size_t b, size_t &prod) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    bool is_power_of_two = adrt::_impl::is_pow2(shape);
+    const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
         unsigned long ushape = static_cast<unsigned long>(shape);
