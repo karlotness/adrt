@@ -192,9 +192,11 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -209,9 +211,11 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::adrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::adrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -256,9 +260,11 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::iadrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::iadrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -273,9 +279,11 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::iadrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::iadrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -320,9 +328,11 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::bdrt_basic(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::bdrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -337,9 +347,11 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::bdrt_basic(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, tmp_buf, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::bdrt_basic(in_data, *input_shape, tmp_buf, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         adrt::_py::py_free(tmp_buf);
@@ -378,9 +390,11 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::interp_adrtcart(static_cast<const npy_float32*>(PyArray_DATA(I)), *input_shape, static_cast<npy_float32*>(PyArray_DATA(ret)));
+        adrt::interp_adrtcart(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         return reinterpret_cast<PyObject*>(ret);
@@ -392,9 +406,11 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
             Py_XDECREF(ret);
             return nullptr;
         }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS;
-        adrt::interp_adrtcart(static_cast<const npy_float64*>(PyArray_DATA(I)), *input_shape, static_cast<npy_float64*>(PyArray_DATA(ret)));
+        adrt::interp_adrtcart(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS;
         return reinterpret_cast<PyObject*>(ret);
