@@ -54,7 +54,7 @@ def _set_module(module):
     return decorate
 
 
-def _normalize_array(a):
+def _normalize_array(a, /):
     r"""Ensure provided arrays are in a suitable layout.
 
     This is an internal function. Users should not call it. Make sure
@@ -70,7 +70,7 @@ def _normalize_array(a):
 
 
 @_set_module("adrt")
-def adrt(a):
+def adrt(a, /):
     r"""The Approximate Discrete Radon Transform (ADRT).
 
     Computes the ADRT of the provided array, `a`. The array `a` may
@@ -116,7 +116,7 @@ def adrt(a):
 
 
 @_set_module("adrt")
-def iadrt(a):
+def iadrt(a, /):
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
@@ -157,7 +157,7 @@ def iadrt(a):
 
 
 @_set_module("adrt")
-def bdrt(a):
+def bdrt(a, /):
     r"""Backprojection for the ADRT.
 
     Parameters
@@ -185,7 +185,7 @@ def bdrt(a):
 
 
 @_set_module("adrt.utils")
-def interp_to_cart(a):
+def interp_to_cart(a, /):
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
     Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
@@ -207,7 +207,7 @@ def interp_to_cart(a):
 
 
 @_set_module("adrt.core")
-def num_iters(n):
+def num_iters(n, /):
     r"""Number of adrt iterations needed for an image of size n.
 
     Many of the algorithms in this package are iterative. For an image

@@ -37,7 +37,7 @@ __all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
 import numpy as np
 
 
-def stitch_adrt(a, *, remove_repeated=False):
+def stitch_adrt(a, /, *, remove_repeated=False):
     r"""Reshape and align ADRT channel-wise output into a contiguous image.
 
     The ADRT routine, :func:`adrt.adrt`, produces an output array
@@ -116,7 +116,7 @@ def stitch_adrt(a, *, remove_repeated=False):
         return ret[0]
 
 
-def truncate(a):
+def truncate(a, /):
     r"""Truncate and rotate square domain from iadrt or bdrt output.
 
     Parameters
@@ -149,7 +149,7 @@ def truncate(a):
     return out
 
 
-def interp_to_cart(adrt_out):
+def interp_to_cart(adrt_out, /):
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
     Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
