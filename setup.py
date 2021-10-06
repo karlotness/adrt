@@ -12,7 +12,7 @@ adrt_c_ext = Extension(
     py_limited_api=True,
     define_macros=[
         ("Py_LIMITED_API", "0x03080000"),
-        ("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION"),
+        ("NPY_NO_DEPRECATED_API", "NPY_1_19_API_VERSION"),
     ],
 )
 
