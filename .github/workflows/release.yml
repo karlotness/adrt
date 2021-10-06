@@ -87,7 +87,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.6'
+        python-version: '3.8'
         architecture: ${{ matrix.python-arch }}
     - name: Install dependencies
       run: |
@@ -169,7 +169,7 @@ jobs:
     needs: wheel
     strategy:
       matrix:
-        python: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10']
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -219,7 +219,7 @@ jobs:
     - name: Install dependencies
       run: pipx install tox
     - name: Run tox tests
-      run: tox -e py36,py37,py38,py39,py310 --installpkg dist/adrt-*-manylinux*_x86_64.whl
+      run: tox -e py38,py39,py310 --installpkg dist/adrt-*-manylinux*_x86_64.whl
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10

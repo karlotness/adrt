@@ -11,7 +11,7 @@ adrt_c_ext = Extension(
     include_dirs=[numpy.get_include()],
     py_limited_api=True,
     define_macros=[
-        ("Py_LIMITED_API", "0x03060000"),
+        ("Py_LIMITED_API", "0x03080000"),
         ("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION"),
     ],
 )
