@@ -31,6 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import numbers
 import numpy as np
 from . import _adrt_cdefs
 
@@ -52,6 +53,19 @@ def _set_module(module):
         return func
 
     return decorate
+
+
+def _format_object_type(obj, /):
+    r"""Given an object `obj`, return a formatted string for its type name.
+
+    In particular, for built-in types omit the ``builtins`` module
+    name, but for others, include it to give the full name of type
+    type (such as "np.ndarray").
+    """
+    t = type(obj)
+    if t.__module__ == "builtins":
+        return t.__qualname__
+    return f"{t.__module__}.{t.__qualname__}"
 
 
 def _normalize_array(a, /):
@@ -227,4 +241,7 @@ def num_iters(n, /):
         The number of iterations needed to fully process the image of
         size ``n``.
     """
-    return _adrt_cdefs.num_iters(n)
+    if isinstance(n, (int, np.integer, numbers.Integral)):
+        return _adrt_cdefs.num_iters(int(n))
+    else:
+        raise TypeError(f"An integer is required, got {_format_object_type(n)}")

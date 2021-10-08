@@ -34,6 +34,7 @@
 import math
 import ctypes
 import pytest
+import numpy as np
 import adrt
 
 
@@ -75,3 +76,17 @@ def test_one():
 def test_common_value(in_val):
     target = math.ceil(math.log2(in_val))
     assert adrt.core.num_iters(in_val) == target
+
+
+@pytest.mark.parametrize(
+    "cls", [np.int16, np.uint16, np.int32, np.uint32, np.int64, np.uint64]
+)
+def test_numpy_integer(cls):
+    value = 20
+    assert adrt.core.num_iters(cls(value)) == adrt.core.num_iters(value)
+
+
+@pytest.mark.parametrize("cls", [np.float32, np.float64, np.complex64, np.complex128])
+def test_reject_numpy_non_integer(cls):
+    with pytest.raises(TypeError):
+        adrt.core.num_iters(cls(4))
