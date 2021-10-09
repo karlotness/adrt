@@ -72,6 +72,11 @@ def test_one():
     assert adrt.core.num_iters(1) == 0
 
 
+def test_bool():
+    assert adrt.core.num_iters(False) == adrt.core.num_iters(0)
+    assert adrt.core.num_iters(True) == adrt.core.num_iters(1)
+
+
 @pytest.mark.parametrize("in_val", range(2, 17))
 def test_common_value(in_val):
     target = math.ceil(math.log2(in_val))
