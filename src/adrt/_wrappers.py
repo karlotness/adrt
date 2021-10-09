@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import numbers
+import operator
 import numpy as np
 from . import _adrt_cdefs
 
@@ -243,7 +243,4 @@ def num_iters(n, /):
         The number of iterations needed to fully process the image of
         size ``n``.
     """
-    if isinstance(n, (int, np.integer, numbers.Integral)):
-        return _adrt_cdefs.num_iters(int(n))
-    else:
-        raise TypeError(f"An integer is required, got {_format_object_type(n)}")
+    return _adrt_cdefs.num_iters(operator.index(n))
