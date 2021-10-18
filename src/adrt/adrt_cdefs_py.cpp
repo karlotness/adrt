@@ -56,6 +56,14 @@ PyArrayObject *extract_array(PyObject *arg) {
     return arr;
 }
 
+adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
+    const size_t val = PyLong_AsSize_t(arg);
+    if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
+        return {};
+    }
+    return {val};
+}
+
 template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
@@ -422,11 +430,11 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
 }
 
 static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
-    const size_t val = PyLong_AsSize_t(arg);
-    if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
+    const adrt::_common::Optional<size_t> val = adrt::_py::extract_size_t(arg);
+    if(!val) {
         return nullptr;
     }
-    return PyLong_FromLong(adrt::num_iters(val));
+    return PyLong_FromLong(adrt::num_iters(*val));
 }
 
 static PyMethodDef adrt_cdefs_methods[] = {
