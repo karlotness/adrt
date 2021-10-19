@@ -172,6 +172,26 @@ namespace adrt {
     }
 
     // Implementation for adrt
+    bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
+        // Make sure all shapes are nonzero
+        for(size_t i = 0; i < 4; ++i) {
+            if(shape[i] <= 0) {
+                return false;
+            }
+        }
+        // Check if the rows & cols are shaped like an ADRT output
+        return ((shape[1] == 4) &&
+                (shape[2] == (shape[3] * 2 - 1)) &&
+                (adrt::_impl::is_pow2(shape[3])));
+    }
+
+    // Implementation for adrt
+    bool adrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter) {
+        int num_iters = adrt::num_iters(shape[3]);
+        return iter >= 0 && iter < num_iters;
+    }
+
+    // Implementation for adrt
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape) {
         return {
             shape[0],
@@ -194,16 +214,7 @@ namespace adrt {
 
     // Implementation for bdrt
     bool bdrt_is_valid_shape(const std::array<size_t, 4> &shape) {
-        // Make sure all shapes are nonzero
-        for(size_t i = 0; i < 4; ++i) {
-            if(shape[i] <= 0) {
-                return false;
-            }
-        }
-        // Check if the rows & cols are shaped like an ADRT output
-        return ((shape[1] == 4) &&
-                (shape[2] == (shape[3] * 2 - 1)) &&
-                (adrt::_impl::is_pow2(shape[3])));
+        return adrt_step_is_valid_shape(shape);
     }
 
     // Implementation for bdrt
