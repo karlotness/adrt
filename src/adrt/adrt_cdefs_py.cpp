@@ -64,6 +64,26 @@ adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
     return {val};
 }
 
+adrt::_common::Optional<int> extract_int(PyObject *arg) {
+    const long val = PyLong_AsLong(arg);
+    if(val == -1L) {
+        PyObject *exc = PyErr_Occurred();
+        if(exc != nullptr) {
+            // Error occurred
+            if(PyErr_GivenExceptionMatches(exc, PyExc_OverflowError)) {
+                // If it's an OverflowError replace the message with one about int
+                PyErr_SetString(PyExc_OverflowError, "Python int too large to convert to C int");
+            }
+            return {};
+        }
+    }
+    else if(val < std::numeric_limits<int>::min() || val > std::numeric_limits<int>::max()) {
+        PyErr_SetString(PyExc_OverflowError, "Python int too large to convert to C int");
+        return {};
+    }
+    return {static_cast<int>(val)};
+}
+
 template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
