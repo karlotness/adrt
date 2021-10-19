@@ -255,6 +255,75 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
 }
 
+static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
+    // Unpack function arguments
+    PyObject *arg_array[2];
+    if(!PyArg_UnpackTuple(args, "adrt_step", 2, 2, &arg_array[0], &arg_array[1])) {
+        return nullptr;
+    }
+    // Process array argument
+    PyArrayObject *const I = adrt::_py::extract_array(arg_array[0]);
+    if(!I) {
+        return nullptr;
+    }
+    // Extract shape and check sizes
+    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    if(!input_shape) {
+        return nullptr;
+    }
+    if(!adrt::adrt_step_is_valid_shape(*input_shape)) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must have valid shape for ADRT, use adrt_init");
+        return nullptr;
+    }
+    // Process int argument
+    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(arg_array[1]);
+    if(!iter) {
+        return nullptr;
+    }
+    // Check range of iter
+    if(!adrt::adrt_step_is_valid_iter(*input_shape, *iter)) {
+        PyErr_SetString(PyExc_ValueError, "Parameter iter is out of range for provided array shape, use num_iters");
+        return nullptr;
+    }
+    // Process input array
+    const int ndim = PyArray_NDIM(I);
+    switch(PyArray_TYPE(I)) {
+    case NPY_FLOAT32:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT32);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::adrt_step(in_data, *input_shape, out_data, *iter);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return reinterpret_cast<PyObject*>(ret);
+    }
+    case NPY_FLOAT64:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT64);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::adrt_step(in_data, *input_shape, out_data, *iter);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return reinterpret_cast<PyObject*>(ret);
+    }
+    default:
+        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        return nullptr;
+    }
+}
+
 static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     // Process function arguments
     PyArrayObject *const I = adrt::_py::extract_array(arg);
@@ -459,6 +528,7 @@ static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
 
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
+    {"adrt_step", adrt_py_adrt_step, METH_VARARGS, "Compute one step of the ADRT"},
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
     {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},

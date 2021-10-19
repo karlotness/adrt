@@ -134,6 +134,11 @@ def adrt(a, /):
     return _adrt_cdefs.adrt(_normalize_array(a))
 
 
+@_set_module("adrt.core")
+def adrt_step(a, /, step):
+    return _adrt_cdefs.adrt_step(_normalize_array(a), operator.index(step))
+
+
 @_set_module("adrt")
 def iadrt(a, /):
     r"""An exact inverse to the ADRT.
