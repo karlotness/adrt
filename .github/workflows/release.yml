@@ -154,7 +154,9 @@ jobs:
         otool -L -arch all "$ADRT_BIN"
         nm -arch all "$ADRT_BIN"
     - name: Install test dependencies
-      run: python -m pip install --upgrade pytest tox
+      run: |
+        python -m pip install --upgrade tox
+        python -m pip install --upgrade -r tests/test_requirements.txt
     - name: Install wheel
       run: python -m pip install --constraint tools/constraints.txt dist/adrt-*.whl
       shell: bash
