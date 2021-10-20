@@ -136,6 +136,46 @@ def adrt(a, /):
 
 @_set_module("adrt.core")
 def adrt_step(a, /, step):
+    r"""Compute a single step of the ADRT.
+
+    The ADRT implemented in :func:`adrt.adrt` is internally an
+    iterative algorithm. Sums along line segments of a given length
+    are approximated by joining sums along line segments of half
+    length in a bottom-up fashion from segments of length two.
+
+    This function allows you to run a single step of the ADRT in order
+    to observe the outputs (for example to read off sums of partial
+    line segments) or to modify the values as the computation proceeds
+    (for example, to mask certain values as they grow).
+
+    To use this function correctly, use :func:`adrt.core.adrt_init` to
+    initialize your input array for use with this function. The
+    argument ``a`` to this function should either be the result of
+    :func:`adrt_init` or a previous output of this function.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which the single ADRT step should be computed.
+        This array must have data type :obj:`float32 <numpy.float32>`
+        or :obj:`float64 <numpy.float64>`.
+    step : int
+        The step to compute. The upper bound on this value should be
+        computed using :func:`num_iters`, then ``step`` must be
+        between :math:`0` and :math:`\mathtt{num\_iters}-1`.
+
+    Returns
+    -------
+    numpy.ndarray
+        The result of the ``step`` iteration of the ADRT. The output
+        has the same shape as the input.
+
+    Note
+    ----
+    If you only want the result of the last step (the full ADRT) and
+    are not interested in the intermediate steps, use the more
+    efficient :func:`adrt.adrt`.
+    """
     return _adrt_cdefs.adrt_step(_normalize_array(a), operator.index(step))
 
 

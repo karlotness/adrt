@@ -39,6 +39,28 @@ from ._wrappers import _format_object_type, num_iters, adrt_step
 
 
 def adrt_init(a, /):
+    r"""Initialize an array for use with :func:`adrt_step`.
+
+    This function processes square arrays with side lengths a power of
+    two. These arrays may also optionally have an optional batch
+    dimension. This function is intended to be used with
+    :func:`adrt.core.adrt_step`.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array which will be made suitable for further processing
+        with the ADRT. This array must have a square shape with sides
+        a power of two, optionally with a leading batch dimension.
+
+    Returns
+    -------
+    numpy.ndarray
+        The input array duplicated, stacked, flipped and rotated to
+        make it suitable for further processing with the ADRT. The
+        output array will have shape :math:`(b, 4, 2n-1, n)` where
+        :math:`b` is the optional batch dimension.
+    """
     # Explicitly require an ndarray (or subclass).
     if not isinstance(a, np.ndarray):
         raise TypeError(
@@ -72,6 +94,43 @@ def adrt_init(a, /):
 
 
 def adrt_iter(a, /, *, copy=True):
+    r"""Yield individual steps of the ADRT.
+
+    The ADRT implemented in :func:`adrt.adrt` is internally an
+    iterative algorithm. Sums along line segments of a given length
+    are approximated by joining sums along line segments of half
+    length in a bottom-up fashion from segments of length two.
+
+    This function allows you observe individual steps of the ADRT. It
+    is a :term:`python:generator` which will yield first the
+    initialized array, followed by the outputs of each iteration of
+    the ADRT.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which steps of the ADRT will be computed. This
+        array must have data type :obj:`float32 <numpy.float32>` or
+        :obj:`float64 <numpy.float64>`.
+    copy : bool, optional
+        If true (default), the arrays produced by this generator are
+        independent copies. Otherwise, read-only views are produced
+        and these *must not* be modified without making a
+        :meth:`copy <numpy.ndarray.copy>` first.
+
+    Yields
+    ------
+    numpy.ndarray
+        Successive stages of the ADRT computation. First, the
+        unprocessed array computed by :func:`adrt_init` followed by
+        snapshots of progress after each ADRT iteration.
+
+    Note
+    ----
+    If you only want the result of the last step (the full ADRT) and
+    are not interested in the intermediate steps, use the more
+    efficient :func:`adrt.adrt`.
+    """
     a = adrt_init(a)
     a.setflags(write=False)
     yield a.copy() if copy else a.view()
