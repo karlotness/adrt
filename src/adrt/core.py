@@ -71,9 +71,11 @@ def adrt_init(a, /):
     return ret
 
 
-def adrt_iter(a, /):
+def adrt_iter(a, /, *, copy=True):
     a = adrt_init(a)
-    yield a.copy()
+    a.setflags(write=False)
+    yield a.copy() if copy else a.view()
     for i in range(num_iters(a.shape[-1])):
         a = adrt_step(a, i)
-        yield a.copy()
+        a.setflags(write=False)
+        yield a.copy() if copy else a.view()
