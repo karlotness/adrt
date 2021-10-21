@@ -83,13 +83,13 @@ def adrt_init(a, /):
         output_shape = output_shape[1:]
     ret = np.zeros_like(a, shape=output_shape)
     # Quadrant 0
-    ret[..., 0, :n, :] = np.flip(a, axis=-1).T
+    ret[..., 0, :n, :] = np.flip(a, axis=-1).swapaxes(-1, -2)
     # Quadrant 1
     ret[..., 1, :n, :] = np.flip(a, axis=-2)
     # Quadrant 2
     ret[..., 2, :n, :] = a
     # Quadrant 3
-    ret[..., 3, :n, :] = np.flip(a, axis=(-1, -2)).T
+    ret[..., 3, :n, :] = np.flip(a, axis=(-1, -2)).swapaxes(-1, -2)
     return ret
 
 
