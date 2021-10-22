@@ -35,7 +35,7 @@ import argparse
 import re
 import ast
 import configparser
-import toml
+import tomli
 from setuptools.config import read_configuration
 from packaging.requirements import Requirement
 from packaging.version import Version
@@ -133,8 +133,8 @@ def find_package_min_numpy(setup_cfg):
 
 
 def find_pyproject_min_numpy(pyproject_toml):
-    with open(pyproject_toml, "r", encoding="utf8") as pyproj_file:
-        defs = toml.load(pyproj_file)
+    with open(pyproject_toml, "rb") as pyproj_file:
+        defs = tomli.load(pyproj_file)
     return find_min_version("numpy", defs["build-system"]["requires"])
 
 
