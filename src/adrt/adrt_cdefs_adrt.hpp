@@ -193,8 +193,8 @@ namespace adrt {
     template <typename adrt_scalar>
     void adrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
-        const unsigned int iter_exp = 1u << iter;
-        const unsigned int iter_exp_next = 1u << (iter + 1);
+        const size_t iter_exp = size_t{1} << static_cast<size_t>(iter);
+        const size_t iter_exp_next = iter_exp << 1u;
 
         ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next)")
         for(size_t batch = 0; batch < shape[0]; ++batch) {
