@@ -187,8 +187,7 @@ namespace adrt {
 
     // Implementation for adrt
     bool adrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter) {
-        int num_iters = adrt::num_iters(shape[3]);
-        return iter >= 0 && iter < num_iters;
+        return iter >= 0 && iter < adrt::num_iters(shape[3]);
     }
 
     // Implementation for adrt
