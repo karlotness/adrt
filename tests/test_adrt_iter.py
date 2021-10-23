@@ -84,6 +84,13 @@ def test_all_match_adrt_step_batch(dtype):
         assert b.dtype == np.dtype(dtype)
 
 
+@pytest.mark.parametrize("size", [1, 2, 4, 8, 16])
+def test_correct_iter_length(size):
+    inarr = np.ones((size, size)).astype("float32")
+    num_elems = adrt.core.num_iters(inarr.shape[-1]) + 1
+    assert mi.ilen(adrt.core.adrt_iter(inarr)) == num_elems
+
+
 def test_refuses_int32():
     size = 16
     inarr = np.ones((size, size)).astype("int32")
