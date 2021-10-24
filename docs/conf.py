@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.imgconverter",
     "sphinx_rtd_theme",
     "matplotlib.sphinxext.plot_directive",
 ]
@@ -61,5 +62,5 @@ def adrt_magick_available():
     return shutil.which("convert") is not None
 
 
-if adrt_magick_available():
-    extensions.append("sphinx.ext.imgconverter")
+if not adrt_magick_available():
+    extensions.remove("sphinx.ext.imgconverter")
