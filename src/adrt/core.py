@@ -31,6 +31,31 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+r"""Low-level routines for observing or influencing the basic algorithms.
+
+The ``adrt.core`` module provides low-level routines that make it
+possible to observe the progress of other iterative algorithms
+provided in this package, or to intervene in their computation.
+
+Broadly, there are two types of routines provided here: generators
+which yield snapshots of each phase in the iterative computation; and
+single-step functions which allow executing a single, specified step.
+
+These routines could be used to implement the basic routines from the
+:mod:`adrt` module; however the implementations there are more
+efficient. If you only want the final result of the basic algorithms,
+you should use the functions from the main :mod:`adrt` module.
+
+However, if you want to observe or modify the progress of the basic
+algorithms these routines make this possible. If you want only to
+observe the individual steps of the iterative computations---but not
+modify them---then the iterator routines here may be useful.
+Otherwise, if you want to perform more advanced operations and
+intervene in and modify the progress of the computations the
+single-step routines make that possible.
+"""
+
+
 __all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter"]
 
 
