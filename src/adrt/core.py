@@ -127,9 +127,8 @@ def adrt_iter(a, /, *, copy=True):
     length in a bottom-up fashion from segments of length two.
 
     This function allows you observe individual steps of the ADRT. It
-    is a :term:`python:generator` which will yield first the
-    initialized array, followed by the outputs of each iteration of
-    the ADRT.
+    is a generator which will yield first the initialized array,
+    followed by the outputs of each iteration of the ADRT.
 
     Parameters
     ----------

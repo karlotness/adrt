@@ -11,10 +11,10 @@ iterative. For example, the ADRT merges line segments, doubling their
 lengths until they span the full size of the input.
 
 The low-level routines here make it possible to observe the progress
-of these iterations. These are generator functions that will yield
-snapshots of the iterative computation after each step. Their final
-snapshots are equivalent to the outputs of the basic algorithms in the
-:mod:`adrt` module.
+of these iterations. These are :term:`python:generator` functions that
+will yield snapshots of the iterative computation after each step.
+Their final snapshots are equivalent to the outputs of the basic
+algorithms in the :mod:`adrt` module.
 
 .. autofunction:: adrt_iter
 
