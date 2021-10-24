@@ -31,6 +31,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+r"""Python wrappers for functions from the native extension.
+
+.. danger::
+   This module is not part of the public API surface. Do not use it!
+
+Most of these functions are re-exported from other modules and should
+be used from there. Users must not import routines from this module;
+they are not part of the public API surface and may be changed or
+removed.
+
+This module exists to centralize type conversion routines used to make
+the native functions more pleasant to use from Python and to attach
+Python documentation.
+"""
+
+
 __all__ = []
 
 

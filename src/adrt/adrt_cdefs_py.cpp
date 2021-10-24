@@ -539,7 +539,11 @@ static PyMethodDef adrt_cdefs_methods[] = {
 static struct PyModuleDef adrt_cdefs_module = {
     PyModuleDef_HEAD_INIT,
     "adrt._adrt_cdefs",
-    "C routines for ADRT. These should not be called directly by module users.",
+    "Native implementations of core functionality.\n\n"
+    ".. danger::\n"
+    "   This module is not part of the public API surface. Do not use it!\n\n"
+    "These functions are not part of the public API surface and may be changed\n"
+    "or removed. Do not call them directly.",
     0,
     adrt_cdefs_methods,
     nullptr,
