@@ -11,5 +11,5 @@ and useful utilities are in :mod:`adrt.utils`.
    :caption: Contents
 
    reference.basic
-   reference.core
    reference.utils
+   reference.core
