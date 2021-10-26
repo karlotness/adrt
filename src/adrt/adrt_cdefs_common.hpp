@@ -35,6 +35,7 @@
 
 #include <cstddef>
 #include <array>
+#include <type_traits>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -61,7 +62,15 @@ namespace adrt {
 
     namespace _common {
 
+        // Template computing a logical and of its parameters (like C++17's std::conjunction)
+        template<typename... terms>
+        struct conjunction : std::true_type {};
+
+        template<typename term, typename... terms>
+        struct conjunction<term, terms...> : std::conditional<bool(term::value), adrt::_common::conjunction<terms...>, std::false_type>::type {};
+
         // Simple optional type that always default-initializes its value
+        // Similar to (but simpler than) C++17's std::optional
         template <typename V>
         class Optional {
             bool ok;
@@ -120,6 +129,7 @@ namespace adrt {
         template <typename scalar, size_t N, typename... Idx>
         scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, const Idx... idxs) {
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
+            static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             const std::array<size_t, N> idx {idxs...};
             size_t acc = 0;
             for(size_t i = 0; i < N; ++i) {
