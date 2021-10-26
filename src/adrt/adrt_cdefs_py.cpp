@@ -124,7 +124,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
         PyErr_SetString(PyExc_RuntimeError, "Invalid number of dimensions computed for output array");
         return nullptr;
     }
-    npy_intp new_shape[n_virtual_dim] = {0};
+    std::array<npy_intp, n_virtual_dim> new_shape;
     for(size_t i = 0; i < undim; ++i) {
         const size_t shape_val = virtual_shape[(n_virtual_dim - undim) + i];
         if(shape_val <= static_cast<npy_uintp>(std::numeric_limits<npy_intp>::max())) {
@@ -135,7 +135,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
             return nullptr;
         }
     }
-    PyObject *arr = PyArray_SimpleNew(ndim, new_shape, typenum);
+    PyObject *arr = PyArray_SimpleNew(ndim, new_shape.data(), typenum);
     if(!arr) {
         if(!PyErr_Occurred()) {
             // Don't shadow errors that NumPy may have set
