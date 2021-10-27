@@ -33,6 +33,7 @@
 
 #include <array>
 #include <limits>
+#include <type_traits>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -160,6 +161,15 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
     return n_elem;
 }
 
+template <Py_ssize_t min, Py_ssize_t max, typename... Dest>
+bool unpack_tuple(PyObject *tuple, const char *name, Dest&... dests) {
+    static_assert(min >= 0, "Min arguments must be non-negative");
+    static_assert(max >= min, "Max arguments must be at least min arguments");
+    static_assert(sizeof...(dests) == max, "Must provide space for exactly max arguments");
+    static_assert(adrt::_common::conjunction<std::is_same<PyObject*, Dest>...>::value, "All destinations should be PyObject*");
+    return PyArg_UnpackTuple(tuple, name, min, max, &dests...);
+}
+
 void *py_malloc(size_t n_elem, size_t elem_size) {
     const adrt::_common::Optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
     if(!alloc_size) {
@@ -258,7 +268,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
 static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
     PyObject *py_arg_array, *py_arg_iter;
-    if(!PyArg_UnpackTuple(args, "adrt_step", 2, 2, &py_arg_array, &py_arg_iter)) {
+    if(!adrt::_py::unpack_tuple<2, 2>(args, "adrt_step", py_arg_array, py_arg_iter)) {
         return nullptr;
     }
     // Process array argument
