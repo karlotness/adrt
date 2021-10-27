@@ -257,12 +257,12 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
-    PyObject *arg_array[2];
-    if(!PyArg_UnpackTuple(args, "adrt_step", 2, 2, &arg_array[0], &arg_array[1])) {
+    PyObject *py_arg_array, *py_arg_iter;
+    if(!PyArg_UnpackTuple(args, "adrt_step", 2, 2, &py_arg_array, &py_arg_iter)) {
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(arg_array[0]);
+    PyArrayObject *const I = adrt::_py::extract_array(py_arg_array);
     if(!I) {
         return nullptr;
     }
@@ -276,7 +276,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(arg_array[1]);
+    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(py_arg_iter);
     if(!iter) {
         return nullptr;
     }
