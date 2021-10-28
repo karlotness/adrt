@@ -48,20 +48,20 @@ namespace adrt {
     template <typename adrt_scalar>
     std::array<size_t, 5> bdrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         const std::array<size_t, 5> curr_shape = {
-            in_shape[0], // Keep batch dimension
+            std::get<0>(in_shape), // Keep batch dimension
             4, // Always 4 quadrants
-            in_shape[2],
-            adrt::_common::floor_div2(in_shape[3]), // Halve the size of each section
-            in_shape[4] * 2, // Double the number of sections
+            std::get<2>(in_shape),
+            adrt::_common::floor_div2(std::get<3>(in_shape)), // Halve the size of each section
+            std::get<4>(in_shape) * 2, // Double the number of sections
         };
 
         ADRT_OPENMP("omp for collapse(5)")
-        for(size_t batch = 0; batch < curr_shape[0]; ++batch) {
+        for(size_t batch = 0; batch < std::get<0>(curr_shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                for(size_t row = 0; row < curr_shape[2]; ++row) {
-                    for(size_t sec_i = 0; sec_i < curr_shape[3]; ++sec_i) {
+                for(size_t row = 0; row < std::get<2>(curr_shape); ++row) {
+                    for(size_t sec_i = 0; sec_i < std::get<3>(curr_shape); ++sec_i) {
                         // We double the sections we store to so loop over the previous (half count) value
-                        for(size_t section = 0; section < in_shape[4]; ++section) {
+                        for(size_t section = 0; section < std::get<4>(in_shape); ++section) {
                             const size_t sec_left = 2 * section, sec_right = 2 * section + 1;
 
                             // Left section
@@ -71,10 +71,10 @@ namespace adrt {
 
                             // Right section
                             adrt_scalar ra_val = 0, rb_val = 0;
-                            if(row + sec_i < in_shape[2]) {
+                            if(row + sec_i < std::get<2>(in_shape)) {
                                 ra_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row + sec_i, 2 * sec_i, section);
                             }
-                            if(row + sec_i + 1 < in_shape[2]) {
+                            if(row + sec_i + 1 < std::get<2>(in_shape)) {
                                 rb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row + sec_i + 1, 2 * sec_i + 1, section);
                             }
                             adrt::_common::array_access(out, curr_shape, batch, quadrant, row, sec_i, sec_right) = ra_val + rb_val;
@@ -89,7 +89,7 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void bdrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
-        const int num_iters = adrt::num_iters(shape[3]);
+        const int num_iters = adrt::num_iters(std::get<3>(shape));
         const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(shape);
 
         ADRT_OPENMP("omp parallel default(none) shared(data, shape, tmp, out, num_iters, output_shape)")
@@ -104,10 +104,10 @@ namespace adrt {
 
             // Copy data to tmp buffer (always load into buf_a)
             ADRT_OPENMP("omp for collapse(4)")
-            for(size_t batch = 0; batch < shape[0]; ++batch) {
+            for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
                 for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                    for(size_t row = 0; row < shape[2]; ++row) {
-                        for(size_t col = 0; col < shape[3]; ++col) {
+                    for(size_t row = 0; row < std::get<2>(shape); ++row) {
+                        for(size_t col = 0; col < std::get<3>(shape); ++col) {
                             adrt::_common::array_access(buf_a, buf_shape, batch, quadrant, row, col, size_t{0}) =
                                 adrt::_common::array_access(data, shape, batch, quadrant, row, col);
                         }
@@ -123,10 +123,10 @@ namespace adrt {
 
             // Copy result to out buffer (always tmp -> out)
             ADRT_OPENMP("omp for collapse(4) nowait")
-            for(size_t batch = 0; batch < output_shape[0]; ++batch) {
+            for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
                 for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
-                    for(size_t row = 0; row < output_shape[2]; ++row) {
-                        for(size_t col = 0; col < output_shape[3]; ++col) {
+                    for(size_t row = 0; row < std::get<2>(output_shape); ++row) {
+                        for(size_t col = 0; col < std::get<3>(output_shape); ++col) {
                             adrt::_common::array_access(out, output_shape, batch, quadrant, row, col) =
                                 adrt::_common::array_access(tmp, buf_shape, batch, quadrant, row, size_t{0}, col);
                         }

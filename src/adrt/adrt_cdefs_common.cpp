@@ -167,8 +167,8 @@ namespace adrt {
             }
         }
         // Make sure array is square
-        return ((shape[1] == shape[2]) && // Must be square
-                (adrt::_impl::is_pow2(shape[2]))); // Must have power of two shape
+        return ((std::get<1>(shape) == std::get<2>(shape)) && // Must be square
+                (adrt::_impl::is_pow2(std::get<2>(shape)))); // Must have power of two shape
     }
 
     // Implementation for adrt
@@ -180,34 +180,34 @@ namespace adrt {
             }
         }
         // Check if the rows & cols are shaped like an ADRT output
-        return ((shape[1] == 4) &&
-                (shape[2] == (shape[3] * 2 - 1)) &&
-                (adrt::_impl::is_pow2(shape[3])));
+        return ((std::get<1>(shape) == 4) &&
+                (std::get<2>(shape) == (std::get<3>(shape) * 2 - 1)) &&
+                (adrt::_impl::is_pow2(std::get<3>(shape))));
     }
 
     // Implementation for adrt
     bool adrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter) {
-        return iter >= 0 && iter < adrt::num_iters(shape[3]);
+        return iter >= 0 && iter < adrt::num_iters(std::get<3>(shape));
     }
 
     // Implementation for adrt
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape) {
         return {
-            shape[0],
+            std::get<0>(shape),
             4,
-            shape[1],
+            std::get<1>(shape),
             1,
-            2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
+            2 * std::get<2>(shape) - 1, // No overflow because n^2 fits in size_t, so must 2*n
         };
     }
 
     // Implementation for adrt
     std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape) {
         return {
-            shape[0],
+            std::get<0>(shape),
             4,
-            2 * shape[2] - 1, // No overflow because n^2 fits in size_t, so must 2*n
-            shape[1]
+            2 * std::get<2>(shape) - 1, // No overflow because n^2 fits in size_t, so must 2*n
+            std::get<1>(shape)
         };
     }
 
@@ -219,10 +219,10 @@ namespace adrt {
     // Implementation for bdrt
     std::array<size_t, 5> bdrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {
-            shape[0], // batch
+            std::get<0>(shape), // batch
             4,  // quadrant
-            shape[2], // row
-            shape[3], // col
+            std::get<2>(shape), // row
+            std::get<3>(shape), // col
             1 // sections
         };
     }
@@ -240,10 +240,10 @@ namespace adrt {
     std::array<size_t, 5> iadrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {
             4, // Quadrants (shape[1])
-            shape[0], // planes
+            std::get<0>(shape), // planes
             1,
-            shape[3], // N
-            shape[2], // 2 * N - 1
+            std::get<3>(shape), // N
+            std::get<2>(shape), // 2 * N - 1
         };
     }
 
@@ -258,9 +258,9 @@ namespace adrt {
 
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape) {
         return {
-            shape[0], // batch
-            shape[2], // rows
-            4 * shape[3], // cols. No overflow, merges quadrant and column dimensions
+            std::get<0>(shape), // batch
+            std::get<2>(shape), // rows
+            4 * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
         };
     }
 
