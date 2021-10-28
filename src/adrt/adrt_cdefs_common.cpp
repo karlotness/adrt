@@ -161,7 +161,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
         // Make sure all shapes are nonzero
-        for(size_t i = 0; i < 3; ++i) {
+        for(size_t i = 0; i < shape.size(); ++i) {
             if(shape[i] <= 0) {
                 return false;
             }
@@ -174,7 +174,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
         // Make sure all shapes are nonzero
-        for(size_t i = 0; i < 4; ++i) {
+        for(size_t i = 0; i < shape.size(); ++i) {
             if(shape[i] <= 0) {
                 return false;
             }
