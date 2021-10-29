@@ -164,6 +164,7 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
 template <Py_ssize_t min, Py_ssize_t max, typename... Dest>
 bool unpack_tuple(PyObject *tuple, const char *name, Dest&... dests) {
     static_assert(min >= 0, "Min arguments must be non-negative");
+    static_assert(max >= 1, "Must accept at least one argument");
     static_assert(max >= min, "Max arguments must be at least min arguments");
     static_assert(sizeof...(dests) == max, "Must provide space for exactly max arguments");
     static_assert(adrt::_common::conjunction<std::is_same<PyObject*, Dest>...>::value, "All destinations should be PyObject*");
