@@ -56,8 +56,20 @@ namespace adrt {
     int num_iters(size_t shape);
 
     namespace _const {
-        const long double pi_4 = 0.785398163397448309615660845819875721L;
-        const long double sqrt2 = 1.414213562373095048801688724209698079L;
+
+        // Constants as function templates standing in for C++14 variable templates
+        template<typename scalar>
+        constexpr scalar pi_4() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(0.785398163397448309615660845819875721L);
+        }
+
+        template<typename scalar>
+        constexpr scalar sqrt2() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(1.414213562373095048801688724209698079L);
+        }
+
     } // end namespace adrt::_const
 
     namespace _common {
