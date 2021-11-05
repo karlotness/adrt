@@ -67,6 +67,17 @@ bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
 }
 #endif
 
+template<size_t N>
+bool all_nonzero(const std::array<size_t, N> &shape) {
+    // Make sure all shapes are nonzero
+    for(size_t i = 0; i < shape.size(); ++i) {
+        if(shape[i] <= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Implementation of adrt_num_iters
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
@@ -160,27 +171,17 @@ namespace adrt {
 
     // Implementation for adrt
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
-        // Make sure all shapes are nonzero
-        for(size_t i = 0; i < shape.size(); ++i) {
-            if(shape[i] <= 0) {
-                return false;
-            }
-        }
         // Make sure array is square
-        return ((std::get<1>(shape) == std::get<2>(shape)) && // Must be square
+        return (adrt::_impl::all_nonzero(shape) && // All entries must be nonzero
+                (std::get<1>(shape) == std::get<2>(shape)) && // Must be square
                 (adrt::_impl::is_pow2(std::get<2>(shape)))); // Must have power of two shape
     }
 
     // Implementation for adrt
     bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
-        // Make sure all shapes are nonzero
-        for(size_t i = 0; i < shape.size(); ++i) {
-            if(shape[i] <= 0) {
-                return false;
-            }
-        }
         // Check if the rows & cols are shaped like an ADRT output
-        return ((std::get<1>(shape) == 4) &&
+        return (adrt::_impl::all_nonzero(shape) &&
+                (std::get<1>(shape) == 4) &&
                 (std::get<2>(shape) == (std::get<3>(shape) * 2 - 1)) &&
                 (adrt::_impl::is_pow2(std::get<3>(shape))));
     }
