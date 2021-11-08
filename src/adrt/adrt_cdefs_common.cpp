@@ -68,7 +68,7 @@ bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
 #endif
 
 template<size_t N>
-bool all_nonzero(const std::array<size_t, N> &shape) {
+bool all_positive(const std::array<size_t, N> &shape) {
     // Make sure all shapes are nonzero
     for(size_t i = 0; i < shape.size(); ++i) {
         if(shape[i] <= 0) {
@@ -172,7 +172,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
         // Make sure array is square
-        return (adrt::_impl::all_nonzero(shape) && // All entries must be nonzero
+        return (adrt::_impl::all_positive(shape) && // All entries must be nonzero
                 (std::get<1>(shape) == std::get<2>(shape)) && // Must be square
                 (adrt::_impl::is_pow2(std::get<2>(shape)))); // Must have power of two shape
     }
@@ -180,7 +180,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
         // Check if the rows & cols are shaped like an ADRT output
-        return (adrt::_impl::all_nonzero(shape) &&
+        return (adrt::_impl::all_positive(shape) &&
                 (std::get<1>(shape) == 4) &&
                 (std::get<2>(shape) == (std::get<3>(shape) * 2 - 1)) &&
                 (adrt::_impl::is_pow2(std::get<3>(shape))));
