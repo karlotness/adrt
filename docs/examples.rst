@@ -10,7 +10,7 @@ package. For help with that see the :ref:`installation instructions
 <installation>`. To follow these examples, you will also need `NumPy
 <https://numpy.org/install/>`__, `SciPy
 <https://www.scipy.org/install.html>`__, and `Matplotlib
-<https://matplotlib.org/stable/users/installing.html>`__.
+<https://matplotlib.org/stable/users/installing/index.html>`__.
 
 .. toctree::
    :maxdepth: 1
