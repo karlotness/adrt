@@ -217,6 +217,14 @@ namespace adrt {
         return adrt_step_is_valid_shape(shape);
     }
 
+    bool bdrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
+        return bdrt_is_valid_shape(shape);
+    }
+
+    bool bdrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter) {
+        return adrt_step_is_valid_iter(shape, iter);
+    }
+
     // Implementation for bdrt
     std::array<size_t, 5> bdrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {

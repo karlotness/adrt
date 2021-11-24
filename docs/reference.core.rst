@@ -18,6 +18,8 @@ algorithms in the :mod:`adrt` module.
 
 .. autofunction:: adrt_iter
 
+.. autofunction:: bdrt_iter
+
 Single-Step Routines
 --------------------
 
@@ -38,3 +40,5 @@ different order.
 .. autofunction:: adrt_init
 
 .. autofunction:: adrt_step
+
+.. autofunction:: bdrt_step

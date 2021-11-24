@@ -56,11 +56,11 @@ single-step routines make that possible.
 """
 
 
-__all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter"]
+__all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter", "bdrt_step"]
 
 
 import numpy as np
-from ._wrappers import _format_object_type, num_iters, adrt_step
+from ._wrappers import _format_object_type, num_iters, adrt_step, bdrt_step
 
 
 def adrt_init(a, /):
@@ -160,5 +160,44 @@ def adrt_iter(a, /, *, copy=True):
     yield a.copy() if copy else a.view()
     for i in range(num_iters(a.shape[-1])):
         a = adrt_step(a, i)
+        a.setflags(write=False)
+        yield a.copy() if copy else a.view()
+
+
+def bdrt_iter(a, /, *, copy=True):
+    r"""Yield individual steps of the bdrt.
+
+    The implementation of :func:`adrt.bdrt` is internally an iterative
+    algorithm. This function allows you observe individual steps of
+    the bdrt. It is a generator which will yield the outputs of each
+    iteration of the bdrt.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which steps of the bdrt will be computed. This
+        array must have data type :obj:`float32 <numpy.float32>` or
+        :obj:`float64 <numpy.float64>`.
+    copy : bool, optional
+        If true (default), the arrays produced by this generator are
+        independent copies. Otherwise, read-only views are produced
+        and these *must not* be modified without making a
+        :meth:`copy <numpy.ndarray.copy>` first.
+
+    Yields
+    ------
+    numpy.ndarray
+        Successive stages of the bdrt computation, a snapshot of the
+        progress after each bdrt iteration.
+
+    Note
+    ----
+    If you only want the result of the last step and are not
+    interested in the intermediate steps, use the more efficient
+    :func:`adrt.bdrt`.
+
+    """
+    for i in range(num_iters(a.shape[-1])):
+        a = bdrt_step(a, i)
         a.setflags(write=False)
         yield a.copy() if copy else a.view()

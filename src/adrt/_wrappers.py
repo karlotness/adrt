@@ -264,6 +264,45 @@ def bdrt(a, /):
     return _adrt_cdefs.bdrt(_normalize_array(a))
 
 
+@_set_module("adrt.core")
+def bdrt_step(a, /, step):
+    r"""Compute a single step of the bdrt.
+
+    The implementation of :func:`adrt.bdrt` is internally an iterative
+    algorithm. This function allows you to run a single step of the
+    bdrt in order to observe the outputs or to modify the values as
+    the computation proceeds.
+
+    To use this function correctly, the input ``a`` should be the
+    result of an ADRT operation (:func:`adrt.adrt`) or a previous
+    output of this function.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which the single bdrt step should be computed.
+        This array must have data type :obj:`float32 <numpy.float32>`
+        or :obj:`float64 <numpy.float64>`.
+    step : int
+        The step to compute. The upper bound on this value should be
+        computed using :func:`num_iters`, then ``step`` must be
+        between :math:`0` and :math:`\mathtt{num\_iters}-1`.
+
+    Returns
+    -------
+    numpy.ndarray
+        The result of the ``step`` iteration of the bdrt. The output
+        has the same shape as the input.
+
+    Note
+    ----
+    If you only want the result of the last step and are not
+    interested in the intermediate steps, use the more efficient
+    :func:`adrt.bdrt`.
+    """
+    return _adrt_cdefs.bdrt_step(_normalize_array(a), operator.index(step))
+
+
 @_set_module("adrt.utils")
 def interp_to_cart(a, /):
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
