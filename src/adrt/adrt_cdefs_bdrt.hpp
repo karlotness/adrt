@@ -148,6 +148,8 @@ namespace adrt {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < std::get<2>(shape); ++row) {
                     for(size_t col = 0; col < std::get<3>(shape); ++col) {
+                        // TODO: Fix so this operation is the transpose of corresponding adrt step
+                        // Not just matching at the cumulative last step, but for each individually
                         const size_t sec_i = col / iter_exp_next;
                         const size_t section = adrt::_common::floor_div2(col % iter_exp_next);
                         const size_t col_idx_a = (2 * sec_i) * iter_exp + section;
