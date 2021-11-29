@@ -611,7 +611,7 @@ static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt_step", adrt_py_adrt_step, METH_VARARGS, "Compute one step of the ADRT"},
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
-    {"bdrt_step", adrt_py_bdrt_step, METH_VARARGS, "Compute the one step of bdrt"},
+    {"bdrt_step", adrt_py_bdrt_step, METH_VARARGS, "Compute one step of the bdrt"},
     {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
     {nullptr, nullptr, 0, nullptr}
