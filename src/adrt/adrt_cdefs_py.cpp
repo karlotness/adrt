@@ -69,7 +69,7 @@ adrt::_common::Optional<int> extract_int(PyObject *arg) {
     const long val = PyLong_AsLong(arg);
     if(val == -1L) {
         PyObject *exc = PyErr_Occurred();
-        if(exc != nullptr) {
+        if(exc) {
             // Error occurred
             if(PyErr_GivenExceptionMatches(exc, PyExc_OverflowError)) {
                 // If it's an OverflowError replace the message with one about int
