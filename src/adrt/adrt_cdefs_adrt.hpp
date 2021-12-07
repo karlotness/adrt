@@ -195,24 +195,34 @@ namespace adrt {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
         const size_t iter_exp = size_t{1} << static_cast<size_t>(iter);
         const size_t iter_exp_next = iter_exp << 1u;
+        const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp_next);
 
-        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next)")
+        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next, num_col_blocks)")
         for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < std::get<2>(shape); ++row) {
-                    for(size_t col = 0; col < std::get<3>(shape); ++col) {
-                        // Compute which two inputs this should be a combination of...
-                        const size_t out_angle = col % iter_exp_next;
-                        const size_t out_offset = col / iter_exp_next;
-                        const size_t a_col_idx = (2 * out_offset) * iter_exp + adrt::_common::floor_div2(out_angle);
-                        const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, a_col_idx);
-                        adrt_scalar bval = 0;
-                        if(row >= adrt::_common::ceil_div2(out_angle)) {
+                    for(size_t col_block = 0; col_block < num_col_blocks; ++col_block) {
+                        const size_t col_start = col_block * iter_exp_next;
+                        const size_t out_offset = col_block;
+                        const size_t max_col_i = std::min(iter_exp_next, std::get<3>(shape) - col_start);
+                        const size_t col_split = std::min(2 * row + 1, max_col_i);
+                        for(size_t col_i = 0; col_i < col_split; ++col_i) {
+                            const size_t col = col_start + col_i;
+                            const size_t out_angle = col_i;
+                            const size_t a_col_idx = (2 * out_offset) * iter_exp + adrt::_common::floor_div2(out_angle);
+                            const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, a_col_idx);
                             const size_t b_col_idx = (2 * out_offset + 1) * iter_exp + adrt::_common::floor_div2(out_angle);
                             const size_t b_row_idx = row - adrt::_common::ceil_div2(out_angle);
-                            bval = adrt::_common::array_access(data, shape, batch, quadrant, b_row_idx, b_col_idx);
+                            const adrt_scalar bval = adrt::_common::array_access(data, shape, batch, quadrant, b_row_idx, b_col_idx);
+                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
                         }
-                        adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
+                        for(size_t col_i = col_split; col_i < max_col_i; ++col_i) {
+                            const size_t col = col_start + col_i;
+                            const size_t out_angle = col_i;
+                            const size_t a_col_idx = (2 * out_offset) * iter_exp + adrt::_common::floor_div2(out_angle);
+                            const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, a_col_idx);
+                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval;
+                        }
                     }
                 }
             }

@@ -121,6 +121,11 @@ namespace adrt {
             return val / 2;
         }
 
+        inline size_t ceil_div(size_t val, size_t d) {
+            // Only for non-negative values
+            return (val / d) + (val % d == 0u ? 0u : 1u);
+        }
+
         inline size_t ceil_div2(size_t val) {
             // Only for non-negative values
             return (val / 2) + (val % 2);
