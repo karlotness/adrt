@@ -142,10 +142,9 @@ namespace adrt {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
         const int adrt_iter = adrt::num_iters(std::get<3>(shape)) - iter - 1;
         const size_t iter_exp = size_t{1} << static_cast<size_t>(adrt_iter);
-        const size_t iter_exp_next = iter_exp << 1u;
         const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp);
 
-        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next, num_col_blocks)")
+        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, num_col_blocks)")
         for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < std::get<2>(shape); ++row) {
