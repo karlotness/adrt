@@ -36,15 +36,7 @@ import numpy as np
 import adrt
 
 
-@pytest.mark.parametrize(
-    "size",
-    [
-        1,
-        2,
-        pytest.param(4, marks=pytest.mark.xfail),
-        pytest.param(8, marks=pytest.mark.xfail),
-    ],
-)
+@pytest.mark.parametrize("size", [2, 4, 8])
 def test_materialize_array(size):
     n = size
     full_size = 4 * n * (2 * n - 1)

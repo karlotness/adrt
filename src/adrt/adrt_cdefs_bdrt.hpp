@@ -140,7 +140,8 @@ namespace adrt {
     template <typename adrt_scalar>
     void bdrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
-        const size_t iter_exp = size_t{1} << static_cast<size_t>(iter);
+        const int adrt_iter = adrt::num_iters(std::get<3>(shape)) - iter - 1;
+        const size_t iter_exp = size_t{1} << static_cast<size_t>(adrt_iter);
         const size_t iter_exp_next = iter_exp << 1u;
 
         ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next)")
@@ -148,32 +149,27 @@ namespace adrt {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < std::get<2>(shape); ++row) {
                     for(size_t col = 0; col < std::get<3>(shape); ++col) {
-                        // TODO: Fix so this operation is the transpose of corresponding adrt step
-                        // Not just matching at the cumulative last step, but for each individually
-                        const size_t sec_i = col / iter_exp_next;
-                        const size_t section = adrt::_common::floor_div2(col % iter_exp_next);
-                        const size_t col_idx_a = (2 * sec_i) * iter_exp + section;
-                        const size_t col_idx_b = (2 * sec_i + 1) * iter_exp + section;
-
-                        adrt_scalar a_val = 0;
-                        adrt_scalar b_val = 0;
-
-                        if(col % 2 == 0) {
-                            // Even section (left)
-                            a_val = adrt::_common::array_access(data, shape, batch, quadrant, row, col_idx_a);
-                            b_val = adrt::_common::array_access(data, shape, batch, quadrant, row, col_idx_b);
+                        const size_t col_sec_i = (col % iter_exp) + (iter_exp * (col / iter_exp_next));
+                        const size_t base_col = 2 * col_sec_i;
+                        if((col / iter_exp) % 2 == 0) {
+                            // Case: same row
+                            const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col);
+                            const adrt_scalar bval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col + 1);
+                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
                         }
                         else {
-                            // Odd section (right)
-                            if(row + sec_i < std::get<2>(shape)) {
-                                a_val = adrt::_common::array_access(data, shape, batch, quadrant, row + sec_i, col_idx_a);
+                            // Case: different rows
+                            const size_t base_row = row + (col % iter_exp);
+                            adrt_scalar aval = 0;
+                            adrt_scalar bval = 0;
+                            if(base_row < std::get<2>(shape)) {
+                                aval = adrt::_common::array_access(data, shape, batch, quadrant, base_row, base_col);
                             }
-                            if(row + sec_i + 1 < std::get<2>(shape)) {
-                                b_val = adrt::_common::array_access(data, shape, batch, quadrant, row + sec_i + 1, col_idx_b);
+                            if(base_row + 1 < std::get<2>(shape)) {
+                                bval = adrt::_common::array_access(data, shape, batch, quadrant, base_row + 1, base_col + 1);
                             }
+                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
                         }
-
-                        adrt::_common::array_access(out, shape, batch, quadrant, row, col) = a_val + b_val;
                     }
                 }
             }
