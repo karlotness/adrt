@@ -143,32 +143,44 @@ namespace adrt {
         const int adrt_iter = adrt::num_iters(std::get<3>(shape)) - iter - 1;
         const size_t iter_exp = size_t{1} << static_cast<size_t>(adrt_iter);
         const size_t iter_exp_next = iter_exp << 1u;
+        const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp);
 
-        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next)")
+        ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, iter_exp_next, num_col_blocks)")
         for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
                 for(size_t row = 0; row < std::get<2>(shape); ++row) {
-                    for(size_t col = 0; col < std::get<3>(shape); ++col) {
-                        const size_t col_sec_i = (col % iter_exp) + (iter_exp * (col / iter_exp_next));
-                        const size_t base_col = 2 * col_sec_i;
-                        if((col / iter_exp) % 2 == 0) {
+                    for(size_t col_block = 0; col_block < num_col_blocks; ++col_block) {
+                        const size_t col_start = col_block * iter_exp;
+                        const size_t max_col_i = std::min(iter_exp, std::get<3>(shape) - col_start);
+                        const size_t base_col_sec_i = iter_exp * (col_block / 2);
+                        if(col_block % 2 == 0) {
                             // Case: same row
-                            const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col);
-                            const adrt_scalar bval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col + 1);
-                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
+                            for(size_t col_i = 0; col_i < max_col_i; ++col_i) {
+                                const size_t col = col_start + col_i;
+                                const size_t col_sec_i = col_i + base_col_sec_i;
+                                const size_t base_col = 2 * col_sec_i;
+                                const adrt_scalar aval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col);
+                                const adrt_scalar bval = adrt::_common::array_access(data, shape, batch, quadrant, row, base_col + 1);
+                                adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
+                            }
                         }
                         else {
                             // Case: different rows
-                            const size_t base_row = row + (col % iter_exp);
-                            adrt_scalar aval = 0;
-                            adrt_scalar bval = 0;
-                            if(base_row < std::get<2>(shape)) {
-                                aval = adrt::_common::array_access(data, shape, batch, quadrant, base_row, base_col);
+                            for(size_t col_i = 0; col_i < max_col_i; ++col_i) {
+                                const size_t col = col_start + col_i;
+                                const size_t col_sec_i = col_i + base_col_sec_i;
+                                const size_t base_col = 2 * col_sec_i;
+                                const size_t base_row = row + col_i;
+                                adrt_scalar aval = 0;
+                                adrt_scalar bval = 0;
+                                if(base_row < std::get<2>(shape)) {
+                                    aval = adrt::_common::array_access(data, shape, batch, quadrant, base_row, base_col);
+                                }
+                                if(base_row + 1 < std::get<2>(shape)) {
+                                    bval = adrt::_common::array_access(data, shape, batch, quadrant, base_row + 1, base_col + 1);
+                                }
+                                adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
                             }
-                            if(base_row + 1 < std::get<2>(shape)) {
-                                bval = adrt::_common::array_access(data, shape, batch, quadrant, base_row + 1, base_col + 1);
-                            }
-                            adrt::_common::array_access(out, shape, batch, quadrant, row, col) = aval + bval;
                         }
                     }
                 }
