@@ -118,17 +118,16 @@ namespace adrt {
 
         inline size_t floor_div2(size_t val) {
             // Only for non-negative values
-            return val / 2;
+            return val / size_t{2};
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
             // Only for non-negative values
-            return (val / d) + (val % d == 0u ? 0u : 1u);
+            return (val / d) + (val % d == size_t{0} ? size_t{0} : size_t{1});
         }
 
         inline size_t ceil_div2(size_t val) {
-            // Only for non-negative values
-            return (val / 2) + (val % 2);
+            return adrt::_common::ceil_div(val, size_t{2});
         }
 
         template<size_t N>
