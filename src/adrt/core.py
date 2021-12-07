@@ -195,7 +195,6 @@ def bdrt_iter(a, /, *, copy=True):
     If you only want the result of the last step and are not
     interested in the intermediate steps, use the more efficient
     :func:`adrt.bdrt`.
-
     """
     for i in range(num_iters(a.shape[-1])):
         a = bdrt_step(a, i)
