@@ -35,6 +35,7 @@
 
 #include <array>
 #include <utility>
+#include <algorithm>
 #include "adrt_cdefs_common.hpp"
 
 namespace adrt {
