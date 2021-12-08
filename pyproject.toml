@@ -5,3 +5,34 @@ requires = [
     "numpy~=1.19"
 ]
 build-backend = "setuptools.build_meta"
+
+# cibuildwheel settings
+[tool.cibuildwheel]
+build = "cp38-*"
+skip = "*-musllinux*"
+build-frontend = "build"
+dependency-versions = "./tools/constraints.txt"
+before-test = "pip install -r {project}/tests/test_requirements.txt"
+test-command = "pytest {project}/tests"
+test-skip = "*-macosx_universal2:arm64"
+
+[tool.cibuildwheel.linux]
+archs = ["auto64"]
+
+[tool.cibuildwheel.linux.environment]
+CFLAGS = "-O3 -g0 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -D_FORTIFY_SOURCE=2"
+LDFLAGS = "-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack"
+LDSHARED = "g++ -pthread -shared"
+
+[tool.cibuildwheel.macos]
+archs = ["universal2"]
+
+[tool.cibuildwheel.macos.environment]
+CFLAGS = "-O3 -g0 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough"
+LDFLAGS = "-Wl,-S,-x,-dead_strip_dylibs"
+
+[tool.cibuildwheel.windows]
+archs = ["auto"]
+
+[tool.cibuildwheel.windows.environment]
+CL = "/std:c++14 /permissive- /Zc:inline,preprocessor,__cplusplus"
