@@ -44,9 +44,8 @@ def test_materialize_array(size):
         (full_size, 4, 2 * n - 1, n)
     )
     num_iters = adrt.core.num_iters(n)
-    for step in range(num_iters):
-        adrt_step = num_iters - step - 1
-        bdrt_out = adrt.core.bdrt_step(basis_arr, step)
+    for bdrt_step, adrt_step in zip(range(num_iters), reversed(range(num_iters))):
+        bdrt_out = adrt.core.bdrt_step(basis_arr, bdrt_step)
         adrt_out = adrt.core.adrt_step(basis_arr, adrt_step)
         bdrt_mat = bdrt_out.reshape((full_size, full_size))
         adrt_mat = adrt_out.reshape((full_size, full_size))
