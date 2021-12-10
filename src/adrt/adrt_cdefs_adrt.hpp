@@ -49,6 +49,9 @@ namespace adrt {
 
     template <typename adrt_scalar>
     std::array<size_t, 5> adrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(out)
+
         const std::array<size_t, 5> curr_shape = {
             std::get<0>(in_shape), // Keep batch dimension
             4, // Always 4 quadrants
@@ -56,6 +59,8 @@ namespace adrt {
             std::get<3>(in_shape) * 2, // The number of angles doubles
             std::get<4>(in_shape), // Keep the same number of columns
         };
+
+        ADRT_ASSERT(adrt::_assert::same_total_size(in_shape, curr_shape))
 
         ADRT_OPENMP("omp for collapse(4)")
         for(size_t batch = 0; batch < std::get<0>(curr_shape); ++batch) {
@@ -87,6 +92,11 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void adrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(tmp)
+        ADRT_ASSERT(out)
+        ADRT_ASSERT(adrt::adrt_is_valid_shape(shape))
+
         const int num_iters = adrt::num_iters(std::get<1>(shape));
         const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(shape);
 
@@ -193,6 +203,11 @@ namespace adrt {
     template <typename adrt_scalar>
     void adrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(out)
+        ADRT_ASSERT(adrt::adrt_step_is_valid_shape(shape))
+        ADRT_ASSERT(adrt::adrt_step_is_valid_iter(shape, iter))
+
         const size_t iter_exp = size_t{1} << static_cast<size_t>(iter);
         const size_t iter_exp_next = iter_exp << 1u;
         const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp_next);

@@ -49,6 +49,9 @@ namespace adrt {
 
     template <typename adrt_scalar>
     std::array<size_t, 5> bdrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(out)
+
         const std::array<size_t, 5> curr_shape = {
             std::get<0>(in_shape), // Keep batch dimension
             4, // Always 4 quadrants
@@ -56,6 +59,8 @@ namespace adrt {
             adrt::_common::floor_div2(std::get<3>(in_shape)), // Halve the size of each section
             std::get<4>(in_shape) * 2, // Double the number of sections
         };
+
+        ADRT_ASSERT(adrt::_assert::same_total_size(in_shape, curr_shape))
 
         ADRT_OPENMP("omp for collapse(5)")
         for(size_t batch = 0; batch < std::get<0>(curr_shape); ++batch) {
@@ -91,6 +96,11 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void bdrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(tmp)
+        ADRT_ASSERT(out)
+        ADRT_ASSERT(adrt::bdrt_is_valid_shape(shape))
+
         const int num_iters = adrt::num_iters(std::get<3>(shape));
         const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(shape);
 
@@ -141,6 +151,11 @@ namespace adrt {
     template <typename adrt_scalar>
     void bdrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(out)
+        ADRT_ASSERT(adrt::bdrt_step_is_valid_shape(shape))
+        ADRT_ASSERT(adrt::bdrt_step_is_valid_iter(shape, iter))
+
         const int adrt_iter = adrt::num_iters(std::get<3>(shape)) - iter - 1;
         const size_t iter_exp = size_t{1} << static_cast<size_t>(adrt_iter);
         const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp);

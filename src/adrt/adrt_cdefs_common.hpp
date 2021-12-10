@@ -49,6 +49,15 @@
 #define ADRT_RESTRICT
 #endif
 
+#ifndef NDEBUG
+#pragma message ("Building with assertions enabled")
+#include <cassert>
+#define ADRT_ASSERT(cond) assert(cond);
+#else
+#define ADRT_ASSERT(cond)
+#endif
+
+
 namespace adrt {
 
     using std::size_t;
@@ -102,10 +111,12 @@ namespace adrt {
             }
 
             V &operator*() {
+                // No assertion here, could be trying to set the value
                 return val;
             }
 
             const V &operator*() const {
+                ADRT_ASSERT(has_value())
                 return val;
             }
 
@@ -156,10 +167,43 @@ namespace adrt {
 
         template <typename scalar, size_t N, typename... Idx>
         inline scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, const Idx... idxs) {
+            #ifndef NDEBUG
+            {
+                // If asserts enabled, check array bounds
+                const std::array<size_t, N> idx {idxs...};
+                for(size_t i = 0; i < N; ++i) {
+                    ADRT_ASSERT(idx[i] < shape[i])
+                }
+            }
+            #endif
             return array_stride_access(buf, compute_strides(shape), idxs...);
         }
 
     } // end namespace adrt::_common
+
+    #ifndef NDEBUG
+    namespace _assert {
+        template <size_t NA, size_t NB>
+        bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
+            adrt::_common::Optional<size_t> size_a = 1;
+            for(size_t i = 0; i < a.size(); ++i) {
+                size_a = adrt::_common::mul_check(*size_a, a[i]);
+                if(!size_a) {
+                    return false;
+                }
+            }
+            adrt::_common::Optional<size_t> size_b = 1;
+            for(size_t i = 0; i < b.size(); ++i) {
+                size_b = adrt::_common::mul_check(*size_b, b[i]);
+                if(!size_b) {
+                    return false;
+                }
+            }
+            return *size_a == *size_b;
+        }
+    } // end namespace adrt::_assert
+    #endif // NDEBUG
+
 } // end namespace adrt
 
 #endif //ADRT_CDEFS_COMMON_H

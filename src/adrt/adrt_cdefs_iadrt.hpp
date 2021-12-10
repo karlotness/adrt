@@ -47,6 +47,9 @@ namespace adrt {
 
     template <typename adrt_scalar>
     std::array<size_t, 5> iadrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(out)
+
         const std::array<size_t, 5> curr_shape = {
             4, // Always 4 quadrants
             std::get<1>(in_shape), // Keep batch dimension
@@ -54,6 +57,8 @@ namespace adrt {
             adrt::_common::floor_div2(std::get<3>(in_shape)), // We halve the number of "columns"
             std::get<4>(in_shape), // Keep the same number of "rows"
         };
+
+        ADRT_ASSERT(adrt::_assert::same_total_size(in_shape, curr_shape))
 
         ADRT_OPENMP("omp for collapse(4)")
         for(size_t quadrant = 0; quadrant < 4; ++quadrant) {
@@ -97,6 +102,11 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void iadrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
+        ADRT_ASSERT(data)
+        ADRT_ASSERT(tmp)
+        ADRT_ASSERT(out)
+        ADRT_ASSERT(adrt::iadrt_is_valid_shape(shape))
+
         const int num_iters = adrt::num_iters(std::get<3>(shape));
         const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(shape);
 
