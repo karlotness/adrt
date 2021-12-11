@@ -131,6 +131,7 @@ namespace adrt {
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
+            ADRT_ASSERT(d != 0)
             // Only for non-negative values
             return (val / d) + (val % d == size_t{0} ? size_t{0} : size_t{1});
         }
@@ -144,7 +145,8 @@ namespace adrt {
             std::array<size_t, N> strides_out;
             size_t step_size = 1;
             for(size_t i = 0; i < N; ++i) {
-                size_t idx_i = N - i - 1;
+                const size_t idx_i = N - i - 1;
+                ADRT_ASSERT(shape_in[idx_i] > 0)
                 strides_out[idx_i] = step_size;
                 step_size *= shape_in[idx_i];
             }
