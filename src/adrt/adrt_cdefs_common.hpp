@@ -50,7 +50,6 @@
 #endif
 
 #ifndef NDEBUG
-#pragma message ("Building with assertions enabled")
 #include <cassert>
 #define ADRT_ASSERT(cond) assert(cond);
 #else

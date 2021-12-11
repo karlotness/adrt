@@ -44,6 +44,10 @@
 #endif
 #include "numpy/arrayobject.h"
 
+#ifndef NDEBUG
+#pragma message ("Building with assertions enabled")
+#endif
+
 #if defined(__GNUC__) || defined(__clang__)
 // GCC visibility
 #define ADRT_BEGIN_EXPORT _Pragma("GCC visibility push(default)")
