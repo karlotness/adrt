@@ -57,7 +57,6 @@
 #define ADRT_ASSERT(cond)
 #endif
 
-
 namespace adrt {
 
     using std::size_t;
@@ -185,15 +184,17 @@ namespace adrt {
     namespace _assert {
         template <size_t NA, size_t NB>
         bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
-            adrt::_common::Optional<size_t> size_a = 1;
-            for(size_t i = 0; i < a.size(); ++i) {
+            static_assert(NA > 0, "Must have at least one entry in array a");
+            static_assert(NB > 0, "Must have at least one entry in array b");
+            adrt::_common::Optional<size_t> size_a = std::get<0>(a);
+            for(size_t i = 1; i < a.size(); ++i) {
                 size_a = adrt::_common::mul_check(*size_a, a[i]);
                 if(!size_a) {
                     return false;
                 }
             }
-            adrt::_common::Optional<size_t> size_b = 1;
-            for(size_t i = 0; i < b.size(); ++i) {
+            adrt::_common::Optional<size_t> size_b = std::get<0>(b);
+            for(size_t i = 1; i < b.size(); ++i) {
                 size_b = adrt::_common::mul_check(*size_b, b[i]);
                 if(!size_b) {
                     return false;
