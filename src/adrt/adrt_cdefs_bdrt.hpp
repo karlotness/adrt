@@ -167,7 +167,7 @@ namespace adrt {
                     for(size_t col_block = 0; col_block < num_col_blocks; ++col_block) {
                         const size_t col_start = col_block * iter_exp;
                         const size_t max_col_i = std::min(iter_exp, std::get<3>(shape) - col_start);
-                        const size_t base_col_sec_i = iter_exp * (col_block / 2);
+                        const size_t base_col_sec_i = iter_exp * adrt::_common::floor_div2(col_block);
                         if(col_block % 2 == 0) {
                             // Case: same row
                             for(size_t col_i = 0; col_i < max_col_i; ++col_i) {
