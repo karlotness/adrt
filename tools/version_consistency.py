@@ -203,7 +203,4 @@ if __name__ == "__main__":
         failure = True
 
     # Make sure versions match
-    if failure:
-        exit(1)
-    else:
-        exit(0)
+    exit(1 if failure else 0)
