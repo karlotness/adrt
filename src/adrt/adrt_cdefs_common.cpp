@@ -120,7 +120,7 @@ int num_iters(size_t shape) {
         unsigned long index;
         unsigned long ushape = static_cast<unsigned long>(shape);
         _BitScanReverse(&index, ushape);
-        return index + (is_power_of_two ? 0 : 1);
+        return static_cast<int>(index) + (is_power_of_two ? 0 : 1);
     }
 
     #if defined(_M_X64) || defined(_M_ARM64)
@@ -128,7 +128,7 @@ int num_iters(size_t shape) {
         unsigned long index;
         unsigned __int64 ushape = static_cast<unsigned __int64>(shape);
         _BitScanReverse64(&index, ushape);
-        return index + (is_power_of_two ? 0 : 1);
+        return static_cast<int>(index) + (is_power_of_two ? 0 : 1);
     }
     #endif // End: 64bit arch
 
