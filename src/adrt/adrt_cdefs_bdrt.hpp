@@ -157,7 +157,7 @@ namespace adrt {
         ADRT_ASSERT(adrt::bdrt_step_is_valid_iter(shape, iter))
 
         const int adrt_iter = adrt::num_iters(std::get<3>(shape)) - iter - 1;
-        const size_t iter_exp = size_t{1} << static_cast<size_t>(adrt_iter);
+        const size_t iter_exp = size_t{1} << adrt_iter;
         const size_t num_col_blocks = adrt::_common::ceil_div(std::get<3>(shape), iter_exp);
 
         ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, iter_exp, num_col_blocks)")
