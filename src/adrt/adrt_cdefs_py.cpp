@@ -567,7 +567,6 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT32);
         if(!ret) {
-            Py_XDECREF(ret);
             return nullptr;
         }
         const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
@@ -583,7 +582,6 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT64);
         if(!ret) {
-            Py_XDECREF(ret);
             return nullptr;
         }
         const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
