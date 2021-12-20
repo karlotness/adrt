@@ -137,7 +137,7 @@ jobs:
           if [[ ! -e "$wheelfile" ]]; then
             continue
           fi
-          echo "----- WHEEL: $(basename wheelfile) -----"
+          echo "----- WHEEL: $(basename $wheelfile) -----"
           dir=$(mktemp -d)
           unzip -q "$wheelfile" -d "$dir"
           echo "Libraries:"
