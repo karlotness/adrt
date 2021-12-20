@@ -235,12 +235,12 @@ jobs:
     - name: Show archive contents
       run: |
         for f in dist/*.tar.gz; do
-          echo "----- FILE: $f -----"
+          echo "----- FILE: $(basename $f) -----"
           tar -tzvf "$f"
           echo ""
         done
         for f in dist/*.whl; do
-          echo "----- FILE: $f -----"
+          echo "----- FILE: $(basename $f) -----"
           zipinfo "$f"
           echo ""
         done
