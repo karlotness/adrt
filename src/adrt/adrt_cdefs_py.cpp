@@ -639,12 +639,8 @@ ADRT_BEGIN_EXPORT
 PyMODINIT_FUNC
 PyInit__adrt_cdefs(void)
 {
-    PyObject *const module = PyModule_Create(&adrt_cdefs_module);
-    if(!module) {
-        return nullptr;
-    }
     import_array();
-    return module;
+    return PyModule_Create(&adrt_cdefs_module);
 }
 
 ADRT_END_EXPORT
