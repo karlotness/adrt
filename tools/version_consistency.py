@@ -72,10 +72,10 @@ def find_build_macro_defs(setup_py):
     macros_re = re.compile(
         r"Extension\(.*?define_macros\s*=\s*(?P<defs>\[.+?\]).*?\)", re.DOTALL
     )
-    match = macros_re.search(content)
-    if not match:
+    if match := macros_re.search(content):
+        return dict(ast.literal_eval(match.group("defs")))
+    else:
         raise ValueError("Could not find build macro definitions")
-    return dict(ast.literal_eval(match.group("defs")))
 
 
 def find_package_version(setup_cfg):
@@ -87,10 +87,10 @@ def find_release_tag_version(tag_string):
     if tag_string is None:
         return None
     ver_re = re.compile(r"^refs/tags/v(?P<ver>.+)$")
-    match = ver_re.match(tag_string)
-    if not match:
+    if match := ver_re.match(tag_string):
+        return match.group("ver")
+    else:
         raise ValueError(f"Invalid tag format {tag_string}")
-    return match.group("ver")
 
 
 def find_meta_min_python(setup_cfg):
@@ -139,12 +139,10 @@ def find_setup_numpy_api(setup_py):
     macros = find_build_macro_defs(setup_py)
     min_numpy = macros["NPY_NO_DEPRECATED_API"]
     rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
-    match = rgx.match(min_numpy)
-    if not match:
+    if match := rgx.match(min_numpy):
+        return f"{match.group('major')}.{match.group('minor')}"
+    else:
         raise ValueError(f"Invalid NumPy API macro: {min_numpy}")
-    major = match.group("major")
-    minor = match.group("minor")
-    return f"{major}.{minor}"
 
 
 if __name__ == "__main__":
