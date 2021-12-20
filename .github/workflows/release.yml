@@ -98,6 +98,54 @@ jobs:
         name: wheel
         path: wheelhouse/adrt-*.whl
         if-no-files-found: error
+    - name: Diagnostics (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      continue-on-error: true
+      run: |
+        for wheelfile in wheelhouse/adrt-*.whl; do
+          if [[ ! -e "$wheelfile" ]]; then
+            continue
+          fi
+          echo "----- WHEEL: $(basename $wheelfile) -----"
+          dir=$(mktemp -d)
+          unzip -q "$wheelfile" -d "$dir"
+          readelf --wide --symbols --dynamic "${dir}"/adrt/*.so
+          echo ""
+        done
+    - name: Diagnostics (Windows)
+      if: ${{ runner.os == 'Windows' }}
+      continue-on-error: true
+      run: |
+        $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
+        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1)
+        $ProgressPreference = 'SilentlyContinue'
+        Remove-Item "wheel-diagnostic" -Recurse -ErrorAction SilentlyContinue
+        $baseextract = New-Item -Path . -Name "wheel-diagnostic" -ItemType "directory"
+        Get-ChildItem -Path "wheelhouse" -Filter "adrt-*.whl" | ForEach-Object {
+          $wheelfile = $_
+          Write-Output "----- WHEEL: $($wheelfile.Name) -----`n"
+          $destdir = New-Item -Path $baseextract.FullName -Name $wheelfile.Basename -ItemType "directory"
+          Expand-Archive -Path $wheelfile.FullName -DestinationPath $destdir.FullName
+          dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter "*.pyd" -Recurse).FullName)
+          Write-Output "`n"
+        }
+    - name: Diagnostics (macOS)
+      if: ${{ runner.os == 'macOS' }}
+      continue-on-error: true
+      run: |
+        for wheelfile in wheelhouse/adrt-*.whl; do
+          if [[ ! -e "$wheelfile" ]]; then
+            continue
+          fi
+          echo "----- WHEEL: $(basename wheelfile) -----"
+          dir=$(mktemp -d)
+          unzip -q "$wheelfile" -d "$dir"
+          echo "Libraries:"
+          otool -L -arch all "${dir}"/adrt/*.so
+          echo "Symbols:"
+          nm -arch all "${dir}"/adrt/*.so
+          echo ""
+        done
   test-ubuntu:
     runs-on: ubuntu-latest
     timeout-minutes: 10
