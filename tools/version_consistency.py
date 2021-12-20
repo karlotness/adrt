@@ -34,12 +34,11 @@
 import argparse
 import re
 import ast
-import configparser
-import tomli
 from setuptools.config import read_configuration
 from packaging.requirements import Requirement
 from packaging.version import Version
 from packaging.utils import canonicalize_name, canonicalize_version
+
 
 parser = argparse.ArgumentParser(description="Check version strings for consistency")
 parser.add_argument(
@@ -99,17 +98,6 @@ def find_meta_min_python(setup_cfg):
     return find_min_version("python", ["python" + ver_constraint])
 
 
-def find_wheel_limited_api(setup_cfg):
-    cfg_file = configparser.ConfigParser()
-    cfg_file.read(setup_cfg)
-    limited_ver = cfg_file["bdist_wheel"]["py_limited_api"].strip()
-    if not limited_ver.startswith("cp"):
-        raise ValueError(f"Could not parse limited API version: {limited_ver}")
-    major = limited_ver[2]
-    minor = limited_ver[3:]
-    return f"{major}.{minor}"
-
-
 def find_macro_min_python(setup_py):
     macros = find_build_macro_defs(setup_py)
     min_python = macros["Py_LIMITED_API"]
@@ -130,21 +118,6 @@ def find_package_min_numpy(setup_cfg):
     cfg_file = read_configuration(setup_cfg)
     ver_constraint = cfg_file["options"]["install_requires"]
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
-
-
-def find_pyproject_min_numpy(pyproject_toml):
-    with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomli.load(pyproj_file)
-    return find_min_version("numpy", defs["build-system"]["requires"])
-
-
-def find_constraint_min_numpy(constraint_txt):
-    comment_re = re.compile(r"(?:^|\s)#.*$")
-    constraints = []
-    with open(constraint_txt, "r", encoding="utf8") as constraint_file:
-        for line in constraint_file:
-            constraints.append(comment_re.sub("", line.strip()).strip())
-    return find_min_version("numpy", filter(bool, constraints))
 
 
 def find_setup_numpy_api(setup_py):
@@ -176,29 +149,21 @@ if __name__ == "__main__":
 
     # Check Python version requirements
     meta_min_python = find_meta_min_python("setup.cfg")
-    wheel_limited_api = find_wheel_limited_api("setup.cfg")
     macro_limited_api = find_macro_min_python("setup.py")
     print(f"Metadata min Python: {meta_min_python}")
-    print(f"Wheel limited API version: {wheel_limited_api}")
     print(f"Limited API macro: {macro_limited_api}")
     # Check consistency
-    if not (meta_min_python == wheel_limited_api == macro_limited_api):
+    if meta_min_python != macro_limited_api:
         print("Python version mismatch")
         failure = True
     print("")
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("setup.cfg")
-    pyproj_min_numpy = find_pyproject_min_numpy("pyproject.toml")
     macro_min_numpy = find_setup_numpy_api("setup.py")
-    constraint_min_numpy = find_constraint_min_numpy("tools/constraints.txt")
     print(f"Package min NumPy: {package_min_numpy}")
-    print(f"PyProject min NumPy: {pyproj_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")
-    print(f"Constraints min NumPy: {constraint_min_numpy}")
-    if not (
-        package_min_numpy == pyproj_min_numpy == macro_min_numpy == constraint_min_numpy
-    ):
+    if package_min_numpy != macro_min_numpy:
         print("NumPy version mismatch")
         failure = True
 

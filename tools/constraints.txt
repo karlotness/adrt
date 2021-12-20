@@ -1,2 +1,0 @@
-# These constraints are used for release builds
-numpy==1.19
