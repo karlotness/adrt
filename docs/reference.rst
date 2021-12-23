@@ -1,5 +1,5 @@
-Package Reference
-=================
+API Reference
+=============
 
 This section provides a full API reference for this library. The
 functionality is split into several submodules, providing routines
