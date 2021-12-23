@@ -37,12 +37,12 @@
 #ifndef Py_LIMITED_API
 #error "Must use limited API"
 #endif
-#include "Python.h"
+#include <Python.h>
 
 #ifndef NPY_NO_DEPRECATED_API
 #error "Must use NumPy API versioning"
 #endif
-#include "numpy/arrayobject.h"
+#include <numpy/arrayobject.h>
 
 #ifndef NDEBUG
 #pragma message ("Building with assertions enabled")
