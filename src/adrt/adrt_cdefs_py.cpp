@@ -294,7 +294,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::adrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_SetString(PyExc_ValueError, "Parameter iter is out of range for provided array shape, use num_iters");
+        PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
         return nullptr;
     }
     // Process input array
@@ -501,7 +501,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::bdrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_SetString(PyExc_ValueError, "Parameter iter is out of range for provided array shape, use num_iters");
+        PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
         return nullptr;
     }
     // Process input array
