@@ -129,24 +129,18 @@ def truncate(a, /):
     out : numpy.ndarray
           array of shape (4,N,N) or (?,4,N,N) in which N = 2**n
     """
-
-    if a.ndim == 3:
-        n = a.shape[-1]
-        out = np.zeros((4, n, n), dtype=a.dtype)
-        out[0, :, :] = a[0, :n, :n][::-1, :].T
-        out[1, :, :] = a[1, :n, :n][::-1, :]
-        out[2, :, :] = a[2, :n, :n]
-        out[3, :, :] = a[3, :n, :n][::-1, ::-1].T
-
-    elif a.ndim == 4:
-        n = a.shape[-1]
-        out = np.zeros((a.shape[0], 4, n, n), dtype=a.dtype)
-        out[:, 0, :, :] = a[:, 0, :n, :n][:, ::-1, :].transpose((0, 2, 1))
-        out[:, 1, :, :] = a[:, 1, :n, :n][:, ::-1, :]
-        out[:, 2, :, :] = a[:, 2, :n, :n]
-        out[:, 3, :, :] = a[:, 3, :n, :n][:, ::-1, ::-1].transpose((0, 2, 1))
-
-    return out
+    n = a.shape[-1]
+    if a.shape[-3:] != (4, 2 * n - 1, n):
+        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
+    return np.stack(
+        [
+            np.flip(a[..., 0, :n, :n], axis=-2).swapaxes(-1, -2),
+            np.flip(a[..., 1, :n, :n], axis=-2),
+            a[..., 2, :n, :n],
+            np.flip(a[..., 3, :n, :n], axis=(-1, -2)).swapaxes(-1, -2),
+        ],
+        axis=-3,
+    )
 
 
 def interp_to_cart(adrt_out, /):
