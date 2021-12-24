@@ -100,20 +100,13 @@ def adrt_init(a, /):
         or not all(a.shape)
     ):
         raise ValueError("ADRT input must be square, with shape a power of two")
-    # Shape is valid, create new output buffer
+    # Shape is valid, create new output buffer and copy
     n = a.shape[-1]
-    output_shape = (a.shape[0], 4, 2 * n - 1, n)
-    if a.ndim < 3:
-        # No batch dimension
-        output_shape = output_shape[1:]
+    output_shape = a.shape[:-2] + (4, 2 * n - 1, n)
     ret = np.zeros_like(a, shape=output_shape)
-    # Quadrant 0
     ret[..., 0, :n, :] = np.flip(a, axis=-1).swapaxes(-1, -2)
-    # Quadrant 1
     ret[..., 1, :n, :] = np.flip(a, axis=-2)
-    # Quadrant 2
     ret[..., 2, :n, :] = a
-    # Quadrant 3
     ret[..., 3, :n, :] = np.flip(a, axis=(-1, -2)).swapaxes(-1, -2)
     return ret
 
