@@ -110,6 +110,11 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
             shape_arr.set_ok(false);
             return shape_arr;
         }
+        else if(static_cast<npy_uintp>(shape) > std::numeric_limits<size_t>::max()) {
+            PyErr_SetString(PyExc_ValueError, "Maximum allowed dimension exceeded");
+            shape_arr.set_ok(false);
+            return shape_arr;
+        }
         (*shape_arr)[i + (max_dim - ndim)] = static_cast<size_t>(shape);
     }
     shape_arr.set_ok(true);
