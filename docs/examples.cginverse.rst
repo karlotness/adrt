@@ -46,10 +46,14 @@ performs the actual inversion operation using conjugate gradients.
            super().__init__(dtype=dtype, shape=(img_size ** 2, img_size ** 2))
            self._img_size = img_size
 
-       def _matvec(self, x):
-           sqmat = x.reshape((self._img_size, self._img_size))
-           ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(sqmat)))
-           return np.sum(ret, axis=0).ravel()
+       def _matmat(self, x):
+           # Use batch dimensions to handle columns of matrix x
+           n_batch = x.shape[-1]
+           batch_img = np.moveaxis(x, -1, 0).reshape(
+               (n_batch, self._img_size, self._img_size)
+           )
+           ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).sum(axis=1)
+           return np.moveaxis(ret, 0, -1).reshape((self._img_size ** 2, n_batch))
 
        def _adjoint(self):
            return self
