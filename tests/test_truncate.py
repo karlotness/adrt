@@ -39,10 +39,10 @@ import adrt
 @pytest.mark.parametrize("dtype", ["float32", "float64", "int32", "int64"])
 def test_inverts_adrt_init(dtype):
     size = 16
-    in_arr = np.arange(size ** 2).reshape(size, size).astype(dtype)
+    in_arr = np.arange(5 * size ** 2).reshape((5, size, size)).astype(dtype)
     out_arr = adrt.utils.truncate(adrt.core.adrt_init(in_arr))
-    assert out_arr.shape == (4,) + in_arr.shape
-    assert np.allclose(np.expand_dims(in_arr, 0), out_arr)
+    assert out_arr.shape == (5, 4, size, size)
+    assert np.allclose(np.expand_dims(in_arr, 1), out_arr)
     assert out_arr.dtype == in_arr.dtype
 
 
