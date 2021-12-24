@@ -73,47 +73,30 @@ def stitch_adrt(a, /, *, remove_repeated=False):
         an array with shape (..., 3*N-2, 4*N) or (..., 3*N-2, 4*N-4)
         if ``remove_repeated`` is ``True``.
     """
-
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
         raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
-
-    if a.ndim > 3:
-        had_batch = True
-        batch_size = a.shape[:-3]
-    else:
-        had_batch = False
-        batch_size = (1,)
-        a = np.expand_dims(a, 0)
-    # Compute working array shape
+    # Compute output shape
     in_rows = 2 * n - 1
     out_rows = 3 * n - 2
-    out_cols = 4 * n - (4 if remove_repeated else 0)
-    output_shape = (*batch_size, out_rows, out_cols)
-
-    # Process input array
-    ret = np.zeros_like(a, shape=output_shape)
+    view_cols = n - (1 if remove_repeated else 0)
+    output_shape = a.shape[:-3] + (out_rows, 4 * view_cols)
+    view_shape = a.shape[:-3] + (out_rows, 4, view_cols)
+    # We rely on C-ordered layout to merge the last two dimensions
+    ret = np.zeros_like(a, shape=view_shape, order="C")
+    # Fill result array
     for i in range(4):
-        if (i % 2) == 0:
-            quadrant = a[..., i, :, :]
-        else:
-            quadrant = a[..., i, ::-1, ::-1]
+        quadrant = a[..., i, :, :]
+        if i % 2:
+            quadrant = np.flip(quadrant, axis=(-1, -2))
         if remove_repeated:
             quadrant = quadrant[..., :-1]
         if i < 2:
-            ret[
-                ..., :in_rows, i * (out_cols // 4) : (i + 1) * (out_cols // 4)
-            ] = quadrant
+            ret[..., :in_rows, i, :] = quadrant
         else:
-            ret[
-                ..., -in_rows:, i * (out_cols // 4) : (i + 1) * (out_cols // 4)
-            ] = quadrant
-
-    if had_batch:
-        return ret
-    else:
-        # Remove batch dimension
-        return ret[0]
+            ret[..., -in_rows:, i, :] = quadrant
+    ret.shape = output_shape
+    return ret
 
 
 def truncate(a, /):
