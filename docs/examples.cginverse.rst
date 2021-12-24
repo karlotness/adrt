@@ -87,7 +87,7 @@ the difference in behavior between the iterative inverse here and
 
    # Compute ADRT and add noise
    img_plain_adrt = adrt.adrt(img)
-   noise_mask = np.random.default_rng().normal(scale=1e-3, size=img_plain_adrt.shape)
+   noise_mask = np.random.default_rng(seed=0).normal(scale=1e-4, size=img_plain_adrt.shape)
    img_noise_adrt = img_plain_adrt + noise_mask
 
    # Plot noisy ADRT
