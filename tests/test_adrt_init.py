@@ -50,7 +50,7 @@ def test_single_all_ones(dtype):
 @pytest.mark.parametrize("dtype", ["float32", "float64", "int32", "int64"])
 def test_single_unique_values(dtype):
     size = 16
-    in_arr = np.arange(size ** 2).reshape(size, size).astype(dtype)
+    in_arr = np.arange(size ** 2).reshape((size, size)).astype(dtype)
     out_arr = adrt.core.adrt_init(in_arr)
     values = set(in_arr.astype(np.int32).ravel())
     assert in_arr.dtype == out_arr.dtype
@@ -63,7 +63,7 @@ def test_single_unique_values(dtype):
 def test_batch_unique_values(dtype):
     size = 16
     batches = 3
-    in_arr = np.arange(batches * size ** 2).reshape(batches, size, size).astype(dtype)
+    in_arr = np.arange(batches * size ** 2).reshape((batches, size, size)).astype(dtype)
     batch_out_arr = adrt.core.adrt_init(in_arr)
     single_out_arr = np.stack([adrt.core.adrt_init(in_arr[i]) for i in range(batches)])
     assert batch_out_arr.shape[0] == batches
