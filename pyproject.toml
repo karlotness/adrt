@@ -21,7 +21,6 @@ archs = ["auto64"]
 [tool.cibuildwheel.linux.environment]
 CFLAGS = "-O3 -g0 -std=c++11 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -D_FORTIFY_SOURCE=2 -DNDEBUG"
 LDFLAGS = "-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack"
-LDSHARED = "g++ -pthread -shared"
 
 [tool.cibuildwheel.macos]
 archs = ["universal2"]
