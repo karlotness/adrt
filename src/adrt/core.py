@@ -56,7 +56,7 @@ single-step routines make that possible.
 """
 
 
-__all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter", "bdrt_step"]
+__all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter", "bdrt_step", "bdrt_iter"]
 
 
 import numpy as np
