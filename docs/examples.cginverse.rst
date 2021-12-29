@@ -125,3 +125,32 @@ therefore not suitable for cases where the forward ADRT was not
 exactly applied, or where noise may be present. In such cases, a
 different approach such as the ``cgiadrt`` illustrated here may be
 more suitable.
+
+Multiple Noise Levels
+---------------------
+
+We repeat the above demonstration of the ``cgiadrt`` iterative inverse
+for several noise levels. For each example a new noise mask is drawn
+from a normal distribution :math:`\mathcal{N}(0, \sigma I)`.
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+   rng = np.random.default_rng(seed=0)
+   fig, axs = plt.subplots(2, 2, sharey=True)
+   fig.suptitle("CG Inverses at Several Noise Levels")
+   for scale, ax in zip([1e-2, 1e-1, 1, 10], axs.ravel()):
+       noise = rng.normal(scale=scale, size=img_plain_adrt.shape)
+       cg_inv = cgiadrt(img_plain_adrt + noise)
+       im_plot = ax.imshow(cg_inv)
+       fig.colorbar(im_plot, ax=ax)
+       ax.set_title(f"$\\sigma = {scale}$")
+   plt.tight_layout()
+
+The results produced by ``cgiadrt`` remain relatively clean even at
+noise with scales much larger than those used for the comparison with
+:func:`adrt.iadrt`. While exact, :func:`adrt.iadrt`, is unstable and
+so an iterative approach such as the one demonstrated here may be
+advantageous for certain applications and can be assembled with the
+help of routines in this package.
