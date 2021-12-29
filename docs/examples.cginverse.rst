@@ -96,8 +96,8 @@ the difference in behavior between the iterative inverse here and
    fig, axs = plt.subplots(1, 4, sharey=True)
    for i, ax in enumerate(axs.ravel()):
        im_plot = ax.imshow(img_noise_adrt[i], vmin=vmin, vmax=vmax)
-   plt.tight_layout()
-   fig.colorbar(im_plot, ax=axs, orientation="horizontal")
+   fig.tight_layout()
+   fig.colorbar(im_plot, ax=axs, orientation="horizontal", pad=0.1)
 
 
 If you compare this against the ADRT in :ref:`quickstart`, you should
@@ -117,7 +117,7 @@ inverses produce very different results.
        im_plot = ax.imshow(data)
        fig.colorbar(im_plot, ax=ax, orientation="horizontal", pad=0.08)
        ax.set_title(title)
-   plt.tight_layout()
+   fig.tight_layout()
 
 The inverse provided by :func:`adrt.iadrt` is an exact inverse to the
 forward ADRT, but it is very sensitive to noise in its input. It is
@@ -146,7 +146,7 @@ from a normal distribution :math:`\mathcal{N}(0, \sigma I)`.
        im_plot = ax.imshow(cg_inv)
        fig.colorbar(im_plot, ax=ax)
        ax.set_title(f"$\\sigma = {scale}$")
-   plt.tight_layout()
+   fig.tight_layout()
 
 The results produced by ``cgiadrt`` remain relatively clean even at
 noise with scales much larger than those used for the comparison with

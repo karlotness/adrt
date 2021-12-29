@@ -55,7 +55,7 @@ The result can be computed by :func:`adrt.adrt`.
    fig, axs = plt.subplots(1, 4, sharey=True)
    for i, ax in enumerate(axs.ravel()):
        im_plot = ax.imshow(adrt_result[i], vmin=0, vmax=np.max(adrt_result))
-   plt.tight_layout()
+   fig.tight_layout()
    fig.colorbar(im_plot, ax=axs, orientation="horizontal")
 
 This result can be stitched together using :func:`adrt.utils.stitch_adrt`.
@@ -97,5 +97,5 @@ applies. This can be computed by :func:`adrt.iadrt()`
    fig, axs = plt.subplots(1, 3, sharey=True)
    for i, ax in enumerate(axs.ravel()):
        im_plot = ax.imshow(results[i], vmin=0, vmax=np.max(img))
-   plt.tight_layout()
+   fig.tight_layout()
    fig.colorbar(im_plot, ax=axs, orientation="horizontal")
