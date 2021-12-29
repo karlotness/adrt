@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 # cibuildwheel settings
 [tool.cibuildwheel]
 build = "cp38-*"
-skip = "*-musllinux*"
+skip = ["*-musllinux*", "pp*"]
 build-frontend = "build"
 before-test = "pip install -r {project}/tests/test_requirements.txt"
 test-command = "pytest {project}/tests"
