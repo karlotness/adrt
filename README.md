@@ -20,6 +20,11 @@ This implementation is based on descriptions in several publications:
 The code in this repository is licensed under a 3-clause BSD license.
 See [LICENSE.txt](LICENSE.txt) for the license text.
 
+We also make available several pre-built binary copies of this
+software. The binary build for Windows includes additional license
+terms for runtime code included as part of the software. Review the
+LICENSE.txt file in the binary build package for more information.
+
 [pypi]: https://pypi.org/project/adrt/
 [docs]: https://adrt.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/adrt/actions

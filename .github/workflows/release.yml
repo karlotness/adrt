@@ -90,6 +90,8 @@ jobs:
         python -m pip install --upgrade cibuildwheel
     - name: Build wheels
       run: python -m cibuildwheel --output-dir wheelhouse
+      env:
+        CIBW_BEFORE_ALL_WINDOWS: 'pwsh {package}/tools/patch_license_windows.ps1 {package}'
     - name: Store artifact
       uses: actions/upload-artifact@v2
       with:
