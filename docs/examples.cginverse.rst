@@ -52,7 +52,7 @@ performs the actual inversion operation using conjugate gradients.
            batch_img = np.moveaxis(x, -1, 0).reshape(
                (n_batch, self._img_size, self._img_size)
            )
-           ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).sum(axis=1)
+           ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).mean(axis=1)
            return np.moveaxis(ret, 0, -1).reshape((self._img_size ** 2, n_batch))
 
        def _adjoint(self):
@@ -62,7 +62,7 @@ performs the actual inversion operation using conjugate gradients.
    def cgiadrt(b, **kwargs):
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
-       tb = np.sum(adrt.utils.truncate(adrt.bdrt(b)), axis=0).ravel()
+       tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
        x, info = cg(linop, tb, x0=tb, **kwargs)
        if info != 0:
            raise ValueError(f"Convergence failed (cg status {info})")
@@ -108,7 +108,7 @@ inverses produce very different results.
    :context: close-figs
    :align: center
 
-   iadrt_inv = adrt.iadrt(img_noise_adrt)[2, :n, :n]
+   iadrt_inv = adrt.utils.truncate(adrt.iadrt(img_noise_adrt)).mean(axis=0)
    cg_inv = cgiadrt(img_noise_adrt)
 
    fig, axs = plt.subplots(1, 3, sharey=True)
