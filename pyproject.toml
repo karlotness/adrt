@@ -11,8 +11,8 @@ build-backend = "setuptools.build_meta"
 build = "cp38-*"
 skip = ["*-musllinux*", "pp*"]
 build-frontend = "build"
-before-test = "pip install -r {project}/tests/test_requirements.txt"
-test-command = "pytest {project}/tests"
+before-test = "pip install -r {package}/tests/test_requirements.txt"
+test-command = "pytest {package}/tests"
 test-skip = "*-macosx_universal2:arm64"
 
 [tool.cibuildwheel.linux]
