@@ -156,7 +156,7 @@ bool mul_check(size_t a, size_t b, size_t &prod) {
 namespace adrt {
 
     int num_iters(size_t shape) {
-        if(shape <= 1) {
+        if(shape == 0) {
             return 0;
         }
         return adrt::_impl::num_iters(shape);
