@@ -97,7 +97,7 @@ namespace adrt {
         ADRT_ASSERT(out)
         ADRT_ASSERT(adrt::adrt_is_valid_shape(shape))
 
-        const int num_iters = adrt::num_iters(std::get<1>(shape));
+        const int num_iters = adrt::num_iters(std::get<2>(shape));
         const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(shape);
 
         ADRT_OPENMP("omp parallel default(none) shared(data, shape, tmp, out, num_iters, output_shape)")
