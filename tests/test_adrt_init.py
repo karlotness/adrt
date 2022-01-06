@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021 Karl Otness, Donsub Rim
+# Copyright (c) 2022 Karl Otness, Donsub Rim
 # All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without

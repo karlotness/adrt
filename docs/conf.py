@@ -4,7 +4,7 @@ import adrt
 
 # Project information
 project = "adrt"
-copyright = "2020, 2021 Karl Otness, Donsub Rim"
+copyright = "2022 Karl Otness, Donsub Rim"
 author = "Karl Otness, Donsub Rim"
 version = adrt.__version__
 release = version
