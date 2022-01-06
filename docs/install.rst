@@ -30,10 +30,33 @@ This makes it possible to customize the compiler flags used when
 building the native extensions. In particular, OpenMP support can
 enabled as discussed :ref:`below <openmp-build>`.
 
-To install the package from source with default compiler flags run
-(note the trailing ``.``)::
+The code requires C++11 support to build and makes use of a few
+compiler built-in functions for performance. We require GCC>=5, a
+recent version of Clang, or a recent MSVC. For old compiler versions
+which do not default to C++11 or later (such as GCC 5), you may have
+to specify ``-std=c++11`` or a similar argument to override the
+default C++ version.
+
+For good performance we depend on aggressive compiler optimizations.
+We *strongly* recommend that you use ``-O3`` with GCC and Clang. This
+may be already in the default flags inherited from Python. On Linux
+and macOS, these and additional compiler flags can be provided in the
+``CFLAGS`` environment variable.
+
+To install the package from source with default compiler flags,
+navigate to the directory containing your copy of the source code and
+run (note the trailing ``.``)::
 
   python -m pip install .
+
+With GCC or Clang on Linux or macOS you could use::
+
+  CFLAGS="-O3" python -m pip install .
+
+Note that if any other packages are built from source by pip during
+this process they will also inherit these ``CFLAGS`` during their
+builds. This may in particular affect NumPy, if a pre-built NumPy is
+not available for your system.
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -61,7 +84,7 @@ To enable OpenMP you must pass the necessary flags to your C++
 compiler via the ``CFLAGS`` environment variable. For GCC the correct
 flag is ``-fopenmp``. In this case, run pip as::
 
-  CFLAGS="-fopenmp" python -m pip install .
+  CFLAGS="-O3 -fopenmp" python -m pip install .
 
 This will install an OpenMP-enabled copy of the package. Other
 compilers will require different flags to be passed through ``CFLAGS``
