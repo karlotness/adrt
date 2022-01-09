@@ -47,6 +47,8 @@ namespace adrt {
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape);
     std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape);
 
+    namespace _impl {
+
     template <typename adrt_scalar>
     std::array<size_t, 5> adrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         ADRT_ASSERT(data)
@@ -89,6 +91,8 @@ namespace adrt {
 
         return curr_shape;
     }
+
+    } // end namespace: adrt::_impl
 
     template <typename adrt_scalar>
     void adrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
@@ -176,7 +180,7 @@ namespace adrt {
 
             // Perform computations
             for(int i = 0; i < num_iters; ++i) {
-                buf_shape = adrt::adrt_core(buf_a, buf_shape, buf_b);
+                buf_shape = adrt::_impl::adrt_core(buf_a, buf_shape, buf_b);
                 std::swap(buf_a, buf_b);
             }
 
