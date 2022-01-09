@@ -182,6 +182,7 @@ jobs:
         key: pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: |
           pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
           pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Install dependencies
       run: |
