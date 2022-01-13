@@ -71,6 +71,9 @@ def adrt_init(a, /):
     dimension. This function is intended to be used with
     :func:`adrt.core.adrt_step`.
 
+    The function :func:`adrt.utils.truncate` provides an inverse for
+    this operation.
+
     Parameters
     ----------
     a : numpy.ndarray
