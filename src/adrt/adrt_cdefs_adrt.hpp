@@ -129,6 +129,8 @@ namespace adrt {
             // QUADRANT 1 (Transpose the squares)
             ADRT_OPENMP("omp for collapse(3) nowait")
             for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
+                // Note: no overflow here (or in other blocked loops) because very large shapes (> size_t_max - 16) are impossible
+                // The input array must be square and with that dimension, the input would be too large to exist
                 for(size_t row_start = 0; row_start < std::get<1>(shape); row_start += block_stride) {
                     for(size_t col_start = 0; col_start < std::get<2>(shape); col_start += block_stride) {
                         // Transpose inside each block
