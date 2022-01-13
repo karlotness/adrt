@@ -125,6 +125,13 @@ namespace adrt {
 
         adrt::_common::Optional<size_t> mul_check(size_t a, size_t b);
 
+        adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n);
+
+        template<size_t N>
+        adrt::_common::Optional<size_t> shape_product(const std::array<size_t, N> &shape) {
+            return adrt::_common::shape_product(shape.data(), shape.size());
+        }
+
         inline size_t floor_div2(size_t val) {
             // Only for non-negative values
             return val / size_t{2};
@@ -187,21 +194,9 @@ namespace adrt {
         bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
             static_assert(NA > 0, "Must have at least one entry in array a");
             static_assert(NB > 0, "Must have at least one entry in array b");
-            adrt::_common::Optional<size_t> size_a = std::get<0>(a);
-            for(size_t i = 1; i < a.size(); ++i) {
-                size_a = adrt::_common::mul_check(*size_a, a[i]);
-                if(!size_a) {
-                    return false;
-                }
-            }
-            adrt::_common::Optional<size_t> size_b = std::get<0>(b);
-            for(size_t i = 1; i < b.size(); ++i) {
-                size_b = adrt::_common::mul_check(*size_b, b[i]);
-                if(!size_b) {
-                    return false;
-                }
-            }
-            return *size_a == *size_b;
+            const adrt::_common::Optional<size_t> size_a = adrt::_common::shape_product(a);
+            const adrt::_common::Optional<size_t> size_b = adrt::_common::shape_product(b);
+            return size_a.has_value() && size_b.has_value() && (*size_a == *size_b);
         }
     } // end namespace adrt::_assert
     #endif // NDEBUG

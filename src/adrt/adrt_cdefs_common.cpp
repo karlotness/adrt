@@ -170,6 +170,20 @@ namespace adrt {
             return prod;
         }
 
+        adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {
+            if(n == 0) {
+                return {};
+            }
+            adrt::_common::Optional<size_t> prod = shape[0];
+            for(size_t i = 1; i < n; ++i) {
+                prod = adrt::_common::mul_check(*prod, shape[i]);
+                if(!prod) {
+                    return {};
+                }
+            }
+            return prod;
+        }
+
     } // End adrt::_common
 
     // Implementation for adrt

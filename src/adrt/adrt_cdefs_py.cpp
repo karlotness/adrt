@@ -155,13 +155,9 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
 template <size_t ndim>
 adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
     static_assert(ndim > 0, "Need at least one shape dimension");
-    adrt::_common::Optional<size_t> n_elem = std::get<0>(shape);
-    for(size_t i = 1; i < shape.size(); ++i) {
-        n_elem = adrt::_common::mul_check(*n_elem, shape[i]);
-        if(!n_elem) {
-            PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
-            return n_elem;
-        }
+    const adrt::_common::Optional<size_t> n_elem = adrt::_common::shape_product(shape);
+    if(!n_elem) {
+        PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
     }
     return n_elem;
 }
