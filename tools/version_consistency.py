@@ -80,7 +80,11 @@ def find_build_macro_defs(setup_py):
 
 def find_package_version(setup_cfg):
     cfg_file = read_configuration(setup_cfg)
-    return str(cfg_file["metadata"]["version"])
+    ver_str = str(cfg_file["metadata"]["version"])
+    if ver_str != ver_str.strip():
+        raise ValueError(f"Extra spaces in version string: '{ver_str}'")
+    # Validate version format by constructing Version object
+    return str(Version(ver_str))
 
 
 def find_release_tag_version(tag_string):
