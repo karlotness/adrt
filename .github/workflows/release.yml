@@ -252,7 +252,7 @@ jobs:
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [sdist, wheel, check-artifacts, test-ubuntu, test-manylinux]
+    needs: [check-artifacts, test-ubuntu, test-manylinux]
     permissions:
       contents: write
     steps:
