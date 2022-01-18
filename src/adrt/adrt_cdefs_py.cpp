@@ -29,7 +29,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "adrt_cdefs_py.hpp" // Include this first
+#define PY_SSIZE_T_CLEAN
+#ifndef Py_LIMITED_API
+#error "Must use limited API"
+#endif
+ // Include this first
+#include <Python.h>
+
+#ifndef NPY_NO_DEPRECATED_API
+#error "Must use NumPy API versioning"
+#endif
+#include <numpy/arrayobject.h>
 
 #include <array>
 #include <limits>
@@ -40,6 +50,19 @@
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"
 #include "adrt_cdefs_interp_adrtcart.hpp"
+
+#ifndef NDEBUG
+#pragma message ("Building with assertions enabled")
+#endif
+
+#if defined(__GNUC__) || defined(__clang__)
+// GCC visibility
+#define ADRT_BEGIN_EXPORT _Pragma("GCC visibility push(default)")
+#define ADRT_END_EXPORT _Pragma("GCC visibility pop")
+#else
+#define ADRT_BEGIN_EXPORT
+#define ADRT_END_EXPORT
+#endif
 
 namespace adrt { namespace _py { namespace {
 

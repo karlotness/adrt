@@ -60,7 +60,7 @@ namespace adrt {
 
 }
 
-#include "adrt_cdefs_py.hpp"
+#include <Python.h>
 
 template <typename adrt_scalar, typename adrt_shape>
 static bool interp_adrtcart_impl(const adrt_scalar *const data, const unsigned char ndims, const adrt_shape *const shape, adrt_scalar *const out, const adrt_shape *const base_output_shape) {
