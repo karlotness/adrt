@@ -91,7 +91,7 @@ adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
 adrt::_common::Optional<int> extract_int(PyObject *arg) {
     const long val = PyLong_AsLong(arg);
     if(val == -1L) {
-        PyObject *exc = PyErr_Occurred();
+        PyObject *const exc = PyErr_Occurred();
         if(exc) {
             // Error occurred
             if(PyErr_GivenExceptionMatches(exc, PyExc_OverflowError)) {
@@ -164,7 +164,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
             return nullptr;
         }
     }
-    PyObject *arr = PyArray_SimpleNew(ndim, new_shape.data(), typenum);
+    PyObject *const arr = PyArray_SimpleNew(ndim, new_shape.data(), typenum);
     if(!arr) {
         if(!PyErr_Occurred()) {
             // Don't shadow errors that NumPy may have set
@@ -201,7 +201,7 @@ void *py_malloc(size_t n_elem, size_t elem_size) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
         return nullptr;
     }
-    void *ret = PyMem_Malloc(*alloc_size);
+    void *const ret = PyMem_Malloc(*alloc_size);
     if(!ret) {
         PyErr_NoMemory();
         return nullptr;
