@@ -33,7 +33,7 @@
 #ifndef Py_LIMITED_API
 #error "Must use limited API"
 #endif
- // Include this first
+// Include this first
 #include <Python.h>
 
 #ifndef NPY_NO_DEPRECATED_API
