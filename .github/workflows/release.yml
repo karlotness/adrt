@@ -268,18 +268,15 @@ jobs:
         path: dist/
     - name: Compute checksums
       run: |
-        echo 'SHA256 Checksums:' > release_body.md
-        echo '```' >> release_body.md
-        sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed ' s!dist/!!' >> release_body.md
-        echo '```' >> release_body.md
+        echo -e '<details><summary>SHA256 Checksums</summary>\n\n```' | tee release_body.md
+        sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed ' s!dist/!!' | tee -a release_body.md
+        echo -e '```\n\n</details>' | tee -a release_body.md
     - name: Create release
       run: |
         ADRT_RELEASE_TAG="${{ github.ref }}"
         gh release create ${ADRT_RELEASE_TAG#refs/tags/} dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md --repo "${{ github.repository }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Show release draft
-      run: cat release_body.md
     - name: Download diagnostics
       uses: actions/download-artifact@v2
       with:
