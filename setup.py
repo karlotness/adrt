@@ -1,7 +1,22 @@
 from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
 import numpy
 import glob
 import sys
+
+
+COMPILER_EXTRA_ARGS = {
+    "unix": ["-std=c++11"],
+    "msvc": ["/std:c++14"],
+}
+
+
+class CPPVersionBuildExt(build_ext):
+    def build_extension(self, ext, *args, **kwargs):
+        if ext.language == "c++":
+            extra_args = COMPILER_EXTRA_ARGS.get(self.compiler.compiler_type, [])
+            ext.extra_compile_args = extra_args + ext.extra_compile_args
+        super().build_extension(ext, *args, **kwargs)
 
 
 adrt_c_ext = Extension(
@@ -20,6 +35,7 @@ adrt_c_ext = Extension(
 
 setup(
     ext_modules=[adrt_c_ext],
+    cmdclass={"build_ext": CPPVersionBuildExt},
     options={
         "bdist_wheel": {
             # Automatically build wheels for current Python version and later.

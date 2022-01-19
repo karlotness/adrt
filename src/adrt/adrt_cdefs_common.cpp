@@ -59,14 +59,11 @@ int num_iters_fallback(size_t shape) {
     return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
-#if !defined(__GNUC__) && !defined(__clang__)
-// Fallback only needed if no GCC intrinsics
 bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
 }
-#endif
 
 template<size_t N>
 bool all_positive(const std::array<size_t, N> &shape) {
@@ -82,6 +79,11 @@ bool all_positive(const std::array<size_t, N> &shape) {
 // Implementation of adrt_num_iters
 
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
+
+// Compatibility with old GCC
+#ifndef __has_builtin
+#define __has_builtin(feat) 0
+#endif
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
@@ -106,8 +108,15 @@ int num_iters(size_t shape) {
 }
 
 bool mul_check(size_t a, size_t b, size_t &prod) {
-    const bool overflow = __builtin_mul_overflow(a, b, &prod);
-    return !overflow;
+
+    #if __has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && (__GNUC__ >= 5))
+    {
+        const bool overflow = __builtin_mul_overflow(a, b, &prod);
+        return !overflow;
+    }
+    #endif
+
+    return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
 #elif defined(_MSC_VER) // MSVC intrinsics

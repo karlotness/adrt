@@ -31,11 +31,8 @@ building the native extensions. In particular, OpenMP support can
 enabled as discussed :ref:`below <openmp-build>`.
 
 The code requires C++11 support to build and makes use of a few
-compiler built-in functions for performance. We require GCC>=5, a
-recent version of Clang, or a recent MSVC. For old compiler versions
-which do not default to C++11 or later (such as GCC 5), you may have
-to specify ``-std=c++11`` or a similar argument to override the
-default C++ version.
+compiler built-in functions for performance. We require GCC>=4.8, a
+recent version of Clang, or a recent MSVC.
 
 For good performance we depend on aggressive compiler optimizations.
 We *strongly* recommend that you use ``-O3`` with GCC and Clang. This
