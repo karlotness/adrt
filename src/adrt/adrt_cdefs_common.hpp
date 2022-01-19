@@ -49,6 +49,12 @@
 #define ADRT_RESTRICT
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#define ADRT_NODISCARD __attribute__((warn_unused_result))
+#else
+#define ADRT_NODISCARD
+#endif
+
 #ifndef NDEBUG
 #include <cassert>
 #define ADRT_ASSERT(cond) assert(cond);

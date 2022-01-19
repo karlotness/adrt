@@ -185,8 +185,8 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
     return n_elem;
 }
 
-template <Py_ssize_t min, Py_ssize_t max, typename... Dest>
-bool unpack_tuple(PyObject *tuple, const char *name, Dest&... dests) {
+template <Py_ssize_t min, Py_ssize_t max=min, typename... Dest>
+ADRT_NODISCARD bool unpack_tuple(PyObject *tuple, const char *name, Dest&... dests) {
     static_assert(min >= 0, "Min arguments must be non-negative");
     static_assert(max >= 1, "Must accept at least one argument");
     static_assert(max >= min, "Max arguments must be at least min arguments");
@@ -294,7 +294,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
 static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
     PyObject *py_arg_array, *py_arg_iter;
-    if(!adrt::_py::unpack_tuple<2, 2>(args, "adrt_step", py_arg_array, py_arg_iter)) {
+    if(!adrt::_py::unpack_tuple<2>(args, "adrt_step", py_arg_array, py_arg_iter)) {
         return nullptr;
     }
     // Process array argument
@@ -501,7 +501,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
 static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
     PyObject *py_arg_array, *py_arg_iter;
-    if(!adrt::_py::unpack_tuple<2, 2>(args, "bdrt_step", py_arg_array, py_arg_iter)) {
+    if(!adrt::_py::unpack_tuple<2>(args, "bdrt_step", py_arg_array, py_arg_iter)) {
         return nullptr;
     }
     // Process array argument
