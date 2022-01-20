@@ -49,12 +49,6 @@
 #define ADRT_RESTRICT
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
-#define ADRT_NODISCARD __attribute__((warn_unused_result))
-#else
-#define ADRT_NODISCARD
-#endif
-
 #ifndef NDEBUG
 #include <cassert>
 #define ADRT_ASSERT(cond) assert(cond);
@@ -93,6 +87,22 @@ namespace adrt {
 
         template<typename term, typename... terms>
         struct conjunction<term, terms...> : std::conditional<bool(term::value), adrt::_common::conjunction<terms...>, std::false_type>::type {};
+
+        // Similar to C++20's std::type_identity
+        template <typename T>
+        struct type_identity {
+            using type = T;
+        };
+
+        // Template approximating C++14's std::index_sequence and std::make_index_sequence
+        template <size_t... Idx>
+        struct index_sequence {};
+
+        template<size_t N, size_t... Build_Idx>
+        struct _impl_make_index_sequence : std::conditional<N == 0, adrt::_common::type_identity<adrt::_common::index_sequence<Build_Idx...>>, adrt::_common::_impl_make_index_sequence<N - 1, N - 1, Build_Idx...>>::type {};
+
+        template<size_t I>
+        using make_index_sequence = typename adrt::_common::_impl_make_index_sequence<I>::type;
 
         // Simple optional type that always default-initializes its value
         // Similar to (but simpler than) C++17's std::optional

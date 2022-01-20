@@ -185,14 +185,20 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
     return n_elem;
 }
 
-template <Py_ssize_t min, Py_ssize_t max=min, typename... Dest>
-ADRT_NODISCARD bool unpack_tuple(PyObject *tuple, const char *name, Dest&... dests) {
-    static_assert(min >= 0, "Min arguments must be non-negative");
-    static_assert(max >= 1, "Must accept at least one argument");
-    static_assert(max >= min, "Max arguments must be at least min arguments");
-    static_assert(sizeof...(dests) == max, "Must provide space for exactly max arguments");
-    static_assert(adrt::_common::conjunction<std::is_same<PyObject*, Dest>...>::value, "All destinations should be PyObject*");
-    return PyArg_UnpackTuple(tuple, name, min, max, &dests...);
+template <size_t N, size_t... Ints>
+adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
+    static_assert(N >= 1, "Must accept at least one argument");
+    static_assert(N <= std::numeric_limits<Py_ssize_t>::max(), "Required tuple size is too large for Py_ssize_t");
+    static_assert(sizeof...(Ints) == N, "Wrong number of indices. Do not call this overload directly!");
+    adrt::_common::Optional<std::array<PyObject*, N>> ret;
+    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(*ret)...);
+    ret.set_ok(ok);
+    return ret;
+}
+
+template <size_t N>
+adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name) {
+    return adrt::_py::unpack_tuple<N>(tuple, name, adrt::_common::make_index_sequence<N>{});
 }
 
 void *py_malloc(size_t n_elem, size_t elem_size) {
@@ -293,12 +299,12 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
-    PyObject *py_arg_array, *py_arg_iter;
-    if(!adrt::_py::unpack_tuple<2>(args, "adrt_step", py_arg_array, py_arg_iter)) {
+    const adrt::_common::Optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "adrt_step");
+    if(!unpacked_args) {
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(py_arg_array);
+    PyArrayObject *const I = adrt::_py::extract_array(std::get<0>(*unpacked_args));
     if(!I) {
         return nullptr;
     }
@@ -312,7 +318,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(py_arg_iter);
+    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }
@@ -500,12 +506,12 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
-    PyObject *py_arg_array, *py_arg_iter;
-    if(!adrt::_py::unpack_tuple<2>(args, "bdrt_step", py_arg_array, py_arg_iter)) {
+    const adrt::_common::Optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "bdrt_step");
+    if(!unpacked_args) {
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(py_arg_array);
+    PyArrayObject *const I = adrt::_py::extract_array(std::get<0>(*unpacked_args));
     if(!I) {
         return nullptr;
     }
@@ -519,7 +525,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(py_arg_iter);
+    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }
