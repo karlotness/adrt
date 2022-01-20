@@ -189,7 +189,7 @@ template <size_t N, size_t... Ints>
 adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
     static_assert(N >= 1, "Must accept at least one argument");
     static_assert(N <= std::numeric_limits<Py_ssize_t>::max(), "Required tuple size is too large for Py_ssize_t");
-    static_assert(sizeof...(Ints) == N, "Wrong number of indices. Do not call this overload directly!");
+    static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
     adrt::_common::Optional<std::array<PyObject*, N>> ret;
     const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(*ret)...);
     ret.set_ok(ok);
