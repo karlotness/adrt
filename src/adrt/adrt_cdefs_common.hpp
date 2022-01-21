@@ -88,19 +88,19 @@ namespace adrt {
         template<typename term, typename... terms>
         struct conjunction<term, terms...> : std::conditional<bool(term::value), adrt::_common::conjunction<terms...>, std::false_type>::type {};
 
-        // Similar to C++20's std::type_identity
-        template <typename T>
-        struct type_identity {
-            using type = T;
-        };
-
-        // Template approximating C++14's std::index_sequence and std::make_index_sequence
+        // Simplified version of C++14's std::index_sequence
         template <size_t... Idx>
         struct index_sequence {};
 
         template<size_t N, size_t... Build_Idx>
-        struct _impl_make_index_sequence : std::conditional<N == 0, adrt::_common::type_identity<adrt::_common::index_sequence<Build_Idx...>>, adrt::_common::_impl_make_index_sequence<N - 1, N - 1, Build_Idx...>>::type {};
+        struct _impl_make_index_sequence : adrt::_common::_impl_make_index_sequence<N - 1, N - 1, Build_Idx...> {};
 
+        template<size_t... Build_Idx>
+        struct _impl_make_index_sequence<0, Build_Idx...> {
+            using type = adrt::_common::index_sequence<Build_Idx...>;
+        };
+
+        // Simplified version of C++14's std::make_index_sequence
         template<size_t I>
         using make_index_sequence = typename adrt::_common::_impl_make_index_sequence<I>::type;
 
