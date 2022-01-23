@@ -252,10 +252,10 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(*input_shape);
     const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::adrt_buffer_shape(*input_shape));
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::adrt_buffer_shape(*input_shape)))
     if(!tmp_buf_elems) {
         return nullptr;
     }
+    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::adrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -390,10 +390,10 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(*input_shape);
     const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::iadrt_buffer_shape(*input_shape)))
     if(!tmp_buf_elems) {
         return nullptr;
     }
+    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::iadrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -459,10 +459,10 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(*input_shape);
     const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::bdrt_buffer_shape(*input_shape));
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::bdrt_buffer_shape(*input_shape)))
     if(!tmp_buf_elems) {
         return nullptr;
     }
+    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::bdrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
