@@ -180,6 +180,7 @@ namespace adrt {
         inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, const Idx... idxs) {
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
+            ADRT_ASSERT(buf)
             const std::array<size_t, N> idx {idxs...};
             size_t acc = 0;
             for(size_t i = 0; i < N; ++i) {

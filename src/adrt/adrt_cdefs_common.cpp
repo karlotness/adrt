@@ -180,6 +180,7 @@ namespace adrt {
         }
 
         adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {
+            ADRT_ASSERT((n == 0) || shape)
             if(n == 0) {
                 return {};
             }
