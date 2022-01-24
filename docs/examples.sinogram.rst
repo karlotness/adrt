@@ -1,5 +1,3 @@
-.. _sinogram:
-
 Sinograms of an Image
 =====================
 

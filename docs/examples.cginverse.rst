@@ -1,5 +1,3 @@
-.. _cginverse:
-
 Iterative Inverse
 =================
 
@@ -68,7 +66,7 @@ performs the actual inversion operation using conjugate gradients.
            raise ValueError(f"Convergence failed (cg status {info})")
        return x.reshape((img_size, img_size))
 
-We'll use the same starting image as in the :ref:`quickstart`, but we
+We'll use the same starting image as in the :doc:`quickstart`, but we
 will apply a small amount of normal noise to its adrt to illustrate
 the difference in behavior between the iterative inverse here and
 :func:`adrt.iadrt`.
@@ -100,7 +98,7 @@ the difference in behavior between the iterative inverse here and
    fig.colorbar(im_plot, ax=axs, orientation="horizontal", pad=0.1)
 
 
-If you compare this against the ADRT in :ref:`quickstart`, you should
+If you compare this against the ADRT in :doc:`quickstart`, you should
 see that the differences are visually imperceptible. However, the two
 inverses produce very different results.
 
