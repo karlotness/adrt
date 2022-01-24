@@ -60,11 +60,11 @@ Running Tests
 
 Once you have an installed version of the package, the test suite can
 help confirm whether the routines are operating correctly. We use
-`pytest <https://pytest.org/>`__ as a test runner. Once both pytest
-and the package are installed, navigate to the root directory of the
-repository and run::
+`pytest <https://pytest.org/>`__ as a test runner. Once the package is
+installed, navigate to the root directory of the repository and run::
 
-  pytest
+  python -m pip install -r tests/test_requirements.txt
+  python -m pytest
 
 .. _openmp-build:
 
