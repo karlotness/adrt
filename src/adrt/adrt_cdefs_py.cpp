@@ -82,7 +82,6 @@ PyArrayObject *extract_array(PyObject *arg) {
 }
 
 PyObject *array_to_pyobject(PyArrayObject *arr) {
-    ADRT_ASSERT(arr)
     return reinterpret_cast<PyObject*>(arr);
 }
 
@@ -246,9 +245,7 @@ void xdecref(PyObject *obj) {
 }
 
 void xdecref(PyArrayObject *arr) {
-    if(arr) {
-        adrt::_py::xdecref(adrt::_py::array_to_pyobject(arr));
-    }
+    adrt::_py::xdecref(adrt::_py::array_to_pyobject(arr));
 }
 
 }}} // End namespace adrt::_py
