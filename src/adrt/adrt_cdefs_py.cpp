@@ -228,12 +228,16 @@ void *py_malloc(size_t n_elem, size_t elem_size) {
 
 template <typename scalar>
 scalar *py_malloc(size_t n_elem) {
+    static_assert(!std::is_same<PyObject*, scalar*>::value && !std::is_same<PyArrayObject*, scalar*>::value, "Do not malloc Python objects!");
     return static_cast<scalar*>(adrt::_py::py_malloc(n_elem, sizeof(scalar)));
 }
 
 void py_free(void *ptr) {
     PyMem_Free(ptr);
 }
+
+void py_free(PyObject *obj) = delete;
+void py_free(PyArrayObject *obj) = delete;
 
 void xdecref(PyObject *obj) {
     if(obj) {
