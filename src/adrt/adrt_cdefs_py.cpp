@@ -235,6 +235,18 @@ void py_free(void *ptr) {
     PyMem_Free(ptr);
 }
 
+void xdecref(PyObject *obj) {
+    if(obj) {
+        Py_DECREF(obj);
+    }
+}
+
+void xdecref(PyArrayObject *arr) {
+    if(arr) {
+        adrt::_py::xdecref(adrt::_py::array_to_pyobject(arr));
+    }
+}
+
 }}} // End namespace adrt::_py
 
 extern "C" {
@@ -270,7 +282,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
@@ -289,7 +301,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
@@ -408,7 +420,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
@@ -427,7 +439,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
@@ -477,7 +489,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
@@ -496,7 +508,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
-            Py_XDECREF(ret);
+            adrt::_py::xdecref(ret);
             return nullptr;
         }
         const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
