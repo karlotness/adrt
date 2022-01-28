@@ -81,6 +81,11 @@ PyArrayObject *extract_array(PyObject *arg) {
     return arr;
 }
 
+PyObject *array_to_pyobject(PyArrayObject *arr) {
+    ADRT_ASSERT(arr)
+    return reinterpret_cast<PyObject*>(arr);
+}
+
 adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
     ADRT_ASSERT(arg)
     const size_t val = PyLong_AsSize_t(arg);
@@ -276,7 +281,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -295,7 +300,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
@@ -349,7 +354,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         adrt::adrt_step(in_data, *input_shape, out_data, *iter);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -364,7 +369,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         adrt::adrt_step(in_data, *input_shape, out_data, *iter);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
@@ -414,7 +419,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -433,7 +438,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
@@ -483,7 +488,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -502,7 +507,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         adrt::_py::py_free(tmp_buf);
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
@@ -556,7 +561,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         adrt::bdrt_step(in_data, *input_shape, out_data, *iter);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -571,7 +576,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         adrt::bdrt_step(in_data, *input_shape, out_data, *iter);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
@@ -612,7 +617,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         adrt::interp_adrtcart(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     case NPY_FLOAT64:
     {
@@ -627,7 +632,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         adrt::interp_adrtcart(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
-        return reinterpret_cast<PyObject*>(ret);
+        return adrt::_py::array_to_pyobject(ret);
     }
     default:
         PyErr_SetString(PyExc_TypeError, "Unsupported array type");
