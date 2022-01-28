@@ -180,6 +180,8 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
         }
         return nullptr;
     }
+    ADRT_ASSERT(PyArray_Check(arr))
+    ADRT_ASSERT(PyArray_ISCARRAY(reinterpret_cast<PyArrayObject*>(arr)))
     return reinterpret_cast<PyArrayObject*>(arr);
 }
 
