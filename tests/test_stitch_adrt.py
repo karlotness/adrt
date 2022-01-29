@@ -97,7 +97,7 @@ def _check_zero_stencil(stitched):
 
 def test_accepts_adrt_output():
     n = 16
-    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    inarr = np.arange(n**2).reshape((n, n)).astype("float32")
     out = adrt.adrt(inarr)
     stitched = adrt.utils.stitch_adrt(out)
     assert stitched.shape == (3 * n - 2, 4 * n)
@@ -108,7 +108,7 @@ def test_accepts_adrt_output():
 
 def test_accepts_adrt_output_batched():
     n = 16
-    inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
+    inarr = np.arange(3 * (n**2)).reshape((3, n, n)).astype("float32")
     out = adrt.adrt(inarr)
     stitched = adrt.utils.stitch_adrt(out)
     assert stitched.shape == (3, 3 * n - 2, 4 * n)
@@ -119,7 +119,7 @@ def test_accepts_adrt_output_batched():
 
 def test_accepts_adrt_output_remove_repeated():
     n = 16
-    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    inarr = np.arange(n**2).reshape((n, n)).astype("float32")
     out = adrt.adrt(inarr)
     stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
     assert stitched.shape == (3 * n - 2, 4 * n - 4)
@@ -132,7 +132,7 @@ def test_accepts_adrt_output_remove_repeated():
 
 def test_accepts_adrt_output_remove_repeated_batched():
     n = 16
-    inarr = np.arange(3 * (n ** 2)).reshape((3, n, n)).astype("float32")
+    inarr = np.arange(3 * (n**2)).reshape((3, n, n)).astype("float32")
     out = adrt.adrt(inarr)
     stitched = adrt.utils.stitch_adrt(out, remove_repeated=True)
     assert stitched.shape == (3, 3 * n - 2, 4 * n - 4)
@@ -145,7 +145,7 @@ def test_accepts_adrt_output_remove_repeated_batched():
 
 def test_accepts_adrt_output_multi_batched():
     n = 8
-    inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+    inarr = np.arange(6 * (n**2)).reshape((2, 3, n, n)).astype("float32")
     out_1 = adrt.adrt(inarr[0])
     out_2 = adrt.adrt(inarr[1])
     out = np.stack([out_1, out_2])
@@ -158,7 +158,7 @@ def test_accepts_adrt_output_multi_batched():
 
 def test_accepts_adrt_output_remove_repeated_multi_batched():
     n = 8
-    inarr = np.arange(6 * (n ** 2)).reshape((2, 3, n, n)).astype("float32")
+    inarr = np.arange(6 * (n**2)).reshape((2, 3, n, n)).astype("float32")
     out_1 = adrt.adrt(inarr[0])
     out_2 = adrt.adrt(inarr[1])
     out = np.stack([out_1, out_2])
@@ -181,7 +181,7 @@ def test_accepts_multiple_dtypes(dtype):
 
 def test_small_matrix():
     n = 1
-    inarr = np.arange(n ** 2).reshape((n, n)).astype("float32")
+    inarr = np.arange(n**2).reshape((n, n)).astype("float32")
     out = adrt.adrt(inarr)
     stitched = adrt.utils.stitch_adrt(out)
     assert stitched.shape == (3 * n - 2, 4 * n)

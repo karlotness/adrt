@@ -235,7 +235,7 @@ class TestAdrt:
 
     def test_unique_values(self):
         size = 16
-        inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
+        inarr = np.arange(size**2).reshape((size, size)).astype("float32")
         c_out = adrt.adrt(inarr)
         naive_out = _naive_adrt(inarr)
         assert c_out.shape == naive_out.shape

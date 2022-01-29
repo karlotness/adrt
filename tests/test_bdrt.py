@@ -303,7 +303,7 @@ class TestBdrt:
     @pytest.mark.parametrize("size", [1, 2, 4, 8])
     def test_materialize_array(self, size):
         n = size
-        full_size = n ** 2
+        full_size = n**2
         adrt_size = 4 * n * (2 * n - 1)
         adrt_in = np.eye(full_size, dtype=np.float32).reshape((full_size, n, n))
         bdrt_in = np.eye(adrt_size, dtype=np.float32).reshape(

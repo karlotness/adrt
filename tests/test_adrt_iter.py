@@ -51,7 +51,7 @@ def test_match_adrt_all_ones(dtype):
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_match_adrt_unique_values(dtype):
     size = 16
-    inarr = np.arange(size ** 2).reshape((size, size)).astype(dtype)
+    inarr = np.arange(size**2).reshape((size, size)).astype(dtype)
     c_out = adrt.adrt(inarr)
     last = mi.last(adrt.core.adrt_iter(inarr))
     assert np.allclose(last, c_out)
@@ -63,7 +63,7 @@ def test_match_adrt_unique_values(dtype):
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_first_matches_adrt_init_batch(dtype):
     size = 16
-    inarr = np.arange(3 * size ** 2).reshape((3, size, size)).astype(dtype)
+    inarr = np.arange(3 * size**2).reshape((3, size, size)).astype(dtype)
     first = mi.first(adrt.core.adrt_iter(inarr))
     init = adrt.core.adrt_init(inarr)
     assert np.all(first == init)
@@ -75,7 +75,7 @@ def test_first_matches_adrt_init_batch(dtype):
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_all_match_adrt_step_batch(dtype):
     size = 16
-    inarr = np.arange(3 * size ** 2).reshape((3, size, size)).astype(dtype)
+    inarr = np.arange(3 * size**2).reshape((3, size, size)).astype(dtype)
     for i, (a, b) in enumerate(mi.pairwise(adrt.core.adrt_iter(inarr))):
         step_out = adrt.core.adrt_step(a, step=i)
         assert np.allclose(b, step_out)

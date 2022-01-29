@@ -197,7 +197,7 @@ class TestIAdrt:
 
     def test_unique_values(self):
         size = 32
-        inarr = np.arange(size ** 2).reshape((size, size)).astype("float32")
+        inarr = np.arange(size**2).reshape((size, size)).astype("float32")
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
         inv = np.mean(adrt.utils.truncate(inv), axis=0)
@@ -207,7 +207,7 @@ class TestIAdrt:
 
     def test_batch_dimension_unique_values(self):
         size = 32
-        inarr = np.arange(4 * (size ** 2)).reshape((4, size, size)).astype("float32")
+        inarr = np.arange(4 * (size**2)).reshape((4, size, size)).astype("float32")
         adrt_out = adrt.adrt(inarr)
         inv = adrt.iadrt(adrt_out)
         inv = np.mean(adrt.utils.truncate(inv), axis=1)

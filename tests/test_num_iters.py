@@ -39,7 +39,7 @@ import adrt
 
 
 SIZE_T_BITS = ctypes.sizeof(ctypes.c_size_t) * 8
-SIZE_T_MAX = (2 ** SIZE_T_BITS) - 1
+SIZE_T_MAX = (2**SIZE_T_BITS) - 1
 
 
 def test_reject_negative():
