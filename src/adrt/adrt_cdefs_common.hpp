@@ -168,7 +168,7 @@ namespace adrt {
         struct _impl_compute_strides {
             static inline size_t compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
-                const size_t step_size = _impl_compute_strides<N, I + 1>::compute_strides(shape_in, strides_out);
+                const size_t step_size = adrt::_common::_impl_compute_strides<N, I + 1>::compute_strides(shape_in, strides_out);
                 std::get<I>(strides_out) = step_size;
                 return step_size * std::get<I>(shape_in);
             }
@@ -190,7 +190,7 @@ namespace adrt {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
                 static_assert(sizeof...(idxs) == N - I - 1, "Parameters unpacked incorrectly. Do not use this template manually!");
                 static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
-                return (std::get<I>(strides) * idx) + _impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
+                return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
             }
         };
 
@@ -213,7 +213,7 @@ namespace adrt {
             }
             #endif
             std::array<size_t, N> strides_out;
-            _impl_compute_strides<N, 0>::compute_strides(shape_in, strides_out);
+            adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in, strides_out);
             return strides_out;
         }
 
@@ -222,7 +222,7 @@ namespace adrt {
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             ADRT_ASSERT(buf)
-            const size_t offset = _impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
+            const size_t offset = adrt::_common::_impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
             return buf[offset];
         }
 
@@ -237,7 +237,7 @@ namespace adrt {
                 }
             }
             #endif
-            return array_stride_access(buf, compute_strides(shape), idxs...);
+            return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
         }
 
     } // end namespace adrt::_common
