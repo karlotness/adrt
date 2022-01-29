@@ -32,26 +32,11 @@ The code requires C++11 support to build and makes use of a few
 compiler built-in functions for performance. We require GCC>=4.8, a
 recent version of Clang, or a recent MSVC.
 
-For good performance we depend on aggressive compiler optimizations.
-We *strongly* recommend that you use ``-O3`` with GCC and Clang. This
-may be already in the default flags inherited from Python. On Linux
-and macOS, these and additional compiler flags can be provided in the
-``CFLAGS`` environment variable.
-
 To install the package from source with default compiler flags,
 navigate to the directory containing your copy of the source code and
 run (note the trailing ``.``)::
 
   python -m pip install .
-
-With GCC or Clang on Linux or macOS you could use::
-
-  CFLAGS="-O3" python -m pip install .
-
-Note that if any other packages are built from source by pip during
-this process they will also inherit these ``CFLAGS`` during their
-builds. This may in particular affect NumPy, if a pre-built NumPy is
-not available for your system.
 
 Running Tests
 ~~~~~~~~~~~~~
