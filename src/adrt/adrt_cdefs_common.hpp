@@ -163,16 +163,57 @@ namespace adrt {
             return adrt::_common::ceil_div(val, size_t{2});
         }
 
+        // Implementation struct: unrolls compute_strides loop
+        template<size_t N, size_t I>
+        struct _impl_compute_strides {
+            static inline size_t compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
+                static_assert(I < N, "Index out of range. Do not use this template manually!");
+                const size_t step_size = _impl_compute_strides<N, I + 1>::compute_strides(shape_in, strides_out);
+                std::get<I>(strides_out) = step_size;
+                return step_size * std::get<I>(shape_in);
+            }
+        };
+
+        template<size_t N>
+        struct _impl_compute_strides<N, N> {
+            static inline size_t compute_strides(const std::array<size_t, N>&, std::array<size_t, N>&) {
+                // Terminate recursion with initial stride of 1
+                return size_t{1};
+            }
+        };
+
+        // Implementation struct: unrolls array_stride_access loop
+        template<size_t N, size_t I>
+        struct _impl_array_stride_access {
+            template<typename T, typename... Idx>
+            static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, const Idx... idxs) {
+                static_assert(I < N, "Index out of range. Do not use this template manually!");
+                static_assert(sizeof...(idxs) == N - I - 1, "Parameters unpacked incorrectly. Do not use this template manually!");
+                static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
+                return (std::get<I>(strides) * idx) + _impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
+            }
+        };
+
+        template<size_t N>
+        struct _impl_array_stride_access<N, N> {
+            static inline size_t compute_offset(const std::array<size_t, N>&) {
+                // Terminate recursion, initialize accumulator to zero
+                return size_t{0};
+            }
+        };
+
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
-            std::array<size_t, N> strides_out;
-            size_t step_size = 1;
-            for(size_t i = 0; i < N; ++i) {
-                const size_t idx_i = N - i - 1;
-                ADRT_ASSERT(shape_in[idx_i] > 0)
-                strides_out[idx_i] = step_size;
-                step_size *= shape_in[idx_i];
+            #ifndef NDEBUG
+            {
+                // If asserts enabled, check that shapes are nonzero
+                for(size_t i = 0; i < N; ++i) {
+                    ADRT_ASSERT(shape_in[i] > 0)
+                }
             }
+            #endif
+            std::array<size_t, N> strides_out;
+            _impl_compute_strides<N, 0>::compute_strides(shape_in, strides_out);
             return strides_out;
         }
 
@@ -181,12 +222,8 @@ namespace adrt {
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             ADRT_ASSERT(buf)
-            const std::array<size_t, N> idx {idxs...};
-            size_t acc = 0;
-            for(size_t i = 0; i < N; ++i) {
-                acc += strides[i] * idx[i];
-            }
-            return buf[acc];
+            const size_t offset = _impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
+            return buf[offset];
         }
 
         template <typename scalar, size_t N, typename... Idx>
