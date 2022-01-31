@@ -32,7 +32,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade tox
     - name: Check version strings
-      run: python -m tox -e checkver -- --tag_ref "${{ github.ref }}"
+      run: python -m tox -e checkver -- --tag_ref '${{ github.ref }}'
     - name: Run tox tests
       run: python -m tox -e py
       env:
@@ -102,16 +102,16 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       continue-on-error: true
       run: |
-        touch "diagnostics.txt"
+        touch 'diagnostics.txt'
         for wheelfile in wheelhouse/adrt-*.whl; do
           if [[ ! -e "$wheelfile" ]]; then
             continue
           fi
-          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a "diagnostics.txt"
-          dir=$(mktemp -d)
+          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a 'diagnostics.txt'
+          dir="$(mktemp -d)"
           unzip -q "$wheelfile" -d "$dir"
-          readelf --wide --symbols --dynamic "${dir}"/adrt/*.so | tee -a "diagnostics.txt"
-          echo "" | tee -a "diagnostics.txt"
+          readelf --wide --symbols --dynamic "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
+          echo | tee -a 'diagnostics.txt'
         done
     - name: Diagnostics (Windows)
       if: ${{ runner.os == 'Windows' }}
@@ -120,38 +120,38 @@ jobs:
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
         & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1)
         $ProgressPreference = 'SilentlyContinue'
-        Remove-Item "wheel-diagnostic" -Recurse -ErrorAction SilentlyContinue
-        $baseextract = New-Item -Path . -Name "wheel-diagnostic" -ItemType "directory"
+        Remove-Item 'wheel-diagnostic' -Recurse -ErrorAction SilentlyContinue
+        $baseextract = New-Item -Path . -Name 'wheel-diagnostic' -ItemType 'directory'
         $null = New-Item -Name diagnostics.txt -ItemType File
-        Get-ChildItem -Path "wheelhouse" -Filter "adrt-*.whl" | ForEach-Object {
+        Get-ChildItem -Path 'wheelhouse' -Filter 'adrt-*.whl' | ForEach-Object {
           $wheelfile = $_
-          Write-Output "----- WHEEL: $($wheelfile.Name) -----`n" | Tee-Object -FilePath "diagnostics.txt" -Append
-          $destdir = New-Item -Path $baseextract.FullName -Name $wheelfile.Basename -ItemType "directory"
+          Write-Output "----- WHEEL: $($wheelfile.Name) -----`n" | Tee-Object -FilePath 'diagnostics.txt' -Append
+          $destdir = New-Item -Path $baseextract.FullName -Name $wheelfile.Basename -ItemType 'directory'
           Expand-Archive -Path $wheelfile.FullName -DestinationPath $destdir.FullName
-          dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter "*.pyd" -Recurse).FullName) | Tee-Object -FilePath "diagnostics.txt" -Append
-          Write-Output "`n" | Tee-Object -FilePath "diagnostics.txt" -Append
+          dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter '*.pyd' -Recurse).FullName) | Tee-Object -FilePath 'diagnostics.txt' -Append
+          Write-Output "`n" | Tee-Object -FilePath 'diagnostics.txt' -Append
         }
     - name: Diagnostics (macOS)
       if: ${{ runner.os == 'macOS' }}
       continue-on-error: true
       run: |
-        touch "diagnostics.txt"
+        touch 'diagnostics.txt'
         for wheelfile in wheelhouse/adrt-*.whl; do
           if [[ ! -e "$wheelfile" ]]; then
             continue
           fi
-          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a "diagnostics.txt"
-          dir=$(mktemp -d)
+          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a 'diagnostics.txt'
+          dir="$(mktemp -d)"
           unzip -q "$wheelfile" -d "$dir"
-          echo "Libraries:" | tee -a "diagnostics.txt"
-          otool -L -arch all "${dir}"/adrt/*.so | tee -a "diagnostics.txt"
-          echo "Symbols:" | tee -a "diagnostics.txt"
-          nm -arch all "${dir}"/adrt/*.so | tee -a "diagnostics.txt"
-          echo ""
+          echo 'Libraries:' | tee -a 'diagnostics.txt'
+          otool -L -arch all "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
+          echo 'Symbols:' | tee -a 'diagnostics.txt'
+          nm -arch all "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
+          echo | tee -a 'diagnostics.txt'
         done
     - name: Prepare diagnostics upload
       continue-on-error: true
-      run: mv "diagnostics.txt" "diagnostics-${{ runner.os }}-${{ runner.arch }}-run${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-job${{ github.job }}.txt"
+      run: mv 'diagnostics.txt' 'diagnostics-${{ runner.os }}-${{ runner.arch }}-run${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-job${{ github.job }}.txt'
     - name: Store diagnostics
       uses: actions/upload-artifact@v2
       with:
@@ -268,13 +268,12 @@ jobs:
         path: dist/
     - name: Compute checksums
       run: |
-        echo -e '<details><summary>SHA256 Checksums</summary>\n\n```' | tee release_body.md
-        sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed ' s!dist/!!' | tee -a release_body.md
-        echo -e '```\n\n</details>' | tee -a release_body.md
+        echo -e '<details><summary>SHA256 Checksums</summary>\n\n```' | tee 'release_body.md'
+        sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!' | tee -a 'release_body.md'
+        echo -e '```\n\n</details>' | tee -a 'release_body.md'
     - name: Create release
       run: |
-        ADRT_RELEASE_TAG="${{ github.ref }}"
-        gh release create ${ADRT_RELEASE_TAG#refs/tags/} dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md --repo "${{ github.repository }}"
+        gh release create '${{ github.ref_name }}' dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md --repo '${{ github.repository }}'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
@@ -287,12 +286,12 @@ jobs:
         for f in dist/*.tar.gz; do
           echo "----- FILE: $(basename $f) -----"
           tar -tzvf "$f"
-          echo ""
+          echo
         done
         for f in dist/*.whl; do
           echo "----- FILE: $(basename $f) -----"
           zipinfo "$f"
-          echo ""
+          echo
         done
     - name: Show diagnostics
       run: cat diagnostics/*.txt
