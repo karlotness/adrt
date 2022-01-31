@@ -273,7 +273,7 @@ jobs:
         echo -e '```\n\n</details>' | tee -a 'release_body.md'
     - name: Create release
       run: |
-        gh release create '${{ github.ref_name }}' dist/adrt-*.tar.gz dist/adrt-*.whl --draft --notes-file release_body.md --repo '${{ github.repository }}'
+        gh release create '${{ github.ref_name }}' --target '${{ github.sha }}' --draft --notes-file 'release_body.md' --repo '${{ github.repository }}' dist/adrt-*.tar.gz dist/adrt-*.whl
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
