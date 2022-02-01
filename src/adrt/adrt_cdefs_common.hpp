@@ -186,7 +186,7 @@ namespace adrt {
         template<size_t N, size_t I>
         struct _impl_array_stride_access {
             template<typename T, typename... Idx>
-            static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, const Idx... idxs) {
+            static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, Idx... idxs) {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
                 static_assert(sizeof...(idxs) == N - I - 1, "Parameters unpacked incorrectly. Do not use this template manually!");
                 static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
@@ -218,7 +218,7 @@ namespace adrt {
         }
 
         template <typename scalar, size_t N, typename... Idx>
-        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, const Idx... idxs) {
+        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             ADRT_ASSERT(buf)
@@ -227,7 +227,7 @@ namespace adrt {
         }
 
         template <typename scalar, size_t N, typename... Idx>
-        inline scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, const Idx... idxs) {
+        inline scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, Idx... idxs) {
             #ifndef NDEBUG
             {
                 // If asserts enabled, check array bounds
