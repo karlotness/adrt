@@ -71,10 +71,9 @@ def _naive_adrt(a):
             for si, s in enumerate(range(n)):
                 v = 0
                 for (i, j) in _gen_dline(n, h, s):
-                    if i >= n or i < 0 or j >= n or j < 0:
-                        # Skip values out of range
-                        continue
-                    v += img[i, j]
+                    if 0 <= i < n and 0 <= j < n:
+                        # Add values that are in bounds
+                        v += img[i, j]
                 # Store result
                 res[quad, hi, si] = v
     return res
