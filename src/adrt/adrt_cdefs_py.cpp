@@ -158,7 +158,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
     const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
-        PyErr_SetString(PyExc_RuntimeError, "Invalid number of dimensions computed for output array");
+        PyErr_SetString(PyExc_AssertionError, "BUG: Invalid number of dimensions computed for output array");
         return nullptr;
     }
     std::array<npy_intp, n_virtual_dim> new_shape;
