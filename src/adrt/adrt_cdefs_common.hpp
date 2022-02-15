@@ -177,6 +177,7 @@ namespace adrt {
         template<size_t N>
         struct _impl_compute_strides<N, N> {
             static inline size_t compute_strides(const std::array<size_t, N>&, std::array<size_t, N>&) {
+                static_assert(N > 0, "Strides to compute must have at least one dimension");
                 // Terminate recursion with initial stride of 1
                 return size_t{1};
             }
@@ -197,6 +198,7 @@ namespace adrt {
         template<size_t N>
         struct _impl_array_stride_access<N, N> {
             static inline size_t compute_offset(const std::array<size_t, N>&) {
+                static_assert(N > 0, "Array must have at least one dimension");
                 // Terminate recursion, initialize accumulator to zero
                 return size_t{0};
             }
@@ -204,6 +206,7 @@ namespace adrt {
 
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
+            static_assert(N > 0, "Strides to compute must have at least one dimension");
             #ifndef NDEBUG
             {
                 // If asserts enabled, check that shapes are nonzero
@@ -219,6 +222,7 @@ namespace adrt {
 
         template <typename scalar, size_t N, typename... Idx>
         inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
+            static_assert(N > 0, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             ADRT_ASSERT(buf)
