@@ -173,10 +173,12 @@ namespace adrt {
 
     namespace _common {
         adrt::_common::Optional<size_t> mul_check(size_t a, size_t b) {
-            adrt::_common::Optional<size_t> prod;
-            const bool ok = adrt::_impl::mul_check(a, b, *prod);
-            prod.set_ok(ok);
-            return prod;
+            size_t prod;
+            const bool ok = adrt::_impl::mul_check(a, b, prod);
+            if(!ok) {
+                return {};
+            }
+            return {prod};
         }
 
         adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {

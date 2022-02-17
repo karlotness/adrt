@@ -120,36 +120,32 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     static_assert(min_dim > 0, "Min dimensions must be positive.");
     ADRT_ASSERT(arr)
-    adrt::_common::Optional<std::array<size_t, max_dim>> shape_arr;
+    std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
         PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
-        shape_arr.set_ok(false);
-        return shape_arr;
+        return {};
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
     // Prepend trivial dimensions
     for(size_t i = 0; i < max_dim - ndim; ++i) {
-        (*shape_arr)[i] = 1;
+        shape_arr[i] = 1;
     }
     // Fill rest of array
     for(size_t i = 0; i < ndim; ++i) {
         const npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
             PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
-            shape_arr.set_ok(false);
-            return shape_arr;
+            return {};
         }
         else if(static_cast<npy_uintp>(shape) > std::numeric_limits<size_t>::max()) {
             PyErr_SetString(PyExc_ValueError, "Maximum allowed dimension exceeded");
-            shape_arr.set_ok(false);
-            return shape_arr;
+            return {};
         }
-        (*shape_arr)[i + (max_dim - ndim)] = static_cast<size_t>(shape);
+        shape_arr[i + (max_dim - ndim)] = static_cast<size_t>(shape);
     }
-    shape_arr.set_ok(true);
-    return shape_arr;
+    return {shape_arr};
 }
 
 template <size_t n_virtual_dim>
@@ -202,10 +198,12 @@ adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, 
     static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
     ADRT_ASSERT(tuple)
     ADRT_ASSERT(name)
-    adrt::_common::Optional<std::array<PyObject*, N>> ret;
-    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(*ret)...);
-    ret.set_ok(ok);
-    return ret;
+    std::array<PyObject*, N> ret;
+    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(ret)...);
+    if(!ok) {
+        return {};
+    }
+    return {ret};
 }
 
 template <size_t N>

@@ -104,28 +104,30 @@ namespace adrt {
         template<size_t I>
         using make_index_sequence = typename adrt::_common::_impl_make_index_sequence<I>::type;
 
-        // Simple optional type that always default-initializes its value
         // Similar to (but simpler than) C++17's std::optional
         template <typename V>
         class Optional {
+            static_assert(std::is_trivially_destructible<V>::value, "Optional<V> may only be used with trivially-destructible types.");
+
+            struct Empty {};
+
             bool ok;
-            V val;
+            union {
+                V val;
+                Empty none;
+            };
 
         public:
-            Optional(): ok{false} {}
+            Optional(): ok(false), none() {}
 
-            Optional(V value): ok{true}, val{value} {}
+            Optional(V value): ok(true), val(value) {}
 
             bool has_value() const {
                 return ok;
             }
 
-            void set_ok(bool flag) {
-                ok = flag;
-            }
-
             V &operator*() {
-                // No assertion here, could be trying to set the value
+                ADRT_ASSERT(has_value())
                 return val;
             }
 
