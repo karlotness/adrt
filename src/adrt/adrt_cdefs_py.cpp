@@ -55,15 +55,6 @@
 #pragma message ("Building with assertions enabled")
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
-// GCC visibility
-#define ADRT_BEGIN_EXPORT _Pragma("GCC visibility push(default)")
-#define ADRT_END_EXPORT _Pragma("GCC visibility pop")
-#else
-#define ADRT_BEGIN_EXPORT
-#define ADRT_END_EXPORT
-#endif
-
 namespace adrt { namespace _py { namespace {
 
 PyArrayObject *extract_array(PyObject *arg) {
@@ -688,7 +679,9 @@ static struct PyModuleDef adrt_cdefs_module = {
 };
 
 // Support Python<3.9 which doesn't set visibility
-ADRT_BEGIN_EXPORT
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC visibility push(default)
+#endif
 
 PyMODINIT_FUNC
 PyInit__adrt_cdefs(void)
@@ -697,6 +690,8 @@ PyInit__adrt_cdefs(void)
     return PyModule_Create(&adrt_cdefs_module);
 }
 
-ADRT_END_EXPORT
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC visibility pop
+#endif
 
 } // extern "C"
