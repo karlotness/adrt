@@ -188,9 +188,13 @@ namespace adrt {
             }
             adrt::_common::Optional<size_t> prod = shape[0];
             for(size_t i = 1; i < n; ++i) {
-                prod = adrt::_common::mul_check(*prod, shape[i]);
-                if(!prod) {
-                    return {};
+                if(prod) {
+                    prod = adrt::_common::mul_check(*prod, shape[i]);
+                }
+                else if(shape[i] == 0) {
+                    // We don't anticipate zero shapes, but this makes
+                    // shape_product commutative.
+                    prod = size_t{0};
                 }
             }
             return prod;
