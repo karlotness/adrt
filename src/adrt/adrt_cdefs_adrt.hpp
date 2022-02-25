@@ -46,6 +46,7 @@ namespace adrt {
     bool adrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter);
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape);
     std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape);
+    std::array<size_t, 4> adrt_step_result_shape(const std::array<size_t, 4> &shape);
 
     namespace _impl {
 

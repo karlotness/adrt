@@ -342,12 +342,15 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
         return nullptr;
     }
+    // Compute effective output shape
+    const std::array<size_t, 4> output_shape = adrt::adrt_step_result_shape(*input_shape);
+    ADRT_ASSERT(output_shape == *input_shape)
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -362,7 +365,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -549,12 +552,15 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
         return nullptr;
     }
+    // Compute effective output shape
+    const std::array<size_t, 4> output_shape = adrt::bdrt_step_result_shape(*input_shape);
+    ADRT_ASSERT(output_shape == *input_shape)
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -569,7 +575,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, *input_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
