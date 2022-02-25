@@ -40,6 +40,10 @@
 
 namespace adrt { namespace _impl { namespace {
 
+// This imposes a limit on max_iters(n) <= (digits-1) and ensures that in our
+// single-step functions the shifts of 1<<(iter+1) never go out of range
+const size_t max_size = size_t{1} << (std::numeric_limits<size_t>::digits - 1);
+
 bool is_pow2(size_t val) {
     if(val == 0) {
         return false;
@@ -207,6 +211,7 @@ namespace adrt {
         // Make sure array is square
         return (adrt::_impl::all_positive(shape) && // All entries must be nonzero
                 (std::get<1>(shape) == std::get<2>(shape)) && // Must be square
+                (std::get<2>(shape) <= adrt::_impl::max_size) &&
                 (adrt::_impl::is_pow2(std::get<2>(shape)))); // Must have power of two shape
     }
 
@@ -215,6 +220,7 @@ namespace adrt {
         // Check if the rows & cols are shaped like an ADRT output
         return (adrt::_impl::all_positive(shape) &&
                 (std::get<1>(shape) == 4) &&
+                (std::get<3>(shape) <= adrt::_impl::max_size) &&
                 (std::get<2>(shape) == (std::get<3>(shape) * 2 - 1)) &&
                 (adrt::_impl::is_pow2(std::get<3>(shape))));
     }
