@@ -144,7 +144,14 @@ def find_setup_numpy_api(setup_py):
     min_numpy = macros["NPY_NO_DEPRECATED_API"]
     rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
     if match := rgx.match(min_numpy):
-        return f"{match.group('major')}.{match.group('minor')}"
+        major = int(match.group("major"))
+        minor = int(match.group("minor"))
+        # NumPy<1.18 is missing some API version definitions.
+        # There were no changes in this range so we can safely round up
+        if (major, minor) <= (1, 17):
+            major = 1
+            minor = 17
+        return f"{major}.{minor}"
     else:
         raise ValueError(f"Invalid NumPy API macro: {min_numpy}")
 
