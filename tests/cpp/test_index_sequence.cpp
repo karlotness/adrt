@@ -30,10 +30,13 @@
  */
 
 #include <type_traits>
+#include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
-static_assert(std::is_same<adrt::_common::make_index_sequence<0>, adrt::_common::index_sequence<>>::value, "make_index_sequence<0>");
-static_assert(std::is_same<adrt::_common::make_index_sequence<1>, adrt::_common::index_sequence<0>>::value, "make_index_sequence<1>");
-static_assert(std::is_same<adrt::_common::make_index_sequence<2>, adrt::_common::index_sequence<0, 1>>::value, "make_index_sequence<2>");
-static_assert(std::is_same<adrt::_common::make_index_sequence<3>, adrt::_common::index_sequence<0, 1, 2>>::value, "make_index_sequence<3>");
-static_assert(std::is_same<adrt::_common::make_index_sequence<4>, adrt::_common::index_sequence<0, 1, 2, 3>>::value, "make_index_sequence<4>");
+TEST_CASE("make_index_sequence produces correct sequences", "[common][index_sequence][make_index_sequence]") {
+    STATIC_REQUIRE(std::is_same<adrt::_common::make_index_sequence<0>, adrt::_common::index_sequence<>>::value);
+    STATIC_REQUIRE(std::is_same<adrt::_common::make_index_sequence<1>, adrt::_common::index_sequence<0>>::value);
+    STATIC_REQUIRE(std::is_same<adrt::_common::make_index_sequence<2>, adrt::_common::index_sequence<0, 1>>::value);
+    STATIC_REQUIRE(std::is_same<adrt::_common::make_index_sequence<3>, adrt::_common::index_sequence<0, 1, 2>>::value);
+    STATIC_REQUIRE(std::is_same<adrt::_common::make_index_sequence<4>, adrt::_common::index_sequence<0, 1, 2, 3>>::value);
+}

@@ -30,11 +30,14 @@
  */
 
 #include <type_traits>
+#include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
-static_assert(adrt::_common::conjunction<>::value, "conjunction<>");
-static_assert(adrt::_common::conjunction<std::true_type>::value, "conjunction<true>");
-static_assert(adrt::_common::conjunction<std::true_type, std::true_type>::value, "conjunction<true, true>");
-static_assert(!adrt::_common::conjunction<std::false_type, std::true_type>::value, "conjunction<false, true>");
-static_assert(!adrt::_common::conjunction<std::true_type, std::false_type>::value, "conjunction<true, false>");
-static_assert(!adrt::_common::conjunction<std::true_type, std::true_type, std::false_type>::value, "conjunction<true, true, false>");
+TEST_CASE("conjunction produces correct values", "[common][conjunction]") {
+    STATIC_REQUIRE(adrt::_common::conjunction<>::value);
+    STATIC_REQUIRE(adrt::_common::conjunction<std::true_type>::value);
+    STATIC_REQUIRE(adrt::_common::conjunction<std::true_type, std::true_type>::value);
+    STATIC_REQUIRE_FALSE(adrt::_common::conjunction<std::false_type, std::true_type>::value);
+    STATIC_REQUIRE_FALSE(adrt::_common::conjunction<std::true_type, std::false_type>::value);
+    STATIC_REQUIRE_FALSE(adrt::_common::conjunction<std::true_type, std::true_type, std::false_type>::value);
+}

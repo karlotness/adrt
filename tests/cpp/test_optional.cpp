@@ -37,9 +37,11 @@
 
 using std::size_t;
 
-static_assert(std::is_trivially_destructible<adrt::_common::Optional<int>>::value, "Optional<int> trivially-destructible");
-static_assert(std::is_trivially_destructible<adrt::_common::Optional<size_t>>::value, "Optional<size_t> trivially-destructible");
-static_assert(std::is_trivially_destructible<adrt::_common::Optional<std::array<size_t, 5>>>::value, "Optional<std::array<size_t, 5>> trivially-destructible");
+TEST_CASE("Optional is trivially-destructible for trivial types", "[common][optional]") {
+    STATIC_REQUIRE(std::is_trivially_destructible<adrt::_common::Optional<int>>::value);
+    STATIC_REQUIRE(std::is_trivially_destructible<adrt::_common::Optional<size_t>>::value);
+    STATIC_REQUIRE(std::is_trivially_destructible<adrt::_common::Optional<std::array<size_t, 5>>>::value);
+}
 
 TEST_CASE("Optional default constructor is empty", "[common][optional]") {
     const adrt::_common::Optional<int> opt;
