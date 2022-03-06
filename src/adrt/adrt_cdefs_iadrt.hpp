@@ -109,6 +109,7 @@ namespace adrt {
         ADRT_ASSERT(tmp)
         ADRT_ASSERT(out)
         ADRT_ASSERT(adrt::iadrt_is_valid_shape(shape))
+        ADRT_ASSERT(adrt::_assert::same_total_size(adrt::iadrt_result_shape(shape), adrt::iadrt_buffer_shape(shape)))
 
         const int num_iters = adrt::num_iters(std::get<3>(shape));
         const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(shape);

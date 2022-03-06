@@ -264,7 +264,6 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     if(!tmp_buf_elems) {
         return nullptr;
     }
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::adrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -344,7 +343,6 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_step_result_shape(*input_shape);
-    ADRT_ASSERT(output_shape == *input_shape)
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -405,7 +403,6 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     if(!tmp_buf_elems) {
         return nullptr;
     }
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::iadrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -474,7 +471,6 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     if(!tmp_buf_elems) {
         return nullptr;
     }
-    ADRT_ASSERT(adrt::_assert::same_total_size(output_shape, adrt::bdrt_buffer_shape(*input_shape)))
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
@@ -554,7 +550,6 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_step_result_shape(*input_shape);
-    ADRT_ASSERT(output_shape == *input_shape)
     // Process input array
     const int ndim = PyArray_NDIM(I);
     switch(PyArray_TYPE(I)) {
