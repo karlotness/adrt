@@ -45,17 +45,17 @@ TEST_CASE("Optional is trivially-destructible for trivial types", "[common][opti
 
 TEST_CASE("Optional default constructor is empty", "[common][optional]") {
     const adrt::_common::Optional<int> opt;
-    REQUIRE(!opt.has_value());
+    REQUIRE_FALSE(opt.has_value());
 }
 
 TEST_CASE("Optional assignment constructor stores value", "[common][optional]") {
     const adrt::_common::Optional<int> opt = 5;
     REQUIRE(opt.has_value());
-    REQUIRE(*opt == 5);
+    CHECK(*opt == 5);
 }
 
 TEST_CASE("Optional construction stores value", "[common][optional]") {
     const adrt::_common::Optional<int> opt(5);
     REQUIRE(opt.has_value());
-    REQUIRE(*opt == 5);
+    CHECK(*opt == 5);
 }

@@ -57,7 +57,7 @@ TEST_CASE("array_access handles 1D shape", "[common][array_access]") {
     const std::array<size_t, 1> shape = {8};
     const auto arr = adrt_test::array_sequence<8>();
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
-        REQUIRE(adrt::_common::array_access(arr.data(), shape, i) == arr.at(i));
+        CHECK(adrt::_common::array_access(arr.data(), shape, i) == arr.at(i));
     }
 }
 
@@ -66,7 +66,7 @@ TEST_CASE("array_access handles 2D shape", "[common][array_access]") {
     const auto arr = adrt_test::array_sequence<12>();
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
         for(size_t j = 0; j < std::get<1>(shape); ++j) {
-            REQUIRE(adrt::_common::array_access(arr.data(), shape, i, j) == arr.at(i * std::get<1>(shape) + j));
+            CHECK(adrt::_common::array_access(arr.data(), shape, i, j) == arr.at(i * std::get<1>(shape) + j));
         }
     }
 }
@@ -77,7 +77,7 @@ TEST_CASE("array_access handles 3D shape", "[common][array_access]") {
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
         for(size_t j = 0; j < std::get<1>(shape); ++j) {
             for(size_t k = 0; k < std::get<2>(shape); ++k) {
-                REQUIRE(adrt::_common::array_access(arr.data(), shape, i, j, k) == arr.at(i * std::get<1>(shape) * std::get<2>(shape) + j * std::get<2>(shape) + k));
+                CHECK(adrt::_common::array_access(arr.data(), shape, i, j, k) == arr.at(i * std::get<1>(shape) * std::get<2>(shape) + j * std::get<2>(shape) + k));
             }
         }
     }
@@ -89,5 +89,5 @@ TEST_CASE("array_access assigns 3D shape", "[common][array_access]") {
     auto arr = adrt_test::array_sequence<24>();
     REQUIRE(std::get<21>(arr) != max_val);
     adrt::_common::array_access(arr.data(), shape, size_t{1}, size_t{2}, size_t{1}) = max_val;
-    REQUIRE(std::get<21>(arr) == max_val);
+    CHECK(std::get<21>(arr) == max_val);
 }

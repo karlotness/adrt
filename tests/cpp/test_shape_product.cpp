@@ -45,13 +45,13 @@ TEST_CASE("shape_product handles single elements without overflow", "[common][sh
         std::array<size_t, 1> arr = {val};
         auto result = adrt::_common::shape_product(arr);
         REQUIRE(result.has_value());
-        REQUIRE(*result == val);
+        CHECK(*result == val);
     }
 
     SECTION("single scalar") {
         auto result = adrt::_common::shape_product(&val, size_t{1});
         REQUIRE(result.has_value());
-        REQUIRE(*result == val);
+        CHECK(*result == val);
     }
 }
 
@@ -61,7 +61,7 @@ TEST_CASE("shape_product handles multi-element arrays without overflow", "[commo
     do {
         auto result = adrt::_common::shape_product(vals);
         REQUIRE(result.has_value());
-        REQUIRE(*result == size_t{24});
+        CHECK(*result == size_t{24});
     } while(std::next_permutation(vals.begin(), vals.end()));
 }
 
@@ -73,7 +73,7 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
         do {
             auto result = adrt::_common::shape_product(vals);
             REQUIRE(result.has_value());
-            REQUIRE(*result == max_val);
+            CHECK(*result == max_val);
         } while(std::next_permutation(vals.begin(), vals.end()));
     }
     else {
@@ -86,18 +86,18 @@ TEST_CASE("shape_product handles empty arrays", "[common][shape_product]") {
     SECTION("non-null pointer") {
         size_t val = 0;
         auto result = adrt::_common::shape_product(&val, size_t{0});
-        REQUIRE(!result.has_value());
+        REQUIRE_FALSE(result.has_value());
     }
 
     SECTION("null pointer") {
         auto result = adrt::_common::shape_product(nullptr, size_t{0});
-        REQUIRE(!result.has_value());
+        REQUIRE_FALSE(result.has_value());
     }
 
     SECTION("zero-size array") {
         std::array<size_t, 0> arr;
         auto result = adrt::_common::shape_product(arr);
-        REQUIRE(!result.has_value());
+        REQUIRE_FALSE(result.has_value());
     }
 }
 
@@ -107,7 +107,7 @@ TEST_CASE("shape_product handles arrays with overflow", "[common][shape_product]
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
         auto result = adrt::_common::shape_product(vals);
-        REQUIRE(!result.has_value());
+        REQUIRE_FALSE(result.has_value());
     } while(std::next_permutation(vals.begin(), vals.end()));
 }
 
@@ -118,6 +118,6 @@ TEST_CASE("shape_product is commutative with overflow and zero", "[common][shape
     do {
         auto result = adrt::_common::shape_product(vals);
         REQUIRE(result.has_value());
-        REQUIRE(*result == size_t{0});
+        CHECK(*result == size_t{0});
     } while(std::next_permutation(vals.begin(), vals.end()));
 }

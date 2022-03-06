@@ -41,7 +41,7 @@ TEST_CASE("mul_check computes small products without overflow", "[common][mul_ch
     size_t b = GENERATE(range(0, 4));
     auto result = adrt::_common::mul_check(a, b);
     REQUIRE(result.has_value());
-    REQUIRE(*result == (a * b));
+    CHECK(*result == (a * b));
 }
 
 TEST_CASE("mul_check computes products with size_t_max and 1", "[common][mul_check]") {
@@ -50,13 +50,13 @@ TEST_CASE("mul_check computes products with size_t_max and 1", "[common][mul_che
     SECTION("order a") {
         auto result = adrt::_common::mul_check(max_val, 1);
         REQUIRE(result.has_value());
-        REQUIRE(*result == max_val);
+        CHECK(*result == max_val);
     }
 
     SECTION("order b") {
         auto result = adrt::_common::mul_check(1, max_val);
         REQUIRE(result.has_value());
-        REQUIRE(*result == max_val);
+        CHECK(*result == max_val);
     }
 }
 
@@ -66,13 +66,13 @@ TEST_CASE("mul_check computes products with size_t_max and 0", "[common][mul_che
     SECTION("order a") {
         auto result = adrt::_common::mul_check(max_val, 0);
         REQUIRE(result.has_value());
-        REQUIRE(*result == size_t{0});
+        CHECK(*result == size_t{0});
     }
 
     SECTION("order b") {
         auto result = adrt::_common::mul_check(0, max_val);
         REQUIRE(result.has_value());
-        REQUIRE(*result == size_t{0});
+        CHECK(*result == size_t{0});
     }
 }
 
@@ -85,13 +85,13 @@ TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
         SECTION("order a") {
             auto result = adrt::_common::mul_check(max_3, size_t{3});
             REQUIRE(result.has_value());
-            REQUIRE(*result == max_val);
+            CHECK(*result == max_val);
         }
 
         SECTION("order b") {
             auto result = adrt::_common::mul_check(size_t{3}, max_3);
             REQUIRE(result.has_value());
-            REQUIRE(*result == max_val);
+            CHECK(*result == max_val);
         }
     }
     else {
@@ -103,11 +103,11 @@ TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
 TEST_CASE("mul_check detects overflow with sqrt(size_t_max)", "[common][mul_check]") {
     size_t size_t_half = size_t{1} << (std::numeric_limits<size_t>::digits / 2);
     auto result = adrt::_common::mul_check(size_t_half, size_t_half);
-    REQUIRE(!result.has_value());
+    REQUIRE_FALSE(result.has_value());
 }
 
 TEST_CASE("mul_check detects overflow with size_t_max", "[common][mul_check]") {
     size_t max_val = std::numeric_limits<size_t>::max();
     auto result = adrt::_common::mul_check(max_val, max_val);
-    REQUIRE(!result.has_value());
+    REQUIRE_FALSE(result.has_value());
 }

@@ -40,26 +40,26 @@ TEST_CASE("compute_strides handles 1D shape", "[common][compute_strides]") {
     const std::array<size_t, 1> shape = {5};
     const std::array<size_t, 1> expected_strides = {1};
     const auto strides = adrt::_common::compute_strides(shape);
-    REQUIRE(strides == expected_strides);
+    CHECK(strides == expected_strides);
 }
 
 TEST_CASE("compute_strides handles 2D shape", "[common][compute_strides]") {
     const std::array<size_t, 2> shape = {5, 4};
     const std::array<size_t, 2> expected_strides = {4, 1};
     const auto strides = adrt::_common::compute_strides(shape);
-    REQUIRE(strides == expected_strides);
+    CHECK(strides == expected_strides);
 }
 
 TEST_CASE("compute_strides handles 3D shape", "[common][compute_strides]") {
     const std::array<size_t, 3> shape = {5, 4, 3};
     const std::array<size_t, 3> expected_strides = {12, 3, 1};
     const auto strides = adrt::_common::compute_strides(shape);
-    REQUIRE(strides == expected_strides);
+    CHECK(strides == expected_strides);
 }
 
 TEST_CASE("compute_strides handles 4D shape", "[common][compute_strides]") {
     const std::array<size_t, 4> shape = {5, 4, 3, 2};
     const std::array<size_t, 4> expected_strides = {24, 6, 2, 1};
     const auto strides = adrt::_common::compute_strides(shape);
-    REQUIRE(strides == expected_strides);
+    CHECK(strides == expected_strides);
 }
