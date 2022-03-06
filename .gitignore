@@ -33,3 +33,4 @@ docs/_build/
 tests/cpp/test_all
 tests/cpp/test_all.exe
 tests/cpp/catch2/
+cache-catch2/
