@@ -78,7 +78,7 @@ TEST_CASE("mul_check computes products with size_t_max and 0", "[common][mul_che
 
 TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
     const size_t max_val = std::numeric_limits<size_t>::max();
-    if(max_val % size_t{3} == 0) {
+    if(max_val % size_t{3} == size_t{0}) {
         // Test can proceed (should apply to 32-/64-bit platforms)
         size_t max_3 = max_val / size_t{3};
 
@@ -96,7 +96,6 @@ TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
     }
     else {
         WARN("Unusual bit-ness for platform, test skipped");
-        CHECK_NOFAIL(false);
     }
 }
 

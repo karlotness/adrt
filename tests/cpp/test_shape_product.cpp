@@ -69,7 +69,7 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
     const size_t max_val = std::numeric_limits<size_t>::max();
     std::array<size_t, 4> vals = {1, 1, 3, max_val / size_t{3}};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
-    if(max_val % size_t{3} == 0) {
+    if(max_val % size_t{3} == size_t{0}) {
         do {
             auto result = adrt::_common::shape_product(vals);
             REQUIRE(result.has_value());
@@ -78,7 +78,6 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
     }
     else {
         WARN("Unusual bit-ness for platform, test skipped");
-        CHECK_NOFAIL(false);
     }
 }
 
