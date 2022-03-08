@@ -109,7 +109,7 @@ adrt::_common::Optional<int> extract_int(PyObject *arg) {
 template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
-    static_assert(min_dim > 0, "Min dimensions must be positive.");
+    static_assert(min_dim > 0u, "Min dimensions must be positive.");
     ADRT_ASSERT(arr)
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
@@ -141,7 +141,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
 
 template <size_t n_virtual_dim>
 PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
-    static_assert(n_virtual_dim > 0, "Need at least one shape dimension");
+    static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
     const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
@@ -174,7 +174,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
 
 template <size_t ndim>
 adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
-    static_assert(ndim > 0, "Need at least one shape dimension");
+    static_assert(ndim > 0u, "Need at least one shape dimension");
     const adrt::_common::Optional<size_t> n_elem = adrt::_common::shape_product(shape);
     if(!n_elem) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
@@ -184,8 +184,8 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
 
 template <size_t N, size_t... Ints>
 adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
-    static_assert(N >= 1, "Must accept at least one argument");
-    static_assert(N <= std::numeric_limits<Py_ssize_t>::max(), "Required tuple size is too large for Py_ssize_t");
+    static_assert(N >= 1u, "Must accept at least one argument");
+    static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Required tuple size is too large for Py_ssize_t");
     static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
     ADRT_ASSERT(tuple)
     ADRT_ASSERT(name)

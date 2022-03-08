@@ -45,15 +45,15 @@ namespace adrt { namespace _impl { namespace {
 const size_t max_size = size_t{1} << (std::numeric_limits<size_t>::digits - 1);
 
 bool is_pow2(size_t val) {
-    if(val == 0) {
+    if(val == 0u) {
         return false;
     }
-    return (val & (val - 1)) == 0;
+    return (val & (val - size_t{1})) == 0u;
 }
 
 int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0)
+    ADRT_ASSERT(shape != 0u)
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
     while(shape != 0) {
@@ -65,7 +65,7 @@ int num_iters_fallback(size_t shape) {
 
 bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
-    const bool overflow = (b != 0) && (a > std::numeric_limits<size_t>::max() / b);
+    const bool overflow = (b != 0u) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
 }
 
@@ -73,7 +73,7 @@ template<size_t N>
 bool all_positive(const std::array<size_t, N> &shape) {
     // Make sure all shapes are nonzero
     for(size_t i = 0; i < shape.size(); ++i) {
-        if(shape[i] <= 0) {
+        if(shape[i] <= 0u) {
             return false;
         }
     }
@@ -91,7 +91,7 @@ bool all_positive(const std::array<size_t, N> &shape) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0)
+    ADRT_ASSERT(shape != 0u)
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         const unsigned int ushape = static_cast<unsigned int>(shape);
@@ -127,7 +127,7 @@ bool mul_check(size_t a, size_t b, size_t &prod) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0)
+    ADRT_ASSERT(shape != 0u)
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
@@ -169,7 +169,7 @@ bool mul_check(size_t a, size_t b, size_t &prod) {
 namespace adrt {
 
     int num_iters(size_t shape) {
-        if(shape == 0) {
+        if(shape == 0u) {
             return 0;
         }
         return adrt::_impl::num_iters(shape);
@@ -186,8 +186,8 @@ namespace adrt {
         }
 
         adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {
-            ADRT_ASSERT((n == 0) || shape)
-            if(n == 0) {
+            ADRT_ASSERT((n == 0u) || shape)
+            if(n == 0u) {
                 return {};
             }
             adrt::_common::Optional<size_t> prod = shape[0];
@@ -195,7 +195,7 @@ namespace adrt {
                 if(prod) {
                     prod = adrt::_common::mul_check(*prod, shape[i]);
                 }
-                else if(shape[i] == 0) {
+                else if(shape[i] == 0u) {
                     // We don't anticipate zero shapes, but this makes
                     // shape_product commutative.
                     prod = size_t{0};
@@ -219,9 +219,9 @@ namespace adrt {
     bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
         // Check if the rows & cols are shaped like an ADRT output
         return (adrt::_impl::all_positive(shape) &&
-                (std::get<1>(shape) == 4) &&
+                (std::get<1>(shape) == 4u) &&
                 (std::get<3>(shape) <= adrt::_impl::max_size) &&
-                (std::get<2>(shape) == (std::get<3>(shape) * 2 - 1)) &&
+                (std::get<2>(shape) == (std::get<3>(shape) * size_t{2} - size_t{1})) &&
                 (adrt::_impl::is_pow2(std::get<3>(shape))));
     }
 
@@ -237,7 +237,7 @@ namespace adrt {
             4,
             std::get<1>(shape),
             1,
-            2 * std::get<2>(shape) - 1, // No overflow because n^2 fits in size_t, so must 2*n
+            size_t{2} * std::get<2>(shape) - size_t{1}, // No overflow because n^2 fits in size_t, so must 2*n
         };
     }
 
@@ -246,7 +246,7 @@ namespace adrt {
         return {
             std::get<0>(shape),
             4,
-            2 * std::get<2>(shape) - 1, // No overflow because n^2 fits in size_t, so must 2*n
+            size_t{2} * std::get<2>(shape) - size_t{1}, // No overflow because n^2 fits in size_t, so must 2*n
             std::get<1>(shape)
         };
     }
@@ -316,7 +316,7 @@ namespace adrt {
         return {
             std::get<0>(shape), // batch
             std::get<2>(shape), // rows
-            4 * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
+            size_t{4} * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
         };
     }
 

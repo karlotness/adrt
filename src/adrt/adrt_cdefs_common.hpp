@@ -156,7 +156,7 @@ namespace adrt {
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
-            ADRT_ASSERT(d != 0)
+            ADRT_ASSERT(d != 0u)
             // Only for non-negative values
             return (val / d) + (val % d == size_t{0} ? size_t{0} : size_t{1});
         }
@@ -179,7 +179,7 @@ namespace adrt {
         template<size_t N>
         struct _impl_compute_strides<N, N> {
             static inline size_t compute_strides(const std::array<size_t, N>&, std::array<size_t, N>&) {
-                static_assert(N > 0, "Strides to compute must have at least one dimension");
+                static_assert(N > 0u, "Strides to compute must have at least one dimension");
                 // Terminate recursion with initial stride of 1
                 return size_t{1};
             }
@@ -191,7 +191,7 @@ namespace adrt {
             template<typename T, typename... Idx>
             static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, Idx... idxs) {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
-                static_assert(sizeof...(idxs) == N - I - 1, "Parameters unpacked incorrectly. Do not use this template manually!");
+                static_assert(sizeof...(idxs) == N - I - size_t{1}, "Parameters unpacked incorrectly. Do not use this template manually!");
                 static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
                 return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
             }
@@ -200,7 +200,7 @@ namespace adrt {
         template<size_t N>
         struct _impl_array_stride_access<N, N> {
             static inline size_t compute_offset(const std::array<size_t, N>&) {
-                static_assert(N > 0, "Array must have at least one dimension");
+                static_assert(N > 0u, "Array must have at least one dimension");
                 // Terminate recursion, initialize accumulator to zero
                 return size_t{0};
             }
@@ -208,12 +208,12 @@ namespace adrt {
 
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
-            static_assert(N > 0, "Strides to compute must have at least one dimension");
+            static_assert(N > 0u, "Strides to compute must have at least one dimension");
             #ifndef NDEBUG
             {
                 // If asserts enabled, check that shapes are nonzero
                 for(size_t i = 0; i < N; ++i) {
-                    ADRT_ASSERT(shape_in[i] > 0)
+                    ADRT_ASSERT(shape_in[i] > 0u)
                 }
             }
             #endif
@@ -224,7 +224,7 @@ namespace adrt {
 
         template <typename scalar, size_t N, typename... Idx>
         inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
-            static_assert(N > 0, "Array must have at least one dimension");
+            static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
             ADRT_ASSERT(buf)
@@ -252,8 +252,8 @@ namespace adrt {
     namespace _assert {
         template <size_t NA, size_t NB>
         bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
-            static_assert(NA > 0, "Must have at least one entry in array a");
-            static_assert(NB > 0, "Must have at least one entry in array b");
+            static_assert(NA > 0u, "Must have at least one entry in array a");
+            static_assert(NB > 0u, "Must have at least one entry in array b");
             const adrt::_common::Optional<size_t> size_a = adrt::_common::shape_product(a);
             const adrt::_common::Optional<size_t> size_b = adrt::_common::shape_product(b);
             return size_a.has_value() && size_b.has_value() && (*size_a == *size_b);
