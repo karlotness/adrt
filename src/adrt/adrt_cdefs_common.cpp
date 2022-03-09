@@ -42,13 +42,13 @@ namespace adrt { namespace _impl { namespace {
 
 // This imposes a limit on max_iters(n) <= (digits-1) and ensures that in our
 // single-step functions the shifts of 1<<(iter+1) never go out of range
-const size_t max_size = size_t{1} << (std::numeric_limits<size_t>::digits - 1);
+const size_t max_size = 1_uz << (std::numeric_limits<size_t>::digits - 1);
 
 bool is_pow2(size_t val) {
     if(val == 0u) {
         return false;
     }
-    return (val & (val - size_t{1})) == 0u;
+    return (val & (val - 1_uz)) == 0u;
 }
 
 int num_iters_fallback(size_t shape) {
@@ -198,7 +198,7 @@ namespace adrt {
                 else if(shape[i] == 0u) {
                     // We don't anticipate zero shapes, but this makes
                     // shape_product commutative.
-                    prod = size_t{0};
+                    prod = 0_uz;
                 }
             }
             return prod;
@@ -221,7 +221,7 @@ namespace adrt {
         return (adrt::_impl::all_positive(shape) &&
                 (std::get<1>(shape) == 4u) &&
                 (std::get<3>(shape) <= adrt::_impl::max_size) &&
-                (std::get<2>(shape) == (std::get<3>(shape) * size_t{2} - size_t{1})) &&
+                (std::get<2>(shape) == (std::get<3>(shape) * 2_uz - 1_uz)) &&
                 (adrt::_impl::is_pow2(std::get<3>(shape))));
     }
 
@@ -237,7 +237,7 @@ namespace adrt {
             4,
             std::get<1>(shape),
             1,
-            size_t{2} * std::get<2>(shape) - size_t{1}, // No overflow because n^2 fits in size_t, so must 2*n
+            2_uz * std::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
         };
     }
 
@@ -246,7 +246,7 @@ namespace adrt {
         return {
             std::get<0>(shape),
             4,
-            size_t{2} * std::get<2>(shape) - size_t{1}, // No overflow because n^2 fits in size_t, so must 2*n
+            2_uz * std::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
             std::get<1>(shape)
         };
     }
@@ -316,7 +316,7 @@ namespace adrt {
         return {
             std::get<0>(shape), // batch
             std::get<2>(shape), // rows
-            size_t{4} * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
+            4_uz * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
         };
     }
 

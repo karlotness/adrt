@@ -60,6 +60,10 @@ namespace adrt {
 
     using std::size_t;
 
+    constexpr size_t operator"" _uz(unsigned long long val) {
+        return static_cast<size_t>(val);
+    };
+
     int num_iters(size_t shape);
 
     namespace _const {
@@ -152,17 +156,17 @@ namespace adrt {
 
         inline size_t floor_div2(size_t val) {
             // Only for non-negative values
-            return val / size_t{2};
+            return val / 2_uz;
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
             ADRT_ASSERT(d != 0u)
             // Only for non-negative values
-            return (val / d) + (val % d == size_t{0} ? size_t{0} : size_t{1});
+            return (val / d) + (val % d == 0_uz ? 0_uz : 1_uz);
         }
 
         inline size_t ceil_div2(size_t val) {
-            return adrt::_common::ceil_div(val, size_t{2});
+            return adrt::_common::ceil_div(val, 2_uz);
         }
 
         // Implementation struct: unrolls compute_strides loop
@@ -181,7 +185,7 @@ namespace adrt {
             static inline size_t compute_strides(const std::array<size_t, N>&, std::array<size_t, N>&) {
                 static_assert(N > 0u, "Strides to compute must have at least one dimension");
                 // Terminate recursion with initial stride of 1
-                return size_t{1};
+                return 1_uz;
             }
         };
 
@@ -191,7 +195,7 @@ namespace adrt {
             template<typename T, typename... Idx>
             static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, Idx... idxs) {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
-                static_assert(sizeof...(idxs) == N - I - size_t{1}, "Parameters unpacked incorrectly. Do not use this template manually!");
+                static_assert(sizeof...(idxs) == N - I - 1_uz, "Parameters unpacked incorrectly. Do not use this template manually!");
                 static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
                 return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
             }
@@ -202,7 +206,7 @@ namespace adrt {
             static inline size_t compute_offset(const std::array<size_t, N>&) {
                 static_assert(N > 0u, "Array must have at least one dimension");
                 // Terminate recursion, initialize accumulator to zero
-                return size_t{0};
+                return 0_uz;
             }
         };
 
