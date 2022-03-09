@@ -38,6 +38,8 @@
 
 #include "adrt_cdefs_common.hpp"
 
+using namespace adrt::_common::literals;
+
 namespace adrt { namespace _impl { namespace {
 
 // This imposes a limit on max_iters(n) <= (digits-1) and ensures that in our

@@ -55,6 +55,8 @@
 #pragma message ("Building with assertions enabled")
 #endif
 
+using namespace adrt::_common::literals;
+
 namespace adrt { namespace _py { namespace {
 
 PyArrayObject *extract_array(PyObject *arg) {
