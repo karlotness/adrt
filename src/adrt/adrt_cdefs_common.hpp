@@ -84,7 +84,7 @@ namespace adrt {
         inline namespace literals {
             constexpr size_t operator"" _uz(unsigned long long val) {
                 return static_cast<size_t>(val);
-            };
+            }
         }
 
         // Template computing a logical and of its parameters (like C++17's std::conjunction)
