@@ -45,6 +45,7 @@
 #include <limits>
 #include <type_traits>
 #include <cassert>
+#include <cstddef>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -57,6 +58,7 @@
 #endif
 
 using namespace adrt::_common::literals;
+using std::size_t;
 
 namespace adrt { namespace _py { namespace {
 
