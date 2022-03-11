@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <array>
 #include <type_traits>
+#include <cassert>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -47,13 +48,6 @@
 #define ADRT_RESTRICT __restrict
 #else
 #define ADRT_RESTRICT
-#endif
-
-#ifndef NDEBUG
-#include <cassert>
-#define ADRT_ASSERT(cond) assert(cond);
-#else
-#define ADRT_ASSERT(cond)
 #endif
 
 namespace adrt {
@@ -133,12 +127,12 @@ namespace adrt {
             }
 
             V &operator*() {
-                ADRT_ASSERT(has_value())
+                assert(has_value());
                 return val;
             }
 
             const V &operator*() const {
-                ADRT_ASSERT(has_value())
+                assert(has_value());
                 return val;
             }
 
@@ -162,7 +156,7 @@ namespace adrt {
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
-            ADRT_ASSERT(d != 0u)
+            assert(d != 0u);
             // Only for non-negative values
             return (val / d) + (val % d == 0_uz ? 0_uz : 1_uz);
         }
@@ -219,7 +213,7 @@ namespace adrt {
             {
                 // If asserts enabled, check that shapes are nonzero
                 for(size_t i = 0; i < N; ++i) {
-                    ADRT_ASSERT(shape_in[i] > 0u)
+                    assert(shape_in[i] > 0u);
                 }
             }
             #endif
@@ -233,7 +227,7 @@ namespace adrt {
             static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
-            ADRT_ASSERT(buf)
+            assert(buf);
             const size_t offset = adrt::_common::_impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
             return buf[offset];
         }
@@ -245,7 +239,7 @@ namespace adrt {
                 // If asserts enabled, check array bounds
                 const std::array<size_t, N> idx {idxs...};
                 for(size_t i = 0; i < N; ++i) {
-                    ADRT_ASSERT(idx[i] < shape[i])
+                    assert(idx[i] < shape[i]);
                 }
             }
             #endif
@@ -254,7 +248,6 @@ namespace adrt {
 
     } // end namespace adrt::_common
 
-    #ifndef NDEBUG
     namespace _assert {
         template <size_t NA, size_t NB>
         bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
@@ -265,7 +258,6 @@ namespace adrt {
             return size_a.has_value() && size_b.has_value() && (*size_a == *size_b);
         }
     } // end namespace adrt::_assert
-    #endif // NDEBUG
 
 } // end namespace adrt
 

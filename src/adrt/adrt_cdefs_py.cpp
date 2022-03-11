@@ -44,6 +44,7 @@
 #include <array>
 #include <limits>
 #include <type_traits>
+#include <cassert>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -60,7 +61,7 @@ using namespace adrt::_common::literals;
 namespace adrt { namespace _py { namespace {
 
 PyArrayObject *extract_array(PyObject *arg) {
-    ADRT_ASSERT(arg)
+    assert(arg);
     if(!PyArray_Check(arg)) {
         // This isn't an array
         PyErr_SetString(PyExc_TypeError, "Argument must be a NumPy array or compatible subclass");
@@ -79,7 +80,7 @@ PyObject *array_to_pyobject(PyArrayObject *arr) {
 }
 
 adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
-    ADRT_ASSERT(arg)
+    assert(arg);
     const size_t val = PyLong_AsSize_t(arg);
     if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
         return {};
@@ -88,7 +89,7 @@ adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
 }
 
 adrt::_common::Optional<int> extract_int(PyObject *arg) {
-    ADRT_ASSERT(arg)
+    assert(arg);
     const long val = PyLong_AsLong(arg);
     if(val == -1L) {
         PyObject *const exc = PyErr_Occurred();
@@ -112,7 +113,7 @@ template <size_t min_dim, size_t max_dim>
 adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     static_assert(min_dim > 0u, "Min dimensions must be positive.");
-    ADRT_ASSERT(arr)
+    assert(arr);
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
@@ -169,8 +170,8 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
         }
         return nullptr;
     }
-    ADRT_ASSERT(PyArray_Check(arr))
-    ADRT_ASSERT(PyArray_ISCARRAY(reinterpret_cast<PyArrayObject*>(arr)))
+    assert(PyArray_Check(arr));
+    assert(PyArray_ISCARRAY(reinterpret_cast<PyArrayObject*>(arr)));
     return reinterpret_cast<PyArrayObject*>(arr);
 }
 
@@ -189,8 +190,8 @@ adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, 
     static_assert(N >= 1u, "Must accept at least one argument");
     static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Required tuple size is too large for Py_ssize_t");
     static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
-    ADRT_ASSERT(tuple)
-    ADRT_ASSERT(name)
+    assert(tuple);
+    assert(name);
     std::array<PyObject*, N> ret;
     const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(ret)...);
     if(!ok) {

@@ -36,6 +36,7 @@
 #include <array>
 #include <utility>
 #include <algorithm>
+#include <cassert>
 #include "adrt_cdefs_common.hpp"
 
 namespace adrt {
@@ -53,8 +54,8 @@ namespace adrt {
     template <typename adrt_scalar>
     std::array<size_t, 5> adrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         using namespace adrt::_common::literals;
-        ADRT_ASSERT(data)
-        ADRT_ASSERT(out)
+        assert(data);
+        assert(out);
 
         const std::array<size_t, 5> curr_shape = {
             std::get<0>(in_shape), // Keep batch dimension
@@ -64,7 +65,7 @@ namespace adrt {
             std::get<4>(in_shape), // Keep the same number of columns
         };
 
-        ADRT_ASSERT(adrt::_assert::same_total_size(in_shape, curr_shape))
+        assert(adrt::_assert::same_total_size(in_shape, curr_shape));
 
         ADRT_OPENMP("omp for collapse(4)")
         for(size_t batch = 0; batch < std::get<0>(curr_shape); ++batch) {
@@ -99,11 +100,11 @@ namespace adrt {
     template <typename adrt_scalar>
     void adrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
         using namespace adrt::_common::literals;
-        ADRT_ASSERT(data)
-        ADRT_ASSERT(tmp)
-        ADRT_ASSERT(out)
-        ADRT_ASSERT(adrt::adrt_is_valid_shape(shape))
-        ADRT_ASSERT(adrt::_assert::same_total_size(adrt::adrt_result_shape(shape), adrt::adrt_buffer_shape(shape)))
+        assert(data);
+        assert(tmp);
+        assert(out);
+        assert(adrt::adrt_is_valid_shape(shape));
+        assert(adrt::_assert::same_total_size(adrt::adrt_result_shape(shape), adrt::adrt_buffer_shape(shape)));
 
         const int num_iters = adrt::num_iters(std::get<2>(shape));
         const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(shape);
@@ -214,11 +215,11 @@ namespace adrt {
     void adrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         using namespace adrt::_common::literals;
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
-        ADRT_ASSERT(data)
-        ADRT_ASSERT(out)
-        ADRT_ASSERT(adrt::adrt_step_is_valid_shape(shape))
-        ADRT_ASSERT(adrt::adrt_step_is_valid_iter(shape, iter))
-        ADRT_ASSERT(shape == adrt::adrt_step_result_shape(shape))
+        assert(data);
+        assert(out);
+        assert(adrt::adrt_step_is_valid_shape(shape));
+        assert(adrt::adrt_step_is_valid_iter(shape, iter));
+        assert(shape == adrt::adrt_step_result_shape(shape));
 
         const size_t iter_exp = 1_uz << iter;
         const size_t iter_exp_next = iter_exp << 1;

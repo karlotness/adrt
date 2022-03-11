@@ -37,6 +37,7 @@
 #include <array>
 #include <utility>
 #include <type_traits>
+#include <cassert>
 #include "adrt_cdefs_common.hpp"
 
 namespace adrt {
@@ -51,9 +52,9 @@ namespace adrt {
         // The current implementation performs floating point arithmetic
         static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
 
-        ADRT_ASSERT(data)
-        ADRT_ASSERT(out)
-        ADRT_ASSERT(adrt::interp_adrtcart_is_valid_shape(shape))
+        assert(data);
+        assert(out);
+        assert(adrt::interp_adrtcart_is_valid_shape(shape));
 
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(shape);
 

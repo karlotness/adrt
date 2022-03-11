@@ -30,6 +30,7 @@
  */
 
 #include <limits>
+#include <cassert>
 
 #ifdef _MSC_VER
 // MSVC intrinsics
@@ -55,7 +56,7 @@ bool is_pow2(size_t val) {
 
 int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0u)
+    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
     while(shape != 0) {
@@ -93,7 +94,7 @@ bool all_positive(const std::array<size_t, N> &shape) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0u)
+    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         const unsigned int ushape = static_cast<unsigned int>(shape);
@@ -129,7 +130,7 @@ bool mul_check(size_t a, size_t b, size_t &prod) {
 
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
-    ADRT_ASSERT(shape != 0u)
+    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
@@ -188,7 +189,7 @@ namespace adrt {
         }
 
         adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {
-            ADRT_ASSERT((n == 0u) || shape)
+            assert((n == 0u) || shape);
             if(n == 0u) {
                 return {};
             }
