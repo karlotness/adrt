@@ -347,3 +347,21 @@ def num_iters(n, /):
         size ``n``.
     """
     return _adrt_cdefs.num_iters(operator.index(n))
+
+
+@_set_module("adrt.core")
+def threading_enabled():
+    r"""Indicate whether core routines provide multithreading.
+
+    Many of the core routines in this package can optionally be built
+    with internal multithreading support using OpenMP. If this is
+    enabled these functions will internally split their work across
+    multiple threads.
+
+    Returns
+    -------
+    bool
+        :code:`True` if this module is built with internal threading
+        support, otherwise :code:`False`.
+    """
+    return _adrt_cdefs.openmp_enabled

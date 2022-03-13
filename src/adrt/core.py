@@ -56,11 +56,25 @@ single-step routines make that possible.
 """
 
 
-__all__ = ["num_iters", "adrt_step", "adrt_init", "adrt_iter", "bdrt_step", "bdrt_iter"]
+__all__ = [
+    "num_iters",
+    "adrt_step",
+    "adrt_init",
+    "adrt_iter",
+    "bdrt_step",
+    "bdrt_iter",
+    "threading_enabled",
+]
 
 
 import numpy as np
-from ._wrappers import _format_object_type, num_iters, adrt_step, bdrt_step
+from ._wrappers import (
+    _format_object_type,
+    num_iters,
+    adrt_step,
+    bdrt_step,
+    threading_enabled,
+)
 
 
 def adrt_init(a, /):

@@ -42,3 +42,12 @@ different order.
 .. autofunction:: adrt_step
 
 .. autofunction:: bdrt_step
+
+Multithreading Status
+---------------------
+
+Most of the core routines in this package can be built with support
+for OpenMP. The function :func:`threading_enabled` queries whether
+this support is enabled.
+
+.. autofunction:: threading_enabled

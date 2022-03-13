@@ -221,6 +221,22 @@ void *py_malloc(size_t n_elem, size_t elem_size) {
     return ret;
 }
 
+bool module_add_object_ref(PyObject *module, const char *name, PyObject *value) {
+    assert(module);
+    assert(name);
+    assert(value);
+    Py_INCREF(value);
+    if(PyModule_AddObject(module, name, value) != 0) {
+        Py_DECREF(value);
+        return false;
+    }
+    return true;
+}
+
+bool module_add_bool(PyObject *module, const char *name, bool value) {
+    return adrt::_py::module_add_object_ref(module, name, value ? Py_True : Py_False);
+}
+
 template <typename scalar>
 scalar *py_malloc(size_t n_elem) {
     static_assert(!std::is_same<PyObject*, scalar*>::value && !std::is_same<PyArrayObject*, scalar*>::value, "Do not malloc Python objects!");
@@ -693,7 +709,15 @@ PyMODINIT_FUNC
 PyInit__adrt_cdefs(void)
 {
     import_array();
-    return PyModule_Create(&adrt_cdefs_module);
+    PyObject *module = PyModule_Create(&adrt_cdefs_module);
+    if(!module) {
+        return nullptr;
+    }
+    if(!adrt::_py::module_add_bool(module, "openmp_enabled", adrt::_const::openmp_enabled())) {
+        adrt::_py::xdecref(module);
+        return nullptr;
+    }
+    return module;
 }
 
 #if defined(__GNUC__) || defined(__clang__)

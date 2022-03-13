@@ -71,6 +71,14 @@ namespace adrt {
             return static_cast<scalar>(1.414213562373095048801688724209698079L);
         }
 
+        constexpr bool openmp_enabled() {
+            #ifdef _OPENMP
+            return true;
+            #else
+            return false;
+            #endif
+        }
+
     } // end namespace adrt::_const
 
     namespace _common {
