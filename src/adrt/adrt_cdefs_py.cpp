@@ -706,7 +706,7 @@ static struct PyModuleDef adrt_cdefs_module = {
 #endif
 
 PyMODINIT_FUNC
-PyInit__adrt_cdefs(void)
+PyInit__adrt_cdefs()
 {
     import_array();
     PyObject *module = PyModule_Create(&adrt_cdefs_module);
