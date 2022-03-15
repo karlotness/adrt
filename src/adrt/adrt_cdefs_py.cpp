@@ -710,7 +710,7 @@ PyMODINIT_FUNC
 PyInit__adrt_cdefs()
 {
     import_array();
-    PyObject *module = PyModule_Create(&adrt_cdefs_module);
+    PyObject *const module = PyModule_Create(&adrt_cdefs_module);
     if(!module) {
         return nullptr;
     }
