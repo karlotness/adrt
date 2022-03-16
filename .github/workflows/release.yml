@@ -11,11 +11,11 @@ jobs:
     timeout-minutes: 10
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       id: setup-python
       with:
         python-version: '3.10'
@@ -48,11 +48,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       id: setup-python
       with:
         python-version: '3.10'
@@ -81,11 +81,11 @@ jobs:
     needs: check-cpp
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.10'
     - name: Install dependencies
@@ -95,7 +95,7 @@ jobs:
     - name: Build sdist
       run: python -m build --sdist
     - name: Store artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sdist
         path: dist/adrt-*.tar.gz
@@ -113,11 +113,11 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.10'
     - name: Install cibuildwheel
@@ -129,7 +129,7 @@ jobs:
       env:
         CIBW_BEFORE_ALL_WINDOWS: 'pwsh {package}/tools/patch_license_windows.ps1 {package}'
     - name: Store artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheel
         path: wheelhouse/adrt-*.whl
@@ -189,7 +189,7 @@ jobs:
       continue-on-error: true
       run: mv 'diagnostics.txt' 'diagnostics-${{ runner.os }}-${{ runner.arch }}-run${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-job${{ github.job }}.txt'
     - name: Store diagnostics
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: diagnostics
         path: diagnostics-*.txt
@@ -200,7 +200,7 @@ jobs:
     needs: [sdist, wheel]
     steps:
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       id: setup-python
       with:
         python-version: '3.10'
@@ -218,12 +218,12 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade twine
     - name: Download sdist
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel
         path: dist/
@@ -238,11 +238,11 @@ jobs:
         python: ['3.8', '3.9', '3.10']
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       id: setup-python
       with:
         python-version: ${{ matrix.python }}
@@ -260,7 +260,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade tox
     - name: Download wheel
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel
         path: dist/
@@ -275,11 +275,11 @@ jobs:
     needs: wheel
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         persist-credentials: false
     - name: Download wheel
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel
         path: dist/
@@ -293,12 +293,12 @@ jobs:
       contents: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: wheel
         path: dist/
@@ -313,7 +313,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: diagnostics
         path: diagnostics/
