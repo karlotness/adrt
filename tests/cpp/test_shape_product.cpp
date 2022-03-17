@@ -102,7 +102,7 @@ TEST_CASE("shape_product handles empty arrays", "[common][shape_product]") {
 
 TEST_CASE("shape_product handles arrays with overflow", "[common][shape_product]") {
     const size_t size_t_half = size_t{1} << (std::numeric_limits<size_t>::digits / 2);
-    std::array<size_t, 4> vals = {1, 1, size_t_half, size_t_half};
+    std::array<size_t, 4> vals = {1, 1, size_t_half, size_t_half << (std::numeric_limits<size_t>::digits % 2)};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
         auto result = adrt::_common::shape_product(vals);
@@ -112,7 +112,7 @@ TEST_CASE("shape_product handles arrays with overflow", "[common][shape_product]
 
 TEST_CASE("shape_product is commutative with overflow and zero", "[common][shape_product]") {
     const size_t size_t_half = size_t{1} << (std::numeric_limits<size_t>::digits / 2);
-    std::array<size_t, 4> vals = {0, 1, size_t_half, size_t_half};
+    std::array<size_t, 4> vals = {0, 1, size_t_half, size_t_half << (std::numeric_limits<size_t>::digits % 2)};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
         auto result = adrt::_common::shape_product(vals);

@@ -101,7 +101,7 @@ TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
 
 TEST_CASE("mul_check detects overflow with sqrt(size_t_max)", "[common][mul_check]") {
     size_t size_t_half = size_t{1} << (std::numeric_limits<size_t>::digits / 2);
-    auto result = adrt::_common::mul_check(size_t_half, size_t_half);
+    auto result = adrt::_common::mul_check(size_t_half, size_t_half << (std::numeric_limits<size_t>::digits % 2));
     REQUIRE_FALSE(result.has_value());
 }
 
