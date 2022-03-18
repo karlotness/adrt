@@ -32,10 +32,10 @@
 
 
 import argparse
-import urllib.request
 import hashlib
 import sys
 import pathlib
+import requests
 
 
 CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.8/catch.hpp"
@@ -51,8 +51,9 @@ parser.add_argument(
 
 
 def download_catch2():
-    with urllib.request.urlopen(CATCH2_URL) as req:
-        body = req.read()
+    with requests.get(CATCH2_URL) as response:
+        response.raise_for_status()
+        body = response.content
     # Check the hash
     digest = hashlib.sha256(body)
     if digest.digest() != CATCH2_DIGEST:
