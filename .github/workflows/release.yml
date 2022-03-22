@@ -20,7 +20,7 @@ jobs:
       with:
         python-version: '3.10'
     - name: Cache pip downloads
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
@@ -57,13 +57,13 @@ jobs:
       with:
         python-version: '3.10'
     - name: Cache pip downloads
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: pip-testcpp-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-testcpp-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Cache Catch2
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: cache-catch2/
         key: catch2-f5adf6a4c323792
@@ -215,7 +215,7 @@ jobs:
       with:
         python-version: '3.10'
     - name: Cache pip downloads
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: pip-releasecheckartifacts-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
@@ -257,7 +257,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - name: Cache pip downloads
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
