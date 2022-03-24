@@ -49,7 +49,6 @@ namespace adrt {
 
     template <typename adrt_scalar>
     std::array<size_t, 5> iadrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
-        using namespace adrt::_common::literals;
         assert(data);
         assert(out);
 
@@ -107,7 +106,6 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void iadrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
-        using namespace adrt::_common::literals;
         assert(data);
         assert(tmp);
         assert(out);

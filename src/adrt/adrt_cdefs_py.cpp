@@ -57,7 +57,7 @@
 #pragma message ("Building with assertions enabled")
 #endif
 
-using namespace adrt::_common::literals;
+using namespace adrt::_literals;
 using std::size_t;
 
 namespace adrt { namespace _py { namespace {

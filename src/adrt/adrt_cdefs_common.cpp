@@ -39,7 +39,7 @@
 
 #include "adrt_cdefs_common.hpp"
 
-using namespace adrt::_common::literals;
+using namespace adrt::_literals;
 
 namespace adrt { namespace _impl { namespace {
 
