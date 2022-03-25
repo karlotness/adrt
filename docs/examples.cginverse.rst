@@ -58,6 +58,8 @@ performs the actual inversion operation using conjugate gradients.
 
 
    def cgiadrt(b, **kwargs):
+       if b.ndim > 3:
+           raise ValueError("Batch dimension not supported for cgiadrt")
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
        tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
