@@ -35,7 +35,6 @@ import argparse
 import re
 import ast
 import tomli
-from setuptools.config import read_configuration
 from packaging.requirements import Requirement
 from packaging.version import Version
 from packaging.utils import canonicalize_name, canonicalize_version
@@ -78,13 +77,16 @@ def find_build_macro_defs(setup_py):
         raise ValueError("Could not find build macro definitions")
 
 
-def find_package_version(setup_cfg):
-    cfg_file = read_configuration(setup_cfg)
-    ver_str = str(cfg_file["metadata"]["version"])
-    if ver_str != ver_str.strip():
-        raise ValueError(f"Extra spaces in version string: '{ver_str}'")
-    # Validate version format by constructing Version object
-    return str(Version(ver_str))
+def find_package_version(init_py):
+    with open(init_py, "r", encoding="utf8") as init_file:
+        content = init_file.read()
+    version_re = re.compile(r"^__version__\s*=(?P<ver>.+)$", re.MULTILINE)
+    if match := version_re.search(content):
+        ver_str = ast.literal_eval(match.group("ver"))
+        if not isinstance(ver_str, str):
+            raise ValueError(f"Version attribute is not a string {ver_str}")
+        return ver_str
+    raise ValueError("Could not find package __version__ attribute")
 
 
 def find_release_tag_version(tag_string):
@@ -97,9 +99,10 @@ def find_release_tag_version(tag_string):
         raise ValueError(f"Invalid tag format {tag_string}")
 
 
-def find_meta_min_python(setup_cfg):
-    cfg_file = read_configuration(setup_cfg)
-    ver_constraint = str(cfg_file["options"]["python_requires"])
+def find_meta_min_python(pyproject_toml):
+    with open(pyproject_toml, "rb") as pyproj_file:
+        defs = tomli.load(pyproj_file)
+    ver_constraint = defs["project"]["requires-python"]
     return find_min_version("python", ["python" + ver_constraint])
 
 
@@ -133,9 +136,10 @@ def find_cibuildwheel_min_python(pyproject_toml):
     return find_min_version("python", versions)
 
 
-def find_package_min_numpy(setup_cfg):
-    cfg_file = read_configuration(setup_cfg)
-    ver_constraint = cfg_file["options"]["install_requires"]
+def find_package_min_numpy(pyproject_toml):
+    with open(pyproject_toml, "rb") as pyproj_file:
+        defs = tomli.load(pyproj_file)
+    ver_constraint = defs["project"]["dependencies"]
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
@@ -160,7 +164,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     failure = False
     # Check declared package version
-    var_version = find_package_version("setup.cfg")
+    var_version = find_package_version("src/adrt/__init__.py")
     tag_version = find_release_tag_version(args.tag_ref)
     print(f"Package variable version: {var_version}")
     if tag_version is not None:
@@ -172,7 +176,7 @@ if __name__ == "__main__":
     print("")
 
     # Check Python version requirements
-    meta_min_python = find_meta_min_python("setup.cfg")
+    meta_min_python = find_meta_min_python("pyproject.toml")
     macro_limited_api = find_macro_min_python("setup.py")
     cibuildwheel_min_python = find_cibuildwheel_min_python("pyproject.toml")
     print(f"Metadata min Python: {meta_min_python}")
@@ -185,7 +189,7 @@ if __name__ == "__main__":
     print("")
 
     # Check NumPy version requirements
-    package_min_numpy = find_package_min_numpy("setup.cfg")
+    package_min_numpy = find_package_min_numpy("pyproject.toml")
     macro_min_numpy = find_setup_numpy_api("setup.py")
     print(f"Package min NumPy: {package_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")

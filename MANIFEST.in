@@ -1,4 +1,4 @@
-include README.md MANIFEST.in LICENSE.txt setup.py pyproject.toml setup.cfg
+include README.md MANIFEST.in LICENSE.txt setup.py pyproject.toml
 recursive-include src/adrt *.py *.cpp *.hpp
 graft tests
 prune tests/cpp
