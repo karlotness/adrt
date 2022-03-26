@@ -34,10 +34,16 @@
 import argparse
 import re
 import ast
-import tomli
+import sys
 from packaging.requirements import Requirement
 from packaging.version import Version
 from packaging.utils import canonicalize_name, canonicalize_version
+
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 parser = argparse.ArgumentParser(description="Check version strings for consistency")
@@ -101,7 +107,7 @@ def find_release_tag_version(tag_string):
 
 def find_meta_min_python(pyproject_toml):
     with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomli.load(pyproj_file)
+        defs = tomllib.load(pyproj_file)
     ver_constraint = defs["project"]["requires-python"]
     return find_min_version("python", ["python" + ver_constraint])
 
@@ -125,7 +131,7 @@ def find_macro_min_python(setup_py):
 def find_cibuildwheel_min_python(pyproject_toml):
     ver_re = re.compile(r"cp3(?P<minor>\d+)")
     with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomli.load(pyproj_file)
+        defs = tomllib.load(pyproj_file)
     build_versions = defs["tool"]["cibuildwheel"]["build"]
     if not isinstance(build_versions, list):
         build_versions = build_versions.split()
@@ -138,7 +144,7 @@ def find_cibuildwheel_min_python(pyproject_toml):
 
 def find_package_min_numpy(pyproject_toml):
     with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomli.load(pyproj_file)
+        defs = tomllib.load(pyproj_file)
     ver_constraint = defs["project"]["dependencies"]
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
