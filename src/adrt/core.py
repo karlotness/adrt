@@ -219,11 +219,15 @@ def bdrt_iter(a, /, *, copy=True):
 
 
 def fmg_inv_step(a, /):
-    if a.shape[-1] == 1:
-        return a[..., 0, :, :]
-    # Recursive case
-    f_n_prime = _press_fmg_prolongation(fmg_inv_step(_press_fmg_restriction(a)))
-    image_correction = _press_fmg_highpass(
-        np.mean(_truncate(_bdrt(_adrt(f_n_prime) - a)) / (a.shape[-1] - 1), axis=-3)
-    )
-    return f_n_prime - image_correction
+    arr_stack = []
+    for _i in range(num_iters(a.shape[-1])):
+        arr_stack.append(a)
+        a = _press_fmg_restriction(a)
+    ret = a[..., 0, :, :]
+    while arr_stack:
+        a = arr_stack.pop()
+        f_n_prime = _press_fmg_prolongation(ret)
+        ret = f_n_prime - _press_fmg_highpass(
+            np.mean(_truncate(_bdrt(_adrt(f_n_prime) - a)) / (a.shape[-1] - 1), axis=-3)
+        )
+    return ret
