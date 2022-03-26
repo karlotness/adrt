@@ -224,10 +224,13 @@ def fmg_inv_step(a, /):
         arr_stack.append(a)
         a = _press_fmg_restriction(a)
     ret = a[..., 0, :, :]
+    n = 2
     while arr_stack:
-        a = arr_stack.pop()
         f_n_prime = _press_fmg_prolongation(ret)
         ret = f_n_prime - _press_fmg_highpass(
-            np.mean(_truncate(_bdrt(_adrt(f_n_prime) - a)) / (a.shape[-1] - 1), axis=-3)
+            np.mean(
+                _truncate(_bdrt(_adrt(f_n_prime) - arr_stack.pop())) / (n - 1), axis=-3
+            )
         )
+        n *= 2
     return ret
