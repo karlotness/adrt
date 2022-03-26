@@ -52,6 +52,7 @@
 #include "adrt_cdefs_iadrt.hpp"
 #include "adrt_cdefs_bdrt.hpp"
 #include "adrt_cdefs_interp_adrtcart.hpp"
+#include "adrt_cdefs_fmg.hpp"
 
 #ifndef NDEBUG
 #pragma message ("Building with assertions enabled")
@@ -667,6 +668,174 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     }
 }
 
+static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
+    // Process function arguments
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
+    if(!I) {
+        return nullptr;
+    }
+    // Extract shapes and check sizes
+    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    if(!input_shape) {
+        return nullptr;
+    }
+    if(!adrt::fmg_restriction_is_valid_shape(*input_shape)) {
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        return nullptr;
+    }
+    // Compute effective output shape
+    const std::array<size_t, 4> output_shape = adrt::fmg_restriction_result_shape(*input_shape);
+    // Process input array
+    const int ndim = PyArray_NDIM(I);
+    switch(PyArray_TYPE(I)) {
+    case NPY_FLOAT32:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_restriction(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    case NPY_FLOAT64:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_restriction(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    default:
+        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        return nullptr;
+    }
+}
+
+static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
+    // Process function arguments
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
+    if(!I) {
+        return nullptr;
+    }
+    // Extract shapes and check sizes
+    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    if(!input_shape) {
+        return nullptr;
+    }
+    if(!adrt::fmg_prolongation_is_valid_shape(*input_shape)) {
+        PyErr_SetString(PyExc_ValueError, "Provided array is too large for prolongation operator");
+        return nullptr;
+    }
+    // Compute effective output shape
+    const std::array<size_t, 3> output_shape = adrt::fmg_prolongation_result_shape(*input_shape);
+    // Process input array
+    const int ndim = PyArray_NDIM(I);
+    switch(PyArray_TYPE(I)) {
+    case NPY_FLOAT32:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_prolongation(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    case NPY_FLOAT64:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_prolongation(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    default:
+        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        return nullptr;
+    }
+}
+
+static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
+    // Process function arguments
+    PyArrayObject *const I = adrt::_py::extract_array(arg);
+    if(!I) {
+        return nullptr;
+    }
+    // Extract shapes and check sizes
+    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    if(!input_shape) {
+        return nullptr;
+    }
+    if(!adrt::fmg_highpass_is_valid_shape(*input_shape)) {
+        PyErr_SetString(PyExc_ValueError, "Provided array is too small to high-pass filter");
+        return nullptr;
+    }
+    // Compute effective output shape
+    const std::array<size_t, 3> output_shape = adrt::fmg_highpass_result_shape(*input_shape);
+    // Process input array
+    const int ndim = PyArray_NDIM(I);
+    switch(PyArray_TYPE(I)) {
+    case NPY_FLOAT32:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_highpass(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    case NPY_FLOAT64:
+    {
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        if(!ret) {
+            return nullptr;
+        }
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
+        // NO PYTHON API BELOW THIS POINT
+        Py_BEGIN_ALLOW_THREADS
+        adrt::fmg_highpass(in_data, *input_shape, out_data);
+        // PYTHON API ALLOWED BELOW THIS POINT
+        Py_END_ALLOW_THREADS
+        return adrt::_py::array_to_pyobject(ret);
+    }
+    default:
+        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        return nullptr;
+    }
+}
+
 static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
     const adrt::_common::Optional<size_t> val = adrt::_py::extract_size_t(arg);
     if(!val) {
@@ -683,6 +852,9 @@ static PyMethodDef adrt_cdefs_methods[] = {
     {"bdrt_step", adrt_py_bdrt_step, METH_VARARGS, "Compute one step of the bdrt"},
     {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
+    {"press_fmg_restriction", adrt_py_fmg_restriction, METH_O, "Multigrid restriction operator"},
+    {"press_fmg_prolongation", adrt_py_fmg_prolongation, METH_O, "Multigrid prolongation operator"},
+    {"press_fmg_highpass", adrt_py_fmg_highpass, METH_O, "Multigrid high-pass filter"},
     {nullptr, nullptr, 0, nullptr}
 };
 

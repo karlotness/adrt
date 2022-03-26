@@ -323,4 +323,47 @@ namespace adrt {
         };
     }
 
+    bool fmg_restriction_is_valid_shape(const std::array<size_t, 4> &shape) {
+        return (adrt::_impl::all_positive(shape) &&
+                std::get<1>(shape) == 4u &&
+                std::get<3>(shape) <= adrt::_impl::max_size &&
+                std::get<2>(shape) == (std::get<3>(shape) * 2_uz - 1_uz) &&
+                std::get<3>(shape) >= 2u &&
+                std::get<3>(shape) % 2_uz == 0u);
+    }
+
+    std::array<size_t, 4> fmg_restriction_result_shape(const std::array<size_t, 4> &shape) {
+        return {
+            std::get<0>(shape), // batches
+            4, // quadrants
+            std::get<3>(shape) - 1_uz, // rows
+            std::get<3>(shape) / 2_uz, // cols (halved)
+        };
+    }
+
+    bool fmg_prolongation_is_valid_shape(const std::array<size_t, 3> &shape) {
+        const size_t prl_max_size = adrt::_common::floor_div2(std::numeric_limits<size_t>::max());
+        return (adrt::_impl::all_positive(shape) &&
+                std::get<1>(shape) <= prl_max_size &&
+                std::get<2>(shape) <= prl_max_size);
+    }
+
+    std::array<size_t, 3> fmg_prolongation_result_shape(const std::array<size_t, 3> &shape) {
+        return {
+            std::get<0>(shape), // batch
+            2_uz * std::get<1>(shape), // rows. No overflow, checked in fmg_prolongation_is_valid_shape
+            2_uz * std::get<2>(shape), // cols
+        };
+    }
+
+    bool fmg_highpass_is_valid_shape(const std::array<size_t, 3> &shape) {
+        return (adrt::_impl::all_positive(shape) &&
+                std::get<1>(shape) >= 2u &&
+                std::get<2>(shape) >= 2u);
+    }
+
+    std::array<size_t, 3> fmg_highpass_result_shape(const std::array<size_t, 3> &shape) {
+        return shape;
+    }
+
 } // End namespace adrt

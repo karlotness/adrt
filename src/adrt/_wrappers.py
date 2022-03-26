@@ -365,3 +365,15 @@ def threading_enabled():
         support, otherwise :code:`False`.
     """
     return _adrt_cdefs.openmp_enabled
+
+
+def _press_fmg_restriction(a, /):
+    return _adrt_cdefs.press_fmg_restriction(_normalize_array(a))
+
+
+def _press_fmg_prolongation(a, /):
+    return _adrt_cdefs.press_fmg_prolongation(_normalize_array(a))
+
+
+def _press_fmg_highpass(a, /):
+    return _adrt_cdefs.press_fmg_highpass(_normalize_array(a))

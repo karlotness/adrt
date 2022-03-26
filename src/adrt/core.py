@@ -64,16 +64,22 @@ __all__ = [
     "bdrt_step",
     "bdrt_iter",
     "threading_enabled",
+    "fmg_inv_step",
 ]
 
 
 import numpy as np
+from . import adrt as _adrt, bdrt as _bdrt
+from .utils import truncate as _truncate
 from ._wrappers import (
     _format_object_type,
     num_iters,
     adrt_step,
     bdrt_step,
     threading_enabled,
+    _press_fmg_restriction,
+    _press_fmg_prolongation,
+    _press_fmg_highpass,
 )
 
 
@@ -210,3 +216,14 @@ def bdrt_iter(a, /, *, copy=True):
         a = bdrt_step(a, i)
         a.setflags(write=False)
         yield a.copy() if copy else a.view()
+
+
+def fmg_inv_step(a, /):
+    if a.shape[-1] == 1:
+        return a[..., 0, :, :]
+    # Recursive case
+    f_n_prime = _press_fmg_prolongation(fmg_inv_step(_press_fmg_restriction(a)))
+    image_correction = _press_fmg_highpass(
+        np.mean(_truncate(_bdrt(_adrt(f_n_prime) - a)) / (a.shape[-1] - 1), axis=-3)
+    )
+    return f_n_prime - image_correction
