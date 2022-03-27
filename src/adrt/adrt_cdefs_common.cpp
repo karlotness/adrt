@@ -38,6 +38,11 @@
 #endif
 
 #include "adrt_cdefs_common.hpp"
+#include "adrt_cdefs_adrt.hpp"
+#include "adrt_cdefs_iadrt.hpp"
+#include "adrt_cdefs_bdrt.hpp"
+#include "adrt_cdefs_interp_adrtcart.hpp"
+#include "adrt_cdefs_fmg.hpp"
 
 using namespace adrt::_literals;
 
