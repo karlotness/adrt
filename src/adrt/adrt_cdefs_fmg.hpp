@@ -106,29 +106,65 @@ namespace adrt {
         const adrt_scalar conv_b = static_cast<adrt_scalar>(-1) / static_cast<adrt_scalar>(8);
         const adrt_scalar conv_c = static_cast<adrt_scalar>(3) / static_cast<adrt_scalar>(4);
 
-        ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, shape, out, conv_a, conv_b, conv_c)")
+        ADRT_OPENMP("omp parallel for collapse(2) default(none) shared(data, shape, out, conv_a, conv_b, conv_c)")
         for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
             for(size_t row = 0; row < std::get<1>(shape); ++row) {
-                for(size_t col = 0; col < std::get<2>(shape); ++col) {
-                    const size_t prev_row = (row > 0u ? row - 1_uz : 1_uz);
-                    const size_t next_row = (row < std::get<1>(shape) - 1u ? row + 1_uz : std::get<1>(shape) - 2_uz);
-                    const size_t prev_col = (col > 0u ? col - 1_uz : 1_uz);
-                    const size_t next_col = (col < std::get<2>(shape) - 1u ? col + 1_uz : std::get<2>(shape) - 2_uz);
-                    adrt_scalar val = 0;
+                const size_t prev_row = (row == 0u ? 1_uz : row - 1_uz);
+                const size_t next_row = (row == std::get<1>(shape) - 1_uz ? row - 1_uz : row + 1_uz);
+
+                // First col
+                {
+                    const size_t col = 0;
+                    const size_t prev_col = 1;
                     // Conv row 1
-                    val += conv_a * adrt::_common::array_access(data, shape, batch, prev_row, prev_col);
-                    val += conv_b * adrt::_common::array_access(data, shape, batch, prev_row, col);
-                    val += conv_a * adrt::_common::array_access(data, shape, batch, prev_row, next_col);
+                    const adrt_scalar v11 = conv_a * adrt::_common::array_access(data, shape, batch, prev_row, prev_col);
+                    const adrt_scalar v12 = conv_b * adrt::_common::array_access(data, shape, batch, prev_row, col);
                     // Conv row 2
-                    val += conv_b * adrt::_common::array_access(data, shape, batch, row, prev_col);
-                    val += conv_c * adrt::_common::array_access(data, shape, batch, row, col);
-                    val += conv_b * adrt::_common::array_access(data, shape, batch, row, next_col);
+                    const adrt_scalar v21 = conv_b * adrt::_common::array_access(data, shape, batch, row, prev_col);
+                    const adrt_scalar v22 = conv_c * adrt::_common::array_access(data, shape, batch, row, col);
                     // Conv row 3
-                    val += conv_a * adrt::_common::array_access(data, shape, batch, next_row, prev_col);
-                    val += conv_b * adrt::_common::array_access(data, shape, batch, next_row, col);
-                    val += conv_a * adrt::_common::array_access(data, shape, batch, next_row, next_col);
+                    const adrt_scalar v31 = conv_a * adrt::_common::array_access(data, shape, batch, next_row, prev_col);
+                    const adrt_scalar v32 = conv_b * adrt::_common::array_access(data, shape, batch, next_row, col);
                     // Store result
-                    adrt::_common::array_access(out, shape, batch, row, col) = val;
+                    adrt::_common::array_access(out, shape, batch, row, col) = (v11 + v21 + v31) + (v12 + v22 + v32)  + (v11 + v21 + v31);
+                }
+
+                // Middle columns
+                ADRT_OPENMP("omp simd")
+                for(size_t col = 1; col < std::get<2>(shape) - 1_uz; ++col) {
+                    const size_t prev_col = col - 1_uz;
+                    const size_t next_col = col + 1_uz;
+                    // Conv row 1
+                    const adrt_scalar v11 = conv_a * adrt::_common::array_access(data, shape, batch, prev_row, prev_col);
+                    const adrt_scalar v12 = conv_b * adrt::_common::array_access(data, shape, batch, prev_row, col);
+                    const adrt_scalar v13 = conv_a * adrt::_common::array_access(data, shape, batch, prev_row, next_col);
+                    // Conv row 2
+                    const adrt_scalar v21 = conv_b * adrt::_common::array_access(data, shape, batch, row, prev_col);
+                    const adrt_scalar v22 = conv_c * adrt::_common::array_access(data, shape, batch, row, col);
+                    const adrt_scalar v23 = conv_b * adrt::_common::array_access(data, shape, batch, row, next_col);
+                    // Conv row 3
+                    const adrt_scalar v31 = conv_a * adrt::_common::array_access(data, shape, batch, next_row, prev_col);
+                    const adrt_scalar v32 = conv_b * adrt::_common::array_access(data, shape, batch, next_row, col);
+                    const adrt_scalar v33 = conv_a * adrt::_common::array_access(data, shape, batch, next_row, next_col);
+                    // Store result
+                    adrt::_common::array_access(out, shape, batch, row, col) = (v11 + v21 + v31) + (v12 + v22 + v32) + (v13 + v23 + v33);
+                }
+
+                // Last col
+                {
+                    const size_t col = std::get<2>(shape) - 1_uz;
+                    const size_t prev_col = col - 1_uz;
+                    // Conv row 1
+                    const adrt_scalar v11 = conv_a * adrt::_common::array_access(data, shape, batch, prev_row, prev_col);
+                    const adrt_scalar v12 = conv_b * adrt::_common::array_access(data, shape, batch, prev_row, col);
+                    // Conv row 2
+                    const adrt_scalar v21 = conv_b * adrt::_common::array_access(data, shape, batch, row, prev_col);
+                    const adrt_scalar v22 = conv_c * adrt::_common::array_access(data, shape, batch, row, col);
+                    // Conv row 3
+                    const adrt_scalar v31 = conv_a * adrt::_common::array_access(data, shape, batch, next_row, prev_col);
+                    const adrt_scalar v32 = conv_b * adrt::_common::array_access(data, shape, batch, next_row, col);
+                    // Store result
+                    adrt::_common::array_access(out, shape, batch, row, col) = (v11 + v21 + v31) + (v12 + v22 + v32) + (v11 + v21 + v31);
                 }
             }
         }
