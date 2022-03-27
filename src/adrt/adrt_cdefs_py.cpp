@@ -417,7 +417,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     if(!adrt::iadrt_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -485,7 +485,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::bdrt_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -558,7 +558,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     if(!adrt::bdrt_step_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
         return nullptr;
     }
     // Process int argument
@@ -624,7 +624,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::interp_adrtcart_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT shape");
+        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
