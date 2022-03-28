@@ -70,7 +70,7 @@ def _naive_adrt(a):
         for hi, h in enumerate(reversed(range(-n + 1, n))):
             for si, s in enumerate(range(n)):
                 v = 0
-                for (i, j) in _gen_dline(n, h, s):
+                for i, j in _gen_dline(n, h, s):
                     if 0 <= i < n and 0 <= j < n:
                         # Add values that are in bounds
                         v += img[i, j]
