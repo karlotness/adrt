@@ -100,7 +100,7 @@ if __name__ == "__main__":
     out_path = pathlib.Path(args.out_path)
     if out_path.is_file():
         print("Catch2 already present", file=sys.stderr)
-        exit(0)
+        sys.exit(0)
 
     # Find the contents
     body = None
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     if not body:
         # Failed to retrieve header
         print("Failed to retrieve headers", file=sys.stderr)
-        exit(1)
+        sys.exit(1)
     if args.cache_dir and not from_cache:
         # Retrieved header but not from cache, store it
         store_cache(args.cache_dir, body)
@@ -125,4 +125,4 @@ if __name__ == "__main__":
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "wb") as out_file:
         out_file.write(body)
-    exit(0)
+    sys.exit(0)

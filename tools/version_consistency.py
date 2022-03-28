@@ -204,4 +204,4 @@ if __name__ == "__main__":
         failure = True
 
     # Make sure versions match
-    exit(1 if failure else 0)
+    sys.exit(1 if failure else 0)
