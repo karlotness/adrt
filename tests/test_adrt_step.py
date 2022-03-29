@@ -36,52 +36,36 @@ import numpy as np
 import adrt
 
 
-class TestBdrtStepCdefs:
+class TestAdrtStepCdefs:
     def test_refuses_too_few_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
         with pytest.raises(TypeError):
-            adrt._adrt_cdefs.bdrt_step(arr)
+            adrt._adrt_cdefs.adrt_step(arr)
 
     def test_refuses_too_many_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
         with pytest.raises(TypeError):
-            adrt._adrt_cdefs.bdrt_step(arr, 0, 0)
+            adrt._adrt_cdefs.adrt_step(arr, 0, 0)
 
     def test_refuses_non_array(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64).tolist()
         with pytest.raises(TypeError):
-            adrt._adrt_cdefs.bdrt_step(arr, 0)
+            adrt._adrt_cdefs.adrt_step(arr, 0)
 
     def test_refuses_non_integer(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
         with pytest.raises(TypeError):
-            adrt._adrt_cdefs.bdrt_step(arr, [])
+            adrt._adrt_cdefs.adrt_step(arr, [])
 
     def test_refuses_out_of_range(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
         with pytest.raises(ValueError):
-            adrt._adrt_cdefs.bdrt_step(arr, -1)
+            adrt._adrt_cdefs.adrt_step(arr, -1)
         with pytest.raises(ValueError):
-            adrt._adrt_cdefs.bdrt_step(arr, 4)
+            adrt._adrt_cdefs.adrt_step(arr, 4)
 
 
-class TestBdrtStep:
-    @pytest.mark.parametrize("size", [2, 4, 8])
-    def test_materialize_array(self, size):
-        n = size
-        full_size = 4 * n * (2 * n - 1)
-        basis_arr = np.eye(full_size, dtype=np.float32).reshape(
-            (full_size, 4, 2 * n - 1, n)
-        )
-        num_iters = adrt.core.num_iters(n)
-        for bdrt_step, adrt_step in zip(range(num_iters), reversed(range(num_iters))):
-            bdrt_out = adrt.core.bdrt_step(basis_arr, bdrt_step)
-            adrt_out = adrt.core.adrt_step(basis_arr, adrt_step)
-            bdrt_mat = bdrt_out.reshape((full_size, full_size))
-            adrt_mat = adrt_out.reshape((full_size, full_size))
-            assert np.allclose(adrt_mat, bdrt_mat.T)
-            assert adrt_mat.shape == bdrt_mat.T.shape
-
+class TestAdrtStep:
     def test_refuses_non_integer(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
         with pytest.raises((TypeError, AttributeError)):
