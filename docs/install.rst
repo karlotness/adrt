@@ -69,3 +69,6 @@ flag is ``-fopenmp``. In this case, run pip as::
 This will install an OpenMP-enabled copy of the package. Other
 compilers will require different flags to be passed through ``CFLAGS``
 and ``LDFLAGS``.
+
+After building, you can verify that your installed copy supports
+OpenMP with :func:`adrt.core.threading_enabled`.
