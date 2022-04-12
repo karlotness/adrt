@@ -55,6 +55,9 @@ import numpy as np
 from . import _adrt_cdefs
 
 
+_SUPPORTED_DTYPES = frozenset(map(np.dtype, [np.float32, np.float64]))
+
+
 def _set_module(module):
     r"""Override ``__module__`` on functions for documentation.
 
@@ -101,6 +104,8 @@ def _normalize_array(a, /):
             f"Array argument must be numpy.ndarray, got {_format_object_type(a)}"
         )
     native_dtype = a.dtype.newbyteorder("=")
+    if native_dtype not in _SUPPORTED_DTYPES:
+        raise TypeError(f"Unsupported array type: {native_dtype.name}")
     return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
 
 
