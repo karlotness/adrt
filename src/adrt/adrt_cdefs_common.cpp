@@ -303,8 +303,8 @@ namespace adrt {
 
     std::array<size_t, 5> iadrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {
-            4, // Quadrants (shape[1])
             std::get<0>(shape), // planes
+            4, // Quadrants (shape[1])
             1,
             std::get<3>(shape), // N
             std::get<2>(shape), // 2 * N - 1
