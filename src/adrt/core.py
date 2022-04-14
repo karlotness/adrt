@@ -227,10 +227,8 @@ def fmg_inv_step(a, /):
     n = 1
     while arr_stack:
         n *= 2
-        f_n_prime = _press_fmg_prolongation(ret)
-        ret = f_n_prime - _press_fmg_highpass(
-            np.mean(
-                _truncate(_bdrt(_adrt(f_n_prime) - arr_stack.pop())) / (n - 1), axis=-3
-            )
+        ret = _press_fmg_prolongation(ret)
+        ret -= _press_fmg_highpass(
+            np.mean(_truncate(_bdrt(_adrt(ret) - arr_stack.pop())) / (n - 1), axis=-3)
         )
     return ret
