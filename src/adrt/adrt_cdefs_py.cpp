@@ -30,15 +30,11 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-#ifndef Py_LIMITED_API
-#error "Must use limited API"
-#endif
+#define Py_LIMITED_API 0x03080000
 // Include this first
 #include <Python.h>
 
-#ifndef NPY_NO_DEPRECATED_API
-#error "Must use NumPy API versioning"
-#endif
+#define NPY_NO_DEPRECATED_API NPY_1_15_API_VERSION
 #include <numpy/arrayobject.h>
 
 #include <array>

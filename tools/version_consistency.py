@@ -71,16 +71,16 @@ def find_min_version(package, requirements):
     return str(canonicalize_version(min(found_versions)))
 
 
-def find_build_macro_defs(setup_py):
-    with open(setup_py, "r", encoding="utf8") as setup_file:
-        content = setup_file.read()
-    macros_re = re.compile(
-        r"Extension\(.*?define_macros\s*=\s*(?P<defs>\[.+?\]).*?\)", re.DOTALL
+def find_cpp_macro_def(macro, cpp_path):
+    macro_re = re.compile(
+        rf"^\s*#\s*define\s+{re.escape(macro)}\s(?P<val>.+)$", re.MULTILINE
     )
-    if match := macros_re.search(content):
-        return dict(ast.literal_eval(match.group("defs")))
-    else:
-        raise ValueError("Could not find build macro definitions")
+    with open(cpp_path, "r", encoding="utf8") as cpp_file:
+        content = cpp_file.read()
+    if match := macro_re.search(content):
+        # Normalize tokens
+        return " ".join(match.group("val").strip().split())
+    raise ValueError(f"Could not find macro {macro}")
 
 
 def find_package_version(init_py):
@@ -112,9 +112,8 @@ def find_meta_min_python(pyproject_toml):
     return find_min_version("python", ["python" + ver_constraint])
 
 
-def find_macro_min_python(setup_py):
-    macros = find_build_macro_defs(setup_py)
-    min_python = macros["Py_LIMITED_API"]
+def find_macro_min_python(py_cpp):
+    min_python = find_cpp_macro_def("Py_LIMITED_API", py_cpp)
     if not min_python.startswith("0x") or len(min_python) != 10:
         raise ValueError(f"Limited API macro is not a valid hex string: {min_python}")
     min_python = int(min_python, base=16)
@@ -149,9 +148,8 @@ def find_package_min_numpy(pyproject_toml):
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
-def find_setup_numpy_api(setup_py):
-    macros = find_build_macro_defs(setup_py)
-    min_numpy = macros["NPY_NO_DEPRECATED_API"]
+def find_macro_numpy_api(py_cpp):
+    min_numpy = find_cpp_macro_def("NPY_NO_DEPRECATED_API", py_cpp)
     rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
     if match := rgx.match(min_numpy):
         major = int(match.group("major"))
@@ -183,7 +181,7 @@ if __name__ == "__main__":
 
     # Check Python version requirements
     meta_min_python = find_meta_min_python("pyproject.toml")
-    macro_limited_api = find_macro_min_python("setup.py")
+    macro_limited_api = find_macro_min_python("src/adrt/adrt_cdefs_py.cpp")
     cibuildwheel_min_python = find_cibuildwheel_min_python("pyproject.toml")
     print(f"Metadata min Python: {meta_min_python}")
     print(f"Limited API macro: {macro_limited_api}")
@@ -196,7 +194,7 @@ if __name__ == "__main__":
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
-    macro_min_numpy = find_setup_numpy_api("setup.py")
+    macro_min_numpy = find_macro_numpy_api("src/adrt/adrt_cdefs_py.cpp")
     print(f"Package min NumPy: {package_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")
     if package_min_numpy != macro_min_numpy:
