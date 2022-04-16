@@ -59,37 +59,52 @@ namespace adrt {
         const std::array<size_t, 5> curr_shape = {
             std::get<0>(in_shape), // Keep batch dimension
             4, // Always 4 quadrants
-            std::get<2>(in_shape),
-            adrt::_common::floor_div2(std::get<3>(in_shape)), // Halve the size of each section
-            std::get<4>(in_shape) * 2_uz, // Double the number of sections
+            adrt::_common::floor_div2(std::get<2>(in_shape)), // Halve the size of each section
+            std::get<3>(in_shape) * 2_uz, // Double the number of sections
+            std::get<4>(in_shape), // Keep same number of rows
         };
 
         assert(adrt::_assert::same_total_size(in_shape, curr_shape));
 
-        ADRT_OPENMP("omp for collapse(5)")
+        ADRT_OPENMP("omp for collapse(4)")
         for(size_t batch = 0; batch < std::get<0>(curr_shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4u; ++quadrant) {
-                for(size_t row = 0; row < std::get<2>(curr_shape); ++row) {
-                    for(size_t sec_i = 0; sec_i < std::get<3>(curr_shape); ++sec_i) {
-                        // We double the sections we store to so loop over the previous (half count) value
-                        for(size_t section = 0; section < std::get<4>(in_shape); ++section) {
-                            const size_t sec_left = 2_uz * section;
-                            const size_t sec_right = sec_left + 1_uz;
+                for(size_t sec_i = 0; sec_i < std::get<2>(curr_shape); ++sec_i) {
+                    // We double the sections we store to so loop over the previous (half count) value
+                    for(size_t section = 0; section < std::get<3>(in_shape); ++section) {
+                        const size_t sec_left = 2_uz * section;
+                        const size_t sec_right = sec_left + 1_uz;
 
+                        ADRT_OPENMP("omp simd")
+                        for(size_t row = 0; row < sec_i; ++row) {
+                            const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i, section, row);
+                            const adrt_scalar lb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i + 1_uz, section, row);
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_left, row) = la_val + lb_val;
+                        }
+
+                        ADRT_OPENMP("omp simd")
+                        for(size_t row = sec_i; row < std::get<4>(curr_shape) - 1_uz; ++row) {
                             // Left section
-                            const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row, 2_uz * sec_i, section);
-                            const adrt_scalar lb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row, 2_uz * sec_i + 1_uz, section);
-                            adrt::_common::array_access(out, curr_shape, batch, quadrant, row, sec_i, sec_left) = la_val + lb_val;
+                            const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i, section, row);
+                            const adrt_scalar lb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i + 1_uz, section, row);
+                            const adrt_scalar lbb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i + 1_uz, section, row + 1_uz);
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_left, row) = la_val + lb_val;
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_right, row - sec_i) = la_val + lbb_val;
+                        }
 
-                            // Right section
-                            adrt_scalar ra_val = 0, rb_val = 0;
-                            if(row + sec_i < std::get<2>(in_shape)) {
-                                ra_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row + sec_i, 2_uz * sec_i, section);
-                            }
-                            if(row + sec_i + 1_uz < std::get<2>(in_shape)) {
-                                rb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, row + sec_i + 1_uz, 2_uz * sec_i + 1_uz, section);
-                            }
-                            adrt::_common::array_access(out, curr_shape, batch, quadrant, row, sec_i, sec_right) = ra_val + rb_val;
+                        {
+                            const size_t row = std::get<4>(curr_shape) - 1_uz;
+                            const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i, section, row);
+                            const adrt_scalar lb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i + 1_uz, section, row);
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_left, row) = la_val + lb_val;
+                            // NOTE: We have at least as many rows as columns so num_rows - 1 >= sec_i
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_right, row - sec_i) = la_val;
+                        }
+
+                        // Zero the last sec_i entries in offset row
+                        ADRT_OPENMP("omp simd")
+                        for(size_t zrow = std::get<4>(curr_shape) - sec_i; zrow < std::get<4>(curr_shape); ++zrow) {
+                            adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_right, zrow) = 0;
                         }
                     }
                 }
@@ -121,15 +136,23 @@ namespace adrt {
                 std::swap(buf_a, buf_b);
             }
             std::array<size_t, 5> buf_shape = adrt::bdrt_buffer_shape(shape);
+            const size_t block_stride = 16;
 
             // Copy data to tmp buffer (always load into buf_a)
             ADRT_OPENMP("omp for collapse(4)")
             for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
                 for(size_t quadrant = 0; quadrant < 4u; ++quadrant) {
-                    for(size_t row = 0; row < std::get<2>(shape); ++row) {
-                        for(size_t col = 0; col < std::get<3>(shape); ++col) {
-                            adrt::_common::array_access(buf_a, buf_shape, batch, quadrant, row, col, 0_uz) =
-                                adrt::_common::array_access(data, shape, batch, quadrant, row, col);
+                    // Note: no overflow here (or in other blocked loop) because very large shapes (> size_t_max - 16) are impossible
+                    // The input array must be (2 * N - 1)-by-N. With that dimension the buffer is too large to exist
+                    for(size_t row_start = 0; row_start < std::get<2>(shape); row_start += block_stride) {
+                        for(size_t col_start = 0; col_start < std::get<3>(shape); col_start += block_stride) {
+                            // Transpose inside each block (serial)
+                            for(size_t row = row_start; row < std::min(row_start + block_stride, std::get<2>(shape)); ++row) {
+                                for(size_t col = col_start; col < std::min(col_start + block_stride, std::get<3>(shape)); ++col) {
+                                    adrt::_common::array_access(buf_a, buf_shape, batch, quadrant, col, 0_uz, row) =
+                                        adrt::_common::array_access(data, shape, batch, quadrant, row, col);
+                                }
+                            }
                         }
                     }
                 }
@@ -145,10 +168,15 @@ namespace adrt {
             ADRT_OPENMP("omp for collapse(4) nowait")
             for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
                 for(size_t quadrant = 0; quadrant < 4u; ++quadrant) {
-                    for(size_t row = 0; row < std::get<2>(output_shape); ++row) {
-                        for(size_t col = 0; col < std::get<3>(output_shape); ++col) {
-                            adrt::_common::array_access(out, output_shape, batch, quadrant, row, col) =
-                                adrt::_common::array_access(tmp, buf_shape, batch, quadrant, row, 0_uz, col);
+                    for(size_t row_start = 0; row_start < std::get<2>(output_shape); row_start += block_stride) {
+                        for(size_t col_start = 0; col_start < std::get<3>(output_shape); col_start += block_stride) {
+                            // Transpose inside each block (serial)
+                            for(size_t row = row_start; row < std::min(row_start + block_stride, std::get<2>(output_shape)); ++row) {
+                                for(size_t col = col_start; col < std::min(col_start + block_stride, std::get<3>(output_shape)); ++col) {
+                                    adrt::_common::array_access(out, output_shape, batch, quadrant, row, col) =
+                                        adrt::_common::array_access(tmp, buf_shape, batch, quadrant, 0_uz, col, row);
+                                }
+                            }
                         }
                     }
                 }

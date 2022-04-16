@@ -281,9 +281,9 @@ namespace adrt {
         return {
             std::get<0>(shape), // batch
             4,  // quadrant
-            std::get<2>(shape), // row
             std::get<3>(shape), // col
-            1 // sections
+            1, // sections
+            std::get<2>(shape), // row
         };
     }
 
