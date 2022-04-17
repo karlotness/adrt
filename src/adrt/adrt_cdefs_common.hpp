@@ -177,10 +177,19 @@ namespace adrt {
         template<size_t N, size_t I>
         struct _impl_compute_strides {
             static inline size_t compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
-                static_assert(I < N, "Index out of range. Do not use this template manually!");
+                static_assert(I < N && I > 0u, "Index out of range. Do not use this template manually!");
                 const size_t step_size = adrt::_common::_impl_compute_strides<N, I + 1>::compute_strides(shape_in, strides_out);
                 std::get<I>(strides_out) = step_size;
                 return step_size * std::get<I>(shape_in);
+            }
+        };
+
+        template<size_t N>
+        struct _impl_compute_strides<N, 0> {
+            static inline void compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
+                static_assert(N > 0u, "Strides to compute must have at least one dimension");
+                const size_t step_size = adrt::_common::_impl_compute_strides<N, 1>::compute_strides(shape_in, strides_out);
+                std::get<0>(strides_out) = step_size;
             }
         };
 
