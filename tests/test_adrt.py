@@ -79,6 +79,16 @@ def _naive_adrt(a):
     return res
 
 
+def make_unaligned(a):
+    assert a.dtype.alignment >= 2, "One-byte dtypes cannot be made unaligned"
+    offset = a.dtype.alignment // 2
+    b = np.frombuffer(b"\x00" * offset + a.tobytes("C"), dtype=a.dtype, offset=offset)
+    b.shape = a.shape
+    assert not b.flags.aligned
+    assert np.all(b == a)
+    return b
+
+
 class TestAdrtCdefs:
     def test_accepts_float32(self):
         inarr = np.zeros((16, 16), dtype=np.float32)
@@ -152,6 +162,12 @@ class TestAdrtCdefs:
         with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
+    @pytest.mark.parametrize("dtype", ["float32", "float64"])
+    def test_refuses_unaligned(self, dtype):
+        inarr = make_unaligned(np.zeros((16, 16), dtype=dtype))
+        with pytest.raises(ValueError):
+            _ = adrt._adrt_cdefs.adrt(inarr)
+
 
 class TestAdrt:
     def _check_zero_stencil(self, a):
@@ -201,6 +217,14 @@ class TestAdrt:
         assert inarr.shape == (32, 32)
         assert not inarr.flags["C_CONTIGUOUS"]
         _ = adrt.adrt(inarr)
+
+    @pytest.mark.parametrize("dtype", ["float32", "float64"])
+    def test_accepts_unaligned(self, dtype):
+        base_arr = np.arange(16 * 16, dtype=dtype).reshape((16, 16))
+        unaligned_arr = make_unaligned(base_arr)
+        base_out = adrt.adrt(base_arr)
+        unaligned_out = adrt.adrt(unaligned_arr)
+        assert np.all(base_out == unaligned_out)
 
     def test_accepts_byteswapped(self):
         inarr_native = np.ones((16, 16), dtype=np.float32)
