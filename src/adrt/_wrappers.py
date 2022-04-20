@@ -106,7 +106,10 @@ def _normalize_array(a, /):
     native_dtype = a.dtype.newbyteorder("=")
     if native_dtype not in _SUPPORTED_DTYPES:
         raise TypeError(f"Unsupported array type: {native_dtype.name}")
-    return np.require(a, dtype=native_dtype, requirements=["C_CONTIGUOUS", "ALIGNED"])
+    a = np.asarray(a, native_dtype, "C")
+    if not a.flags.aligned:
+        return a.copy("C")
+    return a
 
 
 @_set_module("adrt")
