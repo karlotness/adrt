@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
 #ifndef ADRT_CDEFS_COMMON_H
 #define ADRT_CDEFS_COMMON_H
 

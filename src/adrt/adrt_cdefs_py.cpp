@@ -50,7 +50,7 @@
 #include "adrt_cdefs_interp_adrtcart.hpp"
 #include "adrt_cdefs_fmg.hpp"
 
-#ifndef NDEBUG
+#if !defined(NDEBUG) && (defined(__GNUC__) || defined(__clang__) || defined(_MSC_VER))
 #pragma message ("Building with assertions enabled")
 #endif
 
