@@ -117,7 +117,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
-        PyErr_SetString(PyExc_ValueError, "Invalid number of dimensions for input array");
+        PyErr_Format(PyExc_ValueError, "Invalid number of dimensions for input array: %d (must be between %zu and %zu)", sndim, min_dim, max_dim);
         return {};
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
@@ -147,7 +147,7 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
     const unsigned int undim = static_cast<unsigned int>(ndim);
     if(undim > n_virtual_dim || ndim <= 0) {
         // This would be a bug and should have been caught earlier. Handle it as well as we can.
-        PyErr_SetString(PyExc_AssertionError, "BUG: Invalid number of dimensions computed for output array");
+        PyErr_Format(PyExc_AssertionError, "BUG: Invalid number of dimensions computed for output array (requested %d but should be between 1 and %zu)", ndim, n_virtual_dim);
         return nullptr;
     }
     std::array<npy_intp, n_virtual_dim> new_shape;
