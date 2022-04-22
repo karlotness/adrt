@@ -46,6 +46,7 @@
 #include "adrt_cdefs_fmg.hpp"
 
 using namespace adrt::_literals;
+using std::size_t;
 
 namespace adrt { namespace _impl { namespace {
 
