@@ -30,6 +30,7 @@
  */
 
 #include <limits>
+#include <array>
 #include <cassert>
 
 #ifdef _MSC_VER
