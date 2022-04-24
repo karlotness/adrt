@@ -32,7 +32,7 @@ Here we use SciPy's implementation in particular, provided in
 :func:`scipy.sparse.linalg.cg`. To do this we define
 ``AdrtNormalOperator`` an instance of
 :class:`scipy.sparse.linalg.LinearOperator` for the operation
-:math:`A^{T}A` and then use this in a function ``cgiadrt`` which
+:math:`A^{T}A` and then use this in a function ``iadrt_cg`` which
 performs the actual inversion operation using conjugate gradients.
 
 .. plot::
@@ -57,9 +57,9 @@ performs the actual inversion operation using conjugate gradients.
            return self
 
 
-   def cgiadrt(b, **kwargs):
+   def iadrt_cg(b, **kwargs):
        if b.ndim > 3:
-           raise ValueError("Batch dimension not supported for cgiadrt")
+           raise ValueError("Batch dimension not supported for iadrt_cg")
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
        tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
@@ -109,7 +109,7 @@ inverses produce very different results.
    :align: center
 
    iadrt_inv = adrt.utils.truncate(adrt.iadrt(img_noise_adrt)).mean(axis=0)
-   cg_inv = cgiadrt(img_noise_adrt)
+   cg_inv = iadrt_cg(img_noise_adrt)
 
    fig, axs = plt.subplots(1, 3, sharey=True)
    plot_elements = [(img, "Original"), (cg_inv, "CG Inverse"), (iadrt_inv, "iadrt Inverse")]
@@ -123,13 +123,13 @@ The inverse provided by :func:`adrt.iadrt` is an exact inverse to the
 forward ADRT, but it is very sensitive to noise in its input. It is
 therefore not suitable for cases where the forward ADRT was not
 exactly applied, or where noise may be present. In such cases, a
-different approach such as the ``cgiadrt`` illustrated here may be
+different approach such as the ``iadrt_cg`` illustrated here may be
 more suitable.
 
 Multiple Noise Levels
 ---------------------
 
-We repeat the above demonstration of the ``cgiadrt`` iterative inverse
+We repeat the above demonstration of the ``iadrt_cg`` iterative inverse
 for several noise levels. For each example a new noise mask is drawn
 from a normal distribution :math:`\mathcal{N}(0, \sigma I)`.
 
@@ -142,13 +142,13 @@ from a normal distribution :math:`\mathcal{N}(0, \sigma I)`.
    fig.suptitle("CG Inverses at Several Noise Levels")
    for scale, ax in zip([1e-2, 1e-1, 1, 10], axs.ravel()):
        noise = rng.normal(scale=scale, size=img_plain_adrt.shape)
-       cg_inv = cgiadrt(img_plain_adrt + noise)
+       cg_inv = iadrt_cg(img_plain_adrt + noise)
        im_plot = ax.imshow(cg_inv)
        fig.colorbar(im_plot, ax=ax)
        ax.set_title(f"$\\sigma = {scale}$")
    fig.tight_layout()
 
-The results produced by ``cgiadrt`` remain relatively clean even at
+The results produced by ``iadrt_cg`` remain relatively clean even at
 noise with scales much larger than those used for the comparison with
 :func:`adrt.iadrt`. While exact, :func:`adrt.iadrt`, is unstable and
 so an iterative approach such as the one demonstrated here may be
