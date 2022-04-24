@@ -50,18 +50,21 @@ def iadrt_fmg(a, /, *, max_iters=None):
         raise ValueError(f"Must allow at least one iteration (requested {max_iters})")
     # Following recipe for itertools.pairwise from Python 3.10
     i1, i2 = itertools.tee(
-        map(
-            # Pair each estimated inverse x with its residual error
-            lambda x: (x, np.linalg.norm(adrt(x) - a)),
-            # Use itertools.islice to limit iterations if requested
-            itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
+        itertools.chain(
+            map(
+                # Pair each estimated inverse x with its residual error
+                lambda x: (x, np.linalg.norm(adrt(x) - a)),
+                # Use itertools.islice to limit iterations if requested
+                itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
+            ),
+            # Chain i2 with one extra value so we don't exhaust early
+            # Use np.inf so the residual will rise and we won't continue iterating
+            [(None, np.inf)],
         ),
         2,
     )
     next(i2, None)
-    # Chain i2 with one extra value so we don't exhaust early
-    # Use np.inf so the residual will certainly rise and we won't continue iterating
-    for (_inv1, res1), (_inv2, res2) in zip(i1, itertools.chain(i2, [(None, np.inf)])):
+    for (_inv1, res1), (_inv2, res2) in zip(i1, i2):
         if res2 >= res1:
             # Residual failed to decrease, stop early
             break
