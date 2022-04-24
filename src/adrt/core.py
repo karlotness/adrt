@@ -65,6 +65,7 @@ __all__ = [
     "bdrt_iter",
     "threading_enabled",
     "iadrt_fmg_step",
+    "iadrt_fmg_iter",
 ]
 
 
@@ -233,3 +234,13 @@ def iadrt_fmg_step(a, /):
             np.mean(_truncate(_bdrt(_adrt(ret) - arr_stack.pop())) / (n - 1), axis=-3)
         )
     return ret
+
+
+def iadrt_fmg_iter(a, /, *, copy=True):
+    inv = iadrt_fmg_step(a)
+    inv.setflags(write=False)
+    yield inv.copy() if copy else inv.view()
+    while True:
+        inv = inv + iadrt_fmg_step(a - _adrt(inv))
+        inv.setflags(write=False)
+        yield inv.copy() if copy else inv.view()
