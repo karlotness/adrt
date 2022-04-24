@@ -64,7 +64,7 @@ __all__ = [
     "bdrt_step",
     "bdrt_iter",
     "threading_enabled",
-    "fmg_inv_step",
+    "iadrt_fmg_step",
 ]
 
 
@@ -218,7 +218,7 @@ def bdrt_iter(a, /, *, copy=True):
         yield a.copy() if copy else a.view()
 
 
-def fmg_inv_step(a, /):
+def iadrt_fmg_step(a, /):
     arr_stack = []
     for _i in range(num_iters(a.shape[-1])):
         arr_stack.append(a)
@@ -228,6 +228,7 @@ def fmg_inv_step(a, /):
     while arr_stack:
         n *= 2
         ret = _press_fmg_prolongation(ret)
+        # In-place operation ok here since prolongation returned a new array
         ret -= _press_fmg_highpass(
             np.mean(_truncate(_bdrt(_adrt(ret) - arr_stack.pop())) / (n - 1), axis=-3)
         )

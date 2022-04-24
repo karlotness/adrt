@@ -78,7 +78,7 @@ def press_inverse(arr):
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_unique_values(dtype):
     arr = np.arange(4 * 31 * 16).reshape((4, 31, 16)).astype(dtype)
-    adrt_result = adrt.core.fmg_inv_step(arr)
+    adrt_result = adrt.core.iadrt_fmg_step(arr)
     reference = press_inverse(arr)
     assert adrt_result.dtype == arr.dtype
     assert adrt_result.shape == (16, 16)
@@ -88,7 +88,7 @@ def test_unique_values(dtype):
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_unique_values_batch(dtype):
     arr = np.arange(3 * 4 * 31 * 16).reshape((3, 4, 31, 16)).astype(dtype)
-    adrt_result = adrt.core.fmg_inv_step(arr)
+    adrt_result = adrt.core.iadrt_fmg_step(arr)
     reference = np.stack([press_inverse(arr[i]) for i in range(arr.shape[0])])
     assert adrt_result.dtype == arr.dtype
     assert adrt_result.shape == (3, 16, 16)
