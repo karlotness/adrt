@@ -220,6 +220,61 @@ def bdrt_iter(a, /, *, copy=True):
 
 
 def iadrt_fmg_step(a, /):
+    r"""Compute an estimated inverse by the full multigrid method.
+
+    This is an implementation of the "FMG" inverse described by Press
+    [1]_. A call to this function on an output of the :func:`ADRT
+    <adrt.adrt>` produces an estimated inverse which can be
+    iteratively refined by adding corrections remaining error.
+
+    For easy access to iteratively-improved inverses produced by this
+    method, consider :func:`iadrt_fmg_iter` which internally
+    performs the required recurrence.
+
+    For another inverse which may perform more reliably for certain
+    inputs consider the ``iadrt_cg`` recipe proposed in the
+    :doc:`examples.cginverse` example.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which an estimated inverse is computed. This
+        array must have data type :obj:`float32 <numpy.float32>` or
+        :obj:`float64 <numpy.float64>` and the shape of an ADRT
+        output.
+
+    Returns
+    -------
+    numpy.ndarray
+        An estimated inverse computed by the full multigrid method for
+        the input ``a``.
+
+    References
+    ----------
+    .. [1] W. Press, "Discrete Radon transform has an exact, fast
+      inverse and generalizes to operations other than sums along
+      lines," Proceedings of the National Academy of Sciences, 2006.
+      `doi:10.1073/pnas.0609228103
+      <https://doi.org/10.1073/pnas.0609228103>`_
+
+    Examples
+    --------
+
+    For an input array::
+
+    >>> rng = np.random.default_rng(seed=0)
+    >>> orig = rng.normal(size=(16, 16))
+    >>> after_adrt = adrt.adrt(orig)
+
+    We can compute an estimated inverse
+
+    >>> est_inv = adrt.core.iadrt_fmg_step(est_inv)
+
+    And iteratively refine it by repeating the below::
+
+    >>> err = after_adrt - adrt.adrt(est_inv)
+    >>> est_inv += adrt.core.iadrt_fmg_step(err)
+    """
     arr_stack = []
     for _i in range(num_iters(a.shape[-1])):
         arr_stack.append(a)
@@ -237,6 +292,46 @@ def iadrt_fmg_step(a, /):
 
 
 def iadrt_fmg_iter(a, /, *, copy=True):
+    r"""Iteratively improve estimated inverses by the full multigrid method.
+
+    Internally computes a recurrence with :func:`iadrt_fmg_step` to
+    iteratively refine an estimated inverse for the :func:`ADRT
+    <adrt.adrt>` output ``a``.
+
+    This iterator has *infinite* length and will continue computing
+    refinements until stopped. For a simple implementation with a
+    basic stopping condition consider :func:`adrt.iadrt_fmg`.
+
+    For another inverse which may perform more reliably for certain
+    inputs consider the ``iadrt_cg`` recipe proposed in the
+    :doc:`examples.cginverse` example.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which an inverse estimates will be computed.
+        This array must have data type :obj:`float32 <numpy.float32>`
+        or :obj:`float64 <numpy.float64>` and the shape of an ADRT
+        output.
+    copy : bool, optional
+        If true (default), the arrays produced by this generator are
+        independent copies. Otherwise, read-only views are produced
+        and these *must not* be modified without making a
+        :meth:`copy <numpy.ndarray.copy>` first.
+
+    Yields
+    ------
+    numpy.ndarray
+        An estimated inverses for ``a`` refined by repeated
+        applications of :func:`iadrt_fmg_step`.
+
+    Warning
+    -------
+    This is an infinite iterator; a simple for loop over its values
+    will run forever. To limit the computation either implement some
+    desired stopping condition, or consider :func:`itertools.islice`
+    to cap the number of elements produced.
+    """
     inv = iadrt_fmg_step(a)
     inv.setflags(write=False)
     yield inv.copy() if copy else inv.view()

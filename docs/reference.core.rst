@@ -20,6 +20,8 @@ algorithms in the :mod:`adrt` module.
 
 .. autofunction:: bdrt_iter
 
+.. autofunction:: iadrt_fmg_iter
+
 Single-Step Routines
 --------------------
 
@@ -42,6 +44,8 @@ different order.
 .. autofunction:: adrt_step
 
 .. autofunction:: bdrt_step
+
+.. autofunction:: iadrt_fmg_step
 
 Multithreading Status
 ---------------------

@@ -42,6 +42,48 @@ from . import utils, core
 
 
 def iadrt_fmg(a, /, *, max_iters=None):
+    r"""Approximate inverse to the ADRT by the full multigrid method.
+
+    Estimated inverses are computed and iteratively refined until the
+    norm of the residual error fails to decrease from one iteration to
+    the next. This iteration can also be terminated early if
+    ``max_iters`` is specified.
+
+    Particularly with a limited iteration count this inverse can be
+    relatively quick to compute, but may not achieve the best possible
+    precision. If your output array ``a`` is *exact* you may consider
+    :func:`iadrt` for an exact inverse. Otherwise, for an inverse that
+    may perform more reliably for certain inputs, consider the
+    ``iadrt_cg`` recipe proposed in the :doc:`examples.cginverse`
+    example.
+
+    See :func:`adrt.core.iadrt_fmg_iter` and
+    :func:`adrt.core.iadrt_fmg_step` for more information on the
+    iterative refinement applied internally and the full multigrid
+    method.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        The array for which the inverse is to be computed. This array
+        must have data type :obj:`float32 <numpy.float32>` or
+        :obj:`float64 <numpy.float64>` and the shape of an ADRT
+        output.
+    max_iters : int, optional
+        If ``None`` (default), the number of internal iterations is
+        unbounded. The computation will terminate only when the norm
+        of the residual error fails to decrease. Otherwise, this must
+        be an integer argument at least 1, and provides an upper bound
+        on the number of iterations performed internally.
+
+    Returns
+    -------
+    numpy.ndarray
+        An estimated inverse computed by the full multigrid method
+        with the lowest residual error observed so long as the
+        decrease was monotonic, or the last computation output if
+        iteration was terminated by ``max_iters``.
+    """
     if a.ndim > 3:
         raise ValueError(
             f"Batch dimension not supported for iadrt_fmg, got {a.ndim} dimensions"
