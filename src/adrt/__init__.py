@@ -31,9 +31,32 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-__all__ = ["adrt", "iadrt", "bdrt", "utils", "core"]
+__all__ = ["adrt", "iadrt", "bdrt", "iadrt_fmg", "utils", "core"]
 __version__ = "0.1.0"
 
 
+import itertools
+import numpy as np
 from ._wrappers import adrt, iadrt, bdrt
 from . import utils, core
+
+
+def iadrt_fmg(a, /, *, max_iters=None):
+    if a.ndim > 3:
+        raise ValueError(
+            f"Batch dimension not supported for iadrt_fmg, got {a.ndim} dimensions"
+        )
+    if max_iters is not None and max_iters < 1:
+        raise ValueError(f"Must allow at least one iteration (requested {max_iters}")
+    i1, i2 = itertools.tee(
+        map(
+            lambda x: (x, np.linalg.norm(adrt(x) - a)),
+            itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
+        ),
+        2,
+    )
+    next(i2, None)
+    for (_inv1, res1), (_inv2, res2) in zip(i1, itertools.chain(i2, [(None, np.inf)])):
+        if res2 >= res1:
+            break
+    return _inv1.copy()
