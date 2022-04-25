@@ -63,7 +63,7 @@ performs the actual inversion operation using conjugate gradients.
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
        tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
-       x, info = cg(linop, tb, x0=tb, **kwargs)
+       x, info = cg(linop, tb, **kwargs)
        if info != 0:
            raise ValueError(f"Convergence failed (cg status {info})")
        return x.reshape((img_size, img_size))
