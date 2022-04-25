@@ -36,6 +36,20 @@ import numpy as np
 import adrt
 
 
+@pytest.fixture
+def counting_iadrt_fmg_step(monkeypatch):
+    count = 0
+    orig_fn = adrt.core.iadrt_fmg_step
+
+    def counting_inv(*args, **kwargs):
+        nonlocal count
+        count += 1
+        return orig_fn(*args, **kwargs)
+
+    monkeypatch.setattr(adrt.core, "iadrt_fmg_step", counting_inv)
+    return lambda: count
+
+
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_unique_values(dtype):
     size = 8
@@ -69,19 +83,11 @@ def test_rejects_batch_dimension():
         _ = adrt.iadrt_fmg(inarr, max_iters=50)
 
 
-def test_stops_quickly_on_zero(monkeypatch):
+def test_stops_quickly_on_zero(counting_iadrt_fmg_step):
     size = 16
     inarr = np.zeros((4, 2 * size - 1, size), dtype="float64")
-    count = 0
-    orig_fn = adrt.core.iadrt_fmg_step
-
-    def counting_inv(a, /):
-        nonlocal count
-        count += 1
-        return orig_fn(a)
-
-    monkeypatch.setattr(adrt.core, "iadrt_fmg_step", counting_inv)
     inv = adrt.iadrt_fmg(inarr, max_iters=50)
+    count = counting_iadrt_fmg_step()
     assert count <= 2
     assert np.allclose(inv, 0)
     assert inv.shape == (size, size)
@@ -89,18 +95,10 @@ def test_stops_quickly_on_zero(monkeypatch):
 
 
 @pytest.mark.parametrize("max_iters", [1, 2, 3, 4])
-def test_max_iters_limits_iterations(monkeypatch, max_iters):
+def test_max_iters_limits_iterations(counting_iadrt_fmg_step, max_iters):
     size = 16
     orig = np.arange(size**2).reshape((size, size)).astype("float64")
     inarr = adrt.adrt(orig)
-    count = 0
-    orig_fn = adrt.core.iadrt_fmg_step
-
-    def counting_inv(a, /):
-        nonlocal count
-        count += 1
-        return orig_fn(a)
-
-    monkeypatch.setattr(adrt.core, "iadrt_fmg_step", counting_inv)
     _ = adrt.iadrt_fmg(inarr, max_iters=max_iters)
+    count = counting_iadrt_fmg_step()
     assert count == max_iters
