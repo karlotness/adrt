@@ -185,10 +185,12 @@ namespace adrt {
 
         template<size_t N>
         struct _impl_compute_strides<N, 0> {
-            static inline void compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
+            static inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
                 static_assert(N > 0u, "Strides to compute must have at least one dimension");
+                std::array<size_t, N> strides_out;
                 const size_t step_size = adrt::_common::_impl_compute_strides<N, 1>::compute_strides(shape_in, strides_out);
                 std::get<0>(strides_out) = step_size;
+                return strides_out;
             }
         };
 
@@ -233,9 +235,7 @@ namespace adrt {
                 }
             }
             #endif
-            std::array<size_t, N> strides_out;
-            adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in, strides_out);
-            return strides_out;
+            return adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in);
         }
 
         template <typename scalar, size_t N, typename... Idx>
