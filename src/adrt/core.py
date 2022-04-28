@@ -259,18 +259,17 @@ def iadrt_fmg_step(a, /):
 
     Examples
     --------
-
-    For an input array::
+    For an input array ``after_adrt``
 
     >>> rng = np.random.default_rng(seed=0)
     >>> orig = rng.normal(size=(16, 16))
     >>> after_adrt = adrt.adrt(orig)
 
-    We can compute an estimated inverse
+    we can compute an estimated inverse
 
     >>> est_inv = adrt.core.iadrt_fmg_step(after_adrt)
 
-    And iteratively refine it by repeating the below::
+    and iteratively refine it by repeating the below
 
     >>> err = after_adrt - adrt.adrt(est_inv)
     >>> est_inv += adrt.core.iadrt_fmg_step(err)
