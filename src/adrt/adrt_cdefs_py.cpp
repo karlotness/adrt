@@ -144,15 +144,13 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
 template <size_t n_virtual_dim>
 PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
+    assert(ndim > 0);
+    assert(static_cast<unsigned int>(ndim) <= n_virtual_dim);
     const unsigned int undim = static_cast<unsigned int>(ndim);
-    if(undim > n_virtual_dim || ndim <= 0) {
-        // This would be a bug and should have been caught earlier. Handle it as well as we can.
-        PyErr_Format(PyExc_AssertionError, "BUG: Invalid number of dimensions computed for output array (requested %d but should be between 1 and %zu)", ndim, n_virtual_dim);
-        return nullptr;
-    }
     std::array<npy_intp, n_virtual_dim> new_shape;
     for(size_t i = 0; i < undim; ++i) {
         const size_t shape_val = virtual_shape[(n_virtual_dim - undim) + i];
+        assert(shape_val > 0u);
         if(shape_val <= static_cast<npy_uintp>(std::numeric_limits<npy_intp>::max())) {
             new_shape[i] = static_cast<npy_intp>(shape_val);
         }
@@ -210,6 +208,7 @@ void *py_malloc(size_t n_elem, size_t elem_size) {
         PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
         return nullptr;
     }
+    assert(*alloc_size > 0u);
     void *const ret = PyMem_Malloc(*alloc_size);
     if(!ret) {
         PyErr_NoMemory();
