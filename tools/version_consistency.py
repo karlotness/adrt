@@ -127,20 +127,6 @@ def find_macro_min_python(py_cpp):
     return str(canonicalize_version(ver))
 
 
-def find_cibuildwheel_min_python(pyproject_toml):
-    ver_re = re.compile(r"cp3(?P<minor>\d+)")
-    with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomllib.load(pyproj_file)
-    build_versions = defs["tool"]["cibuildwheel"]["build"]
-    if not isinstance(build_versions, list):
-        build_versions = build_versions.split()
-    versions = []
-    for ver in build_versions:
-        if match := ver_re.match(ver):
-            versions.append(f"python==3.{match.group('minor')}")
-    return find_min_version("python", versions)
-
-
 def find_package_min_numpy(pyproject_toml):
     with open(pyproject_toml, "rb") as pyproj_file:
         defs = tomllib.load(pyproj_file)
@@ -182,12 +168,10 @@ if __name__ == "__main__":
     # Check Python version requirements
     meta_min_python = find_meta_min_python("pyproject.toml")
     macro_limited_api = find_macro_min_python("src/adrt/adrt_cdefs_py.cpp")
-    cibuildwheel_min_python = find_cibuildwheel_min_python("pyproject.toml")
     print(f"Metadata min Python: {meta_min_python}")
     print(f"Limited API macro: {macro_limited_api}")
-    print(f"CIBW min Python: {cibuildwheel_min_python}")
     # Check consistency
-    if not (meta_min_python == macro_limited_api == cibuildwheel_min_python):
+    if meta_min_python != macro_limited_api:
         print("Python version mismatch")
         failure = True
     print("")

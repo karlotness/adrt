@@ -133,10 +133,11 @@ jobs:
     - name: Install cibuildwheel
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade cibuildwheel
+        python -m pip install --upgrade 'cibuildwheel>=2.5.0'
     - name: Build wheels
       run: python -m cibuildwheel --output-dir wheelhouse
       env:
+        CIBW_BUILD: 'cp*'
         CIBW_BEFORE_ALL_WINDOWS: 'pwsh {package}/tools/patch_license_windows.ps1 {package}'
     - name: Store artifact
       uses: actions/upload-artifact@v3
@@ -239,66 +240,10 @@ jobs:
         path: dist/
     - name: Check artifacts
       run: python -m twine check --strict dist/*
-  test-ubuntu:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: wheel
-    strategy:
-      matrix:
-        python: ['3.8', '3.9', '3.10']
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        persist-credentials: false
-    - name: Setup Python
-      uses: actions/setup-python@v3
-      id: setup-python
-      with:
-        python-version: ${{ matrix.python }}
-    - name: Cache pip downloads
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: |
-          pip-releasetest-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
-    - name: Download wheel
-      uses: actions/download-artifact@v3
-      with:
-        name: wheel
-        path: dist/
-    - name: Run tox tests
-      run: python -m tox -e py --installpkg dist/adrt-*-manylinux*_x86_64.whl
-    - name: Clean up
-      run: python -m pip cache remove adrt || true
-  test-manylinux:
-    runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
-    timeout-minutes: 20
-    needs: wheel
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        persist-credentials: false
-    - name: Download wheel
-      uses: actions/download-artifact@v3
-      with:
-        name: wheel
-        path: dist/
-    - name: Run tox tests
-      run: pipx run tox -e py38,py39,py310 --installpkg dist/adrt-*-manylinux*_x86_64.whl
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [check-artifacts, test-ubuntu, test-manylinux]
+    needs: check-artifacts
     permissions:
       contents: write
     steps:
