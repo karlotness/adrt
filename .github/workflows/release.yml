@@ -110,22 +110,25 @@ jobs:
         name: sdist
         path: dist/adrt-*.tar.gz
         if-no-files-found: error
-    - name: Install test dependencies
-      run: python -m pip install --upgrade tox
-    - name: Run tox tests
-      run: python -m tox -e py --installpkg dist/adrt-*.tar.gz
   wheel:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
-    needs: check-cpp
+    needs: sdist
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    - name: Checkout repository
+    - name: Download sdist
+      uses: actions/download-artifact@v3
+      with:
+        name: sdist
+        path: dist/
+    - name: Checkout repository (Windows)
       uses: actions/checkout@v3
+      if: ${{ runner.os == 'Windows' }}
       with:
         persist-credentials: false
+        path: repo
     - name: Setup Python
       uses: actions/setup-python@v3
       with:
@@ -135,10 +138,11 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade 'cibuildwheel>=2.5.0'
     - name: Build wheels
-      run: python -m cibuildwheel --output-dir wheelhouse
+      run: python -m cibuildwheel --output-dir wheelhouse dist/adrt-*.tar.gz
+      shell: bash
       env:
         CIBW_BUILD: 'cp*'
-        CIBW_BEFORE_ALL_WINDOWS: 'pwsh {package}/tools/patch_license_windows.ps1 {package}'
+        CIBW_BEFORE_ALL_WINDOWS: 'pwsh ${{ github.workspace }}\repo\tools\patch_license_windows.ps1 ${{ github.workspace }}\repo\ {package}'
     - name: Store artifact
       uses: actions/upload-artifact@v3
       with:
@@ -208,7 +212,7 @@ jobs:
   check-artifacts:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [sdist, wheel]
+    needs: wheel
     steps:
     - name: Setup Python
       uses: actions/setup-python@v3
