@@ -31,6 +31,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+r"""Utility routines for visualization further processing.
+
+The ``adrt.utils`` module contains routines which are useful for
+visualization or other basic processing tasks. These routines help to
+transform outputs from the core algorithms into forms which may be
+easier to process elsewhere. For example, by aligning the quadrants of
+the ADRT into a single contiguous image, or interpolating the
+irregular ADRT angles into a regular spacing.
+"""
+
+
 __all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
 
 
