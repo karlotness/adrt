@@ -257,6 +257,13 @@ void xdecref(PyArrayObject *arr) {
     adrt::_py::xdecref(adrt::_py::array_to_pyobject(arr));
 }
 
+void report_unsupported_dtype(PyArrayObject *arr) {
+    assert(arr);
+    PyArray_Descr *const descr = PyArray_DESCR(arr);
+    assert(descr);
+    PyErr_Format(PyExc_TypeError, "unsupported array dtype %S", reinterpret_cast<PyObject*>(descr));
+}
+
 }}} // End namespace adrt::_py
 
 extern "C" {
@@ -324,7 +331,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -395,7 +402,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -463,7 +470,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -531,7 +538,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -602,7 +609,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -658,7 +665,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -714,7 +721,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -770,7 +777,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
@@ -826,7 +833,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        PyErr_SetString(PyExc_TypeError, "Unsupported array type");
+        adrt::_py::report_unsupported_dtype(I);
         return nullptr;
     }
 }
