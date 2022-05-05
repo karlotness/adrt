@@ -63,12 +63,12 @@ PyArrayObject *extract_array(PyObject *arg) {
     assert(arg);
     if(!PyArray_Check(arg)) {
         // This isn't an array
-        PyErr_SetString(PyExc_TypeError, "Argument must be a NumPy array or compatible subclass");
+        PyErr_SetString(PyExc_TypeError, "array must be a NumPy array or compatible subclass");
         return nullptr;
     }
     PyArrayObject *const arr = reinterpret_cast<PyArrayObject*>(arg);
     if(!PyArray_ISCARRAY_RO(arr)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must be C-order, contiguous, aligned, and native byte order");
+        PyErr_SetString(PyExc_ValueError, "array must be C-order, contiguous, aligned, and native byte order");
         return nullptr;
     }
     return arr;
@@ -117,7 +117,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
     const int sndim = PyArray_NDIM(arr);
     const unsigned int ndim = static_cast<unsigned int>(sndim);
     if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
-        PyErr_Format(PyExc_ValueError, "Invalid number of dimensions for input array: %d (must be between %zu and %zu)", sndim, min_dim, max_dim);
+        PyErr_Format(PyExc_ValueError, "array must have between %zu and %zu dimensions, but had %d", min_dim, max_dim, sndim);
         return {};
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
@@ -129,7 +129,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
     for(size_t i = 0; i < ndim; ++i) {
         const npy_intp shape = numpy_shape[i];
         if(shape <= 0) {
-            PyErr_SetString(PyExc_ValueError, "Array must not have shape with dimension of zero");
+            PyErr_Format(PyExc_ValueError, "all array dimensions must be nonzero, but found zero in dimension %zu", i);
             return {};
         }
         else if(static_cast<npy_uintp>(shape) > std::numeric_limits<size_t>::max()) {
@@ -177,7 +177,7 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
     static_assert(ndim > 0u, "Need at least one shape dimension");
     const adrt::_common::Optional<size_t> n_elem = adrt::_common::shape_product(shape);
     if(!n_elem) {
-        PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
+        PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
     }
     return n_elem;
 }
@@ -205,7 +205,7 @@ adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, 
 void *py_malloc(size_t n_elem, size_t elem_size) {
     const adrt::_common::Optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
     if(!alloc_size) {
-        PyErr_SetString(PyExc_ValueError, "Array is too big; unable to allocate temporary space");
+        PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
         return nullptr;
     }
     assert(*alloc_size > 0u);
@@ -280,7 +280,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::adrt_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must be square with a power of two shape");
+        PyErr_SetString(PyExc_ValueError, "array must be square with a power of two shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -353,7 +353,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     if(!adrt::adrt_step_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have valid shape for ADRT, use adrt_init");
+        PyErr_SetString(PyExc_ValueError, "array must have valid shape for ADRT, use adrt_init");
         return nullptr;
     }
     // Process int argument
@@ -363,7 +363,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::adrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
+        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use num_iters", *iter);
         return nullptr;
     }
     // Compute effective output shape
@@ -419,7 +419,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     if(!adrt::iadrt_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -487,7 +487,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::bdrt_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -560,7 +560,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     if(!adrt::bdrt_step_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
     // Process int argument
@@ -570,7 +570,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::bdrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_SetString(PyExc_ValueError, "Parameter step is out of range for provided array shape, use num_iters");
+        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use num_iters", *iter);
         return nullptr;
     }
     // Compute effective output shape
@@ -626,7 +626,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::interp_adrtcart_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -682,7 +682,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::fmg_restriction_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array must have a valid ADRT output shape");
+        PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
     // Compute effective output shape
@@ -738,7 +738,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::fmg_prolongation_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array is too large for prolongation operator");
+        PyErr_SetString(PyExc_ValueError, "array is too large for prolongation operator");
         return nullptr;
     }
     // Compute effective output shape
@@ -794,7 +794,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     if(!adrt::fmg_highpass_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "Provided array is too small to high-pass filter");
+        PyErr_SetString(PyExc_ValueError, "array is too small to high-pass filter");
         return nullptr;
     }
     // Compute effective output shape

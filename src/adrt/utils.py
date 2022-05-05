@@ -86,7 +86,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
+        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
     # Compute output shape
     in_rows = 2 * n - 1
     out_rows = 3 * n - 2
@@ -125,7 +125,7 @@ def truncate(a, /):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
+        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
     return np.stack(
         [
             np.flip(a[..., 0, :n, :n], axis=-2).swapaxes(-1, -2),

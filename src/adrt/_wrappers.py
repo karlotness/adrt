@@ -98,7 +98,7 @@ def _normalize_array(a, /):
         # Explicitly fail if not ndarray (or subclass).
         # Users otherwise may get a confusing error related to the dtype attribute.
         raise TypeError(
-            f"Array argument must be numpy.ndarray, got {_format_object_type(a)}"
+            f"array must be numpy.ndarray, but got {_format_object_type(a)}"
         )
     a = np.asarray(a, a.dtype.newbyteorder("="), "C")
     if not a.flags.aligned:

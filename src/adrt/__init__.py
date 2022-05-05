@@ -99,10 +99,12 @@ def iadrt_fmg(a, /, *, max_iters=None):
     """
     if a.ndim > 3:
         raise ValueError(
-            f"Batch dimension not supported for iadrt_fmg, got {a.ndim} dimensions"
+            f"batch dimension not supported for iadrt_fmg, got {a.ndim} dimensions"
         )
     if max_iters is not None and max_iters < 1:
-        raise ValueError(f"Must allow at least one iteration (requested {max_iters})")
+        raise ValueError(
+            f"must allow at least one iteration, but specified {max_iters}"
+        )
     # Following recipe for itertools.pairwise from Python 3.10
     i1, i2 = itertools.tee(
         itertools.chain(

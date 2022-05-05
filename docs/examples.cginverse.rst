@@ -59,13 +59,13 @@ performs the actual inversion operation using conjugate gradients.
 
    def iadrt_cg(b, **kwargs):
        if b.ndim > 3:
-           raise ValueError("Batch dimension not supported for iadrt_cg")
+           raise ValueError("batch dimension not supported for iadrt_cg")
        img_size = b.shape[-1]
        linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
        tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
        x, info = cg(linop, tb, **kwargs)
        if info != 0:
-           raise ValueError(f"Convergence failed (cg status {info})")
+           raise ValueError(f"convergence failed (cg status {info})")
        return x.reshape((img_size, img_size))
 
 We'll use the same starting image as in the :doc:`quickstart`, but we
