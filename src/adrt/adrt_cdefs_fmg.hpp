@@ -101,9 +101,9 @@ namespace adrt {
         assert(shape == adrt::fmg_highpass_result_shape(shape));
 
         // Convolution constants for kernel [[a, b, a], [[b, c, b]], [a, b, a]]
-        const adrt_scalar conv_a = static_cast<adrt_scalar>(-1) / static_cast<adrt_scalar>(16);
-        const adrt_scalar conv_b = static_cast<adrt_scalar>(-1) / static_cast<adrt_scalar>(8);
-        const adrt_scalar conv_c = static_cast<adrt_scalar>(3) / static_cast<adrt_scalar>(4);
+        const adrt_scalar conv_a = static_cast<adrt_scalar>(-0.0625L); // -1/16
+        const adrt_scalar conv_b = static_cast<adrt_scalar>(-0.125L); // -1/8
+        const adrt_scalar conv_c = static_cast<adrt_scalar>(0.75L); // 3/4
 
         ADRT_OPENMP("omp parallel for collapse(2) default(none) shared(data, shape, out, conv_a, conv_b, conv_c)")
         for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
