@@ -31,17 +31,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-r"""Utility routines for visualization further processing.
-
-The ``adrt.utils`` module contains routines which are useful for
-visualization or other basic processing tasks. These routines help to
-transform outputs from the core algorithms into forms which may be
-easier to process elsewhere. For example, by aligning the quadrants of
-the ADRT into a single contiguous image, or interpolating the
-irregular ADRT angles into a regular spacing.
-"""
-
-
 __all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
 
 
@@ -86,7 +75,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
+        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
     # Compute output shape
     in_rows = 2 * n - 1
     out_rows = 3 * n - 2
@@ -125,7 +114,7 @@ def truncate(a, /):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
+        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
     return np.stack(
         [
             np.flip(a[..., 0, :n, :n], axis=-2).swapaxes(-1, -2),
@@ -160,117 +149,77 @@ def interp_to_cart(adrt_out, /):
 
     """
 
-    def _coord_transform(h, t, n):
-        """
-        Map to coordinates
+    n = adrt_out.shape[-1]      # number of columns (n x n image)
+    nq = 4                      # no of quadrants
 
-        """
-        theta = np.arctan(t / (n - 1))
-        l0 = 0.5 * (np.cos(theta) + np.sin(theta))
-        h0 = (n - 1 + t - h) / (n - 1 + t)
-        s = -l0 * h0 + (1 - h0) * l0
+    tt = np.arange(n).reshape(1, n)
+    theta = np.arctan(tt / (n - 1))
+    hh = np.arange(2 * n - 1).reshape(2 * n - 1, 1)
+    l0 = 0.5 * (np.cos(theta) + np.sin(theta)) 
+    h0 = (n - 1 + tt - hh) / (n - 1 + tt)
 
-        return theta, s
-
-    n = adrt_out.shape[-1]
-
-    theta_canon = np.zeros((2 * n - 1, n))
-    s_canon = np.zeros((2 * n - 1, n))
-    for t in range(n):
-        for h in range(2 * n - 1):
-            theta, s = _coord_transform(h, t, n)
-            theta_canon[h, t] = np.rad2deg(theta)
-            s_canon[h, t] = s
+    theta_canon = np.vstack([np.rad2deg(theta)]*(2*n - 1))
+    theta_canon_m = theta_canon - 90.0
+    s_canon = (1 - 2.0*h0) * l0
 
     adrt_cart_out = np.zeros((n, 4 * n))
     theta_cart_out = np.zeros((n, 4 * n))
     s_cart_out = np.zeros((n, 4 * n))
 
-    for i in range(4):
-        if i == 0:
-            s_cart = np.linspace(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
-            th_cart = np.linspace(-90.0, -45.0, n)
+    s_cart = np.linspace(-0.5*np.sqrt(2), 0.5*np.sqrt(2), n)
+    index_canon = np.arange(n)
 
-            theta_loc = theta_canon - 90.0
-            s_loc = s_canon
-            quadrant = adrt_out[i, :, :]
+    th_cart = np.linspace(0.0, 45.0, n+1)
+    th_cart = 0.5*(th_cart[1:] + th_cart[:-1])
 
-            z = np.zeros((n, n))
-            w = np.zeros((n, n))
-            for j in range(n):
-                z[:, j] = np.interp(
-                    s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
-                )
-            for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, :], z[j, :]) / np.cos(
-                    np.deg2rad(th_cart[::-1] + 45.0)
-                )
+    cos_factor_q = np.cos(np.deg2rad(th_cart))
 
-            theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
+    theta_loc_list = [ theta_canon_m,
+                      -theta_canon[::-1, ::-1],
+                       theta_canon,
+                      -theta_canon_m[::-1, ::-1]]
 
-        elif i == 1:
-            s_cart = np.linspace(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
-            th_cart = np.linspace(-45.0, 0.0, n)
+    s_loc_list = [ s_canon, 
+                  -s_canon[::-1, :],
+                   s_canon,
+                  -s_canon[::-1, :]]
 
-            theta_loc = -theta_canon
-            theta_loc = theta_loc[::-1, :]
-            s_loc = -s_canon[::-1, :]
-            quadrant = adrt_out[i, ::-1, :]
+    quadrant_list = [adrt_out[0,    :,    :],
+                     adrt_out[1, ::-1,    :],
+                     adrt_out[2,    :,    :],
+                     adrt_out[3, ::-1,    :]]
 
-            z = np.zeros((n, n))
-            w = np.zeros((n, n))
-            for j in range(n):
-                z[:, j] = np.interp(
-                    s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
-                )
-            for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) / np.cos(
-                    np.deg2rad(th_cart)
-                )
+    index_list = [index_canon,
+                  index_canon[::-1],
+                  index_canon,
+                  index_canon[::-1]]
 
-            theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
+    cos_factor_list = [cos_factor_q,
+                       cos_factor_q[::-1],
+                       cos_factor_q,
+                       cos_factor_q[::-1]]
 
-        elif i == 2:
-            s_cart = np.linspace(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
-            th_cart = np.linspace(0.0, 45.0, n)
+    for i in range(nq):
+        z = np.zeros((n, n))
+        w = np.zeros((n, n))
 
-            z = np.zeros((n, n))
-            w = np.zeros((n, n))
-            for j in range(n):
-                z[:, j] = np.interp(
-                    s_cart, s_canon[:, j], adrt_out[i, :, j], left=0.0, right=0.0
-                )
-            for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_canon[j, :], z[j, :]) / np.cos(
-                    np.deg2rad(th_cart)
-                )
+        theta_loc = theta_loc_list[i]
+        s_loc = s_loc_list[i]
+        quadrant = quadrant_list[i]
+        index = index_list[i]
+        cos_factor = cos_factor_list[i]
+        th_cart_q = th_cart + i*45.0 - 90.0
 
-            theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
+        for j in range(n):
+            z[:, index[j]] = np.interp(s_cart, s_loc[:, j], quadrant[:, j], 
+                                       left=0.0, right=0.0)
+        for j in range(n):
+            w[j, :] = np.interp(th_cart_q, theta_loc[j, :], z[j, :])/cos_factor
 
-        elif i == 3:
-            s_cart = np.linspace(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
-            th_cart = np.linspace(45.0, 90.0, n)
-
-            theta_loc = (45.0 - theta_canon) + 45.0
-            theta_loc = theta_loc[::-1, :]
-            s_loc = -s_canon[::-1, :]
-            quadrant = adrt_out[i, ::-1, :]
-
-            z = np.zeros((n, n))
-            w = np.zeros((n, n))
-            for j in range(n):
-                z[:, j] = np.interp(
-                    s_cart, s_loc[:, j], quadrant[:, j], left=0.0, right=0.0
-                )
-            for j in range(n):
-                w[j, :] = np.interp(th_cart, theta_loc[j, ::-1], z[j, ::-1]) / np.cos(
-                    np.deg2rad(th_cart[::-1] - 45.0)
-                )
-
-            theta_cart, s_cart = np.meshgrid(th_cart, s_cart)
+        theta_out, s_out = np.meshgrid(th_cart_q, s_cart)
 
         adrt_cart_out[:, i * n : (i + 1) * n] = w
-        theta_cart_out[:, i * n : (i + 1) * n] = theta_cart
-        s_cart_out[:, i * n : (i + 1) * n] = s_cart
+        theta_cart_out[:, i * n : (i + 1) * n] = theta_out
+        s_cart_out[:, i * n : (i + 1) * n] = s_out
 
     return theta_cart_out, s_cart_out, adrt_cart_out
