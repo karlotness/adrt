@@ -71,13 +71,11 @@ namespace adrt {
 
 
         const adrt_scalar dth = pi / Nf4;
-        const adrt_scalar th_left = -pi_2 + 0.5*dth;
+        const adrt_scalar th_left = -pi_2 + half*dth;
 
         const adrt_scalar ds = sqrt2 / Nf;
-        const adrt_scalar s_left = -sqrt2_2 + 0.5*ds;
+        const adrt_scalar s_left = -sqrt2_2 + half*ds;
 
-        ADRT_OPENMP("omp parallel default(none) shared(data, in_shape, out, output_shape, N, N_, Nf, Nf4, pi, pi_2, pi_4, sqrt2, sqrt2_2, half, two, one, dth, th_left, ds, s_left)")
-        ADRT_OPENMP("omp for collapse(3) nowait")
         for(size_t batch = 0; batch < std::get<0>(in_shape); ++batch) {
             for(size_t offset = 0; offset < N; ++offset) {
                 for(size_t angle = 0; angle < 4u*N; ++angle) {
@@ -94,7 +92,8 @@ namespace adrt {
 
                     const size_t q = static_cast<size_t>(th > 0.0) + static_cast<size_t>(th >  -pi_4) + static_cast<size_t>(th > pi_4);
                     const adrt_scalar ti_ = static_cast<adrt_scalar>(std::floor(std::tan(th0)* (Nf - 1)));
-                    const adrt_scalar factor = std::sqrt(std::pow(ti_/Nf, 2) + std::pow(1.0 - 1.0/Nf, 2));
+
+                    const adrt_scalar factor = std::sqrt(static_cast<adrt_scalar>(std::pow(ti_/Nf, 2)) + static_cast<adrt_scalar>(std::pow(1.0 - 1.0/Nf, 2)));
 
                     const adrt_scalar h0 = half + s0 / std::cos(th0)  - half*std::tan(th0);
                     const int hi_ = static_cast<int>(std::floor((1.0 - h0)*Nf - 0.5*(sgn + 1)));
