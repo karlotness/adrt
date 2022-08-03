@@ -161,13 +161,13 @@ def interp_to_cart(adrt_out, /):
         sgn = np.sign(th) - np.sign(th - np.pi / 4) - np.sign(th + np.pi / 4)
         s0 = sgn * s
 
-        t = np.tan(th0) * (N - 1)
+        t = np.tan(th0) * (n - 1)
         ti = np.floor(t).astype(int)
-        factor = np.sqrt((ti / N) ** 2 + (1 - 1 / N) ** 2)
+        factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2)
 
         h0 = 0.5 + s0 / np.cos(th0) - 0.5 * np.tan(th0)
 
-        h = (1 - h0) * N - 1 + 0.5 * (sgn + 1)
+        h = (1 - h0) * n - 1 + 0.5 * (sgn + 1)
         hi = np.floor(h).astype(int)
 
         return (q, factor, ti, hi)
@@ -178,20 +178,22 @@ def interp_to_cart(adrt_out, /):
         return leftgrid + 0.5 * step
 
     if adrt_out.ndim == 4:
-        N = adrt_out.shape[3]
+        n = adrt_out.shape[3]
     elif adrt_out.ndim == 3:
-        N = adrt_out.shape[2]
+        n = adrt_out.shape[2]
 
-    theta_cart_out = _halfgrid(0.5 * np.pi, 4 * N)
-    s_cart_out = _halfgrid(np.sqrt(2) / 2, N)
+    theta_cart_out = _halfgrid(0.5 * np.pi, 4 * n)
+    s_cart_out = _halfgrid(np.sqrt(2) / 2, n)
 
-    TH, S = np.meshgrid(theta_cart_out, s_cart_out)
+    angle, offset = np.meshgrid(theta_cart_out, s_cart_out)
 
-    (Q, FACT, TI, HI) = _coord_transform(TH, S)
+    (quadrant, factor, adrt_tindex, adrt_hindex) = _coord_transform(angle, offset)
 
-    ii = np.logical_and(HI > -1, HI < 2 * N - 1)
+    ii = np.logical_and(adrt_hindex > -1, adrt_hindex < 2 * n - 1)
 
-    adrt_cart_out = np.zeros((N, 4 * N))
-    adrt_cart_out[ii] = FACT[ii] * adrt_out[Q[ii], HI[ii], TI[ii]] / N
+    adrt_cart_out = np.zeros((n, 4 * n))
+    adrt_cart_out[ii] = (
+        factor[ii] * adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]] / n
+    )
 
     return theta_cart_out, s_cart_out, adrt_cart_out
