@@ -57,9 +57,9 @@ namespace adrt {
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
         const size_t N = std::get<3>(in_shape);
-        const int N_ = (int) N;
-        const adrt_scalar Nf = N;
-        const adrt_scalar Nf4 = 4.0 * N;
+        const int N_ = static_cast<int>(N);
+        const adrt_scalar Nf = static_cast<adrt_scalar>(N);
+        const adrt_scalar Nf4 = static_cast<adrt_scalar>(4.0) * Nf;
         const adrt_scalar pi = adrt::_const::pi<adrt_scalar>();
         const adrt_scalar pi_2 = adrt::_const::pi_2<adrt_scalar>();
         const adrt_scalar pi_4 = adrt::_const::pi_4<adrt_scalar>();
@@ -76,12 +76,12 @@ namespace adrt {
         const adrt_scalar ds = sqrt2 / Nf;
         const adrt_scalar s_left = -sqrt2_2 + 0.5*ds;
 
-        ADRT_OPENMP("omp parallel default(none) shared(data, in_shape, out, output_shape)")
+        ADRT_OPENMP("omp parallel default(none) shared(data, in_shape, out, output_shape, N, N_, Nf, Nf4, pi, pi_2, pi_4, sqrt2, sqrt2_2, half, two, one, dth, th_left, ds, s_left)")
         ADRT_OPENMP("omp for collapse(3) nowait")
         for(size_t batch = 0; batch < std::get<0>(in_shape); ++batch) {
             for(size_t offset = 0; offset < N; ++offset) {
                 for(size_t angle = 0; angle < 4u*N; ++angle) {
-                    const adrt_scalar j = static_cast<adrt_scalar>(N-1 - offset);
+                    const adrt_scalar j = static_cast<adrt_scalar>(N - 1 - offset);
                     const adrt_scalar s = s_left +  j*ds;
 
                     const adrt_scalar i = static_cast<adrt_scalar>(4u*N-1 - angle);
