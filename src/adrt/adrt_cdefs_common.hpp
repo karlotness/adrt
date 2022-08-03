@@ -65,6 +65,18 @@ namespace adrt {
 
         // Constants as function templates standing in for C++14 variable templates
         template<typename scalar>
+        constexpr scalar pi() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(3.141592653589793238462643383279502884L);
+        }
+        
+        template<typename scalar>
+        constexpr scalar pi_2() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(1.570796326794896619231321691639751442L);
+        }
+        
+        template<typename scalar>
         constexpr scalar pi_4() {
             static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
             return static_cast<scalar>(0.785398163397448309615660845819875721L);
@@ -74,6 +86,12 @@ namespace adrt {
         constexpr scalar sqrt2() {
             static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
             return static_cast<scalar>(1.414213562373095048801688724209698079L);
+        }
+
+        template<typename scalar>
+        constexpr scalar sqrt2_2() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(0.707106781186547524400844362104849039L);
         }
 
         constexpr bool openmp_enabled() {
