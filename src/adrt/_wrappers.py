@@ -324,7 +324,7 @@ def interp_to_cart(a, /):
           array of shape ``(B?, 4, N, N)`` containing interpolated data
 
     """
-    return _adrt_cdefs.interp_adrtcart(_normalize_array(a))
+    return _adrt_cdefs.interp_to_cart(_normalize_array(a))
 
 
 @_set_module("adrt.core")
