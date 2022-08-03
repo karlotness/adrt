@@ -325,7 +325,7 @@ namespace adrt {
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape) {
         return {
             std::get<0>(shape), // batch
-            std::get<2>(shape), // rows
+            std::get<3>(shape), // rows
             4_uz * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
         };
     }
