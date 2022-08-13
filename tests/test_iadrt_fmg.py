@@ -31,6 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import functools
 import pytest
 import numpy as np
 import adrt
@@ -41,6 +42,7 @@ def counting_iadrt_fmg_step(monkeypatch):
     count = 0
     orig_fn = adrt.core.iadrt_fmg_step
 
+    @functools.wraps(orig_fn)
     def counting_inv(*args, **kwargs):
         nonlocal count
         count += 1
