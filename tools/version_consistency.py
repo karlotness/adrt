@@ -36,7 +36,7 @@ import re
 import ast
 import sys
 from packaging.requirements import Requirement
-from packaging.version import Version
+from packaging.version import Version, InvalidVersion
 from packaging.utils import canonicalize_name, canonicalize_version
 
 
@@ -53,6 +53,14 @@ parser.add_argument(
     default=None,
     help="The tag reference being deployed (if any)",
 )
+
+
+def is_valid_version(ver_str):
+    try:
+        _ = Version(ver_str)
+    except InvalidVersion:
+        return False
+    return True
 
 
 def find_min_version(package, requirements):
@@ -159,7 +167,17 @@ if __name__ == "__main__":
     print(f"Package variable version: {var_version}")
     if tag_version is not None:
         print(f"Release tag version: {tag_version}")
+    # Check format
+    if var_version.strip() != var_version:
+        print("Package version string has extra spaces")
+        failure = True
+    if var_version.lower() != var_version:
+        print("Package version is not lower case")
+        failure = True
     # Check consistency
+    if not is_valid_version(var_version):
+        print("Package version is invalid (see PEP 440)")
+        failure = True
     if tag_version is not None and tag_version != var_version:
         print("Package version mismatch")
         failure = True
