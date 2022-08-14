@@ -106,8 +106,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
             ret[..., :in_rows, i, :] = quadrant
         else:
             ret[..., -in_rows:, i, :] = quadrant
-    ret.shape = output_shape
-    return ret
+    return ret.reshape(output_shape)
 
 
 def truncate(a, /):
