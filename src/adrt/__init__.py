@@ -45,7 +45,7 @@ utility routines can be found in :mod:`adrt.utils`.
 
 
 __all__ = ["adrt", "iadrt", "bdrt", "iadrt_fmg", "utils", "core"]
-__version__ = "0.1.0"
+__version__ = "0.1.0.dev"
 
 
 import itertools

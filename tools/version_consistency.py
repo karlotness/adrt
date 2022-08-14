@@ -53,6 +53,11 @@ parser.add_argument(
     default=None,
     help="The tag reference being deployed (if any)",
 )
+parser.add_argument(
+    "--not_dev",
+    action="store_true",
+    help="Fail on development versions",
+)
 
 
 def is_valid_version(ver_str):
@@ -61,6 +66,13 @@ def is_valid_version(ver_str):
     except InvalidVersion:
         return False
     return True
+
+
+def is_dev_version(ver_str):
+    try:
+        return Version(ver_str).is_devrelease
+    except InvalidVersion:
+        return False
 
 
 def find_min_version(package, requirements):
@@ -180,6 +192,9 @@ if __name__ == "__main__":
         failure = True
     if tag_version is not None and tag_version != var_version:
         print("Package version mismatch")
+        failure = True
+    if args.not_dev and is_dev_version(var_version):
+        print("Package version is a development release")
         failure = True
     print("")
 
