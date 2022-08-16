@@ -45,14 +45,21 @@ namespace adrt {
     bool interp_adrtcart_is_valid_shape(const std::array<size_t, 4> &shape);
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape);
 
-    template <typename adrt_scalar>
+    template <typename float_index = double>
+    bool interp_adrtcart_is_valid_float_index(const std::array<size_t, 4> &in_shape) {
+        return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>(), 4_uz);
+    }
+
+    template <typename adrt_scalar, typename float_index = double>
     void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic
         static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
+        static_assert(std::is_floating_point<float_index>::value, "Floating point index type must be a floating point type");
 
         assert(data);
         assert(out);
         assert(adrt::interp_adrtcart_is_valid_shape(in_shape));
+        assert(adrt::interp_adrtcart_is_valid_float_index<float_index>(in_shape));
 
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
