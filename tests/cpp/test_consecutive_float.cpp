@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cstddef>
 #include <cmath>
 #include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
