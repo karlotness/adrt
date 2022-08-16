@@ -35,6 +35,7 @@
 #include <cstddef>
 #include <array>
 #include <type_traits>
+#include <limits>
 #include <cassert>
 
 #ifdef _OPENMP
@@ -92,6 +93,20 @@ namespace adrt {
         constexpr scalar sqrt2_2() {
             static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
             return static_cast<scalar>(0.707106781186547524400844362104849039L);
+        }
+
+        template<typename scalar>
+        constexpr typename std::enable_if<std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
+            static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
+            static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
+            return 1_uz << std::numeric_limits<scalar>::digits;
+        }
+
+        template<typename scalar>
+        constexpr typename std::enable_if<std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
+            static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
+            static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
+            return std::numeric_limits<size_t>::max();
         }
 
         constexpr bool openmp_enabled() {
