@@ -190,9 +190,14 @@ namespace adrt {
             return adrt::_common::shape_product(shape.data(), shape.size());
         }
 
-        inline size_t floor_div2(size_t val) {
+        inline size_t floor_div(size_t val, size_t d) {
+            assert(d != 0u);
             // Only for non-negative values
-            return val / 2_uz;
+            return val / d;
+        }
+
+        inline size_t floor_div2(size_t val) {
+            return adrt::_common::floor_div(val, 2_uz);
         }
 
         inline size_t ceil_div(size_t val, size_t d) {
