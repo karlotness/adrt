@@ -650,7 +650,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
-        adrt::interp_adrtcart<float, float>(in_data, *input_shape, out_data);
+        adrt::interp_adrtcart<npy_float32, float>(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         return adrt::_py::array_to_pyobject(ret);
@@ -665,7 +665,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
-        adrt::interp_adrtcart<double, float>(in_data, *input_shape, out_data);
+        adrt::interp_adrtcart<npy_float64, float>(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         return adrt::_py::array_to_pyobject(ret);
