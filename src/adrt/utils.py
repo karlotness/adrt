@@ -174,7 +174,7 @@ def interp_to_cart(adrt_out, /):
 
         t = np.tan(th0) * (n - 1)
         ti = np.floor(t).astype(int)
-        factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2)
+        factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2) / n
 
         h0 = 0.5 + s0 / np.cos(th0) - 0.5 * np.tan(th0)
 
@@ -209,8 +209,8 @@ def interp_to_cart(adrt_out, /):
 
     print(adrt_tindex[ii].min())
     print(adrt_tindex[ii].max())
-    adrt_cart_out[ii] = factor[ii] * (
-        adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]] / n
+    adrt_cart_out[ii] = (
+        factor[ii] * adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]]
     )
 
     return theta_cart_out, s_cart_out, adrt_cart_out
