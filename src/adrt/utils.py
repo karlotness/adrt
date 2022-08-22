@@ -150,6 +150,7 @@ def interp_to_cart(adrt_out, /):
     """
 
     def _coord_transform(th, s):
+        n = th.shape[0]
         th0 = np.abs(th) - np.abs(th - np.pi / 4) - np.abs(th + np.pi / 4) + np.pi / 2
         q = (
             3
@@ -167,7 +168,7 @@ def interp_to_cart(adrt_out, /):
 
         h0 = 0.5 + s0 / np.cos(th0) - 0.5 * np.tan(th0)
 
-        h = (1 - h0) * n - 1 + 0.5 * (sgn + 1)
+        h = (1 - h0) * n + 0.5 * (sgn - 1)
         hi = np.floor(h).astype(int)
 
         return (q, factor, ti, hi)
@@ -192,8 +193,14 @@ def interp_to_cart(adrt_out, /):
     ii = np.logical_and(adrt_hindex > -1, adrt_hindex < 2 * n - 1)
 
     adrt_cart_out = np.zeros((n, 4 * n))
-    adrt_cart_out[ii] = (
-        factor[ii] * adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]] / n
+
+    print(adrt_hindex[ii].min())
+    print(adrt_hindex[ii].max())
+
+    print(adrt_tindex[ii].min())
+    print(adrt_tindex[ii].max())
+    adrt_cart_out[ii] = factor[ii] * (
+        adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]] / n
     )
 
     return theta_cart_out, s_cart_out, adrt_cart_out
