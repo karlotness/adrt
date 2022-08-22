@@ -629,6 +629,12 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         PyErr_SetString(PyExc_ValueError, "array must have a valid ADRT output shape");
         return nullptr;
     }
+    // Check that we will be able to process this input shape
+    // Keep this in sync with the largest float type used for indexing below
+    if(!adrt::interp_adrtcart_is_valid_float_index<float>(*input_shape)) {
+        PyErr_SetString(PyExc_ValueError, "array is too big for interpolation index calculations");
+        return nullptr;
+    }
     // Compute effective output shape
     const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(*input_shape);
     // Process input array
@@ -644,7 +650,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
-        adrt::interp_adrtcart(in_data, *input_shape, out_data);
+        adrt::interp_adrtcart<npy_float32, float>(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         return adrt::_py::array_to_pyobject(ret);
@@ -659,7 +665,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
-        adrt::interp_adrtcart(in_data, *input_shape, out_data);
+        adrt::interp_adrtcart<npy_float64, float>(in_data, *input_shape, out_data);
         // PYTHON API ALLOWED BELOW THIS POINT
         Py_END_ALLOW_THREADS
         return adrt::_py::array_to_pyobject(ret);

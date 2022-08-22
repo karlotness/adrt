@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cstddef>
 #include <limits>
 #include <array>
 #include <cassert>

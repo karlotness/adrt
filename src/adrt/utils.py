@@ -31,6 +31,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+r"""Utility routines for visualization further processing.
+
+The ``adrt.utils`` module contains routines which are useful for
+visualization or other basic processing tasks. These routines help to
+transform outputs from the core algorithms into forms which may be
+easier to process elsewhere. For example, by aligning the quadrants of
+the ADRT into a single contiguous image, or interpolating the
+irregular ADRT angles into a regular spacing.
+"""
+
+
 __all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
 
 
@@ -75,7 +86,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
+        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
     # Compute output shape
     in_rows = 2 * n - 1
     out_rows = 3 * n - 2
@@ -95,8 +106,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
             ret[..., :in_rows, i, :] = quadrant
         else:
             ret[..., -in_rows:, i, :] = quadrant
-    ret.shape = output_shape
-    return ret
+    return ret.reshape(output_shape)
 
 
 def truncate(a, /):
@@ -114,7 +124,7 @@ def truncate(a, /):
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
-        raise ValueError(f"Unsuitable shape for ADRT output processing: {a.shape}")
+        raise ValueError(f"unsuitable shape for ADRT output processing {a.shape}")
     return np.stack(
         [
             np.flip(a[..., 0, :n, :n], axis=-2).swapaxes(-1, -2),
