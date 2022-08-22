@@ -31,47 +31,39 @@
 
 #include <cstddef>
 #include <cmath>
+#include <tuple>
+#include <limits>
 #include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
 using std::size_t;
+using float_test_types = std::tuple<float, double>;
 
-TEST_CASE("max consecutive size_t is exactly represented in float", "[common][const][float][float_consecutive_size_t]") {
-    const size_t max_float_size_t = adrt::_const::largest_consecutive_float_size_t<float>();
-    const float float_val = max_float_size_t;
+TEMPLATE_LIST_TEST_CASE("max consecutive size_t is exactly represented in floating point", "[common][const][float][float_consecutive_size_t]", float_test_types) {
+    const size_t max_float_size_t = adrt::_const::largest_consecutive_float_size_t<TestType>();
+    const TestType float_val = max_float_size_t;
     CHECK(std::trunc(float_val) == float_val);
     CHECK(max_float_size_t == static_cast<size_t>(float_val));
 }
 
-TEST_CASE("max consecutive size_t is exactly represented in double", "[common][const][float][float_consecutive_size_t]") {
-    const size_t max_double_size_t = adrt::_const::largest_consecutive_float_size_t<double>();
-    const double double_val = max_double_size_t;
-    CHECK(std::trunc(double_val) == double_val);
-    CHECK(max_double_size_t == static_cast<size_t>(double_val));
-}
-
-TEST_CASE("max consecutive size_t float is consecutive below", "[common][const][float][float_consecutive_size_t]") {
-    const float float_val = adrt::_const::largest_consecutive_float_size_t<float>();
-    const float float_val_below = float_val - 1.0f;
+TEMPLATE_LIST_TEST_CASE("max consecutive size_t floating point is consecutive below", "[common][const][float][float_consecutive_size_t]", float_test_types) {
+    const TestType float_val = adrt::_const::largest_consecutive_float_size_t<TestType>();
+    const TestType float_val_below = float_val - static_cast<TestType>(1);
     CHECK(std::trunc(float_val_below) == float_val_below);
-    CHECK(float_val - float_val_below == 1.0f);
+    CHECK(float_val - float_val_below == static_cast<TestType>(1));
 }
 
-TEST_CASE("max consecutive size_t double is consecutive below", "[common][const][float][float_consecutive_size_t]") {
-    const double double_val = adrt::_const::largest_consecutive_float_size_t<double>();
-    const double double_val_below = double_val - 1.0;
-    CHECK(std::trunc(double_val_below) == double_val_below);
-    CHECK(double_val - double_val_below == 1.0);
-}
-
-TEST_CASE("max consecutive size_t float is not consecutive above", "[common][const][float][float_consecutive_size_t]") {
-    const float float_val = adrt::_const::largest_consecutive_float_size_t<float>();
-    const float float_val_above = float_val + 1.0f;
-    CHECK(float_val == float_val_above);
-}
-
-TEST_CASE("max consecutive size_t double is not consecutive above", "[common][const][float][float_consecutive_size_t]") {
-    const double double_val = adrt::_const::largest_consecutive_float_size_t<double>();
-    const double double_val_above = double_val + 1.0;
-    CHECK(double_val == double_val_above);
+TEMPLATE_LIST_TEST_CASE("max consecutive size_t is likely at end of consecutive range", "[common][const][float][float_consecutive_size_t]", float_test_types) {
+    const TestType float_val = adrt::_const::largest_consecutive_float_size_t<TestType>();
+    const TestType float_val_above = float_val + static_cast<TestType>(1);
+    if(std::numeric_limits<TestType>::digits < std::numeric_limits<size_t>::digits) {
+        // Normal float type, non-consecutive above
+        CHECK(float_val == float_val_above);
+    }
+    else {
+        // Very big float type (size_t max fits into consecutive range)
+        CHECK(float_val == static_cast<TestType>(std::numeric_limits<size_t>::max()));
+        CHECK(std::trunc(float_val_above) == float_val_above);
+        CHECK(float_val_above - float_val == static_cast<TestType>(1));
+    }
 }
