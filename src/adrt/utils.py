@@ -176,9 +176,9 @@ def interp_to_cart(adrt_out, /):
         ti = np.floor(t).astype(int)
         factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2) / n
 
-        h0 = 0.5 + s0 / np.cos(th0) - 0.5 * np.tan(th0)
+        h0 = 0.5 * (1.0 + np.tan(th0)) - s0 / np.cos(th0)
 
-        h = (1 - h0) * n + 0.5 * (sgn - 1)
+        h = h0 * n + 0.5 * (sgn - 1)
         hi = np.floor(h).astype(int)
 
         return (q, factor, ti, hi)

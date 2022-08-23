@@ -104,9 +104,9 @@ namespace adrt {
                     const adrt_scalar sideb = one - one/Nf;
                     const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt( sidea*sidea + sideb*sideb ));
 
-                    const adrt_scalar h0 = half*(one - static_cast<adrt_scalar>(std::tan(th0))) + s_sgnd / (static_cast<adrt_scalar>(std::cos(th0)));
+                    const adrt_scalar h0 = half*(one + static_cast<adrt_scalar>(std::tan(th0))) - s_sgnd / (static_cast<adrt_scalar>(std::cos(th0)));
 
-                    const adrt_scalar hif = static_cast<adrt_scalar>(std::floor((one - h0)*Nf - half*(sgn + one)));
+                    const adrt_scalar hif = static_cast<adrt_scalar>(std::floor(h0*Nf - half*(sgn + one)));
 
                     const size_t ti = static_cast<size_t>(tif);
                     const size_t hi = static_cast<size_t>(hif);
