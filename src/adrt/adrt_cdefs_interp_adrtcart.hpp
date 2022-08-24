@@ -83,6 +83,7 @@ namespace adrt {
         const adrt_scalar ds = sqrt2 / Nf;
         const adrt_scalar s_left = -sqrt2_2 + half*ds;
 
+        ADRT_OPENMP("omp parallel for collapse(3)")
         for(size_t batch = 0; batch < std::get<0>(in_shape); ++batch) {
             for(size_t offset = 0; offset < N; ++offset) {
                 for(size_t angle = 0; angle < 4_uz*N; ++angle) {
