@@ -174,7 +174,8 @@ def _coords_adrt_to_cart_quad(hi, ti, q):
     Parameters
     ----------
     hi : numpy.ndarray
-        1D array of dimension (2*n - 1,) containing intercept indices of a single-quadrant ADRT domain
+        1D array of dimension (2*n - 1,) containing intercept indices
+        of a single-quadrant ADRT domain
     ti : numpy.ndarray
         1D array of dimension (n,) containing slope indices of a
         single-quadrant ADRT domain
