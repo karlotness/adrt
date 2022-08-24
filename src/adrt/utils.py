@@ -42,7 +42,13 @@ irregular ADRT angles into a regular spacing.
 """
 
 
-__all__ = ["stitch_adrt", "truncate", "interp_to_cart"]
+__all__ = [
+    "stitch_adrt",
+    "truncate",
+    "coord_adrt_to_cart",
+    "coord_cart_to_adrt",
+    "interp_to_cart",
+]
 
 
 import numpy as np
@@ -136,6 +142,167 @@ def truncate(a, /):
     )
 
 
+def _cellcenters(a, b, n):
+    r"""Helper function that creates an array of cell-centers of uniform grid
+
+    Parameters
+    ----------
+    a : float
+        left boundary of grid
+    b : float
+        right boundary of grid
+    n : int
+        number of grid-cells
+
+    Returns
+    -------
+    centers : numpy.ndarray
+        array of shape (n,) containing center point of the n uniform grid
+        partition of the interval (a, b)
+    """
+
+    leftgrid, step = np.linspace(a, b, num=n, endpoint=False, retstep=True)
+    centers = leftgrid + 0.5 * step
+
+    return centers
+
+
+def _coords_adrt_to_cart_quad(hi, ti, q):
+    r"""Compute Radon domain coordinates of indices in the single-quadrant ADRT
+    domain
+
+    Parameters
+    ----------
+    hi : numpy.ndarray
+        1D array of dimension (2*n - 1,) containing intercept indices of a single-quadrant ADRT domain
+    ti : numpy.ndarray
+        1D array of dimension (n,) containing slope indices of a
+        single-quadrant ADRT domain
+    q : int
+        quadrant index
+
+    Returns
+    -------
+    theta : numpy.ndarray
+        2D array of dimension (2*n-1, n) containing Radon domain theta (angle)
+        coordinates
+
+    s : numpy.ndarray
+        2D array of dimension (2*n-1, n) containing Radon domain s (offset)
+        coordinates
+    """
+    orient = q % 2
+
+    nh = len(hi)
+    ns = len(ti)
+
+    theta = np.arctan([ti / (ns - 1)])
+
+    y = (np.arange(ns) / ns).reshape(1, ns)
+    h0 = (hi.reshape(nh, 1) + y) / (1 + y)
+
+    if orient:
+        h0 = 1 - h0
+    s = (h0 - 0.5) * (np.cos(theta) + np.sin(theta))
+
+    if orient:
+        theta = -theta[:, ::-1]
+        s = s[:, ::-1]
+
+    theta += ((q - 1) // 2) * np.pi / 2
+    theta = np.repeat(theta, nh, axis=0)
+
+    return theta, s
+
+
+def coord_adrt_to_cart(n):
+    r"""Compute Radon domain coordinates of indices in the ADRT domain
+
+    Parameters
+    ----------
+    n : int
+        n specifies the dimension ADRT domain to be (4, 2*n-1, n)
+
+    Returns
+    -------
+    theta_full : numpy.ndarray
+        2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
+        (angle) coordinates of the ADRT domain for all quadrants, stacked horizontally.
+
+    s_full : numpy.ndarray
+        2D array of dimensions (2*n-1, 4*n) containing Radon domain s (offset)
+        coordinates of the ADRT domain for all quadrants, stacked horizontally.
+    """
+
+    nq = 4
+
+    hi = _cellcenters(1, 1 / n - 1, 2 * n - 1)
+    ti = np.arange(n)
+
+    s_full = np.zeros((2 * n - 1, nq * n))
+    theta_full = np.zeros((2 * n - 1, nq * n))
+    for q in range(nq):
+        theta_quad, s_quad = _coords_adrt_to_cart_quad(hi, ti, q)
+        s_full[:, q * n : (q + 1) * n] = s_quad
+        theta_full[:, q * n : (q + 1) * n] = theta_quad
+
+    return theta_full, s_full
+
+
+def coord_cart_to_adrt(theta, s, n):
+    r"""Find nearest ADRT entry indices for given point in Radon domain.
+
+    Given a point (theta, s) in Radon domain, find the entry in the ADRT domain
+    of dimensions (4, 2*n-1, n).
+
+    Parameters
+    ----------
+    theta : numpy.ndarray
+        1D array containing theta coordinates to convert to ADRT indices
+    s : numpy.ndarray
+        1D array containing s coordinates to convert to ADRT indices
+    n : int
+        size n determining the dimensions of the ADRT domain (4, 2*n-1, n)
+
+    Returns
+    -------
+    q : int
+        quadrant index in ADRT domain
+    hi : int
+        the intercept index in ADRT domain
+    ti : int
+        the slope index in ADRT domain
+    factor : float
+        a transformation factor
+    """
+    th0 = (
+        np.abs(theta)
+        - np.abs(theta - np.pi / 4)
+        - np.abs(theta + np.pi / 4)
+        + np.pi / 2
+    )
+    q = (
+        3
+        - np.sign(theta).astype(int)
+        - np.sign(theta - np.pi / 4).astype(int)
+        - np.sign(theta + np.pi / 4).astype(int)
+    ) // 2
+
+    sgn = np.sign(theta) - np.sign(theta - np.pi / 4) - np.sign(theta + np.pi / 4)
+    s0 = sgn * s
+
+    t = np.tan(th0) * (n - 1)
+    ti = np.floor(t).astype(int)
+    factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2) / n
+
+    h0 = 0.5 * (1.0 + np.tan(th0)) - s0 / np.cos(th0)
+
+    h = h0 * n + 0.5 * (sgn - 1)
+    hi = np.floor(h).astype(int)
+
+    return (q, ti, hi, factor)
+
+
 def interp_to_cart(adrt_out, /):
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
@@ -159,58 +326,24 @@ def interp_to_cart(adrt_out, /):
 
     """
 
-    def _coord_transform(th, s):
-        n = th.shape[0]
-        th0 = np.abs(th) - np.abs(th - np.pi / 4) - np.abs(th + np.pi / 4) + np.pi / 2
-        q = (
-            3
-            - np.sign(th).astype(int)
-            - np.sign(th - np.pi / 4).astype(int)
-            - np.sign(th + np.pi / 4).astype(int)
-        ) // 2
-
-        sgn = np.sign(th) - np.sign(th - np.pi / 4) - np.sign(th + np.pi / 4)
-        s0 = sgn * s
-
-        t = np.tan(th0) * (n - 1)
-        ti = np.floor(t).astype(int)
-        factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2) / n
-
-        h0 = 0.5 * (1.0 + np.tan(th0)) - s0 / np.cos(th0)
-
-        h = h0 * n + 0.5 * (sgn - 1)
-        hi = np.floor(h).astype(int)
-
-        return (q, factor, ti, hi)
-
-    def _halfgrid(a, n):
-        leftgrid, step = np.linspace(-a, a, num=n, endpoint=False, retstep=True)
-
-        return leftgrid + 0.5 * step
-
     if adrt_out.ndim == 4:
         n = adrt_out.shape[3]
+        adrt_cart_out = np.zeros((adrt_out.shape[0], n, 4 * n))
     elif adrt_out.ndim == 3:
         n = adrt_out.shape[2]
+        adrt_cart_out = np.zeros((n, 4 * n))
 
-    theta_cart_out = _halfgrid(0.5 * np.pi, 4 * n)
-    s_cart_out = _halfgrid(np.sqrt(2) / 2, n)
+    theta_cart_out = _cellcenters(-0.5 * np.pi, 0.5 * np.pi, 4 * n)
+    s_cart_out = _cellcenters(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
 
     angle, offset = np.meshgrid(theta_cart_out, s_cart_out)
 
-    (quadrant, factor, adrt_tindex, adrt_hindex) = _coord_transform(angle, offset)
+    (quadrant, adrt_tindex, adrt_hindex, factor) = coord_cart_to_adrt(angle, offset, n)
 
     ii = np.logical_and(adrt_hindex > -1, adrt_hindex < 2 * n - 1)
 
-    adrt_cart_out = np.zeros((n, 4 * n))
-
-    print(adrt_hindex[ii].min())
-    print(adrt_hindex[ii].max())
-
-    print(adrt_tindex[ii].min())
-    print(adrt_tindex[ii].max())
-    adrt_cart_out[ii] = (
-        factor[ii] * adrt_out[quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]]
+    adrt_cart_out[..., ii] = (
+        factor[ii] * adrt_out[..., quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]]
     )
 
     return theta_cart_out, s_cart_out, adrt_cart_out
