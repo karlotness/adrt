@@ -84,6 +84,12 @@ namespace adrt {
         }
 
         template<typename scalar>
+        constexpr scalar pi_8() {
+            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
+            return static_cast<scalar>(0.392699081698724154807830422909937861L);
+        }
+
+        template<typename scalar>
         constexpr scalar sqrt2() {
             static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
             return static_cast<scalar>(1.414213562373095048801688724209698079L);
