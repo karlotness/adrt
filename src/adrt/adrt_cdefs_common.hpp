@@ -216,6 +216,17 @@ namespace adrt {
             return adrt::_common::ceil_div(val, 2_uz);
         }
 
+        template<typename scalar>
+        scalar clamp(scalar v, scalar lo, scalar hi) {
+            if(v < lo) {
+                return lo;
+            }
+            else if (v > hi) {
+                return hi;
+            }
+            return v;
+        }
+
         // Implementation struct: unrolls compute_strides loop
         template<size_t N, size_t I>
         struct _impl_compute_strides {
