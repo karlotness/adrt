@@ -229,17 +229,16 @@ namespace adrt {
         }
 
         template<typename scalar>
-        scalar lerp_pos_to_neg(scalar a, scalar t) {
+        scalar lerp(scalar a, scalar b, scalar t) {
             static_assert(std::is_floating_point<scalar>::value, "Interpolation requires floating point");
-            return a * (static_cast<scalar>(2) * (static_cast<scalar>(0.5L) - t));
-        }
-
-        template<typename scalar>
-        scalar lerp_same_signs(scalar a, scalar b, scalar t) {
-            static_assert(std::is_floating_point<scalar>::value, "Interpolation requires floating point");
-            assert((a <= 0 && b <= 0) || (a >= 0 && b >= 0));
-            // a and b have same sign, subtraction won't magnify
-            return a + t * (b - a);
+            if((a <= static_cast<scalar>(0) && b <= static_cast<scalar>(0)) || (a >= static_cast<scalar>(0) && b >= static_cast<scalar>(0))) {
+                // a and b have same sign, subtraction won't magnify
+                return a + t * (b - a);
+            }
+            else {
+                // a and b have opposite signs, subtraction would magnify
+                return t * b + (static_cast<scalar>(1) - t) * a;
+            }
         }
 
         // Implementation struct: unrolls compute_strides loop
