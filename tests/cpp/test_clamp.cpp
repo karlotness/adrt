@@ -31,7 +31,6 @@
 
 #include <cmath>
 #include <tuple>
-#include <limits>
 #include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
@@ -52,6 +51,20 @@ TEMPLATE_LIST_TEST_CASE("clamp limits floats above range", "[common][float][clam
     const TestType val = std::nextafter(higher, static_cast<TestType>(2));
     REQUIRE(val > higher);
     const TestType clamped = adrt::_common::clamp(val, lower, higher);
+    CHECK(clamped == higher);
+}
+
+TEMPLATE_LIST_TEST_CASE("clamp leaves lower limit alone", "[common][float][clamp]", float_test_types) {
+    const TestType lower = -static_cast<TestType>(1);
+    const TestType higher = static_cast<TestType>(1);
+    const TestType clamped = adrt::_common::clamp(lower, lower, higher);
+    CHECK(clamped == lower);
+}
+
+TEMPLATE_LIST_TEST_CASE("clamp leaves upper limit alone", "[common][float][clamp]", float_test_types) {
+    const TestType lower = -static_cast<TestType>(1);
+    const TestType higher = static_cast<TestType>(1);
+    const TestType clamped = adrt::_common::clamp(higher, lower, higher);
     CHECK(clamped == higher);
 }
 
