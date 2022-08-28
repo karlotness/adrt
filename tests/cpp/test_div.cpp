@@ -56,6 +56,13 @@ TEST_CASE("ceil_div2 gives correct result for max value",  "[common][div][ceil_d
     CHECK(adrt::_common::ceil_div2(val) == expected);
 }
 
+TEST_CASE("floor_div gives correct result for small values", "[common][div][floor_div2]") {
+    size_t val = GENERATE(range(0, 10));
+    size_t d = GENERATE(1, range(3, 6));
+    const size_t expected = static_cast<size_t>(std::floor(static_cast<double>(val) / static_cast<double>(d)));
+    CHECK(adrt::_common::floor_div(val, d) == expected);
+}
+
 TEST_CASE("floor_div2 gives correct result for small values", "[common][div][floor_div2]") {
     size_t val = GENERATE(range(0, 10));
     const size_t expected = static_cast<size_t>(std::floor(static_cast<double>(val) / 2.0));
