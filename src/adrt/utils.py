@@ -52,6 +52,7 @@ __all__ = [
 
 
 import numpy as np
+from ._wrappers import interp_to_cart
 
 
 def stitch_adrt(a, /, *, remove_repeated=False):
@@ -302,49 +303,3 @@ def coord_cart_to_adrt(theta, s, n):
     hi = np.floor(h).astype(int)
 
     return (q, ti, hi, factor)
-
-
-def interp_to_cart(adrt_out, /):
-    r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
-
-    Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
-    of (theta, s): theta is the normal direction of the line and s is the
-    distance of the line to the origin.
-
-    Parameters
-    ----------
-    a : numpy.ndarray of float
-        array of shape (4,2*N-1,N)
-
-    Returns
-    -------
-    theta_cart_out : numpy.ndarray
-          array of shape (N,4*N) containing coordinates theta (angles)
-    s_cart_out : numpy.ndarray
-          array of shape (N,4*N) containing coordinates s (offsets)
-    adrt_cart_out : numpy.ndarray
-          array of shape (N,4*N) containing interpolated data
-
-    """
-
-    if adrt_out.ndim == 4:
-        n = adrt_out.shape[3]
-        adrt_cart_out = np.zeros((adrt_out.shape[0], n, 4 * n))
-    elif adrt_out.ndim == 3:
-        n = adrt_out.shape[2]
-        adrt_cart_out = np.zeros((n, 4 * n))
-
-    theta_cart_out = _cellcenters(-0.5 * np.pi, 0.5 * np.pi, 4 * n)
-    s_cart_out = _cellcenters(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
-
-    angle, offset = np.meshgrid(theta_cart_out, s_cart_out)
-
-    (quadrant, adrt_tindex, adrt_hindex, factor) = coord_cart_to_adrt(angle, offset, n)
-
-    ii = np.logical_and(adrt_hindex > -1, adrt_hindex < 2 * n - 1)
-
-    adrt_cart_out[..., ii] = (
-        factor[ii] * adrt_out[..., quadrant[ii], adrt_hindex[ii], adrt_tindex[ii]]
-    )
-
-    return theta_cart_out, s_cart_out, adrt_cart_out

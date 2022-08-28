@@ -47,7 +47,7 @@ These can be interpolated to a Cartesian grid with
    :context: close-figs
    :align: center
 
-   theta, s, img_cart = adrt.utils.interp_to_cart(adrt_result)
+   img_cart = adrt.utils.interp_to_cart(adrt_result)
 
    plt.imshow(img_cart, aspect="auto")
    plt.colorbar()
