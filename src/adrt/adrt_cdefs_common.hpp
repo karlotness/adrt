@@ -231,7 +231,7 @@ namespace adrt {
         template<typename scalar>
         scalar lerp_pos_to_neg(scalar a, scalar t) {
             static_assert(std::is_floating_point<scalar>::value, "Interpolation requires floating point");
-            return a * (static_cast<scalar>(2) * (static_cast<scalar>(0.5) - t));
+            return a * (static_cast<scalar>(2) * (static_cast<scalar>(0.5L) - t));
         }
 
         template<typename scalar>

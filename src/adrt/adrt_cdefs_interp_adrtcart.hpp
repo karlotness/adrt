@@ -81,11 +81,11 @@ namespace adrt {
                     const int q = static_cast<int>(std::floor(adrt::_common::clamp(th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1)))) + 2;
                     const int sgn = q % 2 == 0 ? 1 : -1;
                     // Compute angle and offset for indexing
-                    const float_index th_t = static_cast<float_index>(2) * std::abs(std::abs(std::fmod(th, adrt::_const::pi_2<float_index>()) / adrt::_const::pi_2<float_index>()) - static_cast<float_index>(0.5));
+                    const float_index th_t = static_cast<float_index>(2) * std::abs(std::abs(std::fmod(th, adrt::_const::pi_2<float_index>()) / adrt::_const::pi_2<float_index>()) - static_cast<float_index>(0.5L));
                     const float_index th0 = adrt::_common::lerp_same_signs(adrt::_const::pi_4<float_index>(), static_cast<float_index>(0), th_t);
                     const float_index tan_theta = adrt::_common::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
                     const float_index ti = std::floor(tan_theta * static_cast<float_index>(N - 1_uz));
-                    const float_index h0 = (static_cast<float_index>(0.5) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? s : -s) / std::cos(th0));
+                    const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? s : -s) / std::cos(th0));
                     const float_index hi = std::floor(h0 * static_cast<float_index>(N) - static_cast<float_index>(sgn < 0 ? 0 : 1));
                     // Compute the scaling factor
                     const larger_float sidea = static_cast<larger_float>(ti) / static_cast<larger_float>(N);
