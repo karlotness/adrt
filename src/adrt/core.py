@@ -70,7 +70,6 @@ __all__ = [
 
 
 import numpy as np
-from . import adrt as _adrt, bdrt as _bdrt
 from .utils import truncate as _truncate
 from ._wrappers import (
     _format_object_type,
@@ -81,6 +80,8 @@ from ._wrappers import (
     _press_fmg_restriction,
     _press_fmg_prolongation,
     _press_fmg_highpass,
+    adrt as _adrt,
+    bdrt as _bdrt,
 )
 
 
