@@ -72,7 +72,7 @@ LDFLAGS = "-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noex
 archs = ["universal2"]
 
 [tool.cibuildwheel.macos.environment]
-CFLAGS = "-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-math-errno -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough -DNDEBUG"
+CFLAGS = "-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough -DNDEBUG"
 LDFLAGS = "-Wl,-S,-x,-dead_strip_dylibs"
 
 [tool.cibuildwheel.windows]
