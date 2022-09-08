@@ -320,7 +320,7 @@ namespace adrt {
 
     bool interp_adrtcart_is_valid_shape(const std::array<size_t, 4> &shape) {
         // bdrt also requires its input to have the shape of an adrt result, reuse
-        return adrt::bdrt_is_valid_shape(shape);
+        return adrt::bdrt_is_valid_shape(shape) && std::get<3>(shape) > 1u;
     }
 
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape) {

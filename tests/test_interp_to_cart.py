@@ -132,12 +132,17 @@ class TestInterpToCart:
         assert native_out.dtype == a.dtype
         assert native_out.shape == (16, 64)
 
-    def test_small_1x1(self):
+    def test_refuses_small_1x1(self):
         inarr = np.ones((4, 1, 1), dtype="float64")
+        with pytest.raises(ValueError):
+            adrt.utils.interp_to_cart(inarr)
+
+    def test_small_2x2(self):
+        inarr = np.ones((4, 3, 2), dtype="float64")
         py_out = py_interp_to_cart(inarr)
         native_out = adrt.utils.interp_to_cart(inarr)
         assert np.allclose(py_out, native_out)
-        assert native_out.shape == (1, 4)
+        assert native_out.shape == (2, 8)
 
     def test_accepts_fortran_order(self):
         size = 16
