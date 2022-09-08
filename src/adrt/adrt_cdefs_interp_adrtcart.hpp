@@ -48,6 +48,9 @@ namespace adrt {
 
     template <typename float_index = double>
     bool interp_adrtcart_is_valid_float_index(const std::array<size_t, 4> &in_shape) {
+        // The input shape is (batch, 4, 2*n-1, n)
+        // The output shape is (batch, n, 4*n)
+        // We ensure that 4*n fits in a float, so n and 2*n-1 will fit as well
         return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>(), 4_uz);
     }
 
