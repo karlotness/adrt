@@ -204,6 +204,7 @@ namespace adrt {
             return adrt::_common::ceil_div(val, 2_uz);
         }
 
+        // Similar to C++17's std::clamp
         template<typename scalar>
         scalar clamp(scalar v, scalar lo, scalar hi) {
             assert(lo <= hi);
@@ -216,6 +217,7 @@ namespace adrt {
             return v;
         }
 
+        // Similar to C++20's std::lerp
         template<typename scalar>
         scalar lerp(scalar a, scalar b, scalar t) {
             static_assert(std::is_floating_point<scalar>::value, "Interpolation requires floating point");
