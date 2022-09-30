@@ -67,6 +67,9 @@ a sinusoidal curve of commensurate width in the sinogram.
    plt.ylabel("$t$")
    plt.xlabel("$\\theta$")
 
+
+.. _adrt shepplogan page:
+
 Shepp-Logan Phantom
 -------------------
 

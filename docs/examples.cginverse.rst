@@ -1,3 +1,5 @@
+.. _inverse page:
+
 Iterative Inverse
 =================
 
