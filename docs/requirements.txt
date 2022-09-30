@@ -3,3 +3,4 @@ sphinx-rtd-theme>=1.0.0,<2
 numpy
 scipy
 matplotlib>=3.4.3
+scikit-image
