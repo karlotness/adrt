@@ -52,7 +52,7 @@ def py_interp_to_cart(adrt_out, /):
     theta_cart_out = _cellcenters(-0.5 * np.pi, 0.5 * np.pi, 4 * n)
     s_cart_out = _cellcenters(-np.sqrt(2) / 2, np.sqrt(2) / 2, n)
     angle, offset = np.meshgrid(theta_cart_out, s_cart_out)
-    quadrant, adrt_tindex, adrt_hindex, factor = adrt.utils.coord_cart_to_adrt(
+    quadrant, adrt_hindex, adrt_tindex, factor = adrt.utils.coord_cart_to_adrt(
         angle, offset, n
     )
     ii = np.logical_and(adrt_hindex > -1, adrt_hindex < 2 * n - 1)
