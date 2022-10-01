@@ -31,6 +31,7 @@
 
 #include <cmath>
 #include <tuple>
+#include <limits>
 #include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
@@ -77,4 +78,12 @@ TEMPLATE_LIST_TEST_CASE("clamp leaves floats within range alone", "[common][floa
     REQUIRE(val < higher);
     const TestType clamped = adrt::_common::clamp(val, lower, higher);
     CHECK(clamped == val);
+}
+
+TEMPLATE_LIST_TEST_CASE("clamp propagates NaN values", "[common][float][clamp]", float_test_types) {
+    static_assert(std::numeric_limits<TestType>::has_quiet_NaN, "Test requires valid quiet NaN value");
+    const TestType nan = std::numeric_limits<TestType>::quiet_NaN();
+    const TestType lower = -static_cast<TestType>(1);
+    const TestType higher = static_cast<TestType>(1);
+    CHECK(std::isnan(adrt::_common::clamp(nan, lower, higher)));
 }

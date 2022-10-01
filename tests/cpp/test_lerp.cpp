@@ -31,6 +31,7 @@
 
 #include <cmath>
 #include <tuple>
+#include <limits>
 #include "catch2/catch.hpp"
 #include "adrt_cdefs_common.hpp"
 
@@ -85,4 +86,28 @@ TEMPLATE_LIST_TEST_CASE("lerp with same signs outputs mean at half", "[common][f
     const TestType right = static_cast<TestType>(2);
     const TestType lerp = adrt::_common::lerp(left, right, static_cast<TestType>(0.5L));
     CHECK(lerp == static_cast<TestType>(1.5L));
+}
+
+TEMPLATE_LIST_TEST_CASE("lerp propagates NaN", "[common][float][lerp][lerp_nan]", float_test_types) {
+    static_assert(std::numeric_limits<TestType>::has_quiet_NaN, "Test requires valid quiet NaN value");
+    const TestType nan = std::numeric_limits<TestType>::quiet_NaN();
+    TestType t_val = static_cast<TestType>(GENERATE(0.0L, 0.5L, 1.0L));
+    CHECK(std::isnan(adrt::_common::lerp(nan, nan, t_val)));
+    CHECK(std::isnan(adrt::_common::lerp(nan, static_cast<TestType>(0.5L), t_val)));
+    CHECK(std::isnan(adrt::_common::lerp(static_cast<TestType>(0.5L), nan, t_val)));
+}
+
+TEMPLATE_LIST_TEST_CASE("lerp propagates NaN with same signs", "[common][float][lerp][lerp_same_signs]", float_test_types) {
+    static_assert(std::numeric_limits<TestType>::has_quiet_NaN, "Test requires valid quiet NaN value");
+    const TestType nan = std::numeric_limits<TestType>::quiet_NaN();
+    const TestType left = static_cast<TestType>(1);
+    const TestType right = static_cast<TestType>(2);
+    CHECK(std::isnan(adrt::_common::lerp(left, right, nan)));
+}
+
+TEMPLATE_LIST_TEST_CASE("lerp propagates NaN with opposite signs", "[common][float][lerp][lerp_same_signs]", float_test_types) {
+    static_assert(std::numeric_limits<TestType>::has_quiet_NaN, "Test requires valid quiet NaN value");
+    const TestType nan = std::numeric_limits<TestType>::quiet_NaN();
+    const TestType val = static_cast<TestType>(2);
+    CHECK(std::isnan(adrt::_common::lerp(-val, val, nan)));
 }
