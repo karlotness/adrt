@@ -10,7 +10,7 @@ We first import requisite modules, and define the ``AdrtNormalOperator`` and the
 function ``iadrt_cg``. However, here we modify ``AdrtNormalOperator`` by adding
 a multiple of the identity term. This modifies our operator so that the CG
 inverse computes the ridge regression problem, given by 
-:math:`(A^TA + \lambda A)x = A^{T}b`. We name the new operator ``AdrtRidgeOperator`` below.
+:math:`(A^{T}A + \lambda A)x = A^{T}b`. We name the new operator ``AdrtRidgeOperator`` below.
 
 
 .. plot::

@@ -19,3 +19,4 @@ package. For help with that see the :doc:`installation instructions
    examples.sinogram
    examples.cginverse
    examples.tomography
+   examples.wave
