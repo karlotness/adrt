@@ -148,8 +148,8 @@ def unstitch_adrt(a, /):
         raise ValueError(f"unsuitable shape for ADRT unstitching {a.shape}")
     removed_repeated = a.shape[-1] == 4 * n - 4
     out_rows = 2 * n - 1
-    ret = np.empty_like(a, shape=(a.shape[:-2] + (4, out_rows, n)))
     a = a.reshape(a.shape[:-1] + (4, n - (1 if removed_repeated else 0)))
+    ret = []
     for q in range(4):
         quadrant = a[..., :, q, :]
         if removed_repeated:
@@ -167,8 +167,9 @@ def unstitch_adrt(a, /):
         # Flip if necessary
         if q % 2:
             quadrant = np.flip(quadrant, axis=(-1, -2))
-        ret[..., q, :, :] = quadrant
-    return ret
+        ret.append(quadrant)
+    # Stack result along a new quadrant dimension
+    return np.stack(ret, axis=-3)
 
 
 def truncate(a, /):
