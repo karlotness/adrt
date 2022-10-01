@@ -357,4 +357,4 @@ def coord_cart_to_adrt(theta, s, n):
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    return (q, ti, hi, factor)
+    return (q, hi, ti, factor)
