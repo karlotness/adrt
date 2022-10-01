@@ -44,6 +44,7 @@ irregular ADRT angles into a regular spacing.
 
 __all__ = [
     "stitch_adrt",
+    "unstitch_adrt",
     "truncate",
     "coord_adrt_to_cart",
     "coord_cart_to_adrt",
@@ -75,6 +76,9 @@ def stitch_adrt(a, /, *, remove_repeated=False):
 
     See :ref:`adrt-description` for a description of the ADRT output
     quadrants.
+
+    The function :func:`unstitch_adrt` provides an inverse for this
+    operation.
 
     Parameters
     ----------
@@ -114,6 +118,57 @@ def stitch_adrt(a, /, *, remove_repeated=False):
         else:
             ret[..., -in_rows:, i, :] = quadrant
     return ret.reshape(output_shape)
+
+
+def unstitch_adrt(a, /):
+    r"""Slice a stitched ADRT output back into individual quadrants.
+
+    This function provides an inverse for :func:`stitch_adrt` and
+    re-slices, flips, and rotates its output into separate quadrants.
+    It functions as an inverse regardless of the ``remove_repeated``
+    argument that was specified when stitching.
+
+    The input array must have shape (..., 3*N-2, 4*N) or (..., 3*N-2,
+    4*N-4). The optional, extra leading dimensions will be treated as
+    batch dimensions and will be preserved in the output.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        Array of *stitched* ADRT output data.
+
+    Returns
+    -------
+    numpy.ndarray
+        The input data separated into quadrants. This array will have
+        shape (..., 4, 2*N-1, N).
+    """
+    n = (a.shape[-2] + 2) // 3
+    if a.shape[-1] != 4 * n and a.shape[-1] != 4 * n - 4:
+        raise ValueError(f"unsuitable shape for ADRT unstitching {a.shape}")
+    removed_repeated = a.shape[-1] == 4 * n - 4
+    out_rows = 2 * n - 1
+    ret = np.empty_like(a, shape=(a.shape[:-2] + (4, out_rows, n)))
+    a = a.reshape(a.shape[:-1] + (4, n - (1 if removed_repeated else 0)))
+    for q in range(4):
+        quadrant = a[..., :, q, :]
+        if removed_repeated:
+            # Need to re-add the removed column
+            neighbor = a[..., :, (q + 1) % 4, 0, np.newaxis]
+            if q == 3:
+                # If we've circled the image we need to flip along the rows
+                neighbor = np.flip(neighbor, axis=-2)
+            quadrant = np.concatenate([quadrant, neighbor], axis=-1)
+        # Slice the quadrant to the appropriate size
+        if q < 2:
+            quadrant = quadrant[..., :out_rows, :]
+        else:
+            quadrant = quadrant[..., -out_rows:, :]
+        # Flip if necessary
+        if q % 2:
+            quadrant = np.flip(quadrant, axis=(-1, -2))
+        ret[..., q, :, :] = quadrant
+    return ret
 
 
 def truncate(a, /):
