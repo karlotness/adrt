@@ -105,6 +105,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
     output_shape = a.shape[:-3] + (out_rows, 4 * view_cols)
     view_shape = a.shape[:-3] + (out_rows, 4, view_cols)
     # We rely on C-ordered layout to merge the last two dimensions
+    # without needing to copy
     ret = np.zeros_like(a, shape=view_shape, order="C")
     # Fill result array
     for i in range(4):
