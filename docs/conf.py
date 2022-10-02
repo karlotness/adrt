@@ -24,6 +24,17 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_static_path = ["_static"]
 suppress_warnings = ["epub.unknown_project_files"]
 
+# Insert code into each rst file
+rst_prolog = r"""
+
+.. role:: pycode(code)
+   :language: python
+
+.. role:: cppcode(code)
+   :language: cpp
+
+"""
+
 # Theme
 html_theme = "sphinx_rtd_theme"
 
