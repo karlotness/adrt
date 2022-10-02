@@ -63,3 +63,17 @@ def test_unstitch_adrt_batch(remove_repeated):
     assert unstitched.dtype == adrt_out.dtype
     assert unstitched.shape == adrt_out.shape
     assert np.all(unstitched == adrt_out)
+
+
+def test_refuses_wrong_last_dimension():
+    n = 16
+    stitched = np.zeros((5, 3 * n - 2, 4 * n - 3), dtype=np.float32)
+    with pytest.raises(ValueError):
+        _ = adrt.utils.unstitch_adrt(stitched)
+
+
+def test_refuses_wrong_second_to_last_dimension():
+    n = 16
+    stitched = np.zeros((5, 3 * n - 1, 4 * n), dtype=np.float32)
+    with pytest.raises(ValueError):
+        _ = adrt.utils.unstitch_adrt(stitched)

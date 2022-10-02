@@ -144,7 +144,7 @@ def unstitch_adrt(a, /):
         shape (..., 4, 2*N-1, N).
     """
     n = (a.shape[-2] + 2) // 3
-    if a.shape[-1] != 4 * n and a.shape[-1] != 4 * n - 4:
+    if a.shape[-2] != 3 * n - 2 or (a.shape[-1] != 4 * n and a.shape[-1] != 4 * n - 4):
         raise ValueError(f"unsuitable shape for ADRT unstitching {a.shape}")
     removed_repeated = a.shape[-1] == 4 * n - 4
     out_rows = 2 * n - 1
