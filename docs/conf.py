@@ -50,6 +50,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "pypug": ("https://packaging.python.org/en/latest/", None),
 }
 
 # Matplotlib plot directive configuration
