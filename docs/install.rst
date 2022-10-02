@@ -1,4 +1,4 @@
-.. highlight:: bash
+.. highlight:: shell-session
 
 Installation
 ============
@@ -10,9 +10,13 @@ This package is available as "`adrt
 <https://pypi.org/project/adrt/>`__" on PyPI. You can install it using
 pip::
 
-  python -m pip install adrt
-  # On Windows:
-  py -m pip install adrt
+  $ python -m pip install adrt
+
+or on Windows:
+
+.. code-block:: ps1con
+
+   PS> py -m pip install adrt
 
 For more details on pip, consult its `user guide
 <https://pip.pypa.io/en/stable/user_guide/>`__. Before installing it
@@ -36,7 +40,7 @@ To install the package from source with default compiler flags,
 navigate to the directory containing your copy of the source code and
 run (note the trailing ``.``)::
 
-  python -m pip install .
+  $ python -m pip install .
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -46,8 +50,11 @@ help confirm whether the routines are operating correctly. We use
 `pytest <https://pytest.org/>`__ as a test runner. Once the package is
 installed, navigate to the root directory of the repository and run::
 
-  python -m pip install -r tests/test_requirements.txt
-  python -m pytest
+  $ python -m pip install -r tests/test_requirements.txt
+  $ python -m pytest
+
+However, if you are trying to modify the package or make a
+contribution see the information under :doc:`develop`.
 
 .. _openmp-build:
 
@@ -64,7 +71,7 @@ To enable OpenMP you must pass the necessary flags to your C++
 compiler via the ``CFLAGS`` environment variable. For GCC the correct
 flag is ``-fopenmp``. In this case, run pip as::
 
-  CFLAGS="-O3 -fopenmp" python -m pip install .
+  $ CFLAGS="-O3 -fopenmp" python -m pip install .
 
 This will install an OpenMP-enabled copy of the package. Other
 compilers will require different flags to be passed through ``CFLAGS``
