@@ -288,20 +288,15 @@ def coord_adrt_to_cart(n):
 
     Returns
     -------
-    out : namedtuple('CartesianCoord', ['angle', 'offset'])
-        a ``namedtuple`` class named ``CartesianCoord`` with a keyword
-        arguments ``angle`` and ``offset``, in which ``angle=theta_full`` and
-        ``offset=s_full`` whose values are
+    theta_full : numpy.ndarray
+        2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
+        (angle) coordinates of the ADRT domain for all quadrants, stacked
+        horizontally.
 
-        theta_full : numpy.ndarray
-            2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
-            (angle) coordinates of the ADRT domain for all quadrants, stacked
-            horizontally.
-
-        s_full : numpy.ndarray
-            2D array of dimensions (2*n-1, 4*n) containing Radon domain s
-            (offset) coordinates of the ADRT domain for all quadrants, stacked
-            horizontally.
+    s_full : numpy.ndarray
+        2D array of dimensions (2*n-1, 4*n) containing Radon domain s
+        (offset) coordinates of the ADRT domain for all quadrants, stacked
+        horizontally.
     """
 
     nq = 4
@@ -340,20 +335,14 @@ def coord_cart_to_adrt(theta, t, n):
 
     Returns
     -------
-    out : namedtuple('AdrtIndex', ['quadrant', 'height', 'slope', 'factor'])
-        a ``namedtuple`` class named ``AdrtIndex`` with a keyword arguments
-        ``quadrant``, ``height``, ``slope`` and ``factor, in which
-        ``angle=theta_full`` and ``offset=s_full`` whose values are in which
-        ``quadrant=q``, ``height=in``, ``slope=si``, ``factor=factor`` given by
-
-        q : numpy.ndarray of numpy.uint8
-            quadrant index in ADRT domain
-        hi : numpy.ndarray of numpy.int
-            the intercept index in ADRT domain
-        si : numpy.ndarray of numpy.uint
-            the slope index in ADRT domain
-        factor :numpy.ndarray of numpy.float
-            a transformation factor
+    q : numpy.ndarray of numpy.uint8
+        quadrant index in ADRT domain
+    hi : numpy.ndarray of numpy.int
+        the intercept index in ADRT domain
+    si : numpy.ndarray of numpy.uint
+        the slope index in ADRT domain
+    factor :numpy.ndarray of numpy.float
+        a transformation factor
 
     """
     th0 = (
