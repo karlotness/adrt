@@ -9,6 +9,7 @@ ADRT: Approximate Discrete Radon Transform
    quickstart
    examples
    reference
+   develop
    license
 
 
