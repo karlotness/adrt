@@ -53,6 +53,7 @@ __all__ = [
 
 
 import numpy as np
+from collections import namedtuple
 from ._wrappers import interp_to_cart
 
 
@@ -284,28 +285,35 @@ def coord_adrt_to_cart(n):
 
     Returns
     -------
-    theta_full : numpy.ndarray
-        2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
-        (angle) coordinates of the ADRT domain for all quadrants, stacked horizontally.
+    out : namedtuple('CartesianCoords', ['angle', 'offset'])
+        in which ``angle=theta_full`` and ``offset=s_full`` whose values are
 
-    s_full : numpy.ndarray
-        2D array of dimensions (2*n-1, 4*n) containing Radon domain s (offset)
-        coordinates of the ADRT domain for all quadrants, stacked horizontally.
+        theta_full : numpy.ndarray
+            2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
+            (angle) coordinates of the ADRT domain for all quadrants, stacked
+            horizontally.
+
+        s_full : numpy.ndarray
+            2D array of dimensions (2*n-1, 4*n) containing Radon domain s
+            (offset) coordinates of the ADRT domain for all quadrants, stacked
+            horizontally.
     """
 
     nq = 4
 
     hi = _cellcenters(1, 1 / n - 1, 2 * n - 1)
-    si = np.arange(n)
+    ti = np.arange(n)
 
-    t_full = np.zeros((2 * n - 1, nq * n))
+    s_full = np.zeros((2 * n - 1, nq * n))
     theta_full = np.zeros((2 * n - 1, nq * n))
     for q in range(nq):
-        theta_quad, t_quad = _coords_adrt_to_cart_quad(hi, si, q)
-        t_full[:, q * n : (q + 1) * n] = t_quad
+        theta_quad, s_quad = _coords_adrt_to_cart_quad(hi, ti, q)
+        s_full[:, q * n : (q + 1) * n] = s_quad
         theta_full[:, q * n : (q + 1) * n] = theta_quad
 
-    return theta_full, t_full
+    CartesianCoords = namedtuple("CartesianCoords", ["angle", "offset"])
+    out = CartesianCoords(theta_full, s_full)
+    return out
 
 
 def coord_cart_to_adrt(theta, t, n):
@@ -325,14 +333,19 @@ def coord_cart_to_adrt(theta, t, n):
 
     Returns
     -------
-    q : int
-        quadrant index in ADRT domain
-    hi : int
-        the intercept index in ADRT domain
-    si : int
-        the slope index in ADRT domain
-    factor : float
-        a transformation factor
+    out : namedtuple('AdrtIndex', ['quadrant', 'height', 'slope', 'factor'])
+        in which ``quadrant=q``, ``height=in``, ``slope=si``, ``factor=factor``
+        given by
+
+        q : numpy.ndarray of numpy.uint8
+            quadrant index in ADRT domain
+        hi : numpy.ndarray of numpy.int
+            the intercept index in ADRT domain
+        si : numpy.ndarray of numpy.uint
+            the slope index in ADRT domain
+        factor :numpy.ndarray of numpy.float
+            a transformation factor
+
     """
     th0 = (
         np.abs(theta)
@@ -342,16 +355,16 @@ def coord_cart_to_adrt(theta, t, n):
     )
     q = (
         3
-        - np.sign(theta).astype(int)
-        - np.sign(theta - np.pi / 4).astype(int)
-        - np.sign(theta + np.pi / 4).astype(int)
+        - np.sign(theta).astype(np.uint8)
+        - np.sign(theta - np.pi / 4).astype(np.uint8)
+        - np.sign(theta + np.pi / 4).astype(np.uint8)
     ) // 2
 
     sgn = np.sign(theta) - np.sign(theta - np.pi / 4) - np.sign(theta + np.pi / 4)
     t0 = sgn * t
 
     s = np.tan(th0) * (n - 1)
-    si = np.floor(s).astype(int)
+    si = np.floor(s).astype(np.uint)
     factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2) / n
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
@@ -359,4 +372,6 @@ def coord_cart_to_adrt(theta, t, n):
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    return (q, hi, si, factor)
+    AdrtIndex = namedtuple("AdrtIndex", ["quadrant", "height", "slope", "factor"])
+    out = AdrtIndex(q, hi, si, factor)
+    return out
