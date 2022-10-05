@@ -28,9 +28,9 @@ The Radon transform is a fundamental integral transform that arises in many
 different fields including medical/seismic tomography, signal/image processing,
 and the analysis of partial differential equations. The `adrt` package 
 implements a discretization of the Radon transform called the approximate
-discrete Radon transform (ADRT) [@Brady1998]. The ADRT is a fast transform with
+discrete Radon transform (ADRT) [@Brady1998; @Gotz96fdrt]. The ADRT is a fast transform with
 the complexity $\mathcal{O}(N^2 \log N)$ for a square of image of size $N
-\times N$. The ADRT can approximate the Radon transform with the rate
+\times N$. The ADRT can approximate the Radon transform with the accuracy
 $\mathcal{O} (N^{-1} \log N)$, and it possesses important inversion properties
 [@Press2006; @Rim2020] enabling it to be used to approximate the inverse of the
 Radon transform.
@@ -45,13 +45,16 @@ uniform grid.
 # Statement of need
 
 `adrt` aims to facilitate numerical experimentation with the ADRT by providing
-an implementation of basic operations of the ADRT algorithm. This will be
-useful in two broad aspects. There are various open research problems regarding
-the ADRT itself, and this package will be useful for researchers studying
-the properties of the ADRT. On the other hand, the ADRT was found to be useful
-in scientific computing applications [@Rim2018] and is potentially useful in
-various applications in imaging, image processing and machine learning. `adrt`
-will provide an accessible implementation for these applications as well.
+an implementation of basic operations of the ADRT algorithm. This will be useful
+in two broad aspects.  First, the ADRT was found to be useful in scientific
+computing applications [@Rim2018] and is potentially useful in various
+applications in imaging, image processing and machine learning, whenever a fast
+approximation to the continuous Radon transform is useful. `adrt` will serve as
+an accessible implementation for these applications.  We are not aware of a
+fast, open-source approximation to the Radon transform readily available in
+Python to date, to the best of our knowledge.  Second, there are various open
+research problems regarding the ADRT itself, and this package will be useful for
+researchers studying the properties of the ADRT.
 
 # Related research and software
 
@@ -60,9 +63,8 @@ A linear interpolation and filtered back-projection is implemented in
 [@scikit-image]; the discrete Radon transform [@Beylkin87]; a fast transform
 based on the pseudo-polar Fourier transform [@ACDISS2008]; the non-uniform fast
 Fourier transform (NUFFT) [@GreengardLee2004; @BMK2019]. However the ADRT has
-unique properties that distinguishes it from other discretizations, such as the
-localization property and the range characterization [@LRR2020], its locality
-and simplicity.
+unique properties that distinguishes it from other discretizations, such as its
+localization property and range characterization [@LRR2020].
 
 # Acknowledgements
 
