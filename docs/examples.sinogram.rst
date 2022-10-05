@@ -4,7 +4,7 @@ Sinograms of an Image
 The discretized Radon transforms are often used to approximate sinograms of a
 known image. :py:mod:`adrt` provides utilities that map the ADRT output which is
 in the ADRT coordinates :math:`(h, s)` to a sinogram which is in the Cartesian
-coordiantes :math:`(\theta, t)`.
+coordinates :math:`(\theta, t)`.
 
 We make use of this package as well as a few other fundamental
 libraries. ::
@@ -12,6 +12,8 @@ libraries. ::
    import numpy as np
    from matplotlib import pyplot as plt
    import adrt
+
+We will illustrate the computation of sinograms with a couple examples. The simple geometry relating the two coordinates :math:`(h, s)`  and :math:`(\theta, t)` is given in a :ref:`diagram below<adrt_to_cart diagram>`.
 
 Gaussian humps
 --------------
@@ -121,3 +123,87 @@ These can be interpolated to a Cartesian grid with
    plt.colorbar()
    plt.ylabel("$t$")
    plt.xlabel("$\\theta$")
+
+.. _adrt_to_cart diagram:
+
+The coordinate transform
+------------------------
+
+The coordinates :math:`(h, s)` and :math:`(\theta, t)` are related by a simple
+geometric relation, depicted in the following diagram. This is shown for
+quadrant 3, the transform for the other quadrants are derived by flipping and
+transposing the image.
+
+
+.. plot::
+   :context: close-figs
+   :align: center
+
+
+   fig, ax = plt.subplots()
+   
+   theta, t = (0.2*np.pi, -0.25)
+   
+   ax.set_aspect(1)
+   xoffset, yoffset = (0.075, 0.025)
+   
+   # add rectangle
+   ax.fill(np.array([0, 1, 1, 0, 0]) - 0.5, 
+           np.array([0, 0, 1, 1, 0]) - 0.5,
+           color = (0, 0, 0, 0.15))
+   
+   # draw auxiliary line normal to the hyperplane
+   z = np.array([-1.0, 1.0])
+   ax.plot([0, - t*np.sin(theta)], 
+           [0, + t*np.cos(theta)], 'r')
+   
+   # draw t-coordinate
+   ax.annotate('$t$', 
+           xy=(-0.5*t*np.sin(theta)+0.02, 0.5*t*np.cos(theta)))
+   
+   # draw line
+   ax.plot(z*np.cos(theta) - t*np.sin(theta), 
+           z*np.sin(theta) + t*np.cos(theta), 'k')
+   
+   # mark origin
+   ax.plot(0, 0, 'k.', markersize=10)
+   
+   # left-intercept
+   x0, y0 = (-0.5, -0.5*np.tan(theta) + t/np.cos(theta))
+   # right-intercept
+   x1, y1 = \
+       (0.5, (0.5 + t*np.sin(theta))/np.cos(theta)*np.sin(theta) + t*np.cos(theta))
+   
+   # mark intercept
+   ax.plot(x0, y0, 'k+')
+   
+   # draw legs
+   ax.hlines(y0, -0.5, 0.5, 'k', linestyles='--')
+   ax.vlines(0.5, y0, y1, 'k', linestyles='--')
+   
+   # display s calculation
+   ax.annotate('$s = \\arctan(\\theta)$', 
+               xy=(0.5 + xoffset, 0.5*(y0 + y1)), 
+               color='b')
+   ax.vlines(0.5 + 0.5*xoffset, y0, y1, 'b')
+   
+   ax.annotate('$\\theta$', xy=(-0.5 + 1.5*xoffset, y0 + 0.02))
+   ax.annotate('$\\frac{h}{N} = \\frac{t}{\cos(\\theta)} - \\frac{\\tan(\\theta)}{2}$', 
+               xy=(-0.5 - 8*xoffset, y0), 
+               color='b')
+   
+   # show h-coordinates for bottom and top edges
+   ax.annotate('$h=0$', xy=(-0.5 - 2.5*xoffset, -0.5 - yoffset), alpha=0.5)
+   ax.annotate('$h=N$', xy=(-0.5 - 2.5*xoffset,  0.5 - yoffset), alpha=0.5)
+   
+   ax.hlines(-0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
+   ax.hlines( 0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
+   
+   ax.spines['top'].set_visible(False)
+   ax.spines['right'].set_visible(False)
+   ax.set_xticks([-0.5, -0.25, 0.0, 0.25, 0.5])
+   ax.set_yticks([-0.5, -0.25, 0.0, 0.25, 0.5])
+   ax.set_xlim([-1.2, 1.2])
+   ax.set_xlabel('$x$')
+   ax.set_ylabel('$y$')
+   ax.grid(True)
