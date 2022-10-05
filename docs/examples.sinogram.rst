@@ -54,7 +54,7 @@ We compute the ADRT of this image and plot the image.
    plt.tight_layout()
 
 From the ADRT data we compute the sinogram by using the function
-:func:`adrt.utils.interp_to_cart()`. Each isotropic Gaussian hump correspond to
+:func:`adrt.utils.interp_to_cart`. Each isotropic Gaussian hump correspond to
 a sinusoidal curve of commensurate width in the sinogram.
 
 .. plot::

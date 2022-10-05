@@ -71,13 +71,15 @@ This result can be stitched together using :func:`adrt.utils.stitch_adrt`.
        plt.axvline(n * i - 0.5, color="white", linestyle="--")
    plt.tight_layout()
 
+Note that this stitching operation can be undone with :func:`adrt.utils.unstitch_adrt`.
+
 .. _iadrt-description:
 
 Inverse Transforms
 ------------------
 
 In the special case the image has quantized values, the exact ADRT formula
-applies. This can be computed by :func:`adrt.iadrt()`
+applies. This can be computed by :func:`adrt.iadrt`
 
 .. plot::
    :context: close-figs

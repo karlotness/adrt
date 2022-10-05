@@ -285,8 +285,10 @@ def coord_adrt_to_cart(n):
 
     Returns
     -------
-    out : namedtuple('CartesianCoords', ['angle', 'offset'])
-        in which ``angle=theta_full`` and ``offset=s_full`` whose values are
+    out : namedtuple('CartesianCoord', ['angle', 'offset'])
+        a ``namedtuple`` class named ``CartesianCoord`` with a keyword
+        arguments ``angle`` and ``offset``, in which ``angle=theta_full`` and
+        ``offset=s_full`` whose values are
 
         theta_full : numpy.ndarray
             2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
@@ -311,7 +313,7 @@ def coord_adrt_to_cart(n):
         s_full[:, q * n : (q + 1) * n] = s_quad
         theta_full[:, q * n : (q + 1) * n] = theta_quad
 
-    cart_coords = namedtuple("CartesianCoords", ["angle", "offset"])
+    cart_coords = namedtuple("CartesianCoord", ["angle", "offset"])
     out = cart_coords(theta_full, s_full)
     return out
 
@@ -334,8 +336,10 @@ def coord_cart_to_adrt(theta, t, n):
     Returns
     -------
     out : namedtuple('AdrtIndex', ['quadrant', 'height', 'slope', 'factor'])
-        in which ``quadrant=q``, ``height=in``, ``slope=si``, ``factor=factor``
-        given by
+        a ``namedtuple`` class named ``AdrtIndex`` with a keyword arguments
+        ``quadrant``, ``height``, ``slope`` and ``factor, in which
+        ``angle=theta_full`` and ``offset=s_full`` whose values are in which
+        ``quadrant=q``, ``height=in``, ``slope=si``, ``factor=factor`` given by
 
         q : numpy.ndarray of numpy.uint8
             quadrant index in ADRT domain
