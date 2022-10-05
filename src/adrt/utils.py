@@ -296,19 +296,19 @@ def coord_adrt_to_cart(n):
     nq = 4
 
     hi = _cellcenters(1, 1 / n - 1, 2 * n - 1)
-    ti = np.arange(n)
+    si = np.arange(n)
 
-    s_full = np.zeros((2 * n - 1, nq * n))
+    t_full = np.zeros((2 * n - 1, nq * n))
     theta_full = np.zeros((2 * n - 1, nq * n))
     for q in range(nq):
-        theta_quad, s_quad = _coords_adrt_to_cart_quad(hi, ti, q)
-        s_full[:, q * n : (q + 1) * n] = s_quad
+        theta_quad, t_quad = _coords_adrt_to_cart_quad(hi, si, q)
+        t_full[:, q * n : (q + 1) * n] = t_quad
         theta_full[:, q * n : (q + 1) * n] = theta_quad
 
-    return theta_full, s_full
+    return theta_full, t_full
 
 
-def coord_cart_to_adrt(theta, s, n):
+def coord_cart_to_adrt(theta, t, n):
     r"""Find nearest ADRT entry indices for given point in Radon domain.
 
     Given a point (theta, s) in Radon domain, find the entry in the ADRT domain
@@ -318,7 +318,7 @@ def coord_cart_to_adrt(theta, s, n):
     ----------
     theta : numpy.ndarray
         1D array containing theta coordinates to convert to ADRT indices
-    s : numpy.ndarray
+    t : numpy.ndarray
         1D array containing s coordinates to convert to ADRT indices
     n : int
         size n determining the dimensions of the ADRT domain (4, 2*n-1, n)
@@ -329,7 +329,7 @@ def coord_cart_to_adrt(theta, s, n):
         quadrant index in ADRT domain
     hi : int
         the intercept index in ADRT domain
-    ti : int
+    si : int
         the slope index in ADRT domain
     factor : float
         a transformation factor
@@ -348,15 +348,15 @@ def coord_cart_to_adrt(theta, s, n):
     ) // 2
 
     sgn = np.sign(theta) - np.sign(theta - np.pi / 4) - np.sign(theta + np.pi / 4)
-    s0 = sgn * s
+    t0 = sgn * t
 
-    t = np.tan(th0) * (n - 1)
-    ti = np.floor(t).astype(int)
-    factor = np.sqrt((ti / n) ** 2 + (1 - 1 / n) ** 2) / n
+    s = np.tan(th0) * (n - 1)
+    si = np.floor(s).astype(int)
+    factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2) / n
 
-    h0 = 0.5 * (1.0 + np.tan(th0)) - s0 / np.cos(th0)
+    h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
 
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    return (q, hi, ti, factor)
+    return (q, hi, si, factor)
