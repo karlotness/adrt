@@ -311,8 +311,8 @@ def coord_adrt_to_cart(n):
         s_full[:, q * n : (q + 1) * n] = s_quad
         theta_full[:, q * n : (q + 1) * n] = theta_quad
 
-    CartesianCoords = namedtuple("CartesianCoords", ["angle", "offset"])
-    out = CartesianCoords(theta_full, s_full)
+    cart_coords = namedtuple("CartesianCoords", ["angle", "offset"])
+    out = cart_coords(theta_full, s_full)
     return out
 
 
@@ -372,6 +372,6 @@ def coord_cart_to_adrt(theta, t, n):
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    AdrtIndex = namedtuple("AdrtIndex", ["quadrant", "height", "slope", "factor"])
-    out = AdrtIndex(q, hi, si, factor)
+    adrt_index = namedtuple("AdrtIndex", ["quadrant", "height", "slope", "factor"])
+    out = adrt_index(q, hi, si, factor)
     return out
