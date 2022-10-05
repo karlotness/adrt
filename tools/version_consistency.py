@@ -214,7 +214,7 @@ if __name__ == "__main__":
     macro_min_numpy = find_macro_numpy_api("src/adrt/adrt_cdefs_py.cpp")
     print(f"Package min NumPy: {package_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")
-    if package_min_numpy != macro_min_numpy:
+    if Version(package_min_numpy) < Version(macro_min_numpy):
         print("NumPy version mismatch")
         failure = True
 
