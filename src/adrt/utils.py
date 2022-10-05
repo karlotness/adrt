@@ -275,6 +275,9 @@ def _coords_adrt_to_cart_quad(hi, ti, q):
     return theta, s
 
 
+CartesianCoord = namedtuple("CartesianCoord", ["angle", "offset"])
+
+
 def coord_adrt_to_cart(n):
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
@@ -313,9 +316,11 @@ def coord_adrt_to_cart(n):
         s_full[:, q * n : (q + 1) * n] = s_quad
         theta_full[:, q * n : (q + 1) * n] = theta_quad
 
-    cart_coords = namedtuple("CartesianCoord", ["angle", "offset"])
-    out = cart_coords(theta_full, s_full)
+    out = CartesianCoord(theta_full, s_full)
     return out
+
+
+ADRTIndex = namedtuple("ADRTIndex", ["quadrant", "height", "slope", "factor"])
 
 
 def coord_cart_to_adrt(theta, t, n):
@@ -376,6 +381,5 @@ def coord_cart_to_adrt(theta, t, n):
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    adrt_index = namedtuple("AdrtIndex", ["quadrant", "height", "slope", "factor"])
-    out = adrt_index(q, hi, si, factor)
+    out = ADRTIndex(q, hi, si, factor)
     return out
