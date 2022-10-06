@@ -288,12 +288,12 @@ def coord_adrt_to_cart(n):
 
     Returns
     -------
-    theta_full : numpy.ndarray
+    angle : numpy.ndarray
         2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
         (angle) coordinates of the ADRT domain for all quadrants, stacked
         horizontally.
 
-    s_full : numpy.ndarray
+    offset : numpy.ndarray
         2D array of dimensions (2*n-1, 4*n) containing Radon domain s
         (offset) coordinates of the ADRT domain for all quadrants, stacked
         horizontally.
@@ -335,13 +335,13 @@ def coord_cart_to_adrt(theta, t, n):
 
     Returns
     -------
-    q : numpy.ndarray of numpy.uint8
+    quadrant : numpy.ndarray of numpy.uint8
         quadrant index in ADRT domain
-    hi : numpy.ndarray of numpy.int
+    height : numpy.ndarray of numpy.int
         the intercept index in ADRT domain
-    si : numpy.ndarray of numpy.uint
+    slope : numpy.ndarray of numpy.uint
         the slope index in ADRT domain
-    factor :numpy.ndarray of numpy.float
+    factor : numpy.ndarray of numpy.float
         a transformation factor
 
     """
