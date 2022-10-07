@@ -79,6 +79,7 @@ coordinates, using the routine provided in :func:`skimage.transform.radon()`
    from skimage.transform import radon
 
    th_array, s_array = adrt.utils.coord_adrt_to_cart(n)
+   th_array = np.broadcast_to(th_array, (2 * n - 1, 4 * n))
 
    th_array1 = th_array[0, :]
    theta = 90.0 + np.rad2deg(th_array1)

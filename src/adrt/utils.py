@@ -52,8 +52,9 @@ __all__ = [
 ]
 
 
-import numpy as np
+import operator
 from collections import namedtuple
+import numpy as np
 from ._wrappers import interp_to_cart
 
 
@@ -201,84 +202,10 @@ def truncate(a, /):
     )
 
 
-def _cellcenters(a, b, n):
-    r"""Helper function that creates an array of cell-centers of uniform grid
-
-    Parameters
-    ----------
-    a : float
-        left boundary of grid
-    b : float
-        right boundary of grid
-    n : int
-        number of grid-cells
-
-    Returns
-    -------
-    centers : numpy.ndarray
-        array of shape (n,) containing center point of the n uniform grid
-        partition of the interval (a, b)
-    """
-
-    leftgrid, step = np.linspace(a, b, num=n, endpoint=False, retstep=True)
-    centers = leftgrid + 0.5 * step
-
-    return centers
-
-
-def _coords_adrt_to_cart_quad(hi, ti, q):
-    r"""Compute Radon domain coordinates of indices in the single-quadrant ADRT
-    domain
-
-    Parameters
-    ----------
-    hi : numpy.ndarray
-        1D array of dimension (2*n - 1,) containing intercept indices
-        of a single-quadrant ADRT domain
-    ti : numpy.ndarray
-        1D array of dimension (n,) containing slope indices of a
-        single-quadrant ADRT domain
-    q : int
-        quadrant index
-
-    Returns
-    -------
-    theta : numpy.ndarray
-        2D array of dimension (2*n-1, n) containing Radon domain theta (angle)
-        coordinates
-
-    s : numpy.ndarray
-        2D array of dimension (2*n-1, n) containing Radon domain s (offset)
-        coordinates
-    """
-    orient = q % 2
-
-    nh = len(hi)
-    ns = len(ti)
-
-    theta = np.arctan([ti / (ns - 1)])
-
-    y = (np.arange(ns) / ns).reshape(1, ns)
-    h0 = (hi.reshape(nh, 1) + y) / (1 + y)
-
-    if orient:
-        h0 = 1 - h0
-    s = (h0 - 0.5) * (np.cos(theta) + np.sin(theta))
-
-    if orient:
-        theta = -theta[:, ::-1]
-        s = s[:, ::-1]
-
-    theta += ((q - 1) // 2) * np.pi / 2
-    theta = np.repeat(theta, nh, axis=0)
-
-    return theta, s
-
-
 CartesianCoord = namedtuple("CartesianCoord", ["angle", "offset"])
 
 
-def coord_adrt_to_cart(n):
+def coord_adrt_to_cart(n, /):
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
     Parameters
@@ -289,30 +216,57 @@ def coord_adrt_to_cart(n):
     Returns
     -------
     angle : numpy.ndarray
-        2D array of dimensions (2*n-1, 4*n) containing Radon domain theta
-        (angle) coordinates of the ADRT domain for all quadrants, stacked
-        horizontally.
+        2D array of dimensions (1, 4*n) containing Radon domain theta
+        (angle) coordinates of the ADRT domain for all quadrants,
+        stacked horizontally.
 
     offset : numpy.ndarray
         2D array of dimensions (2*n-1, 4*n) containing Radon domain s
-        (offset) coordinates of the ADRT domain for all quadrants, stacked
-        horizontally.
+        (offset) coordinates of the ADRT domain, stacked horizontally.
+
+    See Also
+    --------
+    numpy.broadcast_to :
+        For broadcasting ``angle`` to the shape of ADRT output
     """
-
-    nq = 4
-
-    hi = _cellcenters(1, 1 / n - 1, 2 * n - 1)
-    ti = np.arange(n)
-
-    s_full = np.zeros((2 * n - 1, nq * n))
-    theta_full = np.zeros((2 * n - 1, nq * n))
-    for q in range(nq):
-        theta_quad, s_quad = _coords_adrt_to_cart_quad(hi, ti, q)
-        s_full[:, q * n : (q + 1) * n] = s_quad
-        theta_full[:, q * n : (q + 1) * n] = theta_quad
-
-    out = CartesianCoord(theta_full, s_full)
-    return out
+    n = operator.index(n)
+    if n < 2:
+        raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
+    if (n - 1) & n != 0:
+        raise ValueError(f"invalid Radon domain size {n}, must a power of two")
+    hi, step = np.linspace(
+        1, (1 - n) / n, num=2 * n - 1, endpoint=False, retstep=True, dtype=np.float64
+    )
+    hi += step / 2
+    # Compute base angles
+    ns = np.linspace(0, 1, num=n, endpoint=True, dtype=np.float64)
+    theta = np.arctan(ns)  # [0, pi/4]
+    theta_offset = theta - (np.pi / 2)
+    h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
+    # Build output quadrants
+    s_full = np.tile(
+        np.concatenate(
+            [
+                h0,
+                np.flip(-h0, axis=-1),
+            ],
+            axis=-1,
+        ),
+        (1, 2),
+    )
+    theta_full = np.expand_dims(
+        np.concatenate(
+            [
+                theta_offset,
+                -np.flip(theta, axis=0),
+                theta,
+                -np.flip(theta_offset, axis=0),
+            ],
+            axis=-1,
+        ),
+        axis=0,
+    )
+    return CartesianCoord(theta_full, s_full)
 
 
 ADRTIndex = namedtuple("ADRTIndex", ["quadrant", "height", "slope", "factor"])
