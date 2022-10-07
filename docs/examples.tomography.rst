@@ -9,7 +9,7 @@ Inverse Section <inverse page>`.
 We first import requisite modules, and define the ``AdrtNormalOperator`` and the
 function ``iadrt_cg``. However, here we modify ``AdrtNormalOperator`` by adding
 a multiple of the identity term. This modifies our operator so that the CG
-inverse computes the ridge regression problem, given by 
+inverse computes the ridge regression problem, given by
 :math:`(A^{T}A + \lambda A)x = A^{T}b`. We name the new operator ``AdrtRidgeOperator`` below.
 
 
@@ -60,7 +60,7 @@ Forward Data
 -------------
 
 We first obtain the forward measurements of the CT problem, by computing the
-Radon transform of the Shepp-Logan phantom. 
+Radon transform of the Shepp-Logan phantom.
 
 .. plot::
    :context: close-figs
@@ -76,7 +76,7 @@ coordinates, using the routine provided in :func:`skimage.transform.radon()`
    :context: close-figs
    :align: center
 
-   from skimage.transform import radon 
+   from skimage.transform import radon
 
    th_array, s_array = adrt.utils.coord_adrt_to_cart(n)
 
@@ -124,9 +124,9 @@ data into the ADRT data format.
                j = (q+1)*n - i - 1
             s_coords = s_array[:, j]
             factor = np.cos(theta_q[j])
-            vals = np.interp(s_coords, 
-                             t_coords - step*j/(4*n),  # offset correction 
-                             sinogram[:, j], 
+            vals = np.interp(s_coords,
+                             t_coords - step*j/(4*n),  # offset correction
+                             sinogram[:, j],
                              left=0.0, right=0.0)
 
             adrt_data[q, :, i] = vals*factor
@@ -158,8 +158,8 @@ displayed below.
    :context: close-figs
    :align: center
 
-   fig, axs = plt.subplots(nrows=2, 
-                           ncols=2, 
+   fig, axs = plt.subplots(nrows=2,
+                           ncols=2,
                            gridspec_kw={'height_ratios' : (3,1)})
 
    ax = axs[0, 0]
