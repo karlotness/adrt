@@ -136,9 +136,9 @@ transposing the image.
 
 
 .. plot::
-   :context: close-figs
+   :context: reset
    :align: center
-
+   :include-source: false
 
    fig, ax = plt.subplots()
 
