@@ -9,14 +9,6 @@ takes a different approach to the inverse implemented in
 particular the SciPy's :func:`scipy.sparse.linalg.cg` routine, but
 another implementation could be used instead, if desired.
 
-To begin our implementation we import the modules we need, including
-values from :mod:`scipy.sparse.linalg`. ::
-
-   import numpy as np
-   from scipy.sparse.linalg import LinearOperator, cg
-   from matplotlib import pyplot as plt
-   import adrt
-
 .. plot::
    :context: reset
    :include-source: false
@@ -37,38 +29,9 @@ Here we use SciPy's implementation in particular, provided in
 :math:`A^{T}A` and then use this in a function ``iadrt_cg`` which
 performs the actual inversion operation using conjugate gradients.
 
-.. plot::
+.. plot:: code/iadrt_cg.py
    :context: close-figs
    :nofigs:
-
-   class AdrtNormalOperator(LinearOperator):
-       def __init__(self, img_size, dtype=None):
-           super().__init__(dtype=dtype, shape=(img_size ** 2, img_size ** 2))
-           self._img_size = img_size
-
-       def _matmat(self, x):
-           # Use batch dimensions to handle columns of matrix x
-           n_batch = x.shape[-1]
-           batch_img = np.moveaxis(x, -1, 0).reshape(
-               (n_batch, self._img_size, self._img_size)
-           )
-           ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).mean(axis=1)
-           return np.moveaxis(ret, 0, -1).reshape((self._img_size ** 2, n_batch))
-
-       def _adjoint(self):
-           return self
-
-
-   def iadrt_cg(b, **kwargs):
-       if b.ndim > 3:
-           raise ValueError("batch dimension not supported for iadrt_cg")
-       img_size = b.shape[-1]
-       linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
-       tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
-       x, info = cg(linop, tb, **kwargs)
-       if info != 0:
-           raise ValueError(f"convergence failed (cg status {info})")
-       return x.reshape((img_size, img_size))
 
 We'll use the same starting image as in the :doc:`quickstart`, but we
 will apply a small amount of normal noise to its adrt to illustrate
