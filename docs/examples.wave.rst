@@ -5,50 +5,15 @@ The Radon transform allows one to solve the multi-dimensional wave equation
 :math:`\partial_t^2 u = \Delta u`.  This solution is also called the
 Lax-Philips translation representation.
 
-To do this, we will need to invert the Radon transform, so we will again be
-using SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
-:ref:`Iterative Inverse Section <inverse page>`.  We import requisite modules,
-and define the ``AdrtNormalOperator`` and the function ``iadrt_cg``.
+To do this, we will need to invert the Radon transform, so we will
+again be using SciPy's :func:`scipy.sparse.linalg.cg` routine as
+illustrated in the :ref:`Iterative Inverse Section <inverse page>` and
+make use of the function ``iadrt_cg`` from that example.
 
-.. plot::
+.. plot:: code/iadrt_cg.py
    :context: reset
-   :align: center
-
-   import numpy as np
-   from scipy.sparse.linalg import LinearOperator, cg
-   from matplotlib import pyplot as plt
-   import adrt
-
-   from scipy.sparse.linalg import LinearOperator, cg
-
-   class AdrtNormalOperator(LinearOperator):
-      def __init__(self, img_size, dtype=None):
-         super().__init__(dtype=dtype, shape=(img_size ** 2, img_size ** 2))
-         self._img_size = img_size
-
-      def _matmat(self, x):
-         # Use batch dimensions to handle columns of matrix x
-         n_batch = x.shape[-1]
-         batch_img = np.moveaxis(x, -1, 0).reshape(
-             (n_batch, self._img_size, self._img_size)
-         )
-         ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).mean(axis=1)
-         return np.moveaxis(ret, 0, -1).reshape((self._img_size ** 2, n_batch))
-
-      def _adjoint(self):
-         return self
-
-
-   def iadrt_cg(b, **kwargs):
-      if b.ndim > 3:
-          raise ValueError("batch dimension not supported for iadrt_cg")
-      img_size = b.shape[-1]
-      linop = AdrtNormalOperator(img_size=img_size, dtype=b.dtype)
-      tb = adrt.utils.truncate(adrt.bdrt(b)).mean(axis=0).ravel()
-      x, info = cg(linop, tb, **kwargs)
-      if info != 0:
-          raise ValueError(f"convergence failed (cg status {info})")
-      return x.reshape((img_size, img_size))
+   :include-source: false
+   :nofigs:
 
 We first construct the initial condition, a linear combination of two cosine
 peaks.
@@ -124,6 +89,7 @@ Finally, we invert the ADRT.
    :context: close-figs
    :align: center
 
+   # Using iadrt_cg from the Iterative Inverse example
    sol = iadrt_cg(sol_adrt)
 
 We plot the solution, and also show the Cartesian view of the ADRT data.
