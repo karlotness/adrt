@@ -21,6 +21,7 @@ inverse computes the ridge regression problem, given by
    :context: close-figs
    :align: center
 
+   # Using AdrtNormalOperator from the Iterative Inverse example
    class AdrtRidgeOperator(AdrtNormalOperator):
       def __init__(self, img_size, dtype=None, ridge_param=40.0):
          super().__init__(dtype=dtype, img_size=img_size)
@@ -112,19 +113,30 @@ data into the ADRT data format.
 Inversion result
 ----------------
 
-Now, we compute the inverse problem by solving the ridge regression problem.
+Now, we compute the inverse problem by solving the ridge regression
+problem. We also show the inverse computed with :func:`adrt.iadrt_fmg`
+included in the package.
 
 .. plot::
    :context: close-figs
    :align: center
 
    adrt_data = cart_to_adrt(th_array, s_array, sinogram)
+   # Using iadrt_cg from the Iterative Inverse example
    cg_inv = iadrt_cg(adrt_data, op_cls=AdrtRidgeOperator)
+   fmg_inv = adrt.iadrt_fmg(adrt_data)
 
    # Display inversion result
-   plt.imshow(cg_inv, cmap="bone")
-   plt.colorbar()
-   plt.tight_layout()
+   fig, axs = plt.subplots(1, 2, sharey=True)
+   for ax, data, title in zip(
+       axs.ravel(),
+       [cg_inv, fmg_inv],
+       ["CG Inverse", "FMG Inverse"],
+   ):
+       im_plot = ax.imshow(data, cmap="bone", extent=(0, 1, 0, 1))
+       fig.colorbar(im_plot, ax=ax, orientation="horizontal", pad=0.08)
+       ax.set_title(title)
+   fig.tight_layout()
 
 The inversion result, together with a slice plot in the horizontal direction is
 displayed below.
@@ -133,26 +145,30 @@ displayed below.
    :context: close-figs
    :align: center
 
-   fig, axs = plt.subplots(nrows=2,
-                           ncols=2,
-                           gridspec_kw={'height_ratios' : (3,1)})
+   fig, axs = plt.subplots(
+       2, 3, sharex=True, sharey="row",
+   )
+   vmin = min(map(np.min, [phantom, cg_inv, fmg_inv]))
+   vmax = max(map(np.max, [phantom, cg_inv, fmg_inv]))
+   plot_row = n // 5 * 2
+   plot_x = np.linspace(0.0, 1.0, n)
 
-   ax = axs[0, 0]
-   ax.imshow(phantom, cmap='Greys_r', extent=(0, 1, 0, 1))
-   ax.hlines(0.6, 0, 1, 'b')
-   ax.set_title('original')
-
-   ax = axs[0, 1]
-   ax.imshow(cg_inv, cmap='Greys_r', extent=(0, 1, 0, 1))
-   ax.hlines(0.6, 0, 1, 'b')
-   ax.set_title('CG inverse (ridge)')
-
-   ax = axs[1, 0]
-   x = np.linspace(0.0, 1.0, n)
-   ax.plot(x, phantom[n // 5 * 2, :], 'b')
-   ax.set_ylim([-0.1, 1.1])
-
-   ax = axs[1, 1]
-   x = np.linspace(0.0, 1.0, n)
-   ax.plot(x, cg_inv[n // 5 * 2, :], 'b')
-   ax.set_ylim([-0.1, 1.1])
+   for ax, data, title in zip(
+       axs.T,
+       [phantom, cg_inv, fmg_inv],
+       ["Original", "CG Ridge Inverse", "FMG Inverse"],
+   ):
+       im_ax = ax[0]
+       plot_ax = ax[1]
+       im_ax.imshow(
+           data,
+           cmap="bone",
+           extent=(0, 1, 0, 1),
+           vmin=vmin,
+           vmax=vmax,
+       )
+       im_ax.axhline(0.6, color="C0")
+       im_ax.set_title(title)
+       plot_ax.plot(plot_x, data[plot_row, :], "C0")
+       plot_ax.grid(True)
+   fig.tight_layout()
