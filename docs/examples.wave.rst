@@ -60,16 +60,16 @@ peaks.
    n = 2**9
    xx = np.linspace(0.0, 1.0, n)
    X, Y = np.meshgrid(xx, xx)
-   
+
    alph1 = 16.0
    alph2 = 8.0
-   
+
    x1, y1 = 0.6, 0.65
    x2, y2 = 0.4, 0.35
-   
+
    R1 = np.sqrt((X - x1)**2 + (Y - y1)**2)
    R2 = np.sqrt((X - x2)**2 + (Y - y2)**2)
-   
+
    init = 0.5*(np.cos(np.pi*alph1*R1) + 1.0)*(R1 < 1.0/alph1) \
         + 0.5*(np.cos(np.pi*alph2*R2) + 1.0)*(R2 < 1.0/alph2)
 
@@ -81,7 +81,7 @@ We approximate the Radon transform of the initial condition using :func:`adrt.ad
    :align: center
 
    init_adrt = adrt.adrt(init)
-   
+
 For each angular slice, we translate the initial condition following the d'Alembert formula
 
 .. plot::
@@ -89,12 +89,12 @@ For each angular slice, we translate the initial condition following the d'Alemb
    :align: center
 
    sol_adrt = np.zeros(init_adrt.shape)
-   
+
    m = init_adrt.shape[1]
-   
+
    # Eulerian grid
    yy = np.linspace(-1.0, 1.0, m)
-   
+
    time = 0.20
    for q in range(4):
        for i in range(n):
@@ -127,21 +127,21 @@ Finally, we invert the ADRT.
    sol = iadrt_cg(sol_adrt)
 
 We plot the solution, and also show the Cartesian view of the ADRT data.
-   
+
 .. plot::
    :context: close-figs
    :align: center
 
    fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 5))
-   
+
    cart_extent = 0.5*np.array([-np.sqrt(2), np.sqrt(2), -np.pi, np.pi])
-   
+
    ax = axs[0, 1]
    im = ax.imshow(adrt.utils.interp_to_cart(init_adrt), aspect='auto', extent=cart_extent)
    plt.colorbar(im, ax=ax)
    ax.set_xlabel('$\\theta$')
    ax.set_ylabel('$t$')
-   
+
    ax = axs[1, 1]
    im = ax.imshow(adrt.utils.interp_to_cart(sol_adrt), aspect='auto', extent=cart_extent)
    plt.colorbar(im, ax=ax)
@@ -149,7 +149,7 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    ax.set_ylabel('$y$')
    ax.set_xlabel('$\\theta$')
    ax.set_ylabel('$t$')
-   
+
    ax = axs[0, 0]
    im = ax.imshow(init, extent=(0, 1, 0, 1))
    ax.set_title('time = {:1.1f}'.format(0))
@@ -157,7 +157,7 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    ax.set_aspect(1)
    ax.set_xlabel('$x$')
    ax.set_ylabel('$y$')
-   
+
    ax = axs[1, 0]
    ax.set_title('time = {:1.1f}'.format(time))
    im = ax.imshow(sol, extent=(0, 1, 0, 1))
@@ -165,7 +165,6 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    ax.set_aspect(1)
    ax.set_xlabel('$x$')
    ax.set_ylabel('$y$')
-   
+
    fig.tight_layout()
    fig.show()
-
