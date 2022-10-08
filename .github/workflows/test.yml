@@ -32,6 +32,10 @@ jobs:
         python -m pip install --upgrade tox
     - name: Run linters
       run: python -m tox -e lint,checkver
+    - name: Check types
+      run: python -m tox -e type
+      env:
+        CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden -U_FORTIFY_SOURCE'
     - name: Clean up
       run: python -m pip cache remove adrt || true
   test:

@@ -44,17 +44,31 @@ utility routines can be found in :mod:`adrt.utils`.
 """
 
 
-__all__ = ["adrt", "iadrt", "bdrt", "iadrt_fmg", "utils", "core"]
-__version__ = "0.1.0.dev"
-
-
+import typing
 import itertools
 import numpy as np
+import numpy.typing as npt
 from ._wrappers import adrt, iadrt, bdrt
 from . import utils, core
 
 
-def iadrt_fmg(a, /, *, max_iters=None):
+__all__: typing.Final[typing.Sequence[str]] = [
+    "adrt",
+    "iadrt",
+    "bdrt",
+    "iadrt_fmg",
+    "utils",
+    "core",
+]
+__version__: typing.Final[str] = "0.1.0.dev"
+
+
+_F = typing.TypeVar("_F", np.float32, np.float64)
+
+
+def iadrt_fmg(
+    a: npt.NDArray[_F], /, *, max_iters: typing.Optional[int] = None
+) -> npt.NDArray[_F]:
     r"""Approximate inverse to the ADRT by the full multigrid method.
 
     Estimated inverses are computed and iteratively refined until the
@@ -110,13 +124,13 @@ def iadrt_fmg(a, /, *, max_iters=None):
         itertools.chain(
             map(
                 # Pair each estimated inverse x with its residual error
-                lambda x: (x, np.linalg.norm(adrt(x) - a)),
+                lambda x: (x, float(np.linalg.norm(adrt(x) - a))),
                 # Use itertools.islice to limit iterations if requested
                 itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
             ),
             # Chain i2 with one extra value so we don't exhaust early
             # Use np.inf so the residual will rise and we won't continue iterating
-            [(None, np.inf)],
+            [(a, np.inf)],
         ),
         2,
     )

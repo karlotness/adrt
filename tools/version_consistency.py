@@ -106,7 +106,9 @@ def find_cpp_macro_def(macro, cpp_path):
 def find_package_version(init_py):
     with open(init_py, "r", encoding="utf8") as init_file:
         content = init_file.read()
-    version_re = re.compile(r"^__version__\s*=(?P<ver>.+)$", re.MULTILINE)
+    version_re = re.compile(
+        r"^__version__\s*(?::\s*[^=\s]+\s*)?=(?P<ver>.+)$", re.MULTILINE
+    )
     if match := version_re.search(content):
         ver_str = ast.literal_eval(match.group("ver"))
         if not isinstance(ver_str, str):

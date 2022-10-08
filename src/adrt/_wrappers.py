@@ -47,15 +47,22 @@ Python documentation.
 """
 
 
-__all__ = []
-
-
 import operator
+import typing
 import numpy as np
+import numpy.typing as npt
 from . import _adrt_cdefs
 
 
-def _set_module(module):
+__all__: typing.Final[typing.Sequence[str]] = []
+
+
+C = typing.TypeVar("C", bound=typing.Callable[..., typing.Any])
+A = typing.TypeVar("A", bound=np.generic)
+F = typing.TypeVar("F", np.float32, np.float64)
+
+
+def _set_module(module: str) -> typing.Callable[[C], C]:
     r"""Override ``__module__`` on functions for documentation.
 
     This is an internal function. Users should not call it. This
@@ -66,15 +73,14 @@ def _set_module(module):
     appear at the top level.
     """
 
-    def decorate(func):
-        if module is not None:
-            func.__module__ = module
+    def decorate(func: C) -> C:
+        func.__module__ = module
         return func
 
     return decorate
 
 
-def _format_object_type(obj, /):
+def _format_object_type(obj: typing.Any, /) -> str:
     r"""Given an object `obj`, return a formatted string for its type name.
 
     In particular, for built-in types omit the ``builtins`` module
@@ -83,11 +89,11 @@ def _format_object_type(obj, /):
     """
     t = type(obj)
     if t.__module__ == "builtins":
-        return t.__qualname__
+        return str(t.__qualname__)
     return f"{t.__module__}.{t.__qualname__}"
 
 
-def _normalize_array(a, /):
+def _normalize_array(a: npt.NDArray[A], /) -> npt.NDArray[A]:
     r"""Ensure provided arrays are in a suitable layout.
 
     This is an internal function. Users should not call it. Make sure
@@ -107,7 +113,7 @@ def _normalize_array(a, /):
 
 
 @_set_module("adrt")
-def adrt(a, /):
+def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""The Approximate Discrete Radon Transform (ADRT).
 
     Computes the ADRT of the provided array, `a`. The array `a` may
@@ -153,7 +159,7 @@ def adrt(a, /):
 
 
 @_set_module("adrt.core")
-def adrt_step(a, /, step):
+def adrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F]:
     r"""Compute a single step of the ADRT.
 
     The ADRT implemented in :func:`adrt.adrt` is internally an
@@ -198,7 +204,7 @@ def adrt_step(a, /, step):
 
 
 @_set_module("adrt")
-def iadrt(a, /):
+def iadrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
@@ -239,7 +245,7 @@ def iadrt(a, /):
 
 
 @_set_module("adrt")
-def bdrt(a, /):
+def bdrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""Backprojection for the ADRT.
 
     Parameters
@@ -267,7 +273,7 @@ def bdrt(a, /):
 
 
 @_set_module("adrt.core")
-def bdrt_step(a, /, step):
+def bdrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F]:
     r"""Compute a single step of the bdrt.
 
     The implementation of :func:`adrt.bdrt` is internally an iterative
@@ -306,7 +312,7 @@ def bdrt_step(a, /, step):
 
 
 @_set_module("adrt.utils")
-def interp_to_cart(a, /):
+def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
 
     Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
@@ -328,7 +334,7 @@ def interp_to_cart(a, /):
 
 
 @_set_module("adrt.core")
-def num_iters(n, /):
+def num_iters(n: typing.SupportsIndex, /) -> int:
     r"""Number of adrt iterations needed for an image of size n.
 
     Many of the algorithms in this package are iterative. For an image
@@ -352,7 +358,7 @@ def num_iters(n, /):
 
 
 @_set_module("adrt.core")
-def threading_enabled():
+def threading_enabled() -> bool:
     r"""Indicate whether core routines provide multithreading.
 
     Many of the core routines in this package can optionally be built
@@ -369,13 +375,13 @@ def threading_enabled():
     return _adrt_cdefs.openmp_enabled
 
 
-def _press_fmg_restriction(a, /):
+def _press_fmg_restriction(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     return _adrt_cdefs.press_fmg_restriction(_normalize_array(a))
 
 
-def _press_fmg_prolongation(a, /):
+def _press_fmg_prolongation(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     return _adrt_cdefs.press_fmg_prolongation(_normalize_array(a))
 
 
-def _press_fmg_highpass(a, /):
+def _press_fmg_highpass(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     return _adrt_cdefs.press_fmg_highpass(_normalize_array(a))

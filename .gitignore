@@ -25,6 +25,7 @@ build/
 dist/
 .tox/
 .pytest_cache/
+.mypy_cache/
 
 # Sphinx docs
 docs/_build/

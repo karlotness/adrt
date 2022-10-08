@@ -42,7 +42,15 @@ irregular ADRT angles into a regular spacing.
 """
 
 
-__all__ = [
+import operator
+import typing
+from collections import namedtuple
+import numpy as np
+import numpy.typing as npt
+from ._wrappers import interp_to_cart
+
+
+__all__: typing.Final[typing.Sequence[str]] = [
     "stitch_adrt",
     "unstitch_adrt",
     "truncate",
@@ -52,13 +60,12 @@ __all__ = [
 ]
 
 
-import operator
-from collections import namedtuple
-import numpy as np
-from ._wrappers import interp_to_cart
+_A = typing.TypeVar("_A", bound=np.generic)
 
 
-def stitch_adrt(a, /, *, remove_repeated=False):
+def stitch_adrt(
+    a: npt.NDArray[_A], /, *, remove_repeated: bool = False
+) -> npt.NDArray[_A]:
     r"""Reshape and align ADRT channel-wise output into a contiguous image.
 
     The ADRT routine, :func:`adrt.adrt`, produces an output array
@@ -123,7 +130,7 @@ def stitch_adrt(a, /, *, remove_repeated=False):
     return ret.reshape(output_shape)
 
 
-def unstitch_adrt(a, /):
+def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     r"""Slice a stitched ADRT output back into individual quadrants.
 
     This function provides an inverse for :func:`stitch_adrt` and
@@ -175,7 +182,7 @@ def unstitch_adrt(a, /):
     return np.stack(ret, axis=-3)
 
 
-def truncate(a, /):
+def truncate(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     r"""Truncate and rotate square domain from iadrt or bdrt output.
 
     Parameters
@@ -202,10 +209,12 @@ def truncate(a, /):
     )
 
 
-CartesianCoord = namedtuple("CartesianCoord", ["angle", "offset"])
+class CartesianCoord(typing.NamedTuple):
+    angle: npt.NDArray[np.float64]
+    offset: npt.NDArray[np.float64]
 
 
-def coord_adrt_to_cart(n, /):
+def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
     Parameters

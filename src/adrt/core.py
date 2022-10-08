@@ -56,20 +56,9 @@ single-step routines make that possible.
 """
 
 
-__all__ = [
-    "num_iters",
-    "adrt_step",
-    "adrt_init",
-    "adrt_iter",
-    "bdrt_step",
-    "bdrt_iter",
-    "threading_enabled",
-    "iadrt_fmg_step",
-    "iadrt_fmg_iter",
-]
-
-
+import typing
 import numpy as np
+import numpy.typing as npt
 from .utils import truncate as _truncate
 from ._wrappers import (
     _format_object_type,
@@ -85,7 +74,24 @@ from ._wrappers import (
 )
 
 
-def adrt_init(a, /):
+__all__: typing.Final[typing.Sequence[str]] = [
+    "num_iters",
+    "adrt_step",
+    "adrt_init",
+    "adrt_iter",
+    "bdrt_step",
+    "bdrt_iter",
+    "threading_enabled",
+    "iadrt_fmg_step",
+    "iadrt_fmg_iter",
+]
+
+
+_A = typing.TypeVar("_A", bound=np.generic)
+_F = typing.TypeVar("_F", np.float32, np.float64)
+
+
+def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     r"""Initialize an array for use with :func:`adrt_step`.
 
     This function processes square arrays with side lengths a power of
@@ -138,7 +144,9 @@ def adrt_init(a, /):
     return ret
 
 
-def adrt_iter(a, /, *, copy=True):
+def adrt_iter(
+    a: npt.NDArray[_F], /, *, copy: bool = True
+) -> typing.Iterator[npt.NDArray[_F]]:
     r"""Yield individual steps of the ADRT.
 
     The ADRT implemented in :func:`adrt.adrt` is internally an
@@ -184,7 +192,9 @@ def adrt_iter(a, /, *, copy=True):
         yield a.copy() if copy else a.view()
 
 
-def bdrt_iter(a, /, *, copy=True):
+def bdrt_iter(
+    a: npt.NDArray[_F], /, *, copy: bool = True
+) -> typing.Iterator[npt.NDArray[_F]]:
     r"""Yield individual steps of the bdrt.
 
     The implementation of :func:`adrt.bdrt` is internally an iterative
@@ -222,7 +232,7 @@ def bdrt_iter(a, /, *, copy=True):
         yield a.copy() if copy else a.view()
 
 
-def iadrt_fmg_step(a, /):
+def iadrt_fmg_step(a: npt.NDArray[_F], /) -> npt.NDArray[_F]:
     r"""Compute an estimated inverse by the full multigrid method.
 
     This is an implementation of the "FMG" inverse described by Press
@@ -293,7 +303,9 @@ def iadrt_fmg_step(a, /):
     return ret
 
 
-def iadrt_fmg_iter(a, /, *, copy=True):
+def iadrt_fmg_iter(
+    a: npt.NDArray[_F], /, *, copy: bool = True
+) -> typing.Iterator[npt.NDArray[_F]]:
     r"""Iteratively improve estimated inverses by the full multigrid method.
 
     Internally computes a recurrence with :func:`iadrt_fmg_step` to

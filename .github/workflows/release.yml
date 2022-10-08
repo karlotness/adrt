@@ -33,6 +33,10 @@ jobs:
         python -m pip install --upgrade tox
     - name: Check version strings
       run: python -m tox -e checkver -- --tag_ref '${{ github.ref }}' --not_dev
+    - name: Check types
+      run: python -m tox -e type
+      env:
+        CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden -U_FORTIFY_SOURCE'
     - name: Run tox tests
       run: python -m tox -e py
       env:
