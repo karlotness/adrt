@@ -62,7 +62,7 @@ skip = ["*-musllinux*", "pp*"]
 build-frontend = "build"
 before-test = "pip install -r {package}/tests/test_requirements.txt"
 test-command = "pytest {package}/tests"
-test-skip = "*-macosx_universal2:arm64 cp3{10,11,12}-win32 cp3{11,12}-*"
+test-skip = "*-macosx_universal2:arm64 cp3{10,11,12}-win32 cp312-*"
 
 # Specify manylinux image versions
 manylinux-x86_64-image = "manylinux2014"
