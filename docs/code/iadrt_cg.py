@@ -3,7 +3,7 @@ from scipy.sparse.linalg import LinearOperator, cg
 import adrt
 
 
-class AdrtNormalOperator(LinearOperator):
+class ADRTNormalOperator(LinearOperator):
     def __init__(self, img_size, dtype=None):
         super().__init__(dtype=dtype, shape=(img_size**2, img_size**2))
         self._img_size = img_size
@@ -21,7 +21,7 @@ class AdrtNormalOperator(LinearOperator):
         return self
 
 
-def iadrt_cg(b, op_cls=AdrtNormalOperator, **kwargs):
+def iadrt_cg(b, op_cls=ADRTNormalOperator, **kwargs):
     if b.ndim > 3:
         raise ValueError("batch dimension not supported for iadrt_cg")
     img_size = b.shape[-1]

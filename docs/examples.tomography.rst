@@ -6,11 +6,11 @@ from Computerized Tomography (CT). Here we will be using SciPy's
 :func:`scipy.sparse.linalg.cg` routine as illustrated in the :ref:`Iterative
 Inverse Section <inverse page>`.
 
-We first import requisite modules, and define the ``AdrtNormalOperator`` and the
-function ``iadrt_cg``. However, here we modify ``AdrtNormalOperator`` by adding
+We first import requisite modules, and define the ``ADRTNormalOperator`` and the
+function ``iadrt_cg``. However, here we modify ``ADRTNormalOperator`` by adding
 a multiple of the identity term. This modifies our operator so that the CG
 inverse computes the ridge regression problem, given by
-:math:`(A^{T}A + \lambda A)x = A^{T}b`. We name the new operator ``AdrtRidgeOperator`` below.
+:math:`(A^{T}A + \lambda A)x = A^{T}b`. We name the new operator ``ADRTRidgeOperator`` below.
 
 .. plot:: code/iadrt_cg.py
    :context: reset
@@ -21,8 +21,8 @@ inverse computes the ridge regression problem, given by
    :context: close-figs
    :align: center
 
-   # Using AdrtNormalOperator from the Iterative Inverse example
-   class AdrtRidgeOperator(AdrtNormalOperator):
+   # Using ADRTNormalOperator from the Iterative Inverse example
+   class ADRTRidgeOperator(ADRTNormalOperator):
       def __init__(self, img_size, dtype=None, ridge_param=40.0):
          super().__init__(dtype=dtype, img_size=img_size)
          self._ridge_param = ridge_param
@@ -123,7 +123,7 @@ included in the package.
 
    adrt_data = cart_to_adrt(th_array, s_array, sinogram)
    # Using iadrt_cg from the Iterative Inverse example
-   cg_inv = iadrt_cg(adrt_data, op_cls=AdrtRidgeOperator)
+   cg_inv = iadrt_cg(adrt_data, op_cls=ADRTRidgeOperator)
    fmg_inv = adrt.iadrt_fmg(adrt_data)
 
    # Display inversion result

@@ -24,7 +24,7 @@ conjugate gradient method to the normal equations:
 
 Here we use SciPy's implementation in particular, provided in
 :func:`scipy.sparse.linalg.cg`. To do this we define
-``AdrtNormalOperator`` an instance of
+``ADRTNormalOperator`` an instance of
 :class:`scipy.sparse.linalg.LinearOperator` for the operation
 :math:`A^{T}A` and then use this in a function ``iadrt_cg`` which
 performs the actual inversion operation using conjugate gradients.
