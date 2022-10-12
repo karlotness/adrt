@@ -256,23 +256,20 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     s_full = np.tile(
         np.concatenate(
             [
-                h0,
-               -h0,
+                h0[np.newaxis, ...],
+                -h0[np.newaxis, ...],
             ],
-            axis=-1,
+            axis=0,
         ),
-        (1, 2),
+        (2, 1, 1),
     )
-    theta_full = np.expand_dims(
-        np.concatenate(
-            [
-                theta_offset,
-                -theta,
-                theta,
-                -theta_offset,
-            ],
-            axis=-1,
-        ),
+    theta_full = np.concatenate(
+        [
+            theta_offset[np.newaxis, ...],
+            -theta[np.newaxis, ...],
+            theta[np.newaxis, ...],
+            -theta_offset[np.newaxis, ...],
+        ],
         axis=0,
     )
     return CartesianCoord(theta_full, s_full)
