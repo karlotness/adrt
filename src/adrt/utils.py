@@ -225,12 +225,12 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     Returns
     -------
     angle : numpy.ndarray
-        2D array of dimensions (4, n) containing Radon domain theta
+        2D array of dimensions (1, 4*n) containing Radon domain theta
         (angle) coordinates of the ADRT domain for all quadrants,
         stacked horizontally.
 
     offset : numpy.ndarray
-        2D array of dimensions (4, 2*n-1, n) containing Radon domain s
+        2D array of dimensions (2*n-1, 4*n) containing Radon domain s
         (offset) coordinates of the ADRT domain, stacked horizontally.
 
     See Also
@@ -256,20 +256,23 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     s_full = np.tile(
         np.concatenate(
             [
-                h0[np.newaxis, ...],
-                -h0[np.newaxis, ...],
+                h0,
+                np.flip(-h0, axis=-1),
             ],
-            axis=0,
+            axis=-1,
         ),
-        (2, 1, 1),
+        (1, 2),
     )
-    theta_full = np.concatenate(
-        [
-            theta_offset[np.newaxis, ...],
-            -theta[np.newaxis, ...],
-            theta[np.newaxis, ...],
-            -theta_offset[np.newaxis, ...],
-        ],
+    theta_full = np.expand_dims(
+        np.concatenate(
+            [
+                theta_offset,
+                -np.flip(theta, axis=0),
+                theta,
+                -np.flip(theta_offset, axis=0),
+            ],
+            axis=-1,
+        ),
         axis=0,
     )
     return CartesianCoord(theta_full, s_full)
