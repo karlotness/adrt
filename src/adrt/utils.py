@@ -257,7 +257,7 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
         np.concatenate(
             [
                 h0,
-                np.flip(-h0, axis=-1),
+               -h0,
             ],
             axis=-1,
         ),
@@ -267,9 +267,9 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
         np.concatenate(
             [
                 theta_offset,
-                -np.flip(theta, axis=0),
+                -theta,
                 theta,
-                -np.flip(theta_offset, axis=0),
+                -theta_offset,
             ],
             axis=-1,
         ),
