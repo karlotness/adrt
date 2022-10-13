@@ -86,3 +86,11 @@ archs = ["auto"]
 
 [tool.cibuildwheel.windows.environment]
 CL = "/permissive- /Zc:inline,preprocessor,__cplusplus /DNDEBUG"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+addopts = [
+  "--import-mode=importlib",
+  "--capture=no",
+]
