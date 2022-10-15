@@ -129,7 +129,7 @@ namespace adrt {
                 }
 
                 // Middle columns
-                ADRT_OPENMP("omp simd")
+                // Innermost loop serial
                 for(size_t col = 1; col < std::get<2>(shape) - 1_uz; ++col) {
                     const size_t prev_col = col - 1_uz;
                     const size_t next_col = col + 1_uz;
