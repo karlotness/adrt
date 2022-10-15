@@ -74,13 +74,14 @@ namespace adrt {
                         const size_t sec_left = 2_uz * section;
                         const size_t sec_right = sec_left + 1_uz;
 
-                        // Innermost loops serial
+                        ADRT_OPENMP("omp simd")
                         for(size_t row = 0; row < sec_i; ++row) {
                             const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i, section, row);
                             const adrt_scalar lb_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i + 1_uz, section, row);
                             adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_left, row) = la_val + lb_val;
                         }
 
+                        ADRT_OPENMP("omp simd")
                         for(size_t row = sec_i; row < std::get<4>(curr_shape) - 1_uz; ++row) {
                             // Left section
                             const adrt_scalar la_val = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * sec_i, section, row);
@@ -100,6 +101,7 @@ namespace adrt {
                         }
 
                         // Zero the last sec_i entries in offset row
+                        ADRT_OPENMP("omp simd")
                         for(size_t zrow = std::get<4>(curr_shape) - sec_i; zrow < std::get<4>(curr_shape); ++zrow) {
                             adrt::_common::array_access(out, curr_shape, batch, quadrant, sec_i, sec_right, zrow) = 0;
                         }

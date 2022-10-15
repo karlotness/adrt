@@ -72,12 +72,13 @@ namespace adrt {
                     for(size_t angle = 0; angle < std::get<3>(curr_shape); ++angle) {
                         // Pair of loops below split at ceil(angle/2) to avoid extra bounds check in loop body
                         const size_t ceil_div2_angle = adrt::_common::ceil_div2(angle);
-                        // Innermost loops serial
+                        ADRT_OPENMP("omp simd")
                         for(size_t col = 0; col < ceil_div2_angle; ++col) {
                             const adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * row, adrt::_common::floor_div2(angle), col);
                             adrt::_common::array_access(out, curr_shape, batch, quadrant, row, angle, col) = aval;
                         }
                         // This second loop requires col >= ceil(angle/2) to avoid bounds check
+                        ADRT_OPENMP("omp simd")
                         for(size_t col = ceil_div2_angle; col < std::get<4>(curr_shape); ++col) {
                             const adrt_scalar aval = adrt::_common::array_access(data, in_shape, batch, quadrant, 2_uz * row, adrt::_common::floor_div2(angle), col);
                             const size_t b_col_idx = col - ceil_div2_angle;
