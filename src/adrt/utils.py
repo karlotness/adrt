@@ -44,7 +44,6 @@ irregular ADRT angles into a regular spacing.
 
 import operator
 import typing
-from collections import namedtuple
 import numpy as np
 import numpy.typing as npt
 from ._wrappers import interp_to_cart
@@ -276,10 +275,18 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     return CartesianCoord(theta_full, s_full)
 
 
-ADRTIndex = namedtuple("ADRTIndex", ["quadrant", "height", "slope", "factor"])
+class ADRTIndex(typing.NamedTuple):
+    quadrant: npt.NDArray[np.uint8]
+    height: npt.NDArray[np.int64]
+    slope: npt.NDArray[np.uint64]
+    factor: npt.NDArray[np.float64]
 
 
-def coord_cart_to_adrt(theta, t, n):
+def coord_cart_to_adrt(
+    theta: npt.NDArray[typing.Union[np.float32, np.float64]],
+    t: npt.NDArray[typing.Union[np.float32, np.float64]],
+    n: typing.SupportsIndex,
+) -> ADRTIndex:
     r"""Find nearest ADRT entry indices for given point in Radon domain.
 
     Given a point (theta, s) in Radon domain, find the entry in the ADRT domain
@@ -298,14 +305,14 @@ def coord_cart_to_adrt(theta, t, n):
     -------
     quadrant : numpy.ndarray of numpy.uint8
         quadrant index in ADRT domain
-    height : numpy.ndarray of numpy.int
+    height : numpy.ndarray of numpy.int64
         the intercept index in ADRT domain
-    slope : numpy.ndarray of numpy.uint
+    slope : numpy.ndarray of numpy.uint64
         the slope index in ADRT domain
-    factor : numpy.ndarray of numpy.float
+    factor : numpy.ndarray of numpy.float64
         a transformation factor
-
     """
+    n = operator.index(n)
     th0 = (
         np.abs(theta)
         - np.abs(theta - np.pi / 4)
@@ -331,5 +338,4 @@ def coord_cart_to_adrt(theta, t, n):
     h = h0 * n + 0.5 * (sgn - 1)
     hi = np.floor(h).astype(int)
 
-    out = ADRTIndex(q, hi, si, factor)
-    return out
+    return ADRTIndex(q, hi, si, factor)
