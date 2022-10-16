@@ -93,7 +93,7 @@ namespace adrt {
                     // Compute the scaling factor
                     const larger_float sidea = static_cast<larger_float>(ti) / static_cast<larger_float>(N);
                     const larger_float sideb = static_cast<larger_float>(N - 1_uz) / static_cast<larger_float>(N);
-                    const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt(sidea * sidea + sideb * sideb) / static_cast<larger_float>(N));
+                    const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt(sidea * sidea + sideb * sideb));
                     // Perform the updates
                     if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(std::get<2>(in_shape))) {
                         // Intended access is in bounds

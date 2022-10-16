@@ -326,7 +326,7 @@ def coord_cart_to_adrt(theta, t, n):
 
     s = np.tan(th0) * (n - 1)
     si = np.floor(s).astype(np.uint)
-    factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2) / n
+    factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2)
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
 
