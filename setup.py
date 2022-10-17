@@ -16,7 +16,7 @@ class CPPVersionBuildExt(build_ext):
         if ext.language == "c++":
             extra_args = COMPILER_EXTRA_ARGS.get(self.compiler.compiler_type, [])
             ext.extra_compile_args = extra_args + ext.extra_compile_args
-        super().build_extension(ext, *args, **kwargs)
+        return super().build_extension(ext, *args, **kwargs)
 
 
 adrt_c_ext = Extension(
