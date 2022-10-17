@@ -80,7 +80,7 @@ def _set_module(module: str) -> typing.Callable[[C], C]:
     return decorate
 
 
-def _format_object_type(obj: typing.Any, /) -> str:
+def _format_object_type(obj: object, /) -> str:
     r"""Given an object `obj`, return a formatted string for its type name.
 
     In particular, for built-in types omit the ``builtins`` module
