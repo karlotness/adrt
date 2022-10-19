@@ -353,7 +353,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     if(!adrt::adrt_step_is_valid_shape(*input_shape)) {
-        PyErr_SetString(PyExc_ValueError, "array must have valid shape for ADRT, use adrt_init");
+        PyErr_SetString(PyExc_ValueError, "array must have valid shape for ADRT, use adrt.core.adrt_init");
         return nullptr;
     }
     // Process int argument
@@ -363,7 +363,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::adrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use num_iters", *iter);
+        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use adrt.core.num_iters", *iter);
         return nullptr;
     }
     // Compute effective output shape
@@ -570,7 +570,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     // Check range of iter
     if(!adrt::bdrt_step_is_valid_iter(*input_shape, *iter)) {
-        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use num_iters", *iter);
+        PyErr_Format(PyExc_ValueError, "step %d is out of range for array's shape, use adrt.core.num_iters", *iter);
         return nullptr;
     }
     // Compute effective output shape
