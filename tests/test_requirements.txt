@@ -1,3 +1,4 @@
+--only-binary numpy,scipy
 pytest>=6
 more-itertools
 scipy
