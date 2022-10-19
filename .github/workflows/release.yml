@@ -36,11 +36,13 @@ jobs:
     - name: Check types
       run: python -m tox -e type
       env:
-        CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden -U_FORTIFY_SOURCE'
+        CPPFLAGS: '-U_FORTIFY_SOURCE'
+        CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Run tox tests
       run: python -m tox -e py
       env:
-        CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
+        CPPFLAGS: '-UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
+        CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Clean up
       run: python -m pip cache remove adrt || true
   check-cpp:
