@@ -67,22 +67,15 @@ test-skip = "*-macosx_universal2:arm64 cp3{10,11,12}-win32 cp312-*"
 # Specify manylinux image versions
 manylinux-x86_64-image = "manylinux2014"
 
-[tool.cibuildwheel.linux]
-archs = ["auto64"]
-
 [tool.cibuildwheel.linux.environment]
-CFLAGS = "-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=4 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -D_FORTIFY_SOURCE=2 -DNDEBUG"
-LDFLAGS = "-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack"
-
-[tool.cibuildwheel.macos]
-archs = ["universal2"]
+CPPFLAGS = "-DNDEBUG"
+CFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-math-errno -Wall -Wextra -Wpedantic"
+LDFLAGS = "-Wl,--as-needed,-O1"
 
 [tool.cibuildwheel.macos.environment]
-CFLAGS = "-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic -Wconversion -Wfloat-equal -Wimplicit-fallthrough -DNDEBUG"
-LDFLAGS = "-Wl,-S,-x,-dead_strip_dylibs"
-
-[tool.cibuildwheel.windows]
-archs = ["auto"]
+CPPFLAGS = "-DNDEBUG"
+CFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic"
+LDFLAGS = "-Wl,-dead_strip_dylibs"
 
 [tool.cibuildwheel.windows.environment]
 CL = "/permissive- /Zc:inline,preprocessor,__cplusplus /DNDEBUG"
