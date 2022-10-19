@@ -87,7 +87,7 @@ jobs:
       if: ${{ runner.os == 'Windows' }}
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
-        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1)
+        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
         $cppfiles=Get-ChildItem -Path src\adrt\*,tests\cpp\* -Include *.cpp -Exclude adrt_cdefs_py.cpp
         cl /std:c++14 /EHsc /MDd /UNDEBUG /permissive- /Zc:inline,preprocessor,__cplusplus /wd5105 /I src\adrt\ $cppfiles.FullName /link /out:tests\cpp\test_all.exe
     - name: Run tests
@@ -176,7 +176,7 @@ jobs:
       continue-on-error: true
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
-        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1)
+        & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
         $ProgressPreference = 'SilentlyContinue'
         Remove-Item 'wheel-diagnostic' -Recurse -ErrorAction SilentlyContinue
         $baseextract = New-Item -Path . -Name 'wheel-diagnostic' -ItemType 'directory'
