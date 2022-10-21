@@ -81,10 +81,10 @@ jobs:
     - name: Download Catch2
       run: python tools/download_catch2.py tests/cpp/catch2/catch.hpp --cache_dir="cache-catch2/"
     - name: Build tests (Linux)
-      if: ${{ runner.os == 'Linux' }}
+      if: runner.os == 'Linux'
       run: g++ -std=c++11 -g0 -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all.exe
     - name: Build tests (Windows)
-      if: ${{ runner.os == 'Windows' }}
+      if: runner.os == 'Windows'
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
         & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
@@ -132,7 +132,7 @@ jobs:
         path: dist/
     - name: Checkout repository (Windows)
       uses: actions/checkout@v3
-      if: ${{ runner.os == 'Windows' }}
+      if: runner.os == 'Windows'
       with:
         persist-credentials: false
         path: repo
@@ -173,7 +173,7 @@ jobs:
         path: wheelhouse/adrt-*.whl
         if-no-files-found: error
     - name: Diagnostics (Linux)
-      if: ${{ runner.os == 'Linux' }}
+      if: runner.os == 'Linux'
       continue-on-error: true
       run: |
         touch 'diagnostics.txt'
@@ -188,7 +188,7 @@ jobs:
           echo | tee -a 'diagnostics.txt'
         done
     - name: Diagnostics (Windows)
-      if: ${{ runner.os == 'Windows' }}
+      if: runner.os == 'Windows'
       continue-on-error: true
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
@@ -206,7 +206,7 @@ jobs:
           Write-Output "`n" | Tee-Object -FilePath 'diagnostics.txt' -Append
         }
     - name: Diagnostics (macOS)
-      if: ${{ runner.os == 'macOS' }}
+      if: runner.os == 'macOS'
       continue-on-error: true
       run: |
         touch 'diagnostics.txt'
