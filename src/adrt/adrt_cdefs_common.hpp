@@ -93,6 +93,7 @@ namespace adrt {
         constexpr typename std::enable_if<std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
             static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
+            static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<scalar>::digits, "Max exponent is too small to cover digits");
             return 1_uz << std::numeric_limits<scalar>::digits;
         }
 
@@ -100,6 +101,7 @@ namespace adrt {
         constexpr typename std::enable_if<std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
             static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
+            static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<size_t>::digits - 1, "Max exponent is too small to cover digits");
             return std::numeric_limits<size_t>::max();
         }
 
