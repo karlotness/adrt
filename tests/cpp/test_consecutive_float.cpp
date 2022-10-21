@@ -42,6 +42,7 @@ using float_test_types = std::tuple<float, double>;
 TEMPLATE_LIST_TEST_CASE("max consecutive size_t is exactly represented in floating point", "[common][const][float][float_consecutive_size_t]", float_test_types) {
     const size_t max_float_size_t = adrt::_const::largest_consecutive_float_size_t<TestType>();
     const TestType float_val = max_float_size_t;
+    REQUIRE(std::isfinite(float_val));
     CHECK(std::trunc(float_val) == float_val);
     CHECK(max_float_size_t == static_cast<size_t>(float_val));
 }
