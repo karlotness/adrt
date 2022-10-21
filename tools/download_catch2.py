@@ -38,8 +38,8 @@ import pathlib
 import requests
 
 
-CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.9/catch.hpp"
-CATCH2_SHA256 = "27da57c7a06d09be8dd81fab7246b79e7892b6ae7e4e49ba8631f1d5a955e3fc"
+CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.10/catch.hpp"
+CATCH2_SHA256 = "3725c0f0a75f376a5005dde31ead0feb8f7da7507644c201b814443de8355170"
 CATCH2_DIGEST = bytes.fromhex(CATCH2_SHA256)
 
 
