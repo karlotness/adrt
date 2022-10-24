@@ -96,6 +96,17 @@ def test_stops_quickly_on_zero(counting_iadrt_fmg_step):
     assert inv.dtype == inarr.dtype
 
 
+def test_stops_quickly_on_nan(counting_iadrt_fmg_step):
+    size = 8
+    inarr = np.full((4, 2 * size - 1, size), np.nan, dtype=np.float32)
+    inv = adrt.iadrt_fmg(inarr, max_iters=50)
+    count = counting_iadrt_fmg_step()
+    assert count <= 2
+    assert np.all(np.isnan(inv))
+    assert inv.shape == (size, size)
+    assert inv.dtype == inarr.dtype
+
+
 @pytest.mark.parametrize("max_iters", [1, 2, 3, 4])
 def test_max_iters_limits_iterations(counting_iadrt_fmg_step, max_iters):
     size = 16

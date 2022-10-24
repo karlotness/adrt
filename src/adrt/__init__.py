@@ -46,6 +46,7 @@ utility routines can be found in :mod:`adrt.utils`.
 
 import typing
 import itertools
+import math
 import numpy as np
 import numpy.typing as npt
 from ._wrappers import adrt, iadrt, bdrt
@@ -136,7 +137,7 @@ def iadrt_fmg(
     )
     next(i2, None)
     for (_inv1, res1), (_inv2, res2) in zip(i1, i2):
-        if res2 >= res1:
+        if res2 >= res1 or math.isnan(res2):
             # Residual failed to decrease, stop early
             break
     # Create a copy so returned array is writable (we have views from iadrt_fmg_iter)
