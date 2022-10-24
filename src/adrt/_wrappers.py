@@ -372,7 +372,7 @@ def threading_enabled() -> bool:
         :code:`True` if this module is built with internal threading
         support, otherwise :code:`False`.
     """
-    return _adrt_cdefs.openmp_enabled
+    return _adrt_cdefs.OPENMP_ENABLED
 
 
 def _press_fmg_restriction(a: npt.NDArray[F], /) -> npt.NDArray[F]:

@@ -39,4 +39,4 @@ def test_returns_boolean_value():
 
 
 def test_matches_attribute():
-    assert adrt.core.threading_enabled() == adrt._adrt_cdefs.openmp_enabled
+    assert adrt.core.threading_enabled() == adrt._adrt_cdefs.OPENMP_ENABLED

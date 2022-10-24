@@ -4,7 +4,7 @@ import numpy.typing as npt
 
 F = typing.TypeVar("F", np.float32, np.float64)
 
-openmp_enabled: typing.Final[bool]
+OPENMP_ENABLED: typing.Final[bool]
 
 def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]: ...
 def adrt_step(a: npt.NDArray[F], step: int, /) -> npt.NDArray[F]: ...
