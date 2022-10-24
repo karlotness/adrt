@@ -130,8 +130,8 @@ def iadrt_fmg(
                 itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
             ),
             # Chain i2 with one extra value so we don't exhaust early
-            # Use np.inf so the residual will rise and we won't continue iterating
-            [(a, np.inf)],
+            # Use math.inf so the residual will rise and we won't continue iterating
+            [(a, math.inf)],
         ),
         2,
     )
