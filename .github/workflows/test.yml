@@ -45,7 +45,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11.0-rc - 3.11']
+        python: ['3.8', '3.9', '3.10', '3.11']
         include:
           - cflags: '-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all'
           - python: '3.8'
