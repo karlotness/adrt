@@ -2,7 +2,28 @@ Basic Routines
 ==============
 
 .. automodule:: adrt
-   :members:
+
+Forward Transforms
+------------------
+
+These functions implement the fundamental operations of this package:
+the forward approximate discrete Radon transform (ADRT) and the
+associated backprojection operation.
+
+.. autofunction:: adrt
+
+.. autofunction:: bdrt
+
+Inverse Transforms
+------------------
+
+We provide two possible inverses to :func:`adrt`. The first is an
+exact (although ill-conditioned) inverse, while the second implements
+an approximate inverse by the full multigrid method.
+
+.. autofunction:: iadrt
+
+.. autofunction:: iadrt_fmg
 
 .. [brady98] Martin L. Brady, *Discrete Radon transform has an exact,
    fast inverse and generalizes to operations other than sums along
