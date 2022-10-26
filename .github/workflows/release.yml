@@ -152,7 +152,7 @@ jobs:
           LDFLAGS='-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         # Windows configuration
         CIBW_ARCHS_WINDOWS: 'auto'
-        CIBW_BEFORE_ALL_WINDOWS: 'pwsh ${{ github.workspace }}\repo\tools\patch_license_windows.ps1 ${{ github.workspace }}\repo\ {package}'
+        CIBW_BEFORE_ALL_WINDOWS: 'pwsh ${{ github.workspace }}\repo\tools\patch_license_windows.ps1 {package}\LICENSE.txt'
         CIBW_ENVIRONMENT_WINDOWS: >-
           CL='/permissive- /Zc:inline,preprocessor,__cplusplus /DNDEBUG'
         # macOS configuration
