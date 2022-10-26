@@ -65,7 +65,7 @@ _A = typing.TypeVar("_A", bound=np.generic)
 def stitch_adrt(
     a: npt.NDArray[_A], /, *, remove_repeated: bool = False
 ) -> npt.NDArray[_A]:
-    r"""Reshape and align ADRT channel-wise output into a contiguous image.
+    r"""Reshape and align ADRT quadrants output into a contiguous image.
 
     The ADRT routine, :func:`adrt.adrt`, produces an output array
     which is divided into four separate quadrants, each containing the
@@ -74,34 +74,40 @@ def stitch_adrt(
     output. This may be especially useful in order to visualize the
     output as an image.
 
-    The input array must have shape (..., 4, 2*N-1, N). The optional,
-    extra leading dimensions will be treated as batch dimensions and
-    will be preserved in the output.
+    The input array should have the *relative* shape of an ADRT output
+    (but the base dimension ``N`` need not be a power of two). Any
+    number of optional leading dimensions will be treated as batch
+    dimensions and will be preserved in the output.
 
-    The parameter ``remove_repeated`` controls whether this output
-    should have redundant columns (the last column in each quadrant)
-    removed.
+    The output array will be four times as wide as any one original
+    quadrant (with four fewer columns if `remove_repeated` is
+    :pycode:`True`), and will be have an additional ``N-1`` rows
+    added.
+
+    Parameters
+    ----------
+    a : numpy.ndarray
+        Array of ADRT output data to be stitched.
+    remove_repeated : bool, optional
+        If :pycode:`False` (default) all columns are preserved in the
+        output. If :pycode:`True`, the redundant last column in each
+        quadrant is removed.
+
+    Returns
+    -------
+    numpy.ndarray
+        The input data repositioned to form a contiguous array.
+
+    Notes
+    -----
+    The columns which are removed by `remove_repeated` are only truly
+    redundant if `a` has the symmetries of a real ADRT output.
 
     See :ref:`adrt-description` for a description of the ADRT output
     quadrants.
 
     The function :func:`unstitch_adrt` provides an inverse for this
     operation.
-
-    Parameters
-    ----------
-    a : numpy.ndarray
-        Array of ADRT output data. Shape (..., 4, 2*N-1, N).
-    remove_repeated : bool, optional
-        Whether redundant columns should be removed. This removes the
-        last column from each quadrant.
-
-    Returns
-    -------
-    numpy.ndarray
-        The input data, combined into a contiguous array. This will be
-        an array with shape (..., 3*N-2, 4*N) or (..., 3*N-2, 4*N-4)
-        if ``remove_repeated`` is ``True``.
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):
@@ -134,12 +140,11 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
 
     This function provides an inverse for :func:`stitch_adrt` and
     re-slices, flips, and rotates its output into separate quadrants.
-    It functions as an inverse regardless of the ``remove_repeated``
-    argument that was specified when stitching.
-
-    The input array must have shape (..., 3*N-2, 4*N) or (..., 3*N-2,
-    4*N-4). The optional, extra leading dimensions will be treated as
-    batch dimensions and will be preserved in the output.
+    It functions as an inverse regardless of the `remove_repeated`
+    argument that was specified when stitching so long as the ADRT
+    output that was stitched respected the symmetries of a real ADRT
+    output. In other cases, the removed columns may not have been
+    redundant.
 
     Parameters
     ----------
@@ -149,8 +154,8 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     Returns
     -------
     numpy.ndarray
-        The input data separated into quadrants. This array will have
-        shape (..., 4, 2*N-1, N).
+        The input data re-separated into ADRT quadrants with the
+        *relative* shape of an ADRT output.
     """
     n = (a.shape[-2] + 2) // 3
     if a.shape[-2] != 3 * n - 2 or (a.shape[-1] != 4 * n and a.shape[-1] != 4 * n - 4):
@@ -182,17 +187,44 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
 
 
 def truncate(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
-    r"""Truncate and rotate square domain from iadrt or bdrt output.
+    r"""Truncate and rotate a rectangular ADRT output into a square.
+
+    ADRT output arrays consist of four rectangular quadrants with
+    different orientations, such that the image data is not stacked in
+    a corresponding position (see the illustration in
+    :ref:`adrt-description`).
+
+    This function fixes both aspects. It slices each ADRT quadrant
+    into a square, and rotates them so that they are stacked in a
+    consistent orientation (in particular, this forms an inverse for
+    :func:`adrt.core.adrt_init`).
+
+    For this routine the input array `a`, must have the same
+    *relative* shape of an ADRT output, but the base dimension ``N``
+    need not be a power of two. The array may also have any number of
+    leading batch dimensions.
 
     Parameters
     ----------
     a : numpy.ndarray
-        array of shape (4,2*N-1,N) or (?,4,2*N-1,N) in which N = 2**n
+        An ADRT output array with rectangular quadrants.
 
     Returns
     -------
-    out : numpy.ndarray
-          array of shape (4,N,N) or (?,4,N,N) in which N = 2**n
+    numpy.ndarray
+        An array with four square quadrants each rotated into a
+        consistent orientation.
+
+    Notes
+    -----
+    This routine can be used to:
+
+    * Slice the output of :func:`adrt.bdrt` before collapsing with
+      :func:`numpy.mean` to produce the standard transpose to
+      :func:`adrt.adrt`.
+    * Slice and rotate the result of :func:`adrt.iadrt` before
+      collapsing with :func:`numpy.mean`.
+    * Invert :func:`adrt.core.adrt_init`.
     """
     n = a.shape[-1]
     if a.shape[-3:] != (4, 2 * n - 1, n):

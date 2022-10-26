@@ -99,6 +99,10 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     dimension. This function is intended to be used with
     :func:`adrt.core.adrt_step`.
 
+    After processing the result array has the shape of an ADRT output,
+    but only the top square of each quadrant is filled in. Other
+    values are zero.
+
     The function :func:`adrt.utils.truncate` provides an inverse for
     this operation.
 
@@ -114,8 +118,7 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     numpy.ndarray
         The input array duplicated, stacked, flipped and rotated to
         make it suitable for further processing with the ADRT. The
-        output array will have shape :math:`(b, 4, 2n-1, n)` where
-        :math:`b` is the optional batch dimension.
+        output array has the shape of an ADRT output.
     """
     # Explicitly require an ndarray (or subclass).
     if not isinstance(a, np.ndarray):
@@ -160,19 +163,18 @@ def adrt_iter(
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which steps of the ADRT will be computed. This
-        array must have data type :obj:`float32 <numpy.float32>` or
-        :obj:`float64 <numpy.float64>`.
+        array must have a square shape, with sides a power of two.
     copy : bool, optional
-        If true (default), the arrays produced by this generator are
-        independent copies. Otherwise, read-only views are produced
-        and these *must not* be modified without making a
+        If :pycode:`True` (default), the arrays produced by this
+        generator are independent copies. Otherwise, read-only views
+        are produced and these *must not* be modified without making a
         :meth:`copy <numpy.ndarray.copy>` first.
 
     Yields
     ------
-    numpy.ndarray
+    numpy.ndarray of float
         Successive stages of the ADRT computation. First, the
         unprocessed array computed by :func:`adrt_init` followed by
         snapshots of progress after each ADRT iteration.
@@ -204,19 +206,18 @@ def bdrt_iter(
 
     Parameters
     ----------
-    a : numpy.ndarray
-        The array for which steps of the bdrt will be computed. This
-        array must have data type :obj:`float32 <numpy.float32>` or
-        :obj:`float64 <numpy.float64>`.
+    a : numpy.ndarray of float
+        The array for which steps of the backprojection will be
+        computed. Array `a` must have the shape of an ADRT output.
     copy : bool, optional
-        If true (default), the arrays produced by this generator are
-        independent copies. Otherwise, read-only views are produced
-        and these *must not* be modified without making a
+        If :pycode:`True` (default), the arrays produced by this
+        generator are independent copies. Otherwise, read-only views
+        are produced and these *must not* be modified without making a
         :meth:`copy <numpy.ndarray.copy>` first.
 
     Yields
     ------
-    numpy.ndarray
+    numpy.ndarray of float
         Successive stages of the bdrt computation, a snapshot of the
         progress after each bdrt iteration.
 
@@ -250,17 +251,15 @@ def iadrt_fmg_step(a: npt.NDArray[_F], /) -> npt.NDArray[_F]:
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which an estimated inverse is computed. This
-        array must have data type :obj:`float32 <numpy.float32>` or
-        :obj:`float64 <numpy.float64>` and the shape of an ADRT
-        output.
+        array must have the shape of an ADRT output.
 
     Returns
     -------
-    numpy.ndarray
+    numpy.ndarray of float
         An estimated inverse computed by the full multigrid method for
-        the input ``a``.
+        the input `a`.
 
     References
     ----------
@@ -310,7 +309,7 @@ def iadrt_fmg_iter(
 
     Internally computes a recurrence with :func:`iadrt_fmg_step` to
     iteratively refine an estimated inverse for the :func:`ADRT
-    <adrt.adrt>` output ``a``.
+    <adrt.adrt>` output `a`.
 
     This iterator has *infinite* length and will continue computing
     refinements until stopped. For a simple implementation with a
@@ -322,22 +321,20 @@ def iadrt_fmg_iter(
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which an inverse estimates will be computed.
-        This array must have data type :obj:`float32 <numpy.float32>`
-        or :obj:`float64 <numpy.float64>` and the shape of an ADRT
-        output.
+        This array must have the shape of an ADRT output.
     copy : bool, optional
-        If true (default), the arrays produced by this generator are
-        independent copies. Otherwise, read-only views are produced
-        and these *must not* be modified without making a
+        If :pycode:`True` (default), the arrays produced by this
+        generator are independent copies. Otherwise, read-only views
+        are produced and these *must not* be modified without making a
         :meth:`copy <numpy.ndarray.copy>` first.
 
     Yields
     ------
-    numpy.ndarray
-        An estimated inverses for ``a`` refined by repeated
-        applications of :func:`iadrt_fmg_step`.
+    numpy.ndarray of float
+        An estimated inverses for `a` refined by repeated applications
+        of :func:`iadrt_fmg_step`.
 
     Warning
     -------

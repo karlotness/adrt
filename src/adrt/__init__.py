@@ -75,15 +75,15 @@ def iadrt_fmg(
     Estimated inverses are computed and iteratively refined until the
     norm of the residual error fails to decrease from one iteration to
     the next. This iteration can also be terminated early if
-    ``max_iters`` is specified.
+    `max_iters` is specified.
 
     Particularly with a limited iteration count this inverse can be
     relatively quick to compute, but may not achieve the best possible
-    precision. If your output array ``a`` is *exact* you may consider
-    :func:`iadrt` for an exact inverse. Otherwise, for an inverse that
-    may perform more reliably for certain inputs, consider the
-    ``iadrt_cg`` recipe proposed in the :doc:`examples.cginverse`
-    example.
+    precision. If your output array `a` is *exact* and floating-point
+    precision is sufficient you may consider :func:`iadrt` for an
+    exact inverse. Otherwise, for an inverse that may perform more
+    reliably for certain inputs, consider the ``iadrt_cg`` recipe
+    proposed in the :doc:`examples.cginverse` example.
 
     See :func:`adrt.core.iadrt_fmg_iter` and
     :func:`adrt.core.iadrt_fmg_step` for more information on the
@@ -92,25 +92,33 @@ def iadrt_fmg(
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which the inverse is to be computed. This array
-        must have data type :obj:`float32 <numpy.float32>` or
-        :obj:`float64 <numpy.float64>` and the shape of an ADRT
-        output.
+        must have the shape of an ADRT output. This array *must not*
+        have a batch dimension.
     max_iters : int, optional
-        If ``None`` (default), the number of internal iterations is
-        unbounded. The computation will terminate only when the norm
-        of the residual error fails to decrease. Otherwise, this must
-        be an integer argument at least 1, and provides an upper bound
-        on the number of iterations performed internally.
+        If :pycode:`None` (default), the number of internal iterations
+        is unbounded. The computation will terminate only when the
+        norm of the residual error fails to decrease. Otherwise, this
+        must be an integer argument at least :pycode:`1`, and provides
+        an upper bound on the number of iterations performed
+        internally.
 
     Returns
     -------
-    numpy.ndarray
-        An estimated inverse computed by the full multigrid method
-        with the lowest residual error observed so long as the
-        decrease was monotonic, or the last computation output if
-        iteration was terminated by ``max_iters``.
+    numpy.ndarray of float
+        A square inverse computed by the full multigrid method with
+        the lowest residual error observed so long as the decrease was
+        monotonic, or the last computation output if iteration was
+        terminated by `max_iters`.
+
+    Notes
+    -----
+    Unlike :func:`iadrt` the output of this routine will be
+    square---the same size as the original input to :func:`adrt` would
+    have been.
+
+    This function *does not* support batch dimensions.
     """
     if a.ndim > 3:
         raise ValueError(

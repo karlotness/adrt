@@ -116,22 +116,20 @@ def _normalize_array(a: npt.NDArray[A], /) -> npt.NDArray[A]:
 def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""The Approximate Discrete Radon Transform (ADRT).
 
-    Computes the ADRT of the provided array, `a`. The array `a` may
-    have either two or three dimensions. If it has three dimensions,
-    the first dimension, is treated as a batch and the ADRT is
-    computed for each layer independently. The dimensions of the layer
-    data must have equal size N, where N is a power of two. The input
-    shape is ``(B?, N, N)``.
+    This is the fundamental routine of this package, computing the
+    ADRT of the provided array. The array `a` must store square input
+    images with sizes a power of two. The input may optionally include
+    an additional leading batch dimension, so an array of either two
+    or three dimensions.
 
     If padding is needed for the input array, consider
     :func:`numpy.pad`.
 
-    The returned array will have a shape of either three or four
-    dimensions. The optional fourth dimension has the same size as the
-    batch dimension of `a`, if present. The output is divided into
-    four quadrants each representing a range of angles. The third and
-    fourth axes index into Radon transform displacements and angles,
-    respectively. The output has shape: ``(B?, 4, 2 * N - 1, N)``.
+    The returned array will have the shape of an ADRT output of size
+    N. The output is divided into four quadrants, each one less than
+    twice as tall as the input. The taller height dimension represents
+    ADRT offsets, while the final dimension has the same size as the
+    input and represents the ADRT angles.
 
     For more information on the construction of the quadrants and the
     contents of this array see: :ref:`adrt-description`.
@@ -139,11 +137,11 @@ def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     Parameters
     ----------
     a : numpy.ndarray of float
-        The array of data for which the ADRT should be computed.
+        Array for which the ADRT should be computed.
 
     Returns
     -------
-    numpy.ndarray
+    numpy.ndarray of float
         The ADRT of the provided data.
 
     Notes
@@ -174,25 +172,23 @@ def adrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F
 
     To use this function correctly, use :func:`adrt.core.adrt_init` to
     initialize your input array for use with this function. The
-    argument ``a`` to this function should either be the result of
+    argument `a` to this function should either be the result of
     :func:`adrt_init` or a previous output of this function.
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which the single ADRT step should be computed.
-        This array must have data type :obj:`float32 <numpy.float32>`
-        or :obj:`float64 <numpy.float64>`.
     step : int
         The step to compute. The upper bound on this value should be
-        computed using :func:`num_iters`, then ``step`` must be
-        between :math:`0` and :math:`\mathtt{num\_iters}-1`.
+        computed using :func:`num_iters`, then `step` must be between
+        :math:`0` and :math:`\mathtt{num\_iters}-1`, inclusive.
 
     Returns
     -------
-    numpy.ndarray
-        The result of the ``step`` iteration of the ADRT. The output
-        has the same shape as the input.
+    numpy.ndarray of float
+        The result of the `step` iteration of the ADRT. The output has
+        the same shape as the input.
 
     Note
     ----
@@ -208,36 +204,38 @@ def iadrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""An exact inverse to the ADRT.
 
     Computes an exact inverse to the ADRT, but only works for exact
-    ADRT outputs. The array `a` may have either three or four
-    dimensions. If present, the first dimension is a batch dimension.
-    The remaining dimensions are the quadrants, and ADRT data. The
-    array `a` must have shape ``(B?, 2 * N - 1, N)``, where N is a
-    power of two.
+    ADRT outputs. The array `a` may have an optional batch dimension
+    with the shape of an ADRT output.
 
-    The returned array has the dimension as the ADRT, ``(B?, 2 * N - 1, N)``
-    If the input was the ADRT, the exact inverse can be extracted
-    by using :func:`adrt.utils.truncate`.
+    The returned array has the same shape as `a`, but each quadrant
+    should have only zeros below the square at the top of the array.
+    However, this may not be the case due to conditioning or
+    imprecision in the calculations performed by this routine.
+
+    The upper square of each quadrant can be extracted and rotated
+    using :func:`adrt.utils.truncate`.
 
     Parameters
     ----------
     a : numpy.ndarray of float
-        An array storing the output of the forward ADRT.
+        An ADRT output for which to compute the inverse.
 
     Returns
     -------
-    numpy.ndarray
-        The original ADRT input which produced `a`.
+    numpy.ndarray of float
+        The computed inverse with the same shape as `a`.
 
     Warning
     -------
-    This inverse is exact *only* if `a` is an exact output of the
-    forward ADRT. In other cases this inverse is not appropriate.
+    This inverse is ill-conditioned and will be exact *only* if `a` is
+    an exact output of the forward ADRT and the floating point type
+    provides sufficient precision. In other cases this inverse is not
+    appropriate.
 
     For an alternative, see the :doc:`examples.cginverse` example.
 
     Notes
     -----
-    The inverse here only uses values stored in one of the quadrants.
     For details of the algorithm see :ref:`iadrt-description` or the
     source paper [rim20]_.
     """
@@ -246,23 +244,28 @@ def iadrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
 
 @_set_module("adrt")
 def bdrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
-    r"""Backprojection for the ADRT.
+    r"""Backprojection operator for the ADRT.
+
+    The transform implemented in :func:`adrt` is a linear operation.
+    This function computes a generalized transpose of this operation,
+    producing an output with the same shape as its input.
+
+    To retrieve the entries of the transpose of the ADRT in the proper
+    order, apply :func:`adrt.utils.truncate` to the array produced by
+    this function. The truncation operation will remove the extended
+    entries and rotate each quadrant into the same orientation as the
+    original, square shape ADRT input. The quadrants can then be
+    combined, if desired, potentially by :func:`numpy.mean`.
 
     Parameters
     ----------
     a : numpy.ndarray of float
-        An array storing the output of the forward ADRT.
-
-    start : int, optional
-        Set ADRT level expected for input
-
-    end : int, optional
-        Set ADRT level for output
+        An ADRT output array to backproject.
 
     Returns
     -------
-    numpy.ndarray
-        The backprojection of array `a`.
+    numpy.ndarray of float
+        Backprojection of `a` with the same shape.
 
     Notes
     -----
@@ -281,26 +284,26 @@ def bdrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F
     bdrt in order to observe the outputs or to modify the values as
     the computation proceeds.
 
-    To use this function correctly, the input ``a`` should be the
-    result of an ADRT operation (:func:`adrt.adrt`) or a previous
-    output of this function.
+    To use this function correctly, the input `a` should be the result
+    of an ADRT operation (:func:`adrt.adrt`) or a previous output of
+    this function.
 
     Parameters
     ----------
-    a : numpy.ndarray
+    a : numpy.ndarray of float
         The array for which the single bdrt step should be computed.
         This array must have data type :obj:`float32 <numpy.float32>`
         or :obj:`float64 <numpy.float64>`.
     step : int
         The step to compute. The upper bound on this value should be
-        computed using :func:`num_iters`, then ``step`` must be
-        between :math:`0` and :math:`\mathtt{num\_iters}-1`.
+        computed using :func:`num_iters`, then `step` must be between
+        :math:`0` and :math:`\mathtt{num\_iters}-1`, inclusive.
 
     Returns
     -------
-    numpy.ndarray
-        The result of the ``step`` iteration of the bdrt. The output
-        has the same shape as the input.
+    numpy.ndarray of float
+        The result of the `step` iteration of the bdrt. The output has
+        the same shape as the input.
 
     Note
     ----
@@ -313,22 +316,31 @@ def bdrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F
 
 @_set_module("adrt.utils")
 def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
-    r"""Interpolate the ADRT result to a Cartesian angle vs. offset grid.
+    r"""Interpolate an ADRT output into a regular Cartesian grid.
 
-    Interpolate ADRT result to a uniform Cartesian grid in the Radon domain
-    of (theta, s): theta is the normal direction of the line and s is the
-    distance of the line to the origin.
+    The angles and offsets used in an ADRT output are
+    irregularly-spaced to enable reuse of intermediate calculations.
+    This routine provides a basic interpolation operation which
+    resamples these angles into an even-spacing.
+
+    The ADRT result is interpolated into a uniform Cartesian grid in
+    the Radon domain :math:`(\theta, t)`. Where :math:`\theta` is the
+    normal direction of the line, and :math:`t` is the distance of the
+    line to the origin. See the :ref:`coordinate transform
+    illustration <adrt_to_cart diagram>` for more details.
+
+    For an ADRT output of size ``N``, the interpolated array has shape
+    ``(N, 4*N)`` with an optional batch dimension preserved.
 
     Parameters
     ----------
     a : numpy.ndarray of float
-        array of shape ``(B?, 4, 2 * N - 1, N)``
+        ADRT output array to interpolate.
 
     Returns
     -------
-    numpy.ndarray
-          array of shape ``(B?, 4, N, N)`` containing interpolated data
-
+    numpy.ndarray of float
+        Interpolated Cartesian grid data.
     """
     return _adrt_cdefs.interp_to_cart(_normalize_array(a))
 
@@ -341,7 +353,8 @@ def num_iters(n: typing.SupportsIndex, /) -> int:
     of size :math:`n \times n` (powers of two), the core loop must be
     run :math:`\log_2(n)` times. This function computes the number of
     iterations necessary and is equivalent to
-    :math:`\lceil{\log_2(n)}\rceil`.
+    :math:`\lceil{\log_2(n)}\rceil`, with the special case
+    ``num_iters(0) = 0``.
 
     Parameters
     ----------
@@ -352,7 +365,7 @@ def num_iters(n: typing.SupportsIndex, /) -> int:
     -------
     int
         The number of iterations needed to fully process the image of
-        size ``n``.
+        size `n`.
     """
     return _adrt_cdefs.num_iters(operator.index(n))
 
@@ -369,8 +382,8 @@ def threading_enabled() -> bool:
     Returns
     -------
     bool
-        :code:`True` if this module is built with internal threading
-        support, otherwise :code:`False`.
+        :pycode:`True` if this module is built with internal threading
+        support, otherwise :pycode:`False`.
     """
     return _adrt_cdefs.OPENMP_ENABLED
 
