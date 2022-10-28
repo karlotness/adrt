@@ -42,6 +42,7 @@
 #include <type_traits>
 #include <cassert>
 #include <cstddef>
+#include <algorithm>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -144,8 +145,10 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
 template <size_t n_virtual_dim>
 PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
+    static_assert(n_virtual_dim <= static_cast<unsigned int>(std::numeric_limits<int>::max()), "n_virtual_dim too large, will cause problems with debug assertions");
     assert(ndim > 0);
     assert(static_cast<unsigned int>(ndim) <= n_virtual_dim);
+    assert(std::all_of(virtual_shape.cbegin(), std::next(virtual_shape.cbegin(), static_cast<int>(n_virtual_dim) - ndim), [](size_t v){return v == 1u;}));
     const unsigned int undim = static_cast<unsigned int>(ndim);
     std::array<npy_intp, n_virtual_dim> new_shape;
     for(size_t i = 0; i < undim; ++i) {
