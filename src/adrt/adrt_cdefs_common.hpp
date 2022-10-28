@@ -37,6 +37,7 @@
 #include <type_traits>
 #include <limits>
 #include <cassert>
+#include <algorithm>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -288,14 +289,7 @@ namespace adrt {
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
-            #ifndef NDEBUG
-            {
-                // If asserts enabled, check that shapes are nonzero
-                for(size_t i = 0; i < N; ++i) {
-                    assert(shape_in[i] > 0u);
-                }
-            }
-            #endif
+            assert(std::all_of(shape_in.cbegin(), shape_in.cend(), [](size_t v){return v > 0u;}));
             return adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in);
         }
 
@@ -311,15 +305,7 @@ namespace adrt {
 
         template <typename scalar, size_t N, typename... Idx>
         inline scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, Idx... idxs) {
-            #ifndef NDEBUG
-            {
-                // If asserts enabled, check array bounds
-                const std::array<size_t, N> idx {idxs...};
-                for(size_t i = 0; i < N; ++i) {
-                    assert(idx[i] < shape[i]);
-                }
-            }
-            #endif
+            assert(std::mismatch(shape.cbegin(), shape.cend(), std::array<size_t, N>{idxs...}.cbegin(), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}).first == shape.cend());
             return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
         }
 
