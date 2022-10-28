@@ -43,6 +43,7 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
+#include <iterator>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
