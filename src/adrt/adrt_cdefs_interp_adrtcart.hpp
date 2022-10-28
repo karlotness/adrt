@@ -54,6 +54,7 @@ namespace adrt {
         return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>(), 4_uz);
     }
 
+    // DOC ANCHOR: adrt.utils.interp_to_cart +2
     template <typename adrt_scalar, typename float_index = double>
     void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic

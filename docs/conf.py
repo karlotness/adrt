@@ -1,5 +1,12 @@
 import sys
 import shutil
+import pathlib
+import inspect
+import importlib
+import functools
+import itertools
+import re
+import packaging.version
 import adrt
 
 # Project information
@@ -15,6 +22,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.imgconverter",
+    "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "matplotlib.sphinxext.plot_directive",
 ]
@@ -78,3 +86,71 @@ def adrt_magick_available():
 
 if not adrt_magick_available():
     extensions.remove("sphinx.ext.imgconverter")
+
+
+# Linkcode configuration
+@functools.lru_cache(maxsize=1)
+def adrt_find_anchors():
+    repo_root = pathlib.Path(__file__).parent.resolve().parent
+    source_root = repo_root / "src" / "adrt"
+    if not (source_root.exists() and source_root.is_dir()):
+        return {}
+    anchor_re = re.compile(
+        r"^\s*//\s*DOC ANCHOR:\s+(?P<name>\S+)(?:\s+\+\s*(?P<offset>\d+))?\s*$"
+    )
+    anchor_map = {}
+    for source_path in itertools.chain(
+        source_root.glob("*.cpp"), source_root.glob("*.hpp")
+    ):
+        if not source_path.exists():
+            continue
+        with open(source_path, "r", encoding="utf8") as source_file:
+            for lnum, line in enumerate(source_file, start=1):
+                if re_match := anchor_re.match(line):
+                    anchor_name = re_match.group("name").strip()
+                    if re_match.group("offset") is not None:
+                        anchor_offset = int(re_match.group("offset"))
+                    else:
+                        anchor_offset = 1
+                    anchor_map[anchor_name] = (source_path.name, lnum + anchor_offset)
+    return anchor_map
+
+
+def linkcode_resolve(domain, info):
+    if domain != "py":
+        return None
+    mod_name = info["module"]
+    if mod_name != "adrt" and not mod_name.startswith("adrt."):
+        return None
+    fullname = info["fullname"]
+    qualname = ".".join([mod_name, fullname])
+    link_name_map = adrt_find_anchors()
+    if qualname in link_name_map:
+        # Use the provided anchor
+        source_file, line_start = link_name_map[qualname]
+        line_end = None
+    else:
+        pkg_root = pathlib.Path(adrt.__file__).parent
+        module = importlib.import_module(mod_name)
+        obj = getattr(module, fullname)
+        try:
+            source_file = str(
+                pathlib.Path(inspect.getsourcefile(obj)).relative_to(pkg_root)
+            )
+        except ValueError:
+            return None
+        lines, line_start = inspect.getsourcelines(obj)
+        line_end = line_start + len(lines) - 1
+    # Form the URL from the pieces
+    base_url = "https://github.com/karlotness/adrt/"
+    if packaging.version.Version(version).is_devrelease:
+        base_url += "blob/master"
+    else:
+        base_url += f"blob/v{version}"
+    if line_start and line_end:
+        line_suffix = f"#L{line_start}-L{line_end}"
+    elif line_start:
+        line_suffix = f"#L{line_start}"
+    else:
+        line_suffix = ""
+    return f"{base_url}/src/adrt/{source_file}{line_suffix}"

@@ -106,6 +106,7 @@ namespace adrt {
             return std::numeric_limits<size_t>::max();
         }
 
+        // DOC ANCHOR: adrt.core.threading_enabled
         constexpr bool openmp_enabled() {
             #ifdef _OPENMP
             return true;

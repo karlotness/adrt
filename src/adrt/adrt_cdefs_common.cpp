@@ -100,6 +100,7 @@ bool all_positive(const std::array<size_t, N> &shape) {
 #define __has_builtin(feat) 0
 #endif
 
+// DOC ANCHOR: adrt.core.num_iters
 int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     assert(shape != 0u);

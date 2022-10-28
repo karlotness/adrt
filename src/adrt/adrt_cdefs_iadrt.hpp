@@ -104,6 +104,7 @@ namespace adrt {
 
     } // end namespace: adrt::_impl
 
+    // DOC ANCHOR: adrt.iadrt +2
     template <typename adrt_scalar>
     void iadrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
         assert(data);
