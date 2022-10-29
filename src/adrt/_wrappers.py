@@ -274,6 +274,14 @@ def bdrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     -----
     For more details on the backprojection implemented here see the
     source paper [press06]_.
+
+    Examples
+    --------
+    As discussed above, this function can be used to compute the
+    transpose of the operator applied by :func:`adrt` as follows::
+
+      def adrt_tranpose(a):
+          return adrt.utils.truncate(adrt.bdrt(a)).mean(axis=-3)
     """
     return _adrt_cdefs.bdrt(_normalize_array(a))
 
