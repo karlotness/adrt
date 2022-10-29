@@ -137,12 +137,15 @@ def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     Parameters
     ----------
     a : numpy.ndarray of float
-        Array for which the ADRT should be computed.
+        Array for which the ADRT should be computed. This should be a
+        square image with side length a power of two, and optionally a
+        leading batch dimension.
 
     Returns
     -------
     numpy.ndarray of float
-        The ADRT of the provided data.
+        The ADRT of the provided data. For input images of size ``N``,
+        each member of the batch will have shape ``(4, 2*N-1, N)``.
 
     Notes
     -----
