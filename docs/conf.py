@@ -123,7 +123,7 @@ def linkcode_resolve(domain, info):
     if mod_name != "adrt" and not mod_name.startswith("adrt."):
         return None
     fullname = info["fullname"]
-    qualname = ".".join([mod_name, fullname])
+    qualname = f"{mod_name}.{fullname}"
     link_name_map = adrt_find_anchors()
     if qualname in link_name_map:
         # Use the provided anchor
@@ -142,15 +142,15 @@ def linkcode_resolve(domain, info):
         lines, line_start = inspect.getsourcelines(obj)
         line_end = line_start + len(lines) - 1
     # Form the URL from the pieces
-    base_url = "https://github.com/karlotness/adrt/"
+    repo_url = "https://github.com/karlotness/adrt"
     if packaging.version.Version(version).is_devrelease:
-        base_url += "blob/master"
+        ref = "master"
     else:
-        base_url += f"blob/v{version}"
+        ref = f"v{version}"
     if line_start and line_end:
         line_suffix = f"#L{line_start}-L{line_end}"
     elif line_start:
         line_suffix = f"#L{line_start}"
     else:
         line_suffix = ""
-    return f"{base_url}/src/adrt/{source_file}{line_suffix}"
+    return f"{repo_url}/blob/{ref}/src/adrt/{source_file}{line_suffix}"
