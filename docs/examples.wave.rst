@@ -39,7 +39,7 @@ peaks.
         + 0.5*(np.cos(np.pi*alph2*R2) + 1.0)*(R2 < 1.0/alph2)
 
 
-We approximate the Radon transform of the initial condition using :func:`adrt.adrt()`
+We approximate the Radon transform of the initial condition using :func:`adrt.adrt`:
 
 .. plot::
    :context: close-figs

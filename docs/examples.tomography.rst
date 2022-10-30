@@ -45,7 +45,7 @@ Radon transform of the Shepp-Logan phantom.
    n = phantom.shape[0]
 
 We sample the CT data on a uniform Cartesian grid in the :math:`(\theta, t)`
-coordinates, using the routine provided in :func:`skimage.transform.radon()`
+coordinates, using the routine provided in :func:`skimage.transform.radon`:
 
 .. plot::
    :context: close-figs
