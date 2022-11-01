@@ -41,7 +41,7 @@ def test_reject_theta_out_of_bounds():
     t = np.array([0.5])
     n = 2**2
     with pytest.raises(ValueError):
-        adrt.utils.coord_adrt_to_cart(theta, t, n)
+        adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 
 def test_reject_invalid_size():
@@ -49,4 +49,4 @@ def test_reject_invalid_size():
     t = np.array([0.5])
     n = 1
     with pytest.raises(ValueError):
-        adrt.utils.coord_adrt_to_cart(theta, t, n)
+        adrt.utils.coord_cart_to_adrt(theta, t, n)
