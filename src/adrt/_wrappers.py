@@ -338,7 +338,8 @@ def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     the Radon domain :math:`(\theta, t)`. Where :math:`\theta` is the
     normal direction of the line, and :math:`t` is the distance of the
     line to the origin. See the :ref:`coordinate transform
-    illustration <adrt_to_cart diagram>` for more details.
+    illustration <adrt_to_cart diagram>` for more details. 
+    Upon coordinate transform, a nearest neighbor interpolation is performed.
 
     For an ADRT output of size ``N``, the interpolated array has shape
     ``(N, 4*N)`` with an optional batch dimension preserved.
