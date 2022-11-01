@@ -5,7 +5,7 @@ import adrt
 
 class ADRTNormalOperator(LinearOperator):
     def __init__(self, img_size, dtype=None):
-        super().__init__(dtype=dtype, shape=(img_size**2, img_size**2))
+        super().__init__(dtype=dtype, shape=(img_size ** 2, img_size ** 2))
         self._img_size = img_size
 
     def _matmat(self, x):
@@ -15,7 +15,7 @@ class ADRTNormalOperator(LinearOperator):
             (n_batch, self._img_size, self._img_size)
         )
         ret = adrt.utils.truncate(adrt.bdrt(adrt.adrt(batch_img))).mean(axis=1)
-        return np.moveaxis(ret, 0, -1).reshape((self._img_size**2, n_batch))
+        return np.moveaxis(ret, 0, -1).reshape((self._img_size ** 2, n_batch))
 
     def _adjoint(self):
         return self

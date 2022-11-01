@@ -287,7 +287,9 @@ def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
     ns = np.linspace(0, 1, num=n, endpoint=True, dtype=np.float64)
     theta = np.arctan(ns)  # [0, pi/4]
     theta_offset = theta - (np.pi / 2)
-    h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
+    h0 = ((np.add.outer(hi, (1 - 0.5 / n) * ns) / (1 + ns)) - 0.5) * (
+        np.cos(theta) + np.sin(theta)
+    )
     # Build output quadrants
     s_full = np.tile(np.concatenate([h0, np.flip(-h0, axis=-1)], axis=-1), (1, 2))
     theta_full = np.expand_dims(
@@ -344,9 +346,14 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     ns = np.linspace(0, 1, num=n, endpoint=True, dtype=np.float64)
     theta = np.arctan(ns)  # [0, pi/4]
     theta_offset = theta - (np.pi / 2)
-    h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
+    h0 = ((np.add.outer(hi, (1 - 0.5 / n) * ns) / (1 + ns)) - 0.5) * (
+        np.cos(theta) + np.sin(theta)
+    )
     # Build output quadrants
-    s_full = np.concatenate([(h0,), (-h0,), (h0,), (-h0,)], axis=0,)
+    s_full = np.concatenate(
+        [(h0,), (-h0,), (h0,), (-h0,)],
+        axis=0,
+    )
     theta_full = np.concatenate(
         [((theta_offset,),), ((-theta,),), ((theta,),), ((-theta_offset,),)], axis=0
     )
