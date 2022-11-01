@@ -53,6 +53,7 @@ __all__: typing.Final[typing.Sequence[str]] = [
     "stitch_adrt",
     "unstitch_adrt",
     "truncate",
+    "coord_adrt_to_cart_hcat",
     "coord_adrt_to_cart",
     "coord_cart_to_adrt",
     "interp_to_cart",
@@ -245,7 +246,7 @@ class CartesianCoord(typing.NamedTuple):
     offset: npt.NDArray[np.float64]
 
 
-def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
+def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
     The return value ``angle`` can be broadcast to full size using
@@ -266,6 +267,12 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     offset : numpy.ndarray
         2D array of dimensions (2*n-1, 4*n) containing Radon domain s
         (offset) coordinates of the ADRT domain, stacked horizontally.
+
+    Notes
+    -----
+    The function :func:`coord_adrt_to_cart` returns the same
+    coordinates as this function, except both angle and offset consistent with
+    the shape of the output array from :func:`adrt.adrt`.
     """
     n = operator.index(n)
     if n < 2:
@@ -304,6 +311,57 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
         ),
         axis=0,
     )
+    return CartesianCoord(theta_full, s_full)
+
+
+def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
+    r"""Compute Radon domain coordinates of indices in the ADRT domain
+
+    The return value ``angle`` can be broadcast to full size using
+    :func:`numpy.broadcast_to`, if desired.
+
+    Parameters
+    ----------
+    n : int
+        n specifies the dimension ADRT domain to be (4, 2*n-1, n)
+
+    Returns
+    -------
+    angle : numpy.ndarray
+        3D array of dimensions (4, 1, n) containing Radon domain theta
+        (angle) coordinates of the ADRT domain for each of 4 quadrants.
+
+    offset : numpy.ndarray
+        3D array of dimensions (4, 2*n-1, n) containing Radon domain\'s
+        (offset) coordinates of the ADRT domain for each of 4 quadrants.
+
+    Notes
+    -----
+    The function :func:`coord_adrt_to_cart_hcat` produces the same coordinates
+    but in a concatenated 2D array, oriented so the angles are increasing.
+    """
+    n = operator.index(n)
+    if n < 2:
+        raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
+    if (n - 1) & n != 0:
+        raise ValueError(f"invalid Radon domain size {n}, must a power of two")
+    hi, step = np.linspace(
+        1, (1 - n) / n, num=2 * n - 1, endpoint=False, retstep=True, dtype=np.float64
+    )
+    hi += step / 2
+    # Compute base angles
+    ns = np.linspace(0, 1, num=n, endpoint=True, dtype=np.float64)
+    theta = np.arctan(ns)  # [0, pi/4]
+    theta_offset = theta - (np.pi / 2)
+    h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
+    # Build output quadrants
+    s_full = np.concatenate([(h0,), (-h0,), (h0,), (-h0,)], axis=0,)
+    theta_full = np.concatenate([
+        ((theta_offset,), ),
+        ((-theta,), ),
+        ((theta,), ),
+        ((-theta_offset,), ),
+    ], axis=0)
     return CartesianCoord(theta_full, s_full)
 
 

@@ -35,4 +35,6 @@ unevenly spaced ADRT coordinates.
 
 .. autofunction:: coord_adrt_to_cart
 
+.. autofunction:: coord_adrt_to_cart_hcat
+
 .. autofunction:: coord_cart_to_adrt
