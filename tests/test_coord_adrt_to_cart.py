@@ -52,7 +52,7 @@ class TestADRTToCart:
             assert np.all(coord_hcat.offset[..., flipped_index] == coord.offset[i])
 
     def test_spot_adrt_to_cart_2x2(self):
-        size = 2 ** 2
+        size = 2**2
         coord = adrt.utils.coord_adrt_to_cart(size)
         angle = coord.angle
         offset = coord.offset
