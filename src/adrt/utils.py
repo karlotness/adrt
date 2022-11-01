@@ -289,16 +289,7 @@ def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
     theta_offset = theta - (np.pi / 2)
     h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
     # Build output quadrants
-    s_full = np.tile(
-        np.concatenate(
-            [
-                h0,
-                np.flip(-h0, axis=-1),
-            ],
-            axis=-1,
-        ),
-        (1, 2),
-    )
+    s_full = np.tile(np.concatenate([h0, np.flip(-h0, axis=-1)], axis=-1), (1, 2))
     theta_full = np.expand_dims(
         np.concatenate(
             [
@@ -356,12 +347,9 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
     h0 = ((np.add.outer(hi, ns) / (1 + ns)) - 0.5) * (np.cos(theta) + np.sin(theta))
     # Build output quadrants
     s_full = np.concatenate([(h0,), (-h0,), (h0,), (-h0,)], axis=0,)
-    theta_full = np.concatenate([
-        ((theta_offset,), ),
-        ((-theta,), ),
-        ((theta,), ),
-        ((-theta_offset,), ),
-    ], axis=0)
+    theta_full = np.concatenate(
+        [((theta_offset,),), ((-theta,),), ((theta,),), ((-theta_offset,),)], axis=0
+    )
     return CartesianCoord(theta_full, s_full)
 
 
