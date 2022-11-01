@@ -398,6 +398,14 @@ def coord_cart_to_adrt(
         a transformation factor
     """
     n = operator.index(n)
+    if n < 2:
+        raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
+    if (n - 1) & n != 0:
+        raise ValueError(f"invalid Radon domain size {n}, must a power of two")
+
+    if (np.abs(theta) > np.pi / 2).any():
+        raise ValueError("input parameter theta must be between -np.pi/2 and np.pi/2")
+
     th0 = (
         np.abs(theta)
         - np.abs(theta - np.pi / 4)
@@ -415,7 +423,7 @@ def coord_cart_to_adrt(
     t0 = sgn * t
 
     s = np.tan(th0) * (n - 1)
-    si = np.floor(s).astype(np.uint)
+    si = np.round(s).astype(np.uint)
     factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2)
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
