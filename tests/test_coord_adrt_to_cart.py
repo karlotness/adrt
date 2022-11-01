@@ -31,12 +31,25 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import pytest
 import numpy as np
 import adrt
 
 
+def test_reject_invalid_size_small():
+    n = 1
+    with pytest.raises(ValueError):
+        adrt.utils.coord_adrt_to_cart(n)
+
+
+def test_reject_invalid_size_odd():
+    n = 5
+    with pytest.raises(ValueError):
+        adrt.utils.coord_adrt_to_cart(n)
+
+
 class TestADRTToCart:
-    def test_correct_hcat(self):
+    def test_correct_hcat_8x8(self):
         size = 8
         coord = adrt.utils.coord_adrt_to_cart(size)
         coord_hcat = adrt.utils.coord_adrt_to_cart_hcat(size)
