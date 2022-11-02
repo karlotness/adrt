@@ -424,7 +424,7 @@ def coord_cart_to_adrt(
 
     s = np.tan(th0) * (n - 1)
     si = np.round(s).astype(np.uint)
-    factor = np.sqrt((si / n) ** 2 + (1 - 1 / n) ** 2)
+    factor = 1 / np.cos(th0)
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
 
