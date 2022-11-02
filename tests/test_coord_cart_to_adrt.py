@@ -50,3 +50,45 @@ def test_reject_invalid_size():
     n = 1
     with pytest.raises(ValueError):
         adrt.utils.coord_cart_to_adrt(theta, t, n)
+
+
+def test_corners_4x4():
+    theta = np.array([0.25 * np.pi - 1e-8])
+    n = 2**4
+    t = np.array([(1 / n - 1) / np.sqrt(2)])
+    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
+
+    assert np.all(coord.quadrant == 1)
+    assert np.all(coord.height == 2 * n - 2)
+    assert np.all(coord.slope == n - 1)
+    assert np.isclose(coord.factor, 1 / np.cos(theta))
+
+    theta = np.array([0.25 * np.pi - 1e-8])
+    n = 2**4
+    t = np.array([(1 - 1 / n) / np.sqrt(2)])
+    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
+
+    assert np.all(coord.quadrant == 1)
+    assert np.all(coord.height == 0)
+    assert np.all(coord.slope == n - 1)
+    assert np.isclose(coord.factor, 1 / np.cos(theta))
+
+    theta = np.array([0.0 * np.pi + 1e-8])
+    n = 2**4
+    t = np.array([(1 - 1 / n) * 0.5])
+    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
+
+    assert np.all(coord.quadrant == 1)
+    assert np.all(coord.height == 0)
+    assert np.all(coord.slope == 0)
+    assert np.isclose(coord.factor, 1 / np.cos(theta))
+
+    theta = np.array([0.0 * np.pi + 1e-8])
+    n = 2**4
+    t = np.array([(1 / n - 1) * 0.5])
+    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
+
+    assert np.all(coord.quadrant == 1)
+    assert np.all(coord.height == n - 1)
+    assert np.all(coord.slope == 0)
+    assert np.isclose(coord.factor, 1 / np.cos(theta))
