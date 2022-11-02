@@ -450,6 +450,6 @@ def coord_cart_to_adrt(
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
 
     h = h0 * n + 0.5 * (sgn - 1)
-    hi = np.floor(h).astype(int)
+    hi = np.round(h).astype(int)
 
     return ADRTIndex(q, hi, si, factor)

@@ -89,7 +89,7 @@ namespace adrt {
                     const float_index tan_theta = adrt::_common::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
                     const float_index ti = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
                     const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? s : -s) / std::cos(th0));
-                    const float_index hi = std::floor(h0 * static_cast<float_index>(N) - static_cast<float_index>(sgn < 0 ? 0 : 1));
+                    const float_index hi = std::round(h0 * static_cast<float_index>(N) - static_cast<float_index>(sgn < 0 ? 0 : 1));
                     // Compute the scaling factor
                     const adrt_scalar factor = static_cast<adrt_scalar>(1) / static_cast<adrt_scalar>(std::cos(th0));
                     // Perform the updates
