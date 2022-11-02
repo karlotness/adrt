@@ -91,7 +91,7 @@ namespace adrt {
                     const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? s : -s) / std::cos(th0));
                     const float_index hi = std::floor(h0 * static_cast<float_index>(N) - static_cast<float_index>(sgn < 0 ? 0 : 1));
                     // Compute the scaling factor
-                    const adrt_scalar factor = 1.0 / static_cast<adrt_scalar>(std::cos(th0));
+                    const adrt_scalar factor = static_cast<adrt_scalar>(1) / static_cast<adrt_scalar>(std::cos(th0));
                     // Perform the updates
                     if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(std::get<2>(in_shape))) {
                         // Intended access is in bounds
