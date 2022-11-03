@@ -91,7 +91,7 @@ class TestADRTToCart:
         ).all()
 
     def test_spot_adrt_to_cart_hcat_angle_increasing(self):
-        size=2**3
+        size = 2**3
         angle, _ = adrt.utils.coord_adrt_to_cart_hcat(size, remove_repeated=True)
         angle = np.squeeze(angle)
 
