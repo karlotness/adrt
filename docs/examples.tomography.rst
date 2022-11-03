@@ -53,11 +53,9 @@ coordinates, using the routine provided in :func:`skimage.transform.radon`:
 
    from skimage.transform import radon
 
-   th_array, s_array = adrt.utils.coord_adrt_to_cart_hcat(n)
-   th_array = np.broadcast_to(th_array, (2 * n - 1, 4 * n))
-
-   th_array1 = th_array[0, :]
-   theta = 90.0 + np.rad2deg(th_array1)
+   th_array1, _ = adrt.utils.coord_adrt_to_cart_hcat(n, remove_repeated=True)
+   theta = 90.0 + np.rad2deg(th_array1.squeeze())
+   t_array = np.linspace(-0.5, 0.5, n)
    sinogram = radon(phantom, theta=theta)
 
 The sinogram is plotted below. Although this sinogram is similar to that which
@@ -72,42 +70,18 @@ different discrete approximations of the continuous transform.
    plt.imshow(sinogram, aspect="auto")
    plt.colorbar()
 
-Then we define a function ``cart_to_adrt`` that interpolates the sampled forward
-data into the ADRT data format.
+Then we use ``scipy.interpolate.RectBivariateSpline()`` to interpolate the
+sampled forward data at the ADRT coordinates, forming the ADRT data.
 
 .. plot::
    :context: close-figs
    :align: center
 
-   def cart_to_adrt(th_array, s_array, sinogram):
+   from scipy import interpolate
 
-      n = th_array.shape[1] // 4
-      m = sinogram.shape[0]
-
-      nq = 4
-      adrt_data = np.zeros((nq, 2*n-1, n))
-      theta = th_array[0, :]
-
-      theta_q = np.abs(theta) - np.abs(theta - np.pi/4) - np.abs(theta + np.pi/4) + np.pi/2
-
-      t_coords, step = np.linspace(-0.5, 0.5, m, retstep=True, endpoint=True)
-
-      for q in range(nq):
-         for i in range(n):
-            if q % 2 == 0:
-               j = q*n + i
-            else:
-               j = (q+1)*n - i - 1
-            s_coords = s_array[:, j]
-            factor = np.cos(theta_q[j])
-            vals = np.interp(s_coords,
-                             t_coords - step*j/(4*n),  # offset correction
-                             sinogram[:, j],
-                             left=0.0, right=0.0)
-
-            adrt_data[q, :, i] = vals*factor
-
-      return adrt_data
+   spline = interpolate.RectBivariateSpline(t_array, th_array1, sinogram)
+   th_array, s_array = adrt.utils.coord_adrt_to_cart(n)
+   adrt_data = spline(s_array, th_array, grid=False)
 
 
 Inversion result
@@ -121,7 +95,6 @@ included in the package.
    :context: close-figs
    :align: center
 
-   adrt_data = cart_to_adrt(th_array, s_array, sinogram)
    # Using iadrt_cg from the Iterative Inverse example
    cg_inv = iadrt_cg(adrt_data, op_cls=ADRTRidgeOperator)
    fmg_inv = adrt.iadrt_fmg(adrt_data)

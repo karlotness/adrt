@@ -246,7 +246,9 @@ class CartesianCoord(typing.NamedTuple):
     offset: npt.NDArray[np.float64]
 
 
-def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
+def coord_adrt_to_cart_hcat(
+    n: typing.SupportsIndex, /, *, remove_repeated: bool = False,
+) -> CartesianCoord:
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
     The return value ``angle`` can be broadcast to full size using
@@ -257,16 +259,23 @@ def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
     n : int
         n specifies the dimension ADRT domain to be (4, 2*n-1, n)
 
+    remove_repeated : bool, optional
+        If :pycode:`False` (default) all columns are preserved in the
+        output. If :pycode:`True`, the redundant column in each
+        quadrant is removed.
+
     Returns
     -------
     angle : numpy.ndarray
-        2D array of dimensions (1, 4*n) containing Radon domain theta
-        (angle) coordinates of the ADRT domain for all quadrants,
-        stacked horizontally.
+        2D array of dimensions (1, 4*n) if keyword argument ``removed_repeated`` is
+        ``False`` otherwise (1, 4*n-3) containing Radon domain theta (angle)
+        coordinates of the ADRT domain for all quadrants, stacked horizontally.
 
     offset : numpy.ndarray
-        2D array of dimensions (2*n-1, 4*n) containing Radon domain s
-        (offset) coordinates of the ADRT domain, stacked horizontally.
+        2D array of dimensions (2*n-1, 4*n) if keyword argument
+        ``removed_repeated`` is ``False`` otherwise (2*n-1, 4*n-3) containing
+        Radon domain s (offset) coordinates of the ADRT domain, stacked
+        horizontally.
 
     Notes
     -----
@@ -304,6 +313,10 @@ def coord_adrt_to_cart_hcat(n: typing.SupportsIndex, /) -> CartesianCoord:
         ),
         axis=0,
     )
+    if remove_repeated:
+        _, index = np.unique(theta_full, return_index=True)
+        theta_full = theta_full[..., index]
+        s_full = s_full[..., index]
     return CartesianCoord(theta_full, s_full)
 
 
@@ -350,10 +363,7 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
         np.cos(theta) + np.sin(theta)
     )
     # Build output quadrants
-    s_full = np.concatenate(
-        [(h0,), (-h0,), (h0,), (-h0,)],
-        axis=0,
-    )
+    s_full = np.concatenate([(h0,), (-h0,), (h0,), (-h0,)], axis=0,)
     theta_full = np.concatenate(
         [((theta_offset,),), ((-theta,),), ((theta,),), ((-theta_offset,),)], axis=0
     )
