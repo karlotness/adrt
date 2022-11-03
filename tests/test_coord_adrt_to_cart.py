@@ -66,9 +66,7 @@ class TestADRTToCart:
 
     def test_spot_adrt_to_cart_2x2(self):
         size = 2**2
-        coord = adrt.utils.coord_adrt_to_cart(size)
-        angle = coord.angle
-        offset = coord.offset
+        angle, offset = adrt.utils.coord_adrt_to_cart(size)
         theta = np.arctan(np.linspace(0, 1, size))
 
         assert np.all(angle[0] == -np.pi / 2 + theta)
@@ -91,3 +89,10 @@ class TestADRTToCart:
         assert np.isclose(
             offset[1::2, 0, size - 1], -(size // 2 - 0.5) / size * np.sqrt(2)
         ).all()
+
+    def test_spot_adrt_to_cart_hcat_angle_increasing(self):
+        size=2**3
+        angle, _ = adrt.utils.coord_adrt_to_cart_hcat(size, remove_repeated=True)
+        angle = np.squeeze(angle)
+
+        assert np.all(np.diff(angle) > 0)

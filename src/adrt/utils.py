@@ -303,23 +303,28 @@ def coord_adrt_to_cart_hcat(
         np.cos(theta) + np.sin(theta)
     )
     # Build output quadrants
-    s_full = np.tile(np.concatenate([h0, np.flip(-h0, axis=-1)], axis=-1), (1, 2))
+    rep_index = -1 if remove_repeated else None
+    s_full = np.concatenate(
+        [
+            h0[..., :rep_index],
+            np.flip(-h0, axis=-1)[..., :rep_index],
+            h0[..., :rep_index],
+            np.flip(-h0, axis=-1),
+        ],
+        axis=-1,
+    )
     theta_full = np.expand_dims(
         np.concatenate(
             [
-                theta_offset,
-                -np.flip(theta, axis=0),
-                theta,
+                theta_offset[..., :rep_index],
+                -np.flip(theta, axis=0)[..., :rep_index],
+                theta[..., :rep_index],
                 -np.flip(theta_offset, axis=0),
             ],
             axis=-1,
         ),
         axis=0,
     )
-    if remove_repeated:
-        _, index = np.unique(theta_full, return_index=True)
-        theta_full = theta_full[..., index]
-        s_full = s_full[..., index]
     return CartesianCoord(theta_full, s_full)
 
 
