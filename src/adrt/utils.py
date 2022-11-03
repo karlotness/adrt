@@ -269,12 +269,12 @@ def coord_adrt_to_cart_hcat(
 
     Returns
     -------
-    angle : numpy.ndarray
+    angle : numpy.ndarray of numpy.float64
         2D array of dimensions (1, 4*n) if keyword argument ``removed_repeated`` is
         ``False`` otherwise (1, 4*n-3) containing Radon domain theta (angle)
         coordinates of the ADRT domain for all quadrants, stacked horizontally.
 
-    offset : numpy.ndarray
+    offset : numpy.ndarray of numpy.float64
         2D array of dimensions (2*n-1, 4*n) if keyword argument
         ``removed_repeated`` is ``False`` otherwise (2*n-1, 4*n-3) containing
         Radon domain s (offset) coordinates of the ADRT domain, stacked
@@ -341,11 +341,11 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
 
     Returns
     -------
-    angle : numpy.ndarray
+    angle : numpy.ndarray of numpy.float64
         3D array of dimensions (4, 1, n) containing Radon domain theta
         (angle) coordinates of the ADRT domain for each of 4 quadrants.
 
-    offset : numpy.ndarray
+    offset : numpy.ndarray of numpy.float64
         3D array of dimensions (4, 2*n-1, n) containing Radon domain\'s
         (offset) coordinates of the ADRT domain for each of 4 quadrants.
 
