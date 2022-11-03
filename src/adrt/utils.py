@@ -247,7 +247,10 @@ class CartesianCoord(typing.NamedTuple):
 
 
 def coord_adrt_to_cart_hcat(
-    n: typing.SupportsIndex, /, *, remove_repeated: bool = False,
+    n: typing.SupportsIndex,
+    /,
+    *,
+    remove_repeated: bool = False,
 ) -> CartesianCoord:
     r"""Compute Radon domain coordinates of indices in the ADRT domain
 
