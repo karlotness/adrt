@@ -4,7 +4,6 @@ import pathlib
 import inspect
 import importlib
 import functools
-import itertools
 import re
 import packaging.version
 import adrt
@@ -99,9 +98,7 @@ def adrt_find_anchors():
         r"^\s*//\s*DOC ANCHOR:\s+(?P<name>\S+)(?:\s+\+\s*(?P<offset>\d+))?\s*$"
     )
     anchor_map = {}
-    for source_path in itertools.chain(
-        source_root.glob("*.cpp"), source_root.glob("*.hpp")
-    ):
+    for source_path in source_root.glob("*.[ch]pp"):
         if not source_path.exists():
             continue
         with open(source_path, "r", encoding="utf8") as source_file:
