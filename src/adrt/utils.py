@@ -363,7 +363,10 @@ def coord_adrt_to_cart(n: typing.SupportsIndex, /) -> CartesianCoord:
         np.cos(theta) + np.sin(theta)
     )
     # Build output quadrants
-    s_full = np.concatenate([(h0,), (-h0,), (h0,), (-h0,)], axis=0,)
+    s_full = np.concatenate(
+        [(h0,), (-h0,), (h0,), (-h0,)],
+        axis=0,
+    )
     theta_full = np.concatenate(
         [((theta_offset,),), ((-theta,),), ((theta,),), ((-theta_offset,),)], axis=0
     )
