@@ -73,7 +73,7 @@ namespace adrt {
         const float_index t_left = adrt::_const::sqrt2_2<float_index>() - (adrt::_const::sqrt2_2<float_index>() / static_cast<float_index>(N));
         const float_index th_left = adrt::_const::pi_2<float_index>() - (adrt::_const::pi_8<float_index>() / static_cast<float_index>(N));
 
-        ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, s_left, th_left)")
+        ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, t_left, th_left)")
         for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
             for(size_t offset = 0; offset < std::get<1>(output_shape); ++offset) {
                 for(size_t angle = 0; angle < std::get<2>(output_shape); ++angle) {
