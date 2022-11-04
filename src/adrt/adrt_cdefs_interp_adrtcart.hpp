@@ -70,7 +70,7 @@ namespace adrt {
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
         const size_t N = std::get<3>(in_shape);
-        const float_index s_left = adrt::_const::sqrt2_2<float_index>() - (adrt::_const::sqrt2_2<float_index>() / static_cast<float_index>(N));
+        const float_index t_left = adrt::_const::sqrt2_2<float_index>() - (adrt::_const::sqrt2_2<float_index>() / static_cast<float_index>(N));
         const float_index th_left = adrt::_const::pi_2<float_index>() - (adrt::_const::pi_8<float_index>() / static_cast<float_index>(N));
 
         ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, s_left, th_left)")
@@ -79,7 +79,7 @@ namespace adrt {
                 for(size_t angle = 0; angle < std::get<2>(output_shape); ++angle) {
                     const float_index offset_fraction = static_cast<float_index>(offset) / static_cast<float_index>(std::get<1>(output_shape) - 1_uz);
                     const float_index angle_fraction = static_cast<float_index>(angle) / static_cast<float_index>(std::get<2>(output_shape) - 1_uz);
-                    const float_index s = s_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), offset_fraction);
+                    const float_index t = t_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), offset_fraction);
                     const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
                     const int q = static_cast<int>(std::floor(adrt::_common::clamp(th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1)))) + 2;
@@ -88,17 +88,17 @@ namespace adrt {
                     const float_index th_t = static_cast<float_index>(2) * std::abs(std::abs(std::fmod(th, adrt::_const::pi_2<float_index>()) / adrt::_const::pi_2<float_index>()) - static_cast<float_index>(0.5L));
                     const float_index th0 = adrt::_common::lerp(adrt::_const::pi_4<float_index>(), static_cast<float_index>(0), th_t);
                     const float_index tan_theta = adrt::_common::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
-                    const float_index ti = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
-                    const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? s : -s) / std::cos(th0));
+                    const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
+                    const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) - ((sgn >= 0 ? t : -t) / std::cos(th0));
                     const float_index hi = std::floor(h0 * static_cast<float_index>(N));
                     // Compute the scaling factor
-                    const larger_float sidea = static_cast<larger_float>(ti) / static_cast<larger_float>(N - 1_uz);
+                    const larger_float sidea = static_cast<larger_float>(si) / static_cast<larger_float>(N - 1_uz);
                     const larger_float sideb = static_cast<larger_float>(1_uz);
                     const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt(sidea * sidea + sideb));
                     // Perform the updates
                     if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(std::get<2>(in_shape))) {
                         // Intended access is in bounds
-                        adrt::_common::array_access(out, output_shape, batch, offset, angle) = factor * adrt::_common::array_access(data, in_shape, batch, static_cast<size_t>(q), static_cast<size_t>(hi), static_cast<size_t>(ti));
+                        adrt::_common::array_access(out, output_shape, batch, offset, angle) = factor * adrt::_common::array_access(data, in_shape, batch, static_cast<size_t>(q), static_cast<size_t>(hi), static_cast<size_t>(si));
                     }
                     else {
                         // Access is out of bounds, fill with zero
