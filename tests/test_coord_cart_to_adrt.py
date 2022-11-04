@@ -52,140 +52,60 @@ def test_reject_invalid_size():
         adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 
-def test_corners_4x4():
-    n = 2**2
-    theta = np.array([0.25 * np.pi - 1e-8])
-    t = np.array([(1 / n - 1) / np.sqrt(2)])
+size = 2**2
+theta0 = np.array([0.25 * np.pi - 1e-8])
+theta1 = np.array([0.0 * np.pi + 1e-8])
+theta2 = np.array([0.25 * np.pi + 1e-8])
+theta3 = np.array([0.5 * np.pi - 1e-8])
+theta4 = np.array([-0.25 * np.pi + 1e-8])
+theta5 = np.array([0.0 * np.pi - 1e-8])
+theta6 = np.array([-0.5 * np.pi + 1e-8])
+theta7 = np.array([-0.25 * np.pi - 1e-8])
+t0 = np.array([(1 / size - 1) / np.sqrt(2)])
+t1 = np.array([(1 - 1 / size) / np.sqrt(2)])
+t2 = np.array([(1 - 1 / size) * 0.5])
+t3 = np.array([(1 / size - 1) * 0.5])
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        ((theta0, t0, size), (1, 2 * size - 2, size - 1)),
+        ((theta0, t1, size), (1, 0, size - 1)),
+        ((theta1, t2, size), (1, 0, 0)),
+        ((theta1, t3, size), (1, size - 1, 0)),
+        ((theta2, t0, size), (0, 0, size - 1)),
+        ((theta2, t1, size), (0, 2 * size - 2, size - 1)),
+        ((theta3, t2, size), (0, size - 1, 0)),
+        ((theta3, t3, size), (0, 0, 0)),
+        ((theta4, t3, size), (2, 1, size - 1)),
+        ((theta4, t1, size), (2, 2 * size - 2, size - 1)),
+        ((theta5, t1, size), (2, size, 0)),
+        ((theta5, t3, size), (2, 0, 0)),
+        ((theta7, t0, size), (3, 2 * size - 2, size - 1)),
+        ((theta7, t1, size), (3, 0, size - 1)),
+        ((theta6, t2, size), (3, 0, 0)),
+        ((theta6, t3, size), (3, size - 1, 0)),
+    ],
+)
+def test_corners(test_input, expected):
+
+    theta = test_input[0]
+    t = test_input[1]
+    n = test_input[2]
+
     coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
 
-    assert np.all(coord.quadrant == 1)
-    assert np.all(coord.height == 2 * n - 2)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
+    quadrant_expected = expected[0]
+    height_expected = expected[1]
+    slope_expected = expected[2]
 
-    t = np.array([(1 - 1 / n) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
+    if np.abs(theta) > 0.25 * np.pi:
+        th0 = np.abs(theta) - 0.5 * np.pi
+    else:
+        th0 = theta
 
-    assert np.all(coord.quadrant == 1)
-    assert np.all(coord.height == 0)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([0.0 * np.pi + 1e-8])
-    t = np.array([(1 - 1 / n) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 1)
-    assert np.all(coord.height == 0)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    t = np.array([(1 / n - 1) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 1)
-    assert np.all(coord.height == n - 1)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([0.25 * np.pi + 1e-8])
-    t = np.array([(1 / n - 1) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 0)
-    assert np.all(coord.height == -1)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    t = np.array([(1 - 1 / n) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 0)
-    assert np.all(coord.height == 2 * n - 3)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([0.5 * np.pi - 1e-8])
-    t = np.array([(1 - 1 / n) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 0)
-    assert np.all(coord.height == n - 2)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta - 0.5 * np.pi))
-
-    t = np.array([(1 / n - 1) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 0)
-    assert np.all(coord.height == -1)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta - 0.5 * np.pi))
-
-    theta = np.array([-0.25 * np.pi + 1e-8])
-    t = np.array([(1 / n - 1) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 2)
-    assert np.all(coord.height == -1)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    t = np.array([(1 - 1 / n) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 2)
-    assert np.all(coord.height == 2 * n - 3)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([0.0 * np.pi - 1e-8])
-    t = np.array([(1 - 1 / n) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 2)
-    assert np.all(coord.height == n - 2)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    t = np.array([(1 / n - 1) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 2)
-    assert np.all(coord.height == -1)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([-0.25 * np.pi - 1e-8])
-    t = np.array([(1 / n - 1) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 3)
-    assert np.all(coord.height == 2 * n - 2)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    t = np.array([(1 - 1 / n) / np.sqrt(2)])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 3)
-    assert np.all(coord.height == 0)
-    assert np.all(coord.slope == n - 1)
-    assert np.isclose(coord.factor, 1 / np.cos(theta))
-
-    theta = np.array([-0.5 * np.pi + 1e-8])
-    t = np.array([(1 - 1 / n) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 3)
-    assert np.all(coord.height == 0)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta + 0.5 * np.pi))
-
-    t = np.array([(1 / n - 1) * 0.5])
-    coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-    assert np.all(coord.quadrant == 3)
-    assert np.all(coord.height == n - 1)
-    assert np.all(coord.slope == 0)
-    assert np.isclose(coord.factor, 1 / np.cos(theta + 0.5 * np.pi))
+    assert np.all(coord.quadrant == quadrant_expected)
+    assert np.all(coord.height == height_expected)
+    assert np.all(coord.slope == slope_expected)
+    assert np.isclose(coord.factor, 1 / np.cos(th0))

@@ -445,11 +445,11 @@ def coord_cart_to_adrt(
 
     s = np.tan(th0) * (n - 1)
     si = np.round(s).astype(np.uint)
-    factor = 1 / np.cos(th0)
+    side = si / (n - 1)
+    factor = np.sqrt(1.0 + side**2)
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
-
-    h = h0 * n + 0.5 * (sgn - 1)
-    hi = np.round(h).astype(int)
+    h = h0 * n
+    hi = np.floor(h).astype(int)
 
     return ADRTIndex(q, hi, si, factor)
