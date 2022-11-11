@@ -53,9 +53,8 @@ coordinates, using the routine provided in :func:`skimage.transform.radon`:
 
    from skimage.transform import radon
 
-   th_array1, _ = adrt.utils.coord_adrt_to_cart_hcat(n, remove_repeated=True)
+   th_array1 = np.unique(adrt.utils.coord_adrt(n).angle)
    theta = 90.0 + np.rad2deg(th_array1.squeeze())
-   t_array = np.linspace(-0.5, 0.5, n)
    sinogram = radon(phantom, theta=theta)
 
 The sinogram is plotted below. Although this sinogram is similar to that which
@@ -80,8 +79,9 @@ the ADRT data.
 
    from scipy import interpolate
 
+   t_array = np.linspace(-0.5, 0.5, n)
    spline = interpolate.RectBivariateSpline(t_array, th_array1, sinogram)
-   th_array, s_array = adrt.utils.coord_adrt_to_cart(n)
+   s_array, th_array = adrt.utils.coord_adrt(n)
    adrt_data = spline(s_array, th_array, grid=False)
 
 

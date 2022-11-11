@@ -33,8 +33,6 @@ coordinates which are represented in an ADRT output, or the closest
 correspondence between regularly-spaced "Cartesian" coordinates to the
 unevenly spaced ADRT coordinates.
 
-.. autofunction:: coord_adrt_to_cart
-
-.. autofunction:: coord_adrt_to_cart_hcat
+.. autofunction:: coord_adrt
 
 .. autofunction:: coord_cart_to_adrt

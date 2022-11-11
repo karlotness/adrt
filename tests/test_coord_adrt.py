@@ -36,63 +36,100 @@ import numpy as np
 import adrt
 
 
+def test_return_value_order():
+    ret = adrt.utils.coord_adrt(4)
+    offset, angle = ret
+    assert offset is ret.offset
+    assert angle is ret.angle
+
+
 def test_reject_invalid_size_small():
-    n = 1
     with pytest.raises(ValueError):
-        adrt.utils.coord_adrt_to_cart(n)
+        adrt.utils.coord_adrt(1)
 
 
 def test_reject_invalid_size_odd():
-    n = 5
     with pytest.raises(ValueError):
-        adrt.utils.coord_adrt_to_cart(n)
+        adrt.utils.coord_adrt(5)
 
 
-class TestADRTToCart:
-    def test_correct_hcat_8x8(self):
-        size = 8
-        coord = adrt.utils.coord_adrt_to_cart(size)
-        coord_hcat = adrt.utils.coord_adrt_to_cart_hcat(size)
+@pytest.mark.parametrize("n", [2, 4, 8, 16])
+def test_return_correct_shape_dtype(n):
+    ret = adrt.utils.coord_adrt(n)
+    assert ret.offset.shape == (4, 2 * n - 1, n)
+    assert ret.angle.shape == (4, 1, n)
+    assert ret.offset.dtype == np.dtype(np.float64)
+    assert ret.angle.dtype == np.dtype(np.float64)
 
-        for i in range(4):
-            flipped_index = (
-                2 * ((i + 1) // 2) * size
-                - (i % 2)
-                + (-1) ** i * np.arange(size, dtype=int)
-            )
 
-            assert np.all(coord_hcat.angle[..., flipped_index] == coord.angle[i])
-            assert np.all(coord_hcat.offset[..., flipped_index] == coord.offset[i])
+@pytest.mark.parametrize("n", [2, 4, 8, 16])
+def test_angle_spacing(n):
+    angle = adrt.utils.coord_adrt(n).angle.squeeze(1)
+    # Check that angles are in [-pi/2, pi/2]
+    assert np.all(angle >= -np.pi / 2)
+    assert np.all(angle <= np.pi / 2)
+    # Check that angles are linearly spaced by tan in the range [-pi/4, pi/4]
+    angle_offsets = np.expand_dims(np.array([np.pi / 2, 0, 0, -np.pi / 2]), -1)
+    expected_diffs = np.expand_dims(1 / (n - 1) * np.array([1, -1, 1, -1]), -1)
+    angle_spaces = np.diff(np.tan(angle + angle_offsets))
+    assert np.allclose(angle_spaces, expected_diffs)
+    # Check first and last angle values
+    expected_stops = np.array(
+        [
+            [-np.pi / 2, -np.pi / 4],
+            [0, -np.pi / 4],
+            [0, np.pi / 4],
+            [np.pi / 2, np.pi / 4],
+        ]
+    )
+    assert np.allclose(angle[:, [0, -1]], expected_stops)
 
-    def test_spot_adrt_to_cart_2x2(self):
-        size = 2**2
-        angle, offset = adrt.utils.coord_adrt_to_cart(size)
-        theta = np.arctan(np.linspace(0, 1, size))
 
-        assert np.all(angle[0] == -np.pi / 2 + theta)
-        assert np.all(angle[1] == -theta)
-        assert np.all(angle[2] == theta)
-        assert np.all(angle[3] == np.pi / 2 - theta)
+def test_unique_stitches_angles_correctly():
+    angle = adrt.utils.coord_adrt(16).angle
+    unique = np.unique(angle)
+    manually_stitched = np.concatenate(
+        [
+            angle[0, 0],
+            np.flip(angle[1, 0, :-1]),
+            angle[2, 0, 1:],
+            np.flip(angle[3, 0, :-1]),
+        ]
+    )
+    assert unique.shape == manually_stitched.shape
+    assert np.allclose(unique, manually_stitched)
 
-        assert np.all(offset[::2, size - 1, 0] - offset[::2, size, 0] == 1 / size)
-        assert offset[2, size - 1, 0] == -(size // 2 - 0.5) / size
-        assert offset[2, 0, 0] == -offset[2, size - 1, 0]
-        assert np.isclose(
-            offset[1::2, 2 * size - 2, size - 1], (size // 2 - 0.5) / size * np.sqrt(2)
-        ).all()
-        assert np.isclose(
-            offset[::2, 2 * size - 2, size - 1], -(size // 2 - 0.5) / size * np.sqrt(2)
-        ).all()
-        assert np.isclose(
-            offset[::2, 0, size - 1], (size // 2 - 0.5) / size * np.sqrt(2)
-        ).all()
-        assert np.isclose(
-            offset[1::2, 0, size - 1], -(size // 2 - 0.5) / size * np.sqrt(2)
-        ).all()
 
-    def test_spot_adrt_to_cart_hcat_angle_increasing(self):
-        size = 2**3
-        angle, _ = adrt.utils.coord_adrt_to_cart_hcat(size, remove_repeated=True)
-        angle = np.squeeze(angle)
+def test_sort_stitches_angles_correctly():
+    angle = adrt.utils.coord_adrt(16).angle
+    sorted_angles = np.sort(angle.ravel())
+    manually_stitched = np.concatenate(
+        [
+            angle[0, 0],
+            np.flip(angle[1, 0]),
+            angle[2, 0],
+            np.flip(angle[3, 0]),
+        ]
+    )
+    assert sorted_angles.shape == manually_stitched.shape
+    assert np.allclose(sorted_angles, manually_stitched)
 
-        assert np.all(np.diff(angle) > 0)
+
+@pytest.mark.parametrize("n", [2, 4, 8, 16])
+def test_spot_check_offset(n):
+    offset = adrt.utils.coord_adrt(n).offset
+    # Check array repeats as tiles
+    assert np.all(offset[:2] == offset[2:])
+    # Check signs are opposite between first quadrants
+    assert np.all(offset[0] == -offset[1])
+    # Check columns are all linearly spaced
+    col_differences = np.diff(offset[0], axis=0)
+    assert np.allclose(col_differences, np.expand_dims(col_differences[0], 0))
+    # Check spacing in the first column
+    assert np.isclose(col_differences[0, 0], -1 / n)
+    assert np.isclose(offset[0, n - 1, 0], (-n + 1) / (2 * n))
+    assert np.isclose(offset[0, n - 1, 0], -offset[0, 0, 0])
+    # Check values in the last column
+    last_val = np.sqrt(2) * (n - 1) / (2 * n)
+    assert np.isclose(offset[0, 0, -1], last_val)
+    assert np.isclose(offset[0, -1, -1], -last_val)
