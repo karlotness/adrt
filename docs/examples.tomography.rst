@@ -70,8 +70,9 @@ different discrete approximations of the continuous transform.
    plt.imshow(sinogram, aspect="auto")
    plt.colorbar()
 
-Then we use ``scipy.interpolate.RectBivariateSpline()`` to interpolate the
-sampled forward data at the ADRT coordinates, forming the ADRT data.
+Then we use :class:`scipy.interpolate.RectBivariateSpline` to
+interpolate the sampled forward data at the ADRT coordinates, forming
+the ADRT data.
 
 .. plot::
    :context: close-figs
