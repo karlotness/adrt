@@ -24,6 +24,7 @@ extensions = [
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "matplotlib.sphinxext.plot_directive",
+    "sphinxcontrib.bibtex",
 ]
 
 templates_path = ["_templates"]
@@ -151,3 +152,6 @@ def linkcode_resolve(domain, info):
     else:
         line_suffix = ""
     return f"{repo_url}/blob/{ref}/src/adrt/{source_file}{line_suffix}"
+
+# bibtex settings
+bibtex_bibfiles = ['refs.bib']

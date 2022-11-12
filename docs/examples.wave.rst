@@ -2,21 +2,23 @@ Wave Equation
 =============
 
 The Radon transform allows one to solve the multi-dimensional wave equation
-:math:`\partial_t^2 u = \Delta u`.  This solution is also called the
-Lax-Philips translation representation.
+:math:`\partial_t^2 u = \Delta u`. Due to the intertwining property
+:footcite:`Nat01` the solution also satisfies a family of 1D wave equations in
+the Radon domain. This solution is essentially identical to the Lax-Philips
+translation representation :footcite:`LP64`.
 
-To do this, we will need to invert the Radon transform, so we will
-again be using SciPy's :func:`scipy.sparse.linalg.cg` routine as
-illustrated in the :ref:`Iterative Inverse Section <inverse page>` and
-make use of the function ``iadrt_cg`` from that example.
+To do this, we will need to invert the Radon transform: we will again be using
+SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
+:ref:`Iterative Inverse Section <inverse page>` and make use of the function
+``iadrt_cg`` from that example.
 
 .. plot:: code/iadrt_cg.py
    :context: reset
    :include-source: false
    :nofigs:
 
-We first construct the initial condition, a linear combination of two cosine
-peaks.
+We first construct a discretization of the initial condition. We choose a
+superposition of two cosine peaks.
 
 .. plot::
    :context: close-figs
@@ -39,7 +41,7 @@ peaks.
         + 0.5*(np.cos(np.pi*alph2*R2) + 1.0)*(R2 < 1.0/alph2)
 
 
-We approximate the Radon transform of the initial condition using :func:`adrt.adrt`:
+We then approximate the Radon transform of the initial condition using :func:`adrt.adrt`.
 
 .. plot::
    :context: close-figs
@@ -47,7 +49,7 @@ We approximate the Radon transform of the initial condition using :func:`adrt.ad
 
    init_adrt = adrt.adrt(init)
 
-For each angular slice, we translate the initial condition following the d'Alembert formula
+For each angular slice, we translate the initial condition following the d'Alembert formula.
 
 .. plot::
    :context: close-figs
@@ -134,3 +136,7 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
 
    fig.tight_layout()
    fig.show()
+
+
+.. footbibliography::
+
