@@ -1,16 +1,14 @@
 Computerized Tomography
 =======================
 
-Using the routines in :py:mod:`adrt`, we can solve the inverse problem arising
-from Computerized Tomography (CT). Here we will be using SciPy's
-:func:`scipy.sparse.linalg.cg` routine as illustrated in the :ref:`Iterative
-Inverse Section <inverse page>`.
+We can solve the Computerized Tomography (CT) problem using the routines in
+:py:mod:`adrt`. 
 
-We first import requisite modules, and define the ``ADRTNormalOperator`` and the
-function ``iadrt_cg``. However, here we modify ``ADRTNormalOperator`` by adding
-a multiple of the identity term. This modifies our operator so that the CG
-inverse computes the ridge regression problem, given by
-:math:`(A^{T}A + \lambda I)x = A^{T}b`. We name the new operator ``ADRTRidgeOperator`` below.
+Here we will be using SciPy's :func:`scipy.sparse.linalg.cg` routine as
+illustrated in the :ref:`Iterative Inverse Section <inverse page>`.  We first
+import requisite modules then define the ``ADRTNormalOperator`` and the
+function ``iadrt_cg``. However, we modify the operator by adding to it a
+multiple of the identity and name the new operator ``ADRTRidgeOperator`` below.
 
 .. plot:: code/iadrt_cg.py
    :context: reset
@@ -23,7 +21,7 @@ inverse computes the ridge regression problem, given by
 
    # Using ADRTNormalOperator from the Iterative Inverse example
    class ADRTRidgeOperator(ADRTNormalOperator):
-      def __init__(self, img_size, dtype=None, ridge_param=40.0):
+      def __init__(self, img_size, dtype=None, ridge_param=1000.0):
          super().__init__(dtype=dtype, img_size=img_size)
          self._ridge_param = ridge_param
 
@@ -31,11 +29,17 @@ inverse computes the ridge regression problem, given by
          # Use batch dimensions to handle columns of matrix x
          return super()._matmat(x) + self._ridge_param * x
 
+Using this operator with the CG algorithm yields the solution to the ridge
+regression problem given by :math:`(A^{T}A + \lambda I)x = A^{T}b` where
+:math:`A` is the matrix representation of :func:`adrt.adrt`, :math:`I` is the
+identity matrix, and :math:`\lambda \ge 0` is the ridge parameter. 
+
 Forward Data
 -------------
 
-We first obtain the forward measurements of the CT problem, by computing the
-Radon transform of the Shepp-Logan phantom.
+For this demonstration, we will make use of synthetic forward measurement data
+for the CT problem. We will attempt to recover Shepp-Logan phantom from its
+Radon transform. 
 
 .. plot::
    :context: close-figs
@@ -45,7 +49,7 @@ Radon transform of the Shepp-Logan phantom.
    n = phantom.shape[0]
 
 We sample the CT data on a uniform Cartesian grid in the :math:`(\theta, t)`
-coordinates, using the routine provided in :func:`skimage.transform.radon`:
+coordinates using the routine provided in :func:`skimage.transform.radon`.
 
 .. plot::
    :context: close-figs
@@ -57,10 +61,11 @@ coordinates, using the routine provided in :func:`skimage.transform.radon`:
    theta = 90.0 + np.rad2deg(th_array1.squeeze())
    sinogram = radon(phantom, theta=theta)
 
-The sinogram is plotted below. Although this sinogram is similar to that which
-appeared in :ref:`sinogram computation section <adrt shepplogan page>` the grid
-in the :math:`(\theta, t)` coordinates used is different, and they used two
-different discrete approximations of the continuous transform.
+The sampled sinogram is plotted below. Although this sinogram appears similar
+to that in :ref:`sinogram computation section <adrt shepplogan page>` the two
+are different: The grid in the :math:`(\theta, t)` the coordinates used is
+different, and the approximations in discretizing the continuous transform are
+also different.  
 
 .. plot::
    :context: close-figs
@@ -71,7 +76,7 @@ different discrete approximations of the continuous transform.
 
 Then we use :class:`scipy.interpolate.RectBivariateSpline` to
 interpolate the sampled forward data at the ADRT coordinates, forming
-the ADRT data.
+the ADRT data. 
 
 .. plot::
    :context: close-figs
@@ -88,9 +93,9 @@ the ADRT data.
 Inversion result
 ----------------
 
-Now, we compute the inverse problem by solving the ridge regression
-problem. We also show the inverse computed with :func:`adrt.iadrt_fmg`
-included in the package.
+We turn to the solution of the ridge regression problem using the CG algorithm.
+We also show the inverse computed with :func:`adrt.iadrt_fmg` included in the
+package without any regularization for illustration and comparison.
 
 .. plot::
    :context: close-figs
@@ -105,7 +110,7 @@ included in the package.
    for ax, data, title in zip(
        axs.ravel(),
        [cg_inv, fmg_inv],
-       ["CG Inverse", "FMG Inverse"],
+       ["CG Ridge Inverse", "FMG Inverse"],
    ):
        im_plot = ax.imshow(data, cmap="bone", extent=(0, 1, 0, 1))
        fig.colorbar(im_plot, ax=ax, orientation="horizontal", pad=0.08)
