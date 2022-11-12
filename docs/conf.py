@@ -153,5 +153,6 @@ def linkcode_resolve(domain, info):
         line_suffix = ""
     return f"{repo_url}/blob/{ref}/src/adrt/{source_file}{line_suffix}"
 
+
 # bibtex settings
-bibtex_bibfiles = ['refs.bib']
+bibtex_bibfiles = ["refs.bib"]

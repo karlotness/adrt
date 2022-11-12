@@ -2,10 +2,10 @@ Wave Equation
 =============
 
 The Radon transform allows one to solve the multi-dimensional wave equation
-:math:`\partial_t^2 u = \Delta u`. Due to the intertwining property
+:math:`\partial_t^2 u = \Delta u`. Due to the intertwining property\ 
 :footcite:`Nat01` the solution also satisfies a family of 1D wave equations in
 the Radon domain. This solution is essentially identical to the Lax-Philips
-translation representation :footcite:`LP64`.
+translation representation.\ :footcite:`LP64`
 
 To do this, we will need to invert the Radon transform: we will again be using
 SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the

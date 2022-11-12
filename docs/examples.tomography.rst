@@ -3,7 +3,7 @@ Computerized Tomography
 
 We can solve the Computerized Tomography (CT) problem using the routines in
 :py:mod:`adrt`. For a detailed mathematical description, see standard
-references such as :footcite:`Nat01`.
+references\ :footcite:`Nat01` on the topic.
 
 Here we will be using SciPy's :func:`scipy.sparse.linalg.cg` routine as
 illustrated in the :ref:`Iterative Inverse Section <inverse page>`.  We first
