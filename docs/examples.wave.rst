@@ -2,13 +2,15 @@ Wave Equation
 =============
 
 The Radon transform allows one to solve the multi-dimensional wave equation
-:math:`\partial_t^2 u = \Delta u`. Due to the intertwining property\ 
-:footcite:`Nat01` the solution also satisfies a family of 1D wave equations in
-the Radon domain. This solution is essentially identical to the Lax-Philips
-translation representation.\ :footcite:`LP64`
+:math:`\partial_t^2 u = \Delta u` by transforming the problem into a family of
+1D wave equations in the Radon domain, due to its intertwining property.\
+:footcite:`Nat01` As a result, one can solve the 1D wave equations in the Radon
+domain then transform back into the physical variables to obtain the solution.
+Note that this solution is essentially identical to the Lax-Philips translation
+representation.\ :footcite:`LP64`
 
-To do this, we will need to invert the Radon transform: we will again be using
-SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
+For this solution, we will need to invert the Radon transform: we will again be
+using SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
 :ref:`Iterative Inverse Section <inverse page>` and make use of the function
 ``iadrt_cg`` from that example.
 
@@ -17,8 +19,8 @@ SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
    :include-source: false
    :nofigs:
 
-We first construct a discretization of the initial condition. We choose a
-superposition of two cosine peaks.
+We choose a superposition of two cosine peaks as the initial condition and form
+its discretization.
 
 .. plot::
    :context: close-figs
@@ -49,7 +51,8 @@ We then approximate the Radon transform of the initial condition using :func:`ad
 
    init_adrt = adrt.adrt(init)
 
-For each angular slice, we translate the initial condition following the d'Alembert formula.
+For each angular slice, we translate the initial condition following the
+d'Alembert formula.
 
 .. plot::
    :context: close-figs
