@@ -100,7 +100,7 @@ namespace adrt {
         assert(adrt::fmg_highpass_is_valid_shape(shape));
         assert(shape == adrt::fmg_highpass_result_shape(shape));
 
-        // Convolution constants for kernel [[a, b, a], [[b, c, b]], [a, b, a]]
+        // Convolution constants for kernel [[a, b, a], [b, c, b], [a, b, a]]
         const adrt_scalar conv_a = static_cast<adrt_scalar>(-0.0625L); // -1/16
         const adrt_scalar conv_b = static_cast<adrt_scalar>(-0.125L); // -1/8
         const adrt_scalar conv_c = static_cast<adrt_scalar>(0.75L); // 3/4
