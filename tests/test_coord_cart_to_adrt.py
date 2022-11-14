@@ -36,6 +36,31 @@ import numpy as np
 import adrt
 
 
+def test_return_value_order():
+    ret = adrt.utils.coord_cart_to_adrt(
+        theta=np.array([-np.pi / 4, 0, np.pi / 4]),
+        t=np.array([-0.25, 0, 0.25]),
+        n=8,
+    )
+    quadrant, height, slope, factor = ret
+    assert quadrant is ret.quadrant
+    assert height is ret.height
+    assert slope is ret.slope
+    assert factor is ret.factor
+
+
+def test_return_dtype():
+    ret = adrt.utils.coord_cart_to_adrt(
+        theta=np.array([-np.pi / 4, 0, np.pi / 4]),
+        t=np.array([-0.25, 0, 0.25]),
+        n=8,
+    )
+    assert ret.quadrant.dtype == np.dtype(np.uint8)
+    assert ret.height.dtype == np.dtype(np.int64)
+    assert ret.slope.dtype == np.dtype(np.uint64)
+    assert ret.factor.dtype == np.dtype(np.float64)
+
+
 def test_reject_theta_out_of_bounds():
     theta = np.array([np.pi])
     t = np.array([0.5])
