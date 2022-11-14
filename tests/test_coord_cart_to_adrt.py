@@ -61,14 +61,6 @@ def test_return_dtype():
     assert ret.factor.dtype == np.dtype(np.float64)
 
 
-def test_reject_theta_out_of_bounds():
-    theta = np.array([np.pi])
-    t = np.array([0.5])
-    n = 2**2
-    with pytest.raises(ValueError):
-        adrt.utils.coord_cart_to_adrt(theta, t, n)
-
-
 def test_reject_invalid_size():
     theta = np.array([0.25 * np.pi])
     t = np.array([0.5])

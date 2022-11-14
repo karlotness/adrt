@@ -331,9 +331,16 @@ def coord_cart_to_adrt(
         raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
     if (n - 1) & n != 0:
         raise ValueError(f"invalid Radon domain size {n}, must a power of two")
-
-    if (np.abs(theta) > np.pi / 2).any():
-        raise ValueError("input parameter theta must be between -np.pi/2 and np.pi/2")
+    if theta.shape != t.shape:
+        raise ValueError(
+            f"mismatched shapes for theta and t, {theta.shape} vs. {t.shape}"
+        )
+    # Move theta values into canonical range [-pi/2, pi/2]
+    theta = np.where(
+        np.abs(theta) <= np.pi / 2,
+        theta,
+        np.remainder(theta + np.pi / 2, np.pi) - np.pi / 2,
+    )
 
     th0 = (
         np.abs(theta)
