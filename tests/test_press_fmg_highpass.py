@@ -37,14 +37,13 @@ import scipy.ndimage
 import adrt
 
 
-CONV_KERNEL = np.array(
-    [[-1 / 16, -1 / 8, -1 / 16], [-1 / 8, 3 / 4, -1 / 8], [-1 / 16, -1 / 8, -1 / 16]]
-)
-
-
-def sp_highpass(a):
-    assert a.ndim == 2
-    return scipy.ndimage.convolve(a, CONV_KERNEL, mode="mirror")
+def sp_highpass(arr):
+    assert arr.ndim == 2
+    a = -1 / 16
+    b = -1 / 8
+    c = 3 / 4
+    conv_kernel = np.array([[a, b, a], [b, c, b], [a, b, a]])
+    return scipy.ndimage.convolve(arr, conv_kernel, mode="mirror")
 
 
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
