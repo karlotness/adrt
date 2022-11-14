@@ -3,12 +3,12 @@
 Iterative Inverse
 =================
 
-This example presents a method for inverting the forward ADRT which takes a
-different approach to the inverse implemented in :func:`adrt.iadrt`. The
-inverse here uses an iterative solver, in particular the SciPy's
-:func:`scipy.sparse.linalg.cg` routine that implements the Conjugate Gradient
-(CG) method\ :footcite:`Gre97` but another implementation could be used instead,
-if desired.
+This example presents a method for inverting the forward ADRT which
+takes a different approach to the inverse implemented in
+:func:`adrt.iadrt`. The inverse here uses an iterative solver, in
+particular the SciPy's :func:`scipy.sparse.linalg.cg` routine that
+implements the Conjugate Gradient (CG) method [#greenbaum97]_ but
+another implementation could be used instead, if desired.
 
 .. plot::
    :context: reset
@@ -121,5 +121,6 @@ so an iterative approach such as the one demonstrated here may be
 advantageous for certain applications and can be assembled with the
 help of routines in this package.
 
-
-.. footbibliography::
+.. [#greenbaum97] Anne Greenbaum, *Iterative Methods for Solving Linear
+            Systems*, SIAM 1997. `doi:10.1137/1.9781611970937
+            <https://doi.org/10.1137/1.9781611970937>`_

@@ -3,11 +3,11 @@ Wave Equation
 
 The Radon transform allows one to solve the multi-dimensional wave equation
 :math:`\partial_t^2 u = \Delta u` by transforming the problem into a family of
-1D wave equations in the Radon domain, due to its intertwining property.\
-:footcite:`Nat01` As a result, one can solve the 1D wave equations in the Radon
+1D wave equations in the Radon domain, due to its intertwining property.
+[#natterer01]_ As a result, one can solve the 1D wave equations in the Radon
 domain then transform back into the physical variables to obtain the solution.
 Note that this solution is essentially identical to the Lax-Philips translation
-representation.\ :footcite:`LP64`
+representation. [#lax67]_
 
 For this solution, we will need to invert the Radon transform: we will again be
 using SciPy's :func:`scipy.sparse.linalg.cg` routine as illustrated in the
@@ -141,5 +141,10 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    fig.show()
 
 
-.. footbibliography::
-
+.. [#natterer01] Frank Natterer, *The Mathematics of Computerized
+                 Tomography*, SIAM 2001. `doi:10.1137/1.9780898719284
+                 <https://doi.org/10.1137/1.9780898719284>`_.
+.. [#lax67] Peter D. Lax, and Ralph S. Phillips, *Scattering Theory*,
+            Bulletin of the American Mathematical Society 1964.
+            `doi:10.1090/S0002-9904-1964-11051-X
+            <https://doi.org/10.1090/S0002-9904-1964-11051-X>`_.

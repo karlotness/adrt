@@ -153,8 +153,8 @@ def adrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     transform and *approximates* the sums along lines with carefully
     chosen angles. Each quadrant slices along a range of :math:`\pi/4`
     radians. For a detailed description of the algorithm see
-    :ref:`adrt-description` and refer to the source papers [press06]_,
-    [brady98]_.
+    :ref:`adrt-description` and refer to the source papers [#brady98]_
+    [#press06]_.
     """
     return _adrt_cdefs.adrt(_normalize_array(a))
 
@@ -240,7 +240,7 @@ def iadrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     Notes
     -----
     For details of the algorithm see :ref:`iadrt-description` or the
-    source paper [rim20]_.
+    source paper [#rim20]_.
     """
     return _adrt_cdefs.iadrt(_normalize_array(a))
 
@@ -273,7 +273,7 @@ def bdrt(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     Notes
     -----
     For more details on the backprojection implemented here see the
-    source paper [press06]_.
+    source paper [#press06]_.
 
     Examples
     --------
