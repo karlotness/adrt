@@ -33,14 +33,14 @@ multiple of the identity and name the new operator ``ADRTRidgeOperator`` below.
 Using this operator with the CG algorithm yields the solution to the ridge
 regression problem given by :math:`(A^{T}A + \lambda I)x = A^{T}b` where
 :math:`A` is the matrix representation of :func:`adrt.adrt`, :math:`I` is the
-identity matrix, and :math:`\lambda \ge 0` is the ridge parameter. 
+identity matrix, and :math:`\lambda \ge 0` is the ridge parameter.
 
 Forward Data
 -------------
 
 For this demonstration, we will make use of synthetic forward measurement data
 for the CT problem. We will attempt to recover Shepp-Logan phantom from its
-Radon transform. 
+Radon transform.
 
 .. plot::
    :context: close-figs
@@ -66,7 +66,7 @@ The sampled sinogram is plotted below. Although this sinogram appears similar
 to that in :ref:`sinogram computation section <adrt shepplogan page>` the two
 are different: The grid in the :math:`(\theta, t)` the coordinates used is
 different, and the approximations in discretizing the continuous transform are
-also different.  
+also different.
 
 .. plot::
    :context: close-figs
@@ -77,7 +77,7 @@ also different.
 
 Then we use :class:`scipy.interpolate.RectBivariateSpline` to
 interpolate the sampled forward data at the ADRT coordinates, forming
-the ADRT data. 
+the ADRT data.
 
 .. plot::
    :context: close-figs
