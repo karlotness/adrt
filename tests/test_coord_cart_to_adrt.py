@@ -33,6 +33,7 @@
 
 import pytest
 import numpy as np
+import itertools
 import adrt
 
 
@@ -49,10 +50,13 @@ def test_return_value_order():
     assert factor is ret.factor
 
 
-def test_return_dtype():
+@pytest.mark.parametrize(
+    "theta_dtype, t_dtype", itertools.product([np.float32, np.float64], repeat=2)
+)
+def test_return_dtype(theta_dtype, t_dtype):
     ret = adrt.utils.coord_cart_to_adrt(
-        theta=np.array([-np.pi / 4, 0, np.pi / 4]),
-        t=np.array([-0.25, 0, 0.25]),
+        theta=np.array([-np.pi / 4, 0, np.pi / 4]).astype(theta_dtype),
+        t=np.array([-0.25, 0, 0.25]).astype(t_dtype),
         n=8,
     )
     assert ret.quadrant.dtype == np.dtype(np.uint8)
