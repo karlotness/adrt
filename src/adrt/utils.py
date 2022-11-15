@@ -333,7 +333,7 @@ def coord_cart_to_adrt(
         raise ValueError(f"invalid Radon domain size {n}, must a power of two")
     if theta.shape != t.shape:
         raise ValueError(
-            f"mismatched shapes for theta and t, {theta.shape} vs. {t.shape}"
+            f"mismatched shapes for theta and t {theta.shape} vs. {t.shape}"
         )
     # Move theta values into canonical range [-pi/2, pi/2]
     theta = np.where(
