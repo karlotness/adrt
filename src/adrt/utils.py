@@ -348,12 +348,9 @@ def coord_cart_to_adrt(
         - np.abs(theta + np.pi / 4)
         + np.pi / 2
     )
-    q = (
-        3
-        - np.sign(theta).astype(np.uint8)
-        - np.sign(theta - np.pi / 4).astype(np.uint8)
-        - np.sign(theta + np.pi / 4).astype(np.uint8)
-    ) // 2
+    q = (np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2).astype(
+        np.uint8
+    )
 
     sgn = np.sign(theta) - np.sign(theta - np.pi / 4) - np.sign(theta + np.pi / 4)
     t0 = sgn * t

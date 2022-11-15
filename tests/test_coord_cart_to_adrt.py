@@ -61,6 +61,20 @@ def test_return_dtype():
     assert ret.factor.dtype == np.dtype(np.float64)
 
 
+@pytest.mark.parametrize(
+    "theta, quadrant",
+    [
+        pytest.param(-3 * np.pi / 8, 0, id="-3pi/8"),
+        pytest.param(-1 * np.pi / 8, 1, id="-pi/8"),
+        pytest.param(np.pi / 8, 2, id="pi/8"),
+        pytest.param(3 * np.pi / 8, 3, id="3pi/8"),
+    ],
+)
+def test_quadrant_midpoints(theta, quadrant):
+    ret = adrt.utils.coord_cart_to_adrt(theta=np.array([theta]), t=np.zeros(1), n=8)
+    assert ret.quadrant.item() == quadrant
+
+
 def test_reject_invalid_size():
     theta = np.array([0.25 * np.pi])
     t = np.array([0.5])
