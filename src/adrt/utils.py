@@ -309,9 +309,9 @@ def coord_cart_to_adrt(
     Parameters
     ----------
     theta : numpy.ndarray
-        1D array containing theta coordinates to convert to ADRT indices
+        array containing theta coordinates to convert to ADRT indices
     t : numpy.ndarray
-        1D array containing s coordinates to convert to ADRT indices
+        array containing s coordinates to convert to ADRT indices
     n : int
         size n determining the dimensions of the ADRT domain (4, 2*n-1, n)
 
