@@ -92,6 +92,15 @@ def test_quadrant_midpoints_periodic(period):
     assert np.allclose(ret_base.factor, ret.factor)
 
 
+def test_refuses_mismatched_array_shapes():
+    with pytest.raises(ValueError):
+        _ = adrt.utils.coord_cart_to_adrt(
+            theta=np.array([-np.pi / 4, 0, np.pi / 4]),
+            t=np.array([-0.25, 0]),
+            n=8,
+        )
+
+
 def test_reject_invalid_size():
     theta = np.array([0.25 * np.pi])
     t = np.array([0.5])
