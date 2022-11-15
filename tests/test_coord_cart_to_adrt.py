@@ -79,6 +79,19 @@ def test_quadrant_midpoints(theta, quadrant):
     assert ret.quadrant.item() == quadrant
 
 
+@pytest.mark.parametrize("period", [-2, -1, 1, 2])
+def test_quadrant_midpoints_periodic(period):
+    theta = np.arange(-3, 4, 2) * np.pi / 8
+    t = np.linspace(-1 / 16, 1 / 16, 4)
+    n = 8
+    ret_base = adrt.utils.coord_cart_to_adrt(theta=theta, t=t, n=n)
+    ret = adrt.utils.coord_cart_to_adrt(theta=(theta + period * np.pi), t=t, n=n)
+    assert np.all(ret_base.quadrant == ret.quadrant)
+    assert np.all(ret_base.height == ret.height)
+    assert np.all(ret_base.slope == ret.slope)
+    assert np.allclose(ret_base.factor, ret.factor)
+
+
 def test_reject_invalid_size():
     theta = np.array([0.25 * np.pi])
     t = np.array([0.5])
