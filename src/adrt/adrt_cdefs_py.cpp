@@ -123,6 +123,7 @@ adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *
         return {};
     }
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
+    assert(numpy_shape);
     // Prepend trivial dimensions
     for(size_t i = 0; i < max_dim - ndim; ++i) {
         shape_arr[i] = 1;
@@ -198,6 +199,7 @@ adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, 
     if(!ok) {
         return {};
     }
+    assert(std::all_of(ret.cbegin(), ret.cend(), [](PyObject *obj){return obj != nullptr;}));
     return {ret};
 }
 
