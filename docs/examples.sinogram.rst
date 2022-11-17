@@ -3,7 +3,7 @@ Sinograms of an Image
 
 The discretized Radon transforms are often used to approximate sinograms of a
 known image. :py:mod:`adrt` provides utilities that map the ADRT output which is
-in the ADRT coordinates :math:`(h, s)` to a sinogram which is in the Cartesian
+in the ADRT coordinates :math:`(s, h)` to a sinogram which is in the Cartesian
 coordinates :math:`(\theta, t)`.
 
 We make use of this package as well as a few other fundamental
@@ -13,7 +13,7 @@ libraries. ::
    from matplotlib import pyplot as plt
    import adrt
 
-We will illustrate the computation of sinograms with a couple examples. The simple geometry relating the two coordinates :math:`(h, s)`  and :math:`(\theta, t)` is given in a :ref:`diagram below<adrt_to_cart diagram>`.
+We will illustrate the computation of sinograms with a couple examples. The simple geometry relating the two coordinates :math:`(s, h)`  and :math:`(\theta, t)` is given in a :ref:`diagram below<adrt_to_cart diagram>`.
 
 Gaussian humps
 --------------
@@ -129,11 +129,16 @@ These can be interpolated to a Cartesian grid with
 The coordinate transform
 ------------------------
 
-The coordinates :math:`(h, s)` and :math:`(\theta, t)` are related by a simple
-geometric relation, depicted in the following diagram. This is shown for
-quadrant 3, the transform for the other quadrants are derived by flipping and
-transposing the image.
+In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [-N + 1, N]` and :math:`(\theta, t) \in [-\pi / 2, \pi / 2] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
+The diagram shows the correspondence for quadrant 3, and the transform for the
+other quadrants are derived by flipping and transposing the image. In the
+Cartesian domain, the origin is taken to be the center of the image.
 
+To calculate the intercept :math:`h` for each digital line, we draw a line that
+passes through the cell centers of the left-most and right-most entry of the
+digital line, then use its intercept with the left boundary is the :math:`h`
+coordinate of that line. The :math:`arctan` of the slope yields the angle
+:math:`\theta`.
 
 .. plot::
    :context: reset
@@ -207,3 +212,69 @@ transposing the image.
    ax.set_xlabel('$x$')
    ax.set_ylabel('$y$')
    ax.grid(True)
+
+
+We will illustrate the coordinate transform for all quadrants. Let us color each
+entry in the four quadrants
+
+.. plot::
+   :context: close-figs
+   :align: center
+   :include-source: false
+
+   n = 2**2
+   out = adrt.utils.coord_adrt(n)
+   angles = np.broadcast_to(out.angle, out.offset.shape)
+   offsets = out.offset
+
+   m = 4*(2*n - 1)*n
+   z = np.arange(1, m+1) / m
+   z_adrtshape = z.reshape(4, (2*n - 1), n)
+   z_stitched = adrt.utils.stitch_adrt(z_adrtshape)
+
+   fig, axs = plt.subplots(ncols=4, sharey=True) 
+   axs[0].set_ylabel('h')
+   for i in range(4):
+      ax = axs[i]
+      ax.imshow(z_adrtshape[i, ...],
+                vmin=0.0,
+                vmax=1.0,
+                extent=(0, n-1, -n+1, n))
+      ax.set_title("Quadrant {:d}".format(i + 1))
+      ax.set_xlabel('s')
+
+
+In the stitched view, these would be assembled as follows.
+
+.. plot::
+   :context: close-figs
+   :align: center
+   :include-source: false
+
+   plt.imshow(np.ma.masked_array(z_stitched, z_stitched == 0.0))
+
+
+These entries would be mapped to the points on the Cartesian Radon domain with
+the same color.
+
+.. plot::
+   :context: close-figs
+   :align: center
+   :include-source: false
+
+   from matplotlib import cm
+   
+   cmap = cm.get_cmap()
+   for i in range(m):
+      plt.plot(angles.flatten()[i],
+               offsets.flatten()[i],
+               marker='.',
+               color=cmap(z[i]))
+
+   plt.yticks([-0.5*np.sqrt(2), 0, 0.5*np.sqrt(2)],
+              ["-$1/\sqrt{2}$", "0", "$1/\sqrt{2}$"])
+   plt.ylabel('$t$')
+
+   plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
+              ["-$\\frac{\pi}{2}$", "-$\\frac{\pi}{4}$", "0", "$\\frac{\pi}{4}$", "$\\frac{\pi}{2}$"])
+   plt.xlabel('$\\theta$')
