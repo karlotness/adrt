@@ -82,7 +82,7 @@ namespace adrt {
                     const float_index t = t_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), offset_fraction);
                     const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
-                    const int q = static_cast<int>(std::floor(adrt::_common::clamp(th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1)))) + 2;
+                    const int q = static_cast<int>(std::floor(adrt::_common::clamp(-th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1))) + 2) ;
                     const int sgn = q % 2 == 0 ? 1 : -1;
                     // Compute angle and offset for indexing
                     const float_index th_t = static_cast<float_index>(2) * std::abs(std::abs(std::fmod(th, adrt::_const::pi_2<float_index>()) / adrt::_const::pi_2<float_index>()) - static_cast<float_index>(0.5L));

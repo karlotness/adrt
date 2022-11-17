@@ -68,10 +68,10 @@ def test_return_dtype(theta_dtype, t_dtype):
 @pytest.mark.parametrize(
     "theta, quadrant",
     [
-        pytest.param(-3 * np.pi / 8, 3, id="-3pi/8"),
-        pytest.param(-1 * np.pi / 8, 2, id="-pi/8"),
-        pytest.param(np.pi / 8, 1, id="pi/8"),
-        pytest.param(3 * np.pi / 8, 0, id="3pi/8"),
+        pytest.param(-3 * np.pi / 8, 0, id="-3pi/8"),
+        pytest.param(-1 * np.pi / 8, 1, id="-pi/8"),
+        pytest.param(np.pi / 8, 2, id="pi/8"),
+        pytest.param(3 * np.pi / 8, 3, id="3pi/8"),
     ],
 )
 def test_quadrant_midpoints(theta, quadrant):
@@ -109,7 +109,7 @@ def test_reject_invalid_size():
         adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 
-size = 2**2
+size = 2 ** 2
 theta0 = np.array([0.25 * np.pi - 1e-8])
 theta1 = np.array([0.0 * np.pi + 1e-8])
 theta2 = np.array([0.25 * np.pi + 1e-8])
@@ -118,31 +118,31 @@ theta4 = np.array([-0.25 * np.pi + 1e-8])
 theta5 = np.array([0.0 * np.pi - 1e-8])
 theta6 = np.array([-0.5 * np.pi + 1e-8])
 theta7 = np.array([-0.25 * np.pi - 1e-8])
-t0 = np.array([(1 / size - 1) / np.sqrt(2)])
-t1 = np.array([(1 - 1 / size) / np.sqrt(2)])
-t2 = np.array([(1 - 1 / size) * 0.5])
-t3 = np.array([(1 / size - 1) * 0.5])
+t0 = np.array([(1 - 1 / size) / np.sqrt(2)])
+t1 = np.array([(1 / size - 1) / np.sqrt(2)])
+t2 = np.array([(1 / size - 1) * 0.5])
+t3 = np.array([(1 - 1 / size) * 0.5])
 
 
 @pytest.mark.parametrize(
     "test_input, expected",
     [
-        ((theta0, t0, size), (1, 2 * size - 2, size - 1)),
-        ((theta0, t1, size), (1, 0, size - 1)),
-        ((theta1, t2, size), (1, 0, 0)),
-        ((theta1, t3, size), (1, size - 1, 0)),
-        ((theta2, t0, size), (0, 0, size - 1)),
-        ((theta2, t1, size), (0, 2 * size - 2, size - 1)),
-        ((theta3, t2, size), (0, size - 1, 0)),
-        ((theta3, t3, size), (0, 0, 0)),
-        ((theta4, t3, size), (2, 1, size - 1)),
-        ((theta4, t1, size), (2, 2 * size - 2, size - 1)),
-        ((theta5, t1, size), (2, size, 0)),
-        ((theta5, t3, size), (2, 0, 0)),
-        ((theta7, t0, size), (3, 2 * size - 2, size - 1)),
-        ((theta7, t1, size), (3, 0, size - 1)),
-        ((theta6, t2, size), (3, 0, 0)),
-        ((theta6, t3, size), (3, size - 1, 0)),
+        ((theta0, t0, size), (2, 2 * size - 2, size - 1)),
+        ((theta0, t1, size), (2, 0, size - 1)),
+        ((theta1, t2, size), (2, 0, 0)),
+        ((theta1, t3, size), (2, size - 1, 0)),
+        ((theta2, t0, size), (3, 0, size - 1)),
+        ((theta2, t1, size), (3, 2 * size - 2, size - 1)),
+        ((theta3, t2, size), (3, size - 1, 0)),
+        ((theta3, t3, size), (3, 0, 0)),
+        ((theta4, t3, size), (1, 1, size - 1)),
+        ((theta4, t1, size), (1, 2 * size - 2, size - 1)),
+        ((theta5, t1, size), (1, size, 0)),
+        ((theta5, t3, size), (1, 0, 0)),
+        ((theta7, t0, size), (0, 2 * size - 2, size - 1)),
+        ((theta7, t1, size), (0, 0, size - 1)),
+        ((theta6, t2, size), (0, 0, 0)),
+        ((theta6, t3, size), (0, size - 1, 0)),
     ],
 )
 def test_corners(test_input, expected):
