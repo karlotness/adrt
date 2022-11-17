@@ -109,7 +109,7 @@ def test_reject_invalid_size():
         adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 
-size = 2 ** 2
+size = 2**2
 theta0 = np.array([0.25 * np.pi - 1e-8])
 theta1 = np.array([0.0 * np.pi + 1e-8])
 theta2 = np.array([0.25 * np.pi + 1e-8])
