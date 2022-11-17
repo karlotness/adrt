@@ -352,13 +352,13 @@ def coord_cart_to_adrt(
         np.uint8
     )
 
-    sgn = np.sign(theta) - np.sign(theta - np.pi / 4) - np.sign(theta + np.pi / 4)
-    t0 = sgn * (-t)
+    sgn = np.sign(theta - np.pi / 4) + np.sign(theta + np.pi / 4) - np.sign(theta)
+    t0 = sgn * t
 
     s = np.tan(th0) * (n - 1)
     si = np.round(s).astype(np.uint)
     side = si / (n - 1)
-    factor = np.sqrt(1.0 + side ** 2)
+    factor = np.sqrt(1.0 + side**2)
 
     h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
     h = h0 * n
