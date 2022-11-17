@@ -348,7 +348,7 @@ def coord_cart_to_adrt(
         - np.abs(theta + np.pi / 4)
         + np.pi / 2
     )
-    q = (np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2).astype(
+    q = (1 - np.floor(np.clip(theta / (np.pi / 4), -2, 2)).astype(np.int8)).astype(
         np.uint8
     )
 

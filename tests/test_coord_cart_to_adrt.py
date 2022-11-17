@@ -68,10 +68,10 @@ def test_return_dtype(theta_dtype, t_dtype):
 @pytest.mark.parametrize(
     "theta, quadrant",
     [
-        pytest.param(-3 * np.pi / 8, 0, id="-3pi/8"),
-        pytest.param(-1 * np.pi / 8, 1, id="-pi/8"),
-        pytest.param(np.pi / 8, 2, id="pi/8"),
-        pytest.param(3 * np.pi / 8, 3, id="3pi/8"),
+        pytest.param(-3 * np.pi / 8, 3, id="-3pi/8"),
+        pytest.param(-1 * np.pi / 8, 2, id="-pi/8"),
+        pytest.param(np.pi / 8, 1, id="pi/8"),
+        pytest.param(3 * np.pi / 8, 0, id="3pi/8"),
     ],
 )
 def test_quadrant_midpoints(theta, quadrant):
