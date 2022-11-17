@@ -95,8 +95,8 @@ def test_quadrant_midpoints_periodic(period):
 def test_refuses_mismatched_array_shapes():
     with pytest.raises(ValueError):
         _ = adrt.utils.coord_cart_to_adrt(
-            theta=np.array([-np.pi / 4, 0, np.pi / 4]),
-            t=np.array([-0.25, 0]),
+            theta=np.zeros(3),
+            t=np.zeros(2),
             n=8,
         )
 
