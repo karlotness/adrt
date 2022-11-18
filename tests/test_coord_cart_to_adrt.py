@@ -109,6 +109,37 @@ def test_reject_invalid_size():
         adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 
+def test_adrt_core_quadrants():
+    n = 8
+    adrt_coord = adrt.utils.coord_adrt(n)
+    indices = adrt.utils.coord_cart_to_adrt(
+        theta=np.broadcast_to(adrt_coord.angle, adrt_coord.offset.shape),
+        t=adrt_coord.offset,
+        n=n,
+    )
+    # Check quadrants
+    assert np.all(
+        indices.quadrant[:, :, 1:-1]
+        == np.expand_dims(np.array([0, 1, 2, 3]), axis=(-1, -2))
+    )
+    assert np.all(indices.quadrant[0, :, 0] == 0)
+    assert np.all(indices.quadrant[-1, :, 0] == 3)
+
+
+def test_coords_adrt_identity():
+    n = 8
+    adrt_in = np.arange(n**2).reshape((n, n)).astype(np.float32)
+    adrt_out = adrt.adrt(adrt_in)
+    adrt_coord = adrt.utils.coord_adrt(n)
+    indices = adrt.utils.coord_cart_to_adrt(
+        theta=np.broadcast_to(adrt_coord.angle, adrt_coord.offset.shape),
+        t=adrt_coord.offset,
+        n=n,
+    )
+    adrt_indexed = adrt_out[indices.quadrant, indices.height, indices.slope]
+    assert np.allclose(adrt_indexed, adrt_out)
+
+
 size = 2**2
 theta0 = np.array([0.25 * np.pi - 1e-8])
 theta1 = np.array([0.0 * np.pi + 1e-8])
