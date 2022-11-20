@@ -129,7 +129,7 @@ These can be interpolated to a Cartesian grid with
 The coordinate transform
 ------------------------
 
-In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [-N + 1, N]` and :math:`(\theta, t) \in [-\pi / 2, \pi / 2] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
+In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [0, 2N]` and :math:`(\theta, t) \in [-\pi / 2, \pi / 2] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
 The diagram shows the correspondence for quadrant 3, and the transform for the
 other quadrants are derived by flipping and transposing the image. In the
 Cartesian domain, the origin is taken to be the center of the image.
@@ -198,8 +198,8 @@ coordinate of that line. The :math:`arctan` of the slope yields the angle
                color='b')
 
    # show h-coordinates for bottom and top edges
-   ax.annotate('$h=0$', xy=(-0.5 - 2.5*xoffset, -0.5 - yoffset), alpha=0.5)
-   ax.annotate('$h=N$', xy=(-0.5 - 2.5*xoffset,  0.5 - yoffset), alpha=0.5)
+   ax.annotate('$h=0$', xy=(-0.5 - 2.5*xoffset,  0.5 - yoffset), alpha=0.5)
+   ax.annotate('$h=N$', xy=(-0.5 - 2.5*xoffset, -0.5 - yoffset), alpha=0.5)
 
    ax.hlines(-0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
    ax.hlines( 0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
@@ -239,7 +239,7 @@ entry in the four quadrants
       ax.imshow(z_adrtshape[i, ...],
                 vmin=0.0,
                 vmax=1.0,
-                extent=(0, n-1, -n+1, n))
+                extent=(0, n-1, 2*n-1.5, -0.5))
       ax.set_title("Quadrant {:d}".format(i + 1))
       ax.set_xlabel('s')
 

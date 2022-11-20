@@ -303,7 +303,7 @@ def coord_cart_to_adrt(
 ) -> ADRTIndex:
     r"""Find nearest ADRT entry indices for given point in Radon domain.
 
-    Given a point (theta, s) in Radon domain, find the entry in the ADRT domain
+    Given a point (theta, t) in Radon domain, find the entry in the ADRT domain
     of dimensions (4, 2*n-1, n).
 
     Parameters
@@ -311,7 +311,7 @@ def coord_cart_to_adrt(
     theta : numpy.ndarray
         array containing theta coordinates to convert to ADRT indices
     t : numpy.ndarray
-        array containing s coordinates to convert to ADRT indices
+        array containing t coordinates to convert to ADRT indices
     n : int
         size n determining the dimensions of the ADRT domain (4, 2*n-1, n)
 
@@ -335,6 +335,7 @@ def coord_cart_to_adrt(
         raise ValueError(
             f"mismatched shapes for theta and t {theta.shape} vs. {t.shape}"
         )
+
     # Move theta values into canonical range [-pi/2, pi/2]
     theta = np.where(
         np.abs(theta) <= np.pi / 2,
@@ -351,8 +352,7 @@ def coord_cart_to_adrt(
     q = (np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2).astype(
         np.uint8
     )
-
-    sgn = np.sign(theta - np.pi / 4) + np.sign(theta + np.pi / 4) - np.sign(theta)
+    sgn = 1 - 2 * (q % 2).astype(int)
     t0 = sgn * t
 
     s = np.tan(th0) * (n - 1)
@@ -360,8 +360,8 @@ def coord_cart_to_adrt(
     side = si / (n - 1)
     factor = np.sqrt(1.0 + side**2)
 
-    h0 = 0.5 * (1.0 + np.tan(th0)) - t0 / np.cos(th0)
+    h0 = 0.5 * (1.0 + np.tan(th0)) - t0 * factor
     h = h0 * n
-    hi = np.floor(h).astype(int)
+    hi = np.floor(h - 0.1).astype(int)
 
     return ADRTIndex(q, hi, si, factor)
