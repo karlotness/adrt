@@ -360,7 +360,7 @@ def coord_cart_to_adrt(
     side = si / (n - 1)
     factor = np.sqrt(1.0 + side**2)
 
-    h0 = 0.5 * (1.0 + np.tan(th0)) + t0 * factor
+    h0 = 0.5 * (1.0 + np.tan(th0)) + t0 / np.cos(th0)
     h = h0 * n
     hi = np.floor(h - 0.1).astype(int)
 
