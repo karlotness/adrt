@@ -352,7 +352,7 @@ def coord_cart_to_adrt(
     q = (np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2).astype(
         np.uint8
     )
-    sgn = 1 - 2 * (q % 2).astype(int)
+    sgn = 2 * (q % 2).astype(int) - 1
     t0 = sgn * t
 
     s = np.tan(th0) * (n - 1)
@@ -360,7 +360,7 @@ def coord_cart_to_adrt(
     side = si / (n - 1)
     factor = np.sqrt(1.0 + side**2)
 
-    h0 = 0.5 * (1.0 + np.tan(th0)) - t0 * factor
+    h0 = 0.5 * (1.0 + np.tan(th0)) + t0 * factor
     h = h0 * n
     hi = np.floor(h - 0.1).astype(int)
 
