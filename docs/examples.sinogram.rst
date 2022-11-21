@@ -129,7 +129,7 @@ These can be interpolated to a Cartesian grid with
 The coordinate transform
 ------------------------
 
-In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [0, 2N]` and :math:`(\theta, t) \in [-\pi / 2, \pi / 2] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
+In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [0, 2N]` and :math:`(\theta, t) \in [-90, 90] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
 The diagram shows the correspondence for quadrant 3, and the transform for the
 other quadrants are derived by flipping and transposing the image. In the
 Cartesian domain, the origin is taken to be the center of the image.
@@ -187,13 +187,13 @@ coordinate of that line. The :math:`arctan` of the slope yields the angle
    ax.vlines(0.5, y0, y1, 'k', linestyles='--')
 
    # display s calculation
-   ax.annotate('$s = \\arctan(\\theta)$',
+   ax.annotate('$\\frac{s}{N-1} = \\arctan(\\theta)$',
                xy=(0.5 + xoffset, 0.5*(y0 + y1)),
                color='b')
    ax.vlines(0.5 + 0.5*xoffset, y0, y1, 'b')
 
    ax.annotate('$\\theta$', xy=(-0.5 + 1.5*xoffset, y0 + 0.02))
-   ax.annotate('$\\frac{h}{N} = \\frac{t}{\cos(\\theta)} - \\frac{\\tan(\\theta)}{2}$',
+   ax.annotate('$\\frac{h}{N} = \\frac{t}{\cos(\\theta)} + \\frac{1 + \\tan(\\theta)}{2}$',
                xy=(-0.5 - 8*xoffset, y0),
                color='b')
 
@@ -276,5 +276,5 @@ the same color.
    plt.ylabel('$t$')
 
    plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
-              ["-$\\frac{\pi}{2}$", "-$\\frac{\pi}{4}$", "0", "$\\frac{\pi}{4}$", "$\\frac{\pi}{2}$"])
+              ["-90", "-45", "0", "45", "90"])
    plt.xlabel('$\\theta$')
