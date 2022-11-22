@@ -129,16 +129,16 @@ These can be interpolated to a Cartesian grid with
 The coordinate transform
 ------------------------
 
-In each individual quadrant, the coordinates :math:`(s, h) \in [0, N - 1] \times [0, 2N]` and :math:`(\theta, t) \in [-90, 90] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are related by a simple geometric relation, depicted in the following diagram. 
+The ADRT slope-height coordinates :math:`(s, h) \in [0, N - 1] \times [0, 2N]`
+and Cartesian angle-offset cooridnates
+:math:`(\theta, t) \in [-90, 90] \times [-1/\sqrt{2}, 1/\sqrt{2}]` are
+related by a simple geometric relation, depicted in the following diagram. 
 The diagram shows the correspondence for quadrant 3, and the transform for the
 other quadrants are derived by flipping and transposing the image. In the
-Cartesian domain, the origin is taken to be the center of the image.
+Cartesian domain, the origin is taken to be the center of the image and the
+image is scaled to be unit square, so the image is viewed to be supported on 
+:math:`[-1/2, 1/2]^2`.
 
-To calculate the intercept :math:`h` for each digital line, we draw a line that
-passes through the cell centers of the left-most and right-most entry of the
-digital line, then use its intercept with the left boundary is the :math:`h`
-coordinate of that line. The :math:`arctan` of the slope yields the angle
-:math:`\theta`.
 
 .. plot::
    :context: reset
@@ -214,8 +214,21 @@ coordinate of that line. The :math:`arctan` of the slope yields the angle
    ax.grid(True)
 
 
-We will illustrate the coordinate transform for all quadrants. Let us color each
-entry in the four quadrants
+To calculate the exact height (intercept) :math:`h` for each digital line, we
+draw a line that passes through the cell centers of the left-most and right-most
+entry of the digital line. We then use its point of intersection with the left
+boundary of the image as the :math:`h` coordinate of that line. The
+slope of that line yields the angle :math:`\theta` upon taking the
+:math:`arctan`. Note that the integer :math:`\lceil h \rceil - 1` agrees with
+the discrete height index of the digital line.
+
+We remark here that the discrete height index is incremented in the direction
+that is opposite from that used in [#press06]_ and start from 0 at the top of
+the image. This choice was made to make the height indexing agree with the 2D
+array indexing adopted for this implementation.
+
+We next illustrate the coordinate transform for all quadrants. Let us color each
+entry in the four quadrants as follows.
 
 .. plot::
    :context: close-figs
@@ -278,3 +291,10 @@ the same color.
    plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
               ["-90", "-45", "0", "45", "90"])
    plt.xlabel('$\\theta$')
+
+
+.. [#press06] William Press, *Discrete Radon transform has an exact, fast
+               inverse and generalizes to operations other than sums along 
+               lines*, Proceedings of the National Academy of Sciences, 103.
+               `doi:10.1073/pnas.0609228103 
+               <https://doi.org/10.1073/pnas.0609228103>`_.

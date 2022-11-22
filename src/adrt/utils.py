@@ -301,10 +301,14 @@ def coord_cart_to_adrt(
     t: npt.NDArray[typing.Union[np.float32, np.float64]],
     n: typing.SupportsIndex,
 ) -> ADRTIndex:
-    r"""Find nearest ADRT entry indices for given point in Radon domain.
+    r"""Find nearest ADRT entry indices and scaling factor for given point in
+    Radon domain.
 
     Given a point (theta, t) in Radon domain, find the entry in the ADRT domain
-    of dimensions (4, 2*n-1, n).
+    of dimensions (4, 2*n-1, n). When the provided theta value is a multiple of
+    0.25*np.pi and so lies exactly on the boundary between quadrants, height and
+    slope indices for lower indexed the quadrant is provided under the ordering
+    -1 < 0 < 1 < 2.
 
     Parameters
     ----------
