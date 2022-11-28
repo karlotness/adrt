@@ -122,6 +122,18 @@ def test_adrt_core_quadrants():
         indices.quadrant[:, :, 1:-1]
         == np.expand_dims(np.array([0, 1, 2, 3]), axis=(-1, -2))
     )
+    assert np.all(
+        np.logical_or(
+            indices.quadrant[:2, :, -1] == 0,
+            indices.quadrant[:2, :, -1] == 1,
+        )
+    )
+    assert np.all(
+        np.logical_or(
+            indices.quadrant[-2:, :, -1] == 2,
+            indices.quadrant[-2:, :, -1] == 3,
+        )
+    )
     assert np.all(indices.quadrant[0, :, 0] == 0)
     assert np.all(indices.quadrant[-1, :, 0] == 3)
 
