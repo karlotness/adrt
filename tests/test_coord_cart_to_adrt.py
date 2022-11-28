@@ -137,11 +137,11 @@ def test_coords_adrt_identity():
         n=n,
     )
     adrt_indexed = adrt_out[
-        indices.quadrant[..., 1:],
-        indices.height[..., 1:],
-        indices.slope[..., 1:],
+        indices.quadrant,
+        indices.height,
+        indices.slope,
     ]
-    assert np.allclose(adrt_indexed, adrt_out[..., 1:])
+    assert np.allclose(adrt_indexed, adrt_out)
 
 
 size = 2**2
