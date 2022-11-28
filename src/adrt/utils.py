@@ -278,7 +278,7 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
     ns = np.linspace(0, 1, num=n, endpoint=True, dtype=np.float64)
     theta = np.arctan(ns)  # [0, pi/4]
     theta_offset = theta - (np.pi / 2)
-    h0 = ((np.add.outer(hi, (1 - 0.5 / n) * ns) / (1 + ns)) - 0.5) * (
+    h0 = ((np.add.outer(hi, ((2 * n - 1) / (2 * n)) * ns) / (1 + ns)) - 0.5) * (
         np.cos(theta) + np.sin(theta)
     )
     # Build output quadrants
