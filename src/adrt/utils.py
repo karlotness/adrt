@@ -339,33 +339,24 @@ def coord_cart_to_adrt(
         raise ValueError(
             f"mismatched shapes for theta and t {theta.shape} vs. {t.shape}"
         )
-
     # Move theta values into canonical range [-pi/2, pi/2]
     theta = np.where(
         np.abs(theta) <= np.pi / 2,
         theta,
         np.remainder(theta + np.pi / 2, np.pi) - np.pi / 2,
     )
-
-    th0 = (
-        np.abs(theta)
-        - np.abs(theta - np.pi / 4)
-        - np.abs(theta + np.pi / 4)
-        + np.pi / 2
-    )
-    q = (np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2).astype(
-        np.uint8
-    )
-    sgn = 2 * (q % 2).astype(int) - 1
-    t0 = sgn * t
-
-    s = np.tan(th0) * (n - 1)
-    si = np.round(s).astype(np.uint)
-    side = si / (n - 1)
-    factor = np.sqrt(1.0 + side**2)
-
-    h0 = 0.5 * (1.0 + np.tan(th0)) + t0 / np.cos(th0)
-    h = h0 * n
-    hi = np.floor(h - 0.1).astype(int)
-
-    return ADRTIndex(q, hi, si, factor)
+    # Compute quadrants 0, 1, 2, 3
+    q = np.floor(np.clip(theta / (np.pi / 4), -2, 1)).astype(np.int8) + 2
+    # Compute distances from nearest multiple of pi / 2
+    # Using the fact theta is in our canonical range
+    th0 = np.pi / 4 - np.abs(np.abs(theta) - np.pi / 4)
+    # Compute slope (range from [0, n - 1])
+    si = np.around(np.tan(th0) * (n - 1)).astype(np.uint64)
+    # Compute scaling factor
+    factor = np.sqrt(1 + (si / (n - 1)) ** 2)
+    # Compute height
+    sgn = 2 * (q % 2) - 1
+    h = (0.5 * (1 + np.tan(th0)) + (sgn * t) / np.cos(th0)) * n
+    hi = np.floor(h - 0.1).astype(np.int64)
+    # Pack return values
+    return ADRTIndex(q.astype(np.uint8), hi, si, factor)
