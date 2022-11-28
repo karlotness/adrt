@@ -126,6 +126,17 @@ def test_adrt_core_quadrants():
     assert np.all(indices.quadrant[-1, :, 0] == 3)
 
 
+def test_adrt_slope():
+    n = 8
+    adrt_coord = adrt.utils.coord_adrt(n)
+    indices = adrt.utils.coord_cart_to_adrt(
+        theta=np.broadcast_to(adrt_coord.angle, adrt_coord.offset.shape),
+        t=adrt_coord.offset,
+        n=n,
+    )
+    assert np.all(indices.slope == np.expand_dims(np.arange(n), (0, 1)))
+
+
 def test_coords_adrt_identity():
     n = 8
     adrt_in = np.arange(n**2).reshape((n, n)).astype(np.float32)
