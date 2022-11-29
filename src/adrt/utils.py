@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-r"""Utility routines for visualization further processing.
+r"""Utility routines for visualization or further processing.
 
 The ``adrt.utils`` module contains routines which are useful for
 visualization or other basic processing tasks. These routines help to
@@ -140,11 +140,6 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
 
     This function provides an inverse for :func:`stitch_adrt` and
     re-slices, flips, and rotates its output into separate quadrants.
-    It functions as an inverse regardless of the `remove_repeated`
-    argument that was specified when stitching so long as the ADRT
-    output that was stitched respected the symmetries of a real ADRT
-    output. In other cases, the removed columns may not have been
-    redundant.
 
     Parameters
     ----------
@@ -156,6 +151,14 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     numpy.ndarray
         The input data re-separated into ADRT quadrants with the
         *relative* shape of an ADRT output.
+
+    Notes
+    -----
+    This function applies an inverse regardless of the `remove_repeated`
+    argument that was specified when stitching so long as the ADRT
+    output that was stitched respected the symmetries of a real ADRT
+    output. In other cases, the removed columns may not have been
+    redundant.
     """
     n = (a.shape[-2] + 2) // 3
     if a.shape[-2] != 3 * n - 2 or (a.shape[-1] != 4 * n and a.shape[-1] != 4 * n - 4):
