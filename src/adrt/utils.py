@@ -265,8 +265,13 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
         3D array of dimensions (4, 2*n-1, n) containing Radon domain's
         (offset) coordinates of the ADRT domain for each of 4 quadrants.
     angle : numpy.ndarray of numpy.float64
-        3D array of dimensions (4, 1, n) containing Radon domain theta
-        (angle) coordinates of the ADRT domain for each of 4 quadrants.
+        3D array of dimensions (4, 1, n) containing Radon domain theta (angle)
+        coordinates of the ADRT domain for each of 4 quadrants in radians.
+
+    Notes
+    -----
+    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    details on how the Radon domain relates to the ADRT domain.
     """
     n = operator.index(n)
     if n < 2:
@@ -307,11 +312,12 @@ def coord_cart_to_adrt(
     r"""Find nearest ADRT entry indices and scaling factor for given point in
     Radon domain.
 
-    Given a point (theta, t) in Radon domain, find the entry in the ADRT domain
-    of dimensions (4, 2*n-1, n). When the provided theta value is a multiple of
-    0.25*np.pi and so lies exactly on the boundary between quadrants, height and
-    slope indices for lower indexed the quadrant is provided under the ordering
-    -1 < 0 < 1 < 2.
+    Given a point (theta, t) in Radon domain where theta is in radians and t in
+    normalized coordinates between :math:`-1/\sqrt(2)` and :math:`1/\sqrt(2)`,
+    find the entry in the ADRT domain of dimensions (4, 2*n-1, n).  When the
+    provided theta value is a multiple of 0.25*np.pi and so lies exactly on the
+    boundary between quadrants, height and slope indices for lower indexed the
+    quadrant is provided under the ordering -1 < 0 < 1 < 2.
 
     Parameters
     ----------
@@ -332,6 +338,11 @@ def coord_cart_to_adrt(
         the slope index in ADRT domain
     factor : numpy.ndarray of numpy.float64
         a transformation factor
+
+    Notes
+    -----
+    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    details on how the Radon domain relates to the ADRT domain.
     """
     n = operator.index(n)
     if n < 2:

@@ -329,17 +329,14 @@ def bdrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F
 def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     r"""Interpolate an ADRT output into a regular Cartesian grid.
 
-    The angles and offsets used in an ADRT output are
-    irregularly-spaced to enable reuse of intermediate calculations.
-    This routine provides a basic interpolation operation which
-    resamples these angles into an even-spacing.
+    The angles and offsets used in an ADRT output are irregularly-spaced to
+    enable reuse of intermediate calculations.  This routine provides a basic
+    interpolation operation which resamples these angles into an even-spacing.
 
-    The ADRT result is interpolated into a uniform Cartesian grid in
-    the Radon domain :math:`(\theta, t)`. Where :math:`\theta` is the
-    normal direction of the line, and :math:`t` is the distance of the
-    line to the origin. See the :ref:`coordinate transform
-    illustration <adrt_to_cart diagram>` for more details.
-    Upon coordinate transform, a nearest neighbor interpolation is performed.
+    The ADRT result is interpolated into a uniform Cartesian grid in the Radon
+    domain :math:`(\theta, t)`. Where :math:`\theta` is the normal direction of
+    the line, and :math:`t` is the distance of the line to the origin. Upon a
+    coordinate transformation, a nearest neighbor interpolation is performed.
 
     For an ADRT output of size ``N``, the interpolated array has shape
     ``(N, 4*N)`` with an optional batch dimension preserved.
@@ -353,6 +350,12 @@ def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     -------
     numpy.ndarray of float
         Interpolated Cartesian grid data.
+
+    Notes
+    -----
+
+    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    details on the coordinate transform.
     """
     return _adrt_cdefs.interp_to_cart(_normalize_array(a))
 

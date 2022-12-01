@@ -105,19 +105,21 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
 
    fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 5))
 
-   cart_extent = 0.5*np.array([-np.sqrt(2), np.sqrt(2), -np.pi, np.pi])
+   cart_extent = 0.5 * np.array([-np.pi, np.pi, -np.sqrt(2), np.sqrt(2)])
 
    ax = axs[0, 1]
    im = ax.imshow(adrt.utils.interp_to_cart(init_adrt), aspect='auto', extent=cart_extent)
    plt.colorbar(im, ax=ax)
+   ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
+                 ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
    ax.set_xlabel('$\\theta$')
    ax.set_ylabel('$t$')
 
    ax = axs[1, 1]
    im = ax.imshow(adrt.utils.interp_to_cart(sol_adrt), aspect='auto', extent=cart_extent)
    plt.colorbar(im, ax=ax)
-   ax.set_xlabel('$x$')
-   ax.set_ylabel('$y$')
+   ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
+                 ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
    ax.set_xlabel('$\\theta$')
    ax.set_ylabel('$t$')
 

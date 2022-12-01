@@ -17,6 +17,7 @@ package. For help with that see the :doc:`installation instructions
    :caption: Contents
 
    examples.sinogram
+   examples.coordinate
    examples.cginverse
    examples.tomography
    examples.wave
