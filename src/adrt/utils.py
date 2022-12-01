@@ -360,6 +360,6 @@ def coord_cart_to_adrt(
     # Compute height
     sgn = 2 * (q % 2) - 1
     h = (0.5 * (1 + np.tan(th0)) + (sgn * t) / np.cos(th0)) * n
-    hi = np.floor(h - 0.1).astype(np.int64)
+    hi = (np.round(2 * h).astype(np.int64) - 1) // 2
     # Pack return values
     return ADRTIndex(q.astype(np.uint8), hi, si, factor)
