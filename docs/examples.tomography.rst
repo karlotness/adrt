@@ -62,11 +62,11 @@ coordinates using the routine provided in :func:`skimage.transform.radon`.
    theta = 90.0 + np.rad2deg(th_array1.squeeze())
    sinogram = radon(phantom, theta=theta)
 
-The sampled sinogram is plotted below. Although this sinogram appears similar
-to that in :ref:`sinogram computation section <adrt shepplogan page>` the two
-are different: The grid in the :math:`(\theta, t)` the coordinates used is
-different, and the approximations in discretizing the continuous transform are
-also different.
+The sampled sinogram is plotted below. Although this sinogram appears similar to
+that in :ref:`sinogram computation section <adrt shepplogan page>` there are
+differences: The grid in the :math:`(\theta, t)` the coordinates used is
+different, and the approximation used in discretizing the continuous transform
+is also different.
 
 .. plot::
    :context: close-figs
@@ -77,7 +77,7 @@ also different.
 
 Then we use :class:`scipy.interpolate.RectBivariateSpline` to
 interpolate the sampled forward data at the ADRT coordinates, forming
-the ADRT data.
+the ADRT data. We plot the interpolate data below.
 
 .. plot::
    :context: close-figs
@@ -89,6 +89,10 @@ the ADRT data.
    spline = interpolate.RectBivariateSpline(t_array, th_array1, sinogram)
    s_array, th_array = adrt.utils.coord_adrt(n)
    adrt_data = spline(s_array, th_array, grid=False)
+
+   adrt_stitched = adrt.utils.stitch_adrt(adrt_data)
+   plt.imshow(adrt_stitched)
+   plt.colorbar()
 
 
 Inversion result
