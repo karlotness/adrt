@@ -148,7 +148,7 @@ jobs:
         CIBW_ARCHS_LINUX: 'auto64'
         CIBW_ENVIRONMENT_LINUX: >-
           CPPFLAGS='-D_FORTIFY_SOURCE=2 -DNDEBUG'
-          CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=4 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness'
+          CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fno-semantic-interposition -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused-result -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=4 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness'
           LDFLAGS='-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         # Windows configuration
         CIBW_ARCHS_WINDOWS: 'auto'
