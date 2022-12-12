@@ -150,7 +150,7 @@ The documentation is generated using Sphinx. All documentation source
 code is in the ``docs/`` directory and HTML pages can be generated
 using tox::
 
-     $ tox -e docs
+     $ tox run -e docs
 
 After which the main page will be at ``docs/_build/html/index.html``.
 If you have made documentation changes, look over the generated pages

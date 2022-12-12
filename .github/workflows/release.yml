@@ -32,14 +32,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade tox
     - name: Check version strings
-      run: python -m tox -e checkver -- --tag_ref '${{ github.ref }}' --not_dev
+      run: python -m tox run -e checkver -- --tag_ref '${{ github.ref }}' --not_dev
     - name: Check types
-      run: python -m tox -e type
+      run: python -m tox run -e type
       env:
         CPPFLAGS: '-U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Run tox tests
-      run: python -m tox -e py
+      run: python -m tox run -e py
       env:
         CPPFLAGS: '-UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
         CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
