@@ -205,7 +205,6 @@ t_3 = np.array([(1 - 1 / size) / np.sqrt(2)])
     ],
 )
 def test_corners(test_input, expected):
-
     theta = test_input[0]
     t = test_input[1]
     n = test_input[2]

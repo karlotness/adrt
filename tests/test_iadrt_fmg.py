@@ -90,7 +90,7 @@ def test_rejects_batch_dimension():
 def test_stops_quickly_on_edge_case(counting_iadrt_fmg_step, val):
     size = 8
     inarr = np.full((4, 2 * size - 1, size), val, dtype=np.float32)
-    with (np.errstate(invalid="ignore") if np.isinf(val) else contextlib.nullcontext()):
+    with np.errstate(invalid="ignore") if np.isinf(val) else contextlib.nullcontext():
         inv = adrt.iadrt_fmg(inarr, max_iters=50)
     count = counting_iadrt_fmg_step()
     assert count <= 2
