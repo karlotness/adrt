@@ -67,7 +67,7 @@ int num_iters_fallback(size_t shape) {
     assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
-    while(shape != 0) {
+    while(shape != 0u) {
         ++r;
         shape >>= 1;
     }
