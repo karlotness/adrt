@@ -2,6 +2,8 @@
 *~
 .dir-locals-2.el
 .vscode/
+compile_flags.txt
+compile_commands.json
 
 # Python scratch files
 __pycache__/
@@ -26,6 +28,7 @@ dist/
 .tox/
 .pytest_cache/
 .mypy_cache/
+.cache/
 
 # Sphinx docs
 docs/_build/
