@@ -143,7 +143,7 @@ def iadrt_fmg(
         2,
     )
     next(i2, None)
-    for (_inv1, res1), (_inv2, res2) in zip(i1, i2):
+    for (_inv1, res1), (_, res2) in zip(i1, i2):
         if not res2 < res1:
             # Residual failed to decrease, stop early
             break

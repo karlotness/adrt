@@ -287,7 +287,7 @@ def iadrt_fmg_step(a: npt.NDArray[_F], /) -> npt.NDArray[_F]:
     >>> est_inv += adrt.core.iadrt_fmg_step(err)
     """
     arr_stack = []
-    for _i in range(num_iters(a.shape[-1])):
+    for _ in range(num_iters(a.shape[-1])):
         arr_stack.append(a)
         a = _press_fmg_restriction(a)
     ret = a[..., 0, :, :]
