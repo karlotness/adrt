@@ -1,5 +1,5 @@
 ---
-title: 'adrt: A Python package for the approximate discrete Radon transform'
+title: 'adrt: approximate discrete Radon transform for Python'
 tags:
   - Python
   - C++
