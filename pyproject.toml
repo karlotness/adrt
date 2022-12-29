@@ -19,7 +19,7 @@ dependencies = [
   "numpy>=1.21,<2"
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: BSD License",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
