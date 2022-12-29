@@ -35,6 +35,9 @@ import argparse
 import re
 import ast
 import sys
+import itertools
+import importlib.metadata
+import platform
 from packaging.requirements import Requirement
 from packaging.version import Version, InvalidVersion
 from packaging.utils import canonicalize_name, canonicalize_version
@@ -172,6 +175,54 @@ def find_macro_numpy_api(py_cpp):
         raise ValueError(f"Invalid NumPy API macro: {min_numpy}")
 
 
+def find_min_supported_numpy(pyproject_toml):
+    # Known values for markers in oldest-supported-numpy
+    known_implementations = {
+        "CPython",
+        "PyPy",
+        "IronPython",
+        "Jython",
+        platform.python_implementation(),
+    }
+    known_systems = {"Linux", "Windows", "Darwin", "AIX", "OS400", platform.system()}
+    known_machines = {
+        "x86",
+        "x86_64",
+        "aarch64",
+        "s390x",
+        "arm64",
+        "loongarch64",
+        platform.machine(),
+    }
+    # Load minimum Python version and requirements from oldest-supported-numpy
+    python_version = ".".join(find_meta_min_python(pyproject_toml).split(".")[:2])
+    if python_version.count(".") != 1:
+        raise ValueError(
+            f"Version in requires-python had only major version '{python_version}'"
+        )
+    package_reqs = importlib.metadata.requires("oldest-supported-numpy")
+    if package_reqs is None:
+        raise ValueError("No declared dependencies from oldest-supported-numpy")
+    # Filter to requirements for minimum Python version
+    numpy_pins = []
+    for req in map(Requirement, package_reqs):
+        if req.marker is None or any(
+            req.marker.evaluate(
+                {
+                    "python_version": python_version,
+                    "platform_python_implementation": plat_py_impl,
+                    "platform_system": plat_sys,
+                    "platform_machine": plat_mach,
+                }
+            )
+            for plat_py_impl, plat_sys, plat_mach in itertools.product(
+                known_implementations, known_systems, known_machines
+            )
+        ):
+            numpy_pins.append(str(req))
+    return ".".join(str(find_min_version("numpy", numpy_pins)).split(".")[:2])
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     failure = False
@@ -213,11 +264,16 @@ if __name__ == "__main__":
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
+    build_min_numpy = find_min_supported_numpy("pyproject.toml")
     macro_min_numpy = find_macro_numpy_api("src/adrt/adrt_cdefs_py.cpp")
     print(f"Package min NumPy: {package_min_numpy}")
+    print(f"Build min NumPy: {build_min_numpy}")
     print(f"Macro min NumPy: {macro_min_numpy}")
     if Version(package_min_numpy) < Version(macro_min_numpy):
         print("NumPy version mismatch")
+        failure = True
+    if macro_min_numpy != build_min_numpy:
+        print("NumPy C API version mismatch")
         failure = True
 
     # Make sure versions match
