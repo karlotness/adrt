@@ -66,11 +66,13 @@ Fourier transform (NUFFT) [@GreengardLee2004; @BMK2019]. However, the ADRT has
 unique properties that distinguishes it from other discretizations, such as its
 localization property and range characterization [@LRR2023].
 
-# Acknowledgements
+# Acknowledgments
 
-This work was partially supported by by the Air Force Center of Excellence on
-Multi-Fidelity Modeling of Rocket Combustor Dynamics under Award Number
-FA9550-17-1-0195 and AFOSR MURI on multi-information sources of multi-physics
-systems under Award Number FA9550-15-1-0038.
+This work was partially supported by the Department of Defense through the
+National Defense Science & Engineering Graduate (NDSEG) Fellowship program, by
+the Air Force Center of Excellence on Multi-Fidelity Modeling of Rocket
+Combustor Dynamics under Award Number FA9550-17-1-0195, and by AFOSR MURI on
+multi-information sources of multi-physics systems under Award Number
+FA9550-15-1-0038.
 
 # References
