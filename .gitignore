@@ -29,6 +29,7 @@ dist/
 .pytest_cache/
 .mypy_cache/
 .cache/
+auto/
 
 # Sphinx docs
 docs/_build/
