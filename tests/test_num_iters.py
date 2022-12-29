@@ -32,13 +32,13 @@
 
 
 import math
-import ctypes
+import struct
 import pytest
 import numpy as np
 import adrt
 
 
-SIZE_T_BITS = ctypes.sizeof(ctypes.c_size_t) * 8
+SIZE_T_BITS = struct.calcsize("N") * 8
 SIZE_T_MAX = (2**SIZE_T_BITS) - 1
 
 
