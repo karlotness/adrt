@@ -19,7 +19,7 @@ affiliations:
  - name: New York University, USA
    index: 1
  - name: Washington University in St. Louis, USA
-   index: 1
+   index: 2
 date: 12 November 2022
 bibliography: paper.bib
 ---
