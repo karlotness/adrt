@@ -4,9 +4,29 @@
 [![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][tests]
 
+Fast approximate discrete Radon transform for
+[NumPy](https://numpy.org/) arrays.
+
+- **Documentation:** https://adrt.readthedocs.io/en/latest/
+- **Source Code:** https://github.com/karlotness/adrt
+- **Bug Reports:** https://github.com/karlotness/adrt/issues
+
 This library provides an implementation of an approximate discrete
-Radon transform (ADRT) and its inverse, as a Python module operating
-on NumPy arrays.
+Radon transform (ADRT) and related routines as a Python module
+operating on NumPy arrays. Implemented routines include: the forward
+ADRT, a back-projection operation, and several inverse transforms. The
+package [documentation][docs] contains usage examples, and sample
+applications.
+
+## Installation
+
+Install from [PyPI][pypi] using pip:
+``` console
+$ python -m pip install adrt
+```
+
+For further details on installation or building from source, consult
+the [documentation][docs].
 
 ## References
 
