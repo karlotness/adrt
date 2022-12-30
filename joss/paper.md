@@ -28,9 +28,9 @@ bibliography: paper.bib
 
 The Radon transform is a fundamental integral transform that arises in many
 different fields including medical/seismic tomography, signal/image processing,
-and the analysis of partial differential equations. The forward transform
-computes integrals over lines of an input image at various angles and offsets.
-This package implements a discretization of this transform called the
+and the analysis of partial differential equations [@Natterer2001]. The forward
+transform computes integrals over lines of an input image at various angles and
+offsets.  This package implements a discretization of this transform called the
 approximate discrete Radon transform (ADRT) which computes integrals over pixel
 line segments allowing for a faster evaluation over digital images [@Brady1998;
 @Gotz96fdrt]. We provide an implementation of the ADRT and related transforms
@@ -58,7 +58,7 @@ approximate the inverse Radon transform [@Press2006; @Rim2020]. Our
 documentation includes examples of the application of these routines to sample
 problems in tomography and PDEs, as well as recipes for implementing other
 transforms with our core routines, including an iterative inverse using
-conjugate gradient iteration.
+the conjugate gradient iteration.
 
 These routines also support research into the ADRT itself. While some private
 implementations exist [@radonopencl], to the best of our knowledge this is the
@@ -73,11 +73,11 @@ Python.
 
 A variety of other discretizations and approximations of the Radon transform
 exist such as: a linear interpolation and filtered back-projection in
-@scikit-image; the discrete Radon transform [@Beylkin87]; a fast transform based
-on the pseudo-polar Fourier transform [@ACDISS2008]; and the non-uniform fast
-Fourier transform (NUFFT) [@GreengardLee2004; @BMK2019]. However, the ADRT has
-unique properties that distinguish it from other discretizations, such as its
-localization property and range characterization [@LRR2023].
+@scikit-image; the discrete Radon transform [@Beylkin1987]; a fast transform
+based on the pseudo-polar Fourier transform [@ACDISS2008]; and the non-uniform
+fast Fourier transform (NUFFT) [@GreengardLee2004; @BMK2019]. However, the ADRT
+has unique properties that distinguish it from other discretizations, such as
+its localization property and range characterization [@LRR2023].
 
 # Acknowledgments
 
