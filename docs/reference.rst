@@ -12,7 +12,7 @@ with :term:`numpy:dtype` either :obj:`numpy.float32` or
 :obj:`numpy.float64` which are referred to as ":class:`numpy.ndarray`
 of :class:`float`".
 
-Our main routines often have requirements for :term:`shapes
+Our main routines often have requirements for the :term:`shapes
 <numpy:shape>` of input arrays. Often, these functions also support an
 optional batch dimension which makes it possible to process multiple
 independent inputs at once without looping in Python.

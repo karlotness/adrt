@@ -47,11 +47,11 @@ efficient. If you only want the final result of the basic algorithms,
 you should use the functions from the main :mod:`adrt` module.
 
 However, if you want to observe or modify the progress of the basic
-algorithms these routines make this possible. If you want only to
+algorithms, these routines make this possible. If you want only to
 observe the individual steps of the iterative computations---but not
 modify them---then the iterator routines here may be useful.
 Otherwise, if you want to perform more advanced operations and
-intervene in and modify the progress of the computations the
+intervene in and modify the progress of the computations, the
 single-step routines make that possible.
 """
 
@@ -95,13 +95,12 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     r"""Initialize an array for use with :func:`adrt_step`.
 
     This function processes square arrays with side lengths a power of
-    two. These arrays may also optionally have an optional batch
-    dimension. This function is intended to be used with
-    :func:`adrt.core.adrt_step`.
+    two. These arrays may also optionally have a batch dimension. This
+    function is intended to be used with :func:`adrt.core.adrt_step`.
 
-    After processing the result array has the shape of an ADRT output,
-    but only the top square of each quadrant is filled in. Other
-    values are zero.
+    After processing, the resulting array has the shape of an ADRT
+    output, but only the top square of each quadrant is filled in.
+    Other values are zero.
 
     The function :func:`adrt.utils.truncate` provides an inverse for
     this operation.
@@ -116,7 +115,7 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     Returns
     -------
     numpy.ndarray
-        The input array duplicated, stacked, flipped and rotated to
+        The input array duplicated, stacked, flipped, and rotated to
         make it suitable for further processing with the ADRT. The
         output array has the shape of an ADRT output.
     """
@@ -157,8 +156,8 @@ def adrt_iter(
     are approximated by joining sums along line segments of half
     length in a bottom-up fashion from segments of length two.
 
-    This function allows you observe individual steps of the ADRT. It
-    is a generator which will yield first the initialized array,
+    This function allows you to observe individual steps of the ADRT.
+    It is a generator which will yield first the initialized array,
     followed by the outputs of each iteration of the ADRT.
 
     Parameters
@@ -200,7 +199,7 @@ def bdrt_iter(
     r"""Yield individual steps of the bdrt.
 
     The implementation of :func:`adrt.bdrt` is internally an iterative
-    algorithm. This function allows you observe individual steps of
+    algorithm. This function allows you to observe individual steps of
     the bdrt. It is a generator which will yield the outputs of each
     iteration of the bdrt.
 
@@ -239,7 +238,7 @@ def iadrt_fmg_step(a: npt.NDArray[_F], /) -> npt.NDArray[_F]:
     This is an implementation of the "FMG" inverse described by Press
     [1]_. A call to this function on an output of the :func:`ADRT
     <adrt.adrt>` produces an estimated inverse which can be
-    iteratively refined by adding corrections remaining error.
+    iteratively refined by adding corrections for remaining errors.
 
     For easy access to iteratively-improved inverses produced by this
     method, consider :func:`iadrt_fmg_iter` which internally
@@ -322,7 +321,7 @@ def iadrt_fmg_iter(
     Parameters
     ----------
     a : numpy.ndarray of float
-        The array for which an inverse estimates will be computed.
+        The array for which inverse estimates will be computed.
         This array must have the shape of an ADRT output.
     copy : bool, optional
         If :pycode:`True` (default), the arrays produced by this
@@ -333,7 +332,7 @@ def iadrt_fmg_iter(
     Yields
     ------
     numpy.ndarray of float
-        An estimated inverses for `a` refined by repeated applications
+        Estimated inverses for `a` refined by repeated applications
         of :func:`iadrt_fmg_step`.
 
     Warning

@@ -21,7 +21,7 @@ Once you have these installed you have the tools you need to make
 changes to the code or documentation, test your changes, and submit
 them through a pull request.
 
-To build build :term:`wheels <pypug:Wheel>` or :term:`sdists
+To build :term:`wheels <pypug:Wheel>` or :term:`sdists
 <pypug:Source Distribution (or "sdist")>` to distribute to your users
 (either original or modified), consider using `build
 <https://pypa-build.readthedocs.io/en/stable/>`__::
@@ -92,9 +92,9 @@ functions have complete docstrings. Private functions should have
 names starting with an underscore and should *not* be listed in
 :pycode:`__all__`.
 
-For each new function, consider their call signature. Functions of a
+For each new function, consider its call signature. Functions of a
 single parameter, or for which parameters do not have descriptive
-names should use positional-only parameters. Some function
+names, should use positional-only parameters. Some function
 arguments---particularly boolean flags---should be keyword-only. See
 information on :term:`parameters <python:parameter>` from the Python
 documentation for more information on parameter types.
@@ -132,7 +132,7 @@ Put non-template and non-inline functions in cpp files, likely
 
 Include assertions with :cppcode:`assert` for conditions which are
 required for correctness (*not* error handling). In particular,
-assertions on function arguments to check precondition and document
+assertions on function arguments to check preconditions and document
 requirements. Use :cppcode:`static_assert` to check type-level
 requirements.
 
@@ -227,8 +227,8 @@ Submit a pull request
 ~~~~~~~~~~~~~~~~~~~~~
 
 Once your changes are ready to submit, push your working branch to
-your repository fork. Then create a pull request for branch with your
-edits.
+your repository fork. Then create a pull request for the branch with
+your edits.
 
 Automated tests will run on your pull request (including some that are
 not run locally). Check the compilation logs for the automated runs

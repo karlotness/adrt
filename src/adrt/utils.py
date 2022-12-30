@@ -36,7 +36,7 @@ r"""Utility routines for visualization or further processing.
 The ``adrt.utils`` module contains routines which are useful for
 visualization or other basic processing tasks. These routines help to
 transform outputs from the core algorithms into forms which may be
-easier to process elsewhere. For example, by aligning the quadrants of
+easier to process elsewhere, for example by aligning the quadrants of
 the ADRT into a single contiguous image, or interpolating the
 irregular ADRT angles into a regular spacing.
 """
@@ -81,8 +81,7 @@ def stitch_adrt(
 
     The output array will be four times as wide as any one original
     quadrant (with four fewer columns if `remove_repeated` is
-    :pycode:`True`), and will be have an additional ``N-1`` rows
-    added.
+    :pycode:`True`), and will have an additional ``N-1`` rows added.
 
     Parameters
     ----------
@@ -202,10 +201,10 @@ def truncate(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
     consistent orientation (in particular, this forms an inverse for
     :func:`adrt.core.adrt_init`).
 
-    For this routine the input array `a`, must have the same
-    *relative* shape of an ADRT output, but the base dimension ``N``
-    need not be a power of two. The array may also have any number of
-    leading batch dimensions.
+    For this routine the input array `a` must have the same *relative*
+    shape of an ADRT output, but the base dimension ``N`` need not be
+    a power of two. The array may also have any number of leading
+    batch dimensions.
 
     Parameters
     ----------
@@ -262,11 +261,11 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
     Returns
     -------
     offset : numpy.ndarray of numpy.float64
-        3D array of dimensions (4, 2*n-1, n) containing Radon domain's
-        (offset) coordinates of the ADRT domain for each of 4 quadrants.
+        3D array of dimensions (4, 2*n-1, n) containing Radon domain
+        (offset) coordinates of the ADRT domain for each of four quadrants.
     angle : numpy.ndarray of numpy.float64
         3D array of dimensions (4, 1, n) containing Radon domain theta (angle)
-        coordinates of the ADRT domain for each of 4 quadrants in radians.
+        coordinates of the ADRT domain for each of four quadrants in radians.
 
     Notes
     -----
@@ -309,15 +308,16 @@ def coord_cart_to_adrt(
     t: npt.NDArray[typing.Union[np.float32, np.float64]],
     n: typing.SupportsIndex,
 ) -> ADRTIndex:
-    r"""Find nearest ADRT entry indices and scaling factor for given point in
-    Radon domain.
+    r"""Find nearest ADRT entry indices and scaling factor for a given point in
+    the Radon domain.
 
-    Given a point (theta, t) in Radon domain where theta is in radians and t in
-    normalized coordinates between :math:`-1/\sqrt(2)` and :math:`1/\sqrt(2)`,
-    find the entry in the ADRT domain of dimensions (4, 2*n-1, n).  When the
-    provided theta value is a multiple of 0.25*np.pi and so lies exactly on the
-    boundary between quadrants, height and slope indices for lower indexed the
-    quadrant is provided under the ordering -1 < 0 < 1 < 2.
+    Given a point :math:`(\theta, t)` in the Radon domain where theta
+    is in radians and t is in normalized coordinates between
+    :math:`-1/\sqrt{2}` and :math:`1/\sqrt{2}`, find the entry in the
+    ADRT domain of dimensions (4, 2*n-1, n). When the provided theta
+    value is a multiple of :math:`\pi/4` and so lies exactly on the
+    boundary between quadrants, height and slope indices for the lower
+    indexed quadrant are provided.
 
     Parameters
     ----------

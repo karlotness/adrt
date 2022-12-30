@@ -174,9 +174,9 @@ def adrt_step(a: npt.NDArray[F], /, step: typing.SupportsIndex) -> npt.NDArray[F
     (for example, to mask certain values as they grow).
 
     To use this function correctly, use :func:`adrt.core.adrt_init` to
-    initialize your input array for use with this function. The
-    argument `a` to this function should either be the result of
-    :func:`adrt_init` or a previous output of this function.
+    initialize your input array. The argument `a` to this function
+    should either be the result of :func:`adrt_init` or a previous
+    output of this function.
 
     Parameters
     ----------

@@ -29,7 +29,7 @@ Source
 The package can also be built from source code, which is available
 from our `GitHub repository <https://github.com/karlotness/adrt>`__.
 This makes it possible to customize the compiler flags used when
-building the native extensions. In particular, OpenMP support can
+building the native extensions. In particular, OpenMP support can be
 enabled as discussed :ref:`below <openmp-build>`.
 
 The code requires C++11 support to build and makes use of a few

@@ -35,7 +35,7 @@ r"""Fast approximate discrete Radon transform for NumPy arrays.
 
 The ``adrt`` package provides a fast implementation of an approximate
 discrete Radon transform and several related routines such as
-backprojection, inverses and utilities.
+backprojection, inverses, and utilities.
 
 This main module contains the basic functions of the package, designed
 to be simple to use. The module :mod:`adrt.core` contains lower-level

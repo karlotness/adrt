@@ -13,7 +13,10 @@ libraries. ::
    from matplotlib import pyplot as plt
    import adrt
 
-We will illustrate the computation of sinograms with a couple examples. The simple geometry relating the two coordinates :math:`(s, h)`  and :math:`(\theta, t)` is detailed in the :ref:`Coordinate Transform Section<adrt_to_cart page>`.
+We will illustrate the computation of sinograms with a few examples.
+The simple geometry relating the two coordinates :math:`(s, h)` and
+:math:`(\theta, t)` is detailed in the :ref:`Coordinate Transform
+Section<adrt_to_cart page>`.
 
 Gaussian humps
 --------------
@@ -54,7 +57,7 @@ We compute the ADRT of this image and plot the image.
    plt.tight_layout()
 
 From the ADRT data we compute the sinogram by using the function
-:func:`adrt.utils.interp_to_cart`. Each isotropic Gaussian hump correspond to
+:func:`adrt.utils.interp_to_cart`. Each isotropic Gaussian hump corresponds to
 a sinusoidal curve of commensurate width in the sinogram.
 
 .. plot::
@@ -94,7 +97,7 @@ First, we load and preview the data.
    plt.colorbar()
    plt.tight_layout()
 
-We can start by computing the adrt of this image
+We can start by computing the ADRT of this image
 
 .. plot::
    :context: close-figs

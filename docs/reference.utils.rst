@@ -30,7 +30,7 @@ Coordinate Information
 
 These functions provide information on the angle and offset
 coordinates which are represented in an ADRT output, or the closest
-correspondence between regularly-spaced "Cartesian" coordinates to the
+correspondence between regularly-spaced Cartesian coordinates to the
 unevenly spaced ADRT coordinates.
 
 .. autofunction:: coord_adrt

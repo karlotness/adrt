@@ -39,7 +39,7 @@ Forward Data
 -------------
 
 For this demonstration, we will make use of synthetic forward measurement data
-for the CT problem. We will attempt to recover Shepp-Logan phantom from its
+for the CT problem. We will attempt to recover the Shepp-Logan phantom from its
 Radon transform.
 
 .. plot::
@@ -63,8 +63,8 @@ coordinates using the routine provided in :func:`skimage.transform.radon`.
    sinogram = radon(phantom, theta=theta)
 
 The sampled sinogram is plotted below. Although this sinogram appears similar to
-that in :ref:`sinogram computation section <adrt shepplogan page>` there are
-differences: The grid in the :math:`(\theta, t)` the coordinates used is
+that in the :ref:`sinogram computation example <adrt shepplogan page>`, there are
+differences: The grid in the :math:`(\theta, t)` coordinates used here is
 different, and the approximation used in discretizing the continuous transform
 is also different.
 
@@ -77,7 +77,7 @@ is also different.
 
 Then we use :class:`scipy.interpolate.RectBivariateSpline` to
 interpolate the sampled forward data at the ADRT coordinates, forming
-the ADRT data. We plot the interpolate data below.
+the ADRT data. We plot the interpolated data below.
 
 .. plot::
    :context: close-figs
@@ -122,7 +122,7 @@ package without any regularization for illustration and comparison.
        ax.set_title(title)
    fig.tight_layout()
 
-The inversion result, together with a slice plot in the horizontal direction is
+The inversion result, together with a slice plot in the horizontal direction, is
 displayed below.
 
 .. plot::

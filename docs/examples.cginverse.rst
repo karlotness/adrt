@@ -6,7 +6,7 @@ Iterative Inverse
 This example presents a method for inverting the forward ADRT which
 takes a different approach to the inverse implemented in
 :func:`adrt.iadrt`. The inverse here uses an iterative solver, in
-particular the SciPy's :func:`scipy.sparse.linalg.cg` routine that
+particular SciPy's :func:`scipy.sparse.linalg.cg` routine that
 implements the Conjugate Gradient (CG) method [#greenbaum97]_ but
 another implementation could be used instead, if desired.
 
@@ -35,7 +35,7 @@ performs the actual inversion operation using conjugate gradients.
    :nofigs:
 
 We'll use the same starting image as in the :doc:`quickstart`, but we
-will apply a small amount of normal noise to its adrt to illustrate
+will apply a small amount of normal noise to its ADRT to illustrate
 the difference in behavior between the iterative inverse here and
 :func:`adrt.iadrt`.
 

@@ -78,8 +78,8 @@ Note that this stitching operation can be undone with :func:`adrt.utils.unstitch
 Inverse Transforms
 ------------------
 
-In the special case the image has quantized values, the exact ADRT formula
-applies. This can be computed by :func:`adrt.iadrt`
+In the special case where the image has quantized values, the exact
+ADRT formula applies. This can be computed by :func:`adrt.iadrt`
 
 .. plot::
    :context: close-figs

@@ -2,13 +2,13 @@ Maintenance
 ===========
 
 The sections below list some required steps for maintaining this
-package. In particular, the process for releasing a new version, and
+package, in particular, the process for releasing a new version, and
 for modifying the version ranges for dependencies.
 
 Release
 -------
 
-The release process is largely automated, the main steps are:
+The release process is largely automated; the main steps are:
 
 #. Update ``__version__`` in ``__init__.py`` and commit
 #. Add a Git tag for the new version
@@ -20,10 +20,10 @@ The release process is largely automated, the main steps are:
 First, make sure that the most recent commit to the main branch passed
 all its tests.
 
-Next, update the version string in ``__init__.py`` the make a commit
-checking in that change and push it to GitHub. After that, that that
+Next, update the version string in ``__init__.py`` then make a commit
+checking in that change and push it to GitHub. After that, tag that
 commit with a "v" prefix, so for a version of ``1.2.3`` the tag is
-``v1.2.3``, push that tag to GitHub.
+``v1.2.3``. Push that tag to GitHub.
 
 The release workflow will run tests and build several copies of the
 package. The "draft-release" job has two steps with information to
@@ -32,9 +32,10 @@ review: "Show archive contents" and "Show diagnostics."
 Check the archive contents for stray files. The sdist ending in
 ``.tar.gz`` should include our Python source code and Python tests (no
 C++ tests). The wheels ending in ``*.whl`` should include the Python
-module source code, and one native module ``_adrt_cdefs``. No tests
-and no C++ sources in the wheels. Make sure no third party libraries
-inadvertently got picked up and included in the wheels.
+module source code, and one native module ``_adrt_cdefs``. There
+should be no tests and no C++ sources in the wheels. Make sure no
+third party libraries inadvertently got picked up and included in the
+wheels.
 
 For the diagnostics, the main thing to check is our symbol imports and
 exports. Our native extension should export only one symbol
@@ -49,7 +50,7 @@ On Windows we expect ``python3.dll``, ``KERNEL32.dll``, and any number
 of ``api-ms-win-crt-*.dll``, and currently ``VCRUNTIME140.dll``. This
 VC runtime version is decided by the current MSVC version and may have
 a higher number in the future. ``VCRUNTIME140.dll`` is included with
-all supported versions of Python, if the number has changed for a new
+all supported versions of Python. If the number has changed for a new
 toolkit make sure the oldest version of Python that we target includes
 the new DLL. Otherwise it may have to be bundled in the wheels.
 
@@ -122,8 +123,9 @@ In either case there are three places to update the version:
 
 In general when raising the minimum version, replace locations using
 the old minimum with the new minimum version. Similarly, when adding a
-new release, replace the previous ceiling with the new one and shift
-versions around (as may be needed in the GitHub Actions workflows).
+new Python release, replace the previous ceiling with the new one and
+shift versions around (as may be needed in the GitHub Actions
+workflows).
 
 The ``Py_LIMITED_API`` macro should always use the current minimum
 version and should match ``project.requires_python``.
@@ -136,8 +138,9 @@ tests in ``tool.cibuildwheel.test-skip``.
 
 On Windows, NumPy and SciPy are gradually phasing out 32-bit builds.
 For Python 3.10 and later there are no SciPy wheels for 32-bit
-windows. Block all Windows tests on Python 3.10 and later and once we
-only support these versions, 32-bit builds can be dropped altogether.
+windows. Block all 32-bit Windows tests on Python 3.10 and later and
+once we only support these versions, 32-bit builds can be dropped
+altogether.
 
 .. note::
 
