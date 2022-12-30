@@ -69,4 +69,4 @@ class TestAdrtStep:
     def test_refuses_non_integer(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
         with pytest.raises((TypeError, AttributeError)):
-            adrt.core.bdrt_step(arr, 0.0)
+            adrt.core.adrt_step(arr, 0.0)
