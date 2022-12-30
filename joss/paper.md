@@ -43,7 +43,7 @@ C++ with optional OpenMP multithreading.
 
 This package, `adrt`, aims to facilitate numerical experimentation with the ADRT
 by providing production-ready implementations of the ADRT algorithm and related
-transforms. We expect it to be useful several broad respects: in scientific
+transforms. We expect it to be useful in several broad respects: in scientific
 computing applications, in studying the properties of the ADRT, and in preparing
 new specialized software implementations.
 
@@ -65,14 +65,14 @@ implementations exist [@radonopencl], to the best of our knowledge this is the
 only publicly available, open source implementation packaged for general use.
 This implementation provides a testbed for studying the ADRT, including routines
 exposing the progress of internal iterations. This package can also assist the
-development of specialized implementations serving either as a reference for new
-development or through reuse of the core C++ source which is independent of
+development of specialized implementations, either by serving as a reference for
+new development or through reuse of the core C++ source which is independent of
 Python.
 
 # Related research and software
 
 A variety of other discretizations and approximations of the Radon transform
-exist such as: a linear interpolation and filtered back-projection in
+exist, such as a linear interpolation and filtered back-projection in
 @scikit-image; the discrete Radon transform [@Beylkin1987]; a fast transform
 based on the pseudo-polar Fourier transform [@ACDISS2008]; and the non-uniform
 fast Fourier transform (NUFFT) [@GreengardLee2004; @BMK2019]. However, the ADRT
