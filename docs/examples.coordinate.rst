@@ -119,7 +119,7 @@ entry in the four quadrants as follows.
    z_adrtshape = z.reshape(4, (2*n - 1), n)
    z_stitched = adrt.utils.stitch_adrt(z_adrtshape)
 
-   fig, axs = plt.subplots(ncols=4, sharey=True) 
+   fig, axs = plt.subplots(ncols=4, sharey=True)
    axs[0].set_ylabel('h')
    for i in range(4):
       ax = axs[i]
@@ -150,7 +150,7 @@ the same color.
    :include-source: false
 
    from matplotlib import cm
-   
+
    cmap = cm.get_cmap()
    for i in range(m):
       plt.plot(angles.flatten()[i],
@@ -168,7 +168,7 @@ the same color.
 
 
 .. [#press06] William Press, *Discrete Radon transform has an exact, fast
-               inverse and generalizes to operations other than sums along 
+               inverse and generalizes to operations other than sums along
                lines*, Proceedings of the National Academy of Sciences, 103.
-               `doi:10.1073/pnas.0609228103 
+               `doi:10.1073/pnas.0609228103
                <https://doi.org/10.1073/pnas.0609228103>`_.
