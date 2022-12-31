@@ -1,5 +1,3 @@
-.. _adrt_to_cart page:
-
 The Coordinate Transform
 ========================
 

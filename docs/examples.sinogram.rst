@@ -15,8 +15,8 @@ libraries. ::
 
 We will illustrate the computation of sinograms with a few examples.
 The simple geometry relating the two coordinates :math:`(s, h)` and
-:math:`(\theta, t)` is detailed in the :ref:`Coordinate Transform
-Section<adrt_to_cart page>`.
+:math:`(\theta, t)` is detailed in the :doc:`Coordinate Transform
+Section <examples.coordinate>`.
 
 Gaussian humps
 --------------

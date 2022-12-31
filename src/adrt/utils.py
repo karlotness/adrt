@@ -269,7 +269,7 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
 
     Notes
     -----
-    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    See the :doc:`coordinate transform section <examples.coordinate>` for more
     details on how the Radon domain relates to the ADRT domain.
     """
     n = operator.index(n)
@@ -341,7 +341,7 @@ def coord_cart_to_adrt(
 
     Notes
     -----
-    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    See the :doc:`coordinate transform section <examples.coordinate>` for more
     details on how the Radon domain relates to the ADRT domain.
     """
     n = operator.index(n)

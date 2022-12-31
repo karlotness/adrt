@@ -354,7 +354,7 @@ def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
     Notes
     -----
 
-    See the :ref:`coordinate transform section <adrt_to_cart page>` for more
+    See the :doc:`coordinate transform section <examples.coordinate>` for more
     details on the coordinate transform.
     """
     return _adrt_cdefs.interp_to_cart(_normalize_array(a))
