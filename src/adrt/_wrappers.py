@@ -369,7 +369,7 @@ def num_iters(n: typing.SupportsIndex, /) -> int:
     run :math:`\log_2(n)` times. This function computes the number of
     iterations necessary and is equivalent to
     :math:`\lceil{\log_2(n)}\rceil`, with the special case
-    ``num_iters(0) = 0``.
+    :pycode:`num_iters(0) == 0`.
 
     Parameters
     ----------
