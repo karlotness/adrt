@@ -34,14 +34,40 @@ As a running example, we will operate on the image below.
 Forward Transform
 -----------------
 
-The core transformation implemented in this package is the Approximate
-Discrete Radon Transform.
+The core transformation implemented in this package is the approximate
+discrete Radon transform (ADRT). The ADRT computes sums along
+discrete, digital lines at many angles which *approximate* sums along
+continuous lines in the image. At each angle, several lines are used,
+each crossing the edge of the input image at a different offset.
+
+The angles are divided into quadrants each of which has a width of
+:math:`\pi/4` radians. The angles for each quadrant are taken from a
+canonical range from :math:`-\pi/2` through :math:`\pi/2` starting
+from the negative side. In each quadrant the leftmost column contains
+lines which are either horizontal or vertical, and angles vary toward
+the diagonal angle for that quadrant in the rightmost column.
+
+The offsets for each ADRT line change from row to row in each
+quadrant. The top row is always completely filled in, while the lower
+triangle is filled with zeros.
+
+The figure in this section illustrates this structure. The function
+:func:`adrt.utils.coord_adrt` gives the angle and offset for each
+output entry.
 
 .. figure:: _images/adrt-quadrants.*
    :width: 600px
    :align: center
 
-The result can be computed by :func:`adrt.adrt`.
+   An illustration of the lines along which ADRT sums are computed.
+   The lines are drawn in red and their positions in the input image
+   are shown against the light blue squares. Angles change across the
+   columns of each quadrant, while offsets change across the rows.
+
+The result of the ADRT can be computed for our sample image with
+:func:`adrt.adrt`. Compare the higher-valued entries against the
+structure of the sample image and the positions illustrated in the
+figure.
 
 .. plot::
    :context: close-figs
@@ -56,7 +82,10 @@ The result can be computed by :func:`adrt.adrt`.
    fig.tight_layout()
    fig.colorbar(im_plot, ax=axs, orientation="horizontal")
 
-This result can be stitched together using :func:`adrt.utils.stitch_adrt`.
+For illustration purposes this result can be stitched together using
+:func:`adrt.utils.stitch_adrt`. If desired, the result of the
+stitching operation can be undone with
+:func:`adrt.utils.unstitch_adrt`.
 
 .. plot::
    :context: close-figs
@@ -71,15 +100,17 @@ This result can be stitched together using :func:`adrt.utils.stitch_adrt`.
        plt.axvline(n * i - 0.5, color="white", linestyle="--")
    plt.tight_layout()
 
-Note that this stitching operation can be undone with :func:`adrt.utils.unstitch_adrt`.
-
 .. _iadrt-description:
 
 Inverse Transforms
 ------------------
 
 In the special case where the image has quantized values, the exact
-ADRT formula applies. This can be computed by :func:`adrt.iadrt`
+ADRT formula applies. This can be computed by :func:`adrt.iadrt`.
+Consult the :ref:`reference <basic-inverse-transforms>` for more
+information on available inverses and consider the recipe in the
+:doc:`Iterative Inverse example <examples.cginverse>` for an inverse
+which may be more suitable for general use.
 
 .. plot::
    :context: close-figs

@@ -14,6 +14,8 @@ associated backprojection operation.
 
 .. autofunction:: bdrt
 
+.. _basic-inverse-transforms:
+
 Inverse Transforms
 ------------------
 
