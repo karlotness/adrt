@@ -228,9 +228,9 @@ bool module_add_object_ref(PyObject *module, const char *name, PyObject *value) 
     assert(name);
     assert(value);
     assert(PyModule_Check(module));
-    Py_INCREF(value);
+    Py_IncRef(value);
     if(PyModule_AddObject(module, name, value) != 0) {
-        Py_DECREF(value);
+        Py_DecRef(value);
         return false;
     }
     return true;
@@ -254,9 +254,8 @@ void py_free(PyObject *obj) = delete;
 void py_free(PyArrayObject *obj) = delete;
 
 void xdecref(PyObject *obj) {
-    if(obj) {
-        Py_DECREF(obj);
-    }
+    // Function form accepts nullptr
+    Py_DecRef(obj);
 }
 
 void xdecref(PyArrayObject *arr) {
