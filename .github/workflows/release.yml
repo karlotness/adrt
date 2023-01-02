@@ -249,7 +249,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade twine
+        python -m pip install --upgrade twine abi3audit
     - name: Download sdist
       uses: actions/download-artifact@v3
       with:
@@ -262,6 +262,8 @@ jobs:
         path: dist/
     - name: Check artifacts
       run: python -m twine check --strict dist/*
+    - name: Check Python ABI
+      run: python -m abi3audit dist/*.whl
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
