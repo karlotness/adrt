@@ -279,11 +279,13 @@ jobs:
       with:
         name: wheel
         path: dist/
-    - name: Compute checksums
+    - name: Draft release body
       run: |
-        echo -e '<details><summary>SHA256 Checksums</summary>\n\n```' | tee 'release_body.md'
-        sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!' | tee -a 'release_body.md'
-        echo -e '```\n\n</details>' | tee -a 'release_body.md'
+        {
+          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
+          sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>'
+        } > release_body.md
     - name: Create release
       run: gh release create '${{ github.ref_name }}' --title '${{ github.ref_name }}' --target '${{ github.sha }}' --draft --notes-file 'release_body.md' --repo '${{ github.repository }}' dist/adrt-*.tar.gz dist/adrt-*.whl
       env:
