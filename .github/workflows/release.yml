@@ -169,64 +169,51 @@ jobs:
         if-no-files-found: error
     - name: Diagnostics (Linux)
       if: runner.os == 'Linux'
-      continue-on-error: true
       run: |
-        touch 'diagnostics.txt'
         for wheelfile in wheelhouse/adrt-*.whl; do
           if [[ ! -e "$wheelfile" ]]; then
             continue
           fi
-          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a 'diagnostics.txt'
-          dir="$(mktemp -d)"
-          unzip -q "$wheelfile" -d "$dir"
-          readelf --wide --symbols --dynamic "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
-          echo | tee -a 'diagnostics.txt'
+          whldir="$(mktemp -d)"
+          unzip -q "$wheelfile" -d "$whldir"
+          readelf --wide --symbols --dynamic "${whldir}"/adrt/*.so > "diagnostics-$(basename -s '.whl' "$wheelfile").txt"
         done
     - name: Diagnostics (Windows)
       if: runner.os == 'Windows'
-      continue-on-error: true
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
         & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
         $ProgressPreference = 'SilentlyContinue'
         Remove-Item 'wheel-diagnostic' -Recurse -ErrorAction SilentlyContinue
         $baseextract = New-Item -Path . -Name 'wheel-diagnostic' -ItemType 'directory'
-        $null = New-Item -Name diagnostics.txt -ItemType File
         Get-ChildItem -Path 'wheelhouse' -Filter 'adrt-*.whl' | ForEach-Object {
           $wheelfile = $_
-          Write-Output "----- WHEEL: $($wheelfile.Name) -----`n" | Tee-Object -FilePath 'diagnostics.txt' -Append
           $destdir = New-Item -Path $baseextract.FullName -Name $wheelfile.Basename -ItemType 'directory'
           Expand-Archive -Path $wheelfile.FullName -DestinationPath $destdir.FullName
-          dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter '*.pyd' -Recurse).FullName) | Tee-Object -FilePath 'diagnostics.txt' -Append
-          Write-Output "`n" | Tee-Object -FilePath 'diagnostics.txt' -Append
+          dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter '*.pyd' -Recurse).FullName) | Out-File -FilePath "diagnostics-$($wheelfile.Basename).txt"
         }
     - name: Diagnostics (macOS)
       if: runner.os == 'macOS'
-      continue-on-error: true
       run: |
-        touch 'diagnostics.txt'
         for wheelfile in wheelhouse/adrt-*.whl; do
           if [[ ! -e "$wheelfile" ]]; then
             continue
           fi
-          echo "----- WHEEL: $(basename $wheelfile) -----" | tee -a 'diagnostics.txt'
-          dir="$(mktemp -d)"
-          unzip -q "$wheelfile" -d "$dir"
-          echo 'Libraries:' | tee -a 'diagnostics.txt'
-          otool -L -arch all "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
-          echo 'Symbols:' | tee -a 'diagnostics.txt'
-          nm -arch all "${dir}"/adrt/*.so | tee -a 'diagnostics.txt'
-          echo | tee -a 'diagnostics.txt'
+          whldir="$(mktemp -d)"
+          unzip -q "$wheelfile" -d "$whldir"
+          {
+            echo 'Libraries:'
+            otool -L -arch all "${whldir}"/adrt/*.so
+            echo 'Symbols:'
+            nm -arch all "${whldir}"/adrt/*.so
+          } > "diagnostics-$(basename -s '.whl' "$wheelfile").txt"
         done
-    - name: Prepare diagnostics upload
-      continue-on-error: true
-      run: mv 'diagnostics.txt' 'diagnostics-${{ runner.os }}-${{ runner.arch }}-run${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-job${{ github.job }}.txt'
     - name: Store diagnostics
       uses: actions/upload-artifact@v3
       with:
         name: diagnostics
         path: diagnostics-*.txt
-        if-no-files-found: warn
+        if-no-files-found: error
   check-artifacts:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -297,20 +284,44 @@ jobs:
       with:
         name: diagnostics
         path: diagnostics/
-    - name: Show archive contents
+    - name: Prepare step summary
+      run: echo '# Artifact Contents and Diagnostics' > $GITHUB_STEP_SUMMARY
+    - name: Summarize checksums
       run: |
+        {
+          echo -e '## SHA256 Checksums\n```'
+          sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
+          echo -e '```\n'
+        } >>  $GITHUB_STEP_SUMMARY
+    - name: Summarize contents
+      run: |
+        echo '## Contents' >> $GITHUB_STEP_SUMMARY
         for f in dist/*.tar.gz; do
-          echo "----- FILE: $(basename $f) -----"
-          tar -tzvf "$f"
-          echo
+          {
+            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            tar -tzvf "$f"
+            echo -e '```\n\n</details>\n'
+          } >> $GITHUB_STEP_SUMMARY
         done
         for f in dist/*.whl; do
-          echo "----- FILE: $(basename $f) -----"
-          zipinfo "$f"
-          echo
+          {
+            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            zipinfo "$f"
+            echo -e '```\n\n</details>\n'
+          } >> $GITHUB_STEP_SUMMARY
         done
-    - name: Show diagnostics
-      run: cat diagnostics/*.txt
+    - name: Summarize diagnostics
+      run: |
+        echo '## Diagnostics' >> $GITHUB_STEP_SUMMARY
+        for f in diagnostics/diagnostics-*.txt; do
+          fbasename="$(basename -s '.txt' "$f")"
+          wheelname="${fbasename#diagnostics-}.whl"
+          {
+            echo -e "<details><summary>${wheelname}</summary>\n\n\`\`\`"
+            sed 's/\r$//g; H; $be; d; :e; g; s/^[[:space:]]*//; s/[[:space:]]*$//;' "$f"
+            echo -e '```\n\n</details>\n'
+          } >> $GITHUB_STEP_SUMMARY
+        done
   upload:
     runs-on: ubuntu-latest
     timeout-minutes: 20
