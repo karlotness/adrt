@@ -39,10 +39,10 @@ classifiers = [
 dynamic = ["version"]
 
 [project.urls]
-homepage = "https://github.com/karlotness/adrt"
-documentation = "https://adrt.readthedocs.io"
-repository = "https://github.com/karlotness/adrt"
-issues = "https://github.com/karlotness/adrt/issues"
+Homepage = "https://github.com/karlotness/adrt"
+Documentation = "https://adrt.readthedocs.io"
+"Source Code" = "https://github.com/karlotness/adrt"
+"Bug Tracker" = "https://github.com/karlotness/adrt/issues"
 
 # Additional setuptools settings
 [tool.setuptools]
