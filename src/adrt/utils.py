@@ -327,8 +327,8 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
 
 class ADRTIndex(typing.NamedTuple):
     quadrant: npt.NDArray[np.uint8]
-    offset: npt.NDArray[np.int64]
-    angle: npt.NDArray[np.uint64]
+    height: npt.NDArray[np.int64]
+    slope: npt.NDArray[np.uint64]
     factor: npt.NDArray[np.float64]
 
 
