@@ -43,10 +43,10 @@ def test_return_value_order():
         t=np.array([-0.25, 0, 0.25]),
         n=8,
     )
-    quadrant, height, slope, factor = ret
+    quadrant, offset, angle, factor = ret
     assert quadrant is ret.quadrant
-    assert height is ret.height
-    assert slope is ret.slope
+    assert offset is ret.offset
+    assert angle is ret.angle
     assert factor is ret.factor
 
 
@@ -60,8 +60,8 @@ def test_return_dtype(theta_dtype, t_dtype):
         n=8,
     )
     assert ret.quadrant.dtype == np.dtype(np.uint8)
-    assert ret.height.dtype == np.dtype(np.int64)
-    assert ret.slope.dtype == np.dtype(np.uint64)
+    assert ret.offset.dtype == np.dtype(np.int64)
+    assert ret.angle.dtype == np.dtype(np.uint64)
     assert ret.factor.dtype == np.dtype(np.float64)
 
 
@@ -87,8 +87,8 @@ def test_quadrant_midpoints_periodic(period):
     ret_base = adrt.utils.coord_cart_to_adrt(theta=theta, t=t, n=n)
     ret = adrt.utils.coord_cart_to_adrt(theta=(theta + period * np.pi), t=t, n=n)
     assert np.all(ret_base.quadrant == ret.quadrant)
-    assert np.all(ret_base.height == ret.height)
-    assert np.all(ret_base.slope == ret.slope)
+    assert np.all(ret_base.offset == ret.offset)
+    assert np.all(ret_base.angle == ret.angle)
     assert np.allclose(ret_base.factor, ret.factor)
 
 
@@ -146,7 +146,7 @@ def test_adrt_slope():
         t=adrt_coord.offset,
         n=n,
     )
-    assert np.all(indices.slope == np.expand_dims(np.arange(n), (0, 1)))
+    assert np.all(indices.angle == np.expand_dims(np.arange(n), (0, 1)))
 
 
 def test_coords_adrt_identity():
@@ -161,8 +161,8 @@ def test_coords_adrt_identity():
     )
     adrt_indexed = adrt_out[
         indices.quadrant,
-        indices.height,
-        indices.slope,
+        indices.offset,
+        indices.angle,
     ]
     assert np.allclose(adrt_indexed, adrt_out)
 
@@ -212,8 +212,8 @@ def test_corners(test_input, expected):
     coord = adrt.utils.coord_cart_to_adrt(theta, t, n)
 
     quadrant_expected = expected[0]
-    height_expected = expected[1]
-    slope_expected = expected[2]
+    offset_expected = expected[1]
+    angle_expected = expected[2]
 
     if np.abs(theta) > 0.25 * np.pi:
         th0 = np.abs(theta) - 0.5 * np.pi
@@ -221,6 +221,6 @@ def test_corners(test_input, expected):
         th0 = theta
 
     assert np.all(coord.quadrant == quadrant_expected)
-    assert np.all(coord.height == height_expected)
-    assert np.all(coord.slope == slope_expected)
+    assert np.all(coord.offset == offset_expected)
+    assert np.all(coord.angle == angle_expected)
     assert np.isclose(coord.factor, 1 / np.cos(th0))
