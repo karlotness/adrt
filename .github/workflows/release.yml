@@ -347,7 +347,7 @@ jobs:
         name: wheel
         path: dist/
     - name: Upload package
-      run: python -m twine upload --non-interactive dist/*
+      run: python -m twine upload --non-interactive --disable-progress-bar dist/*
       env:
         TWINE_USERNAME: '__token__'
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
