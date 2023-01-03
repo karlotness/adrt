@@ -343,7 +343,7 @@ def coord_cart_to_adrt(
     where :math:`\theta` is in radians and t is in normalized
     coordinates between :math:`-1/\sqrt{2}` and :math:`1/\sqrt{2}`,
     find the index of the closest corresponding entry in an ADRT
-    output. This is the digital ADRT line with offset and angle most
+    output. This is the digital ADRT line with height and slope most
     closely matching these input coordinates.
 
     This function can be used to find entries in the ADRT that most
@@ -360,9 +360,9 @@ def coord_cart_to_adrt(
     points to be queried at once. The arrays must have the same shape,
     which can otherwise be arbitrary.
 
-    The return values are `quadrant`, `offset`, `angle`, and `factor`.
+    The return values are `quadrant`, `height`, `slope`, and `factor`.
     The first three of these are indices into an ADRT output (as in
-    :pycode:`adrt_out[quadrant, offset, angle]`), and the final
+    :pycode:`adrt_out[quadrant, height, slope]`), and the final
     coordinate is a scaling factor which may be applied to the value
     of this entry. The output arrays all have the same shape as the
     input arrays `theta` and `t`.
@@ -370,11 +370,11 @@ def coord_cart_to_adrt(
     Parameters
     ----------
     theta : numpy.ndarray of float
-        :math:`\theta` coordinates in continuous Radon space, in
+        Angle :math:`\theta` coordinates in continuous Radon space, in
         radians to be converted to the closest ADRT index.
     t : numpy.ndarray of float
-        :math:`t` coordinates in continuous Radon space. In normalized
-        coordinates between :math:`-1/\sqrt{2}` and
+        Offset :math:`t` coordinates in continuous Radon space. In
+        normalized coordinates between :math:`-1/\sqrt{2}` and
         :math:`1/\sqrt{2}`.
     n : int
         The size of the ADRT domain. Either the size of the input
@@ -387,18 +387,18 @@ def coord_cart_to_adrt(
     quadrant : numpy.ndarray of numpy.uint8
         Quadrant indices in ADRT domain. These are integers from
         :pycode:`0` through :pycode:`3`, inclusive.
-    offset : numpy.ndarray of numpy.int64
+    height : numpy.ndarray of numpy.int64
         The intercept indices in the ADRT domain.
-    angle : numpy.ndarray of numpy.uint64
-        The angle indices in the ADRT domain.
+    slope : numpy.ndarray of numpy.uint64
+        The slope/angle indices in the ADRT domain.
     factor : numpy.ndarray of numpy.float64
         A transformation factor for each identified ADRT entry.
 
     Notes
     -----
     When the provided `theta` value is a multiple of :math:`\pi/4` and
-    so lies exactly on the boundary between quadrants, the offset and
-    angle indices for the lower indexed quadrant are provided.
+    so lies exactly on the boundary between quadrants, the height and
+    slope indices for the lower indexed quadrant are provided.
 
     See the :doc:`coordinate transform section <examples.coordinate>` for more
     details on how the Radon domain relates to the ADRT domain.
