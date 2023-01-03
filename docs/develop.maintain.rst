@@ -26,8 +26,10 @@ commit with a "v" prefix, so for a version of ``1.2.3`` the tag is
 ``v1.2.3``. Push that tag to GitHub.
 
 The release workflow will run tests and build several copies of the
-package. The "draft-release" job has two steps with information to
-review: "Show archive contents" and "Show diagnostics."
+package. The "draft-release" job produces information on the built
+artifacts: their checksums, contents, and diagnostics for the native
+extensions. These are displayed on the summary page for the overall
+release workflow run.
 
 Check the archive contents for stray files. The sdist ending in
 ``.tar.gz`` should include our Python source code and Python tests (no
