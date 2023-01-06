@@ -192,7 +192,7 @@ locally and ensure that they pass before making a pull request.
 
 We use `tox <https://tox.wiki/>`__ to run our tests and linters. Tox
 will install required dependencies then run the tests. First, `install
-tox <https://tox.wiki/en/latest/install.html>`__, then run::
+tox <https://tox.wiki/en/latest/installation.html>`__, then run::
 
   $ tox
 
