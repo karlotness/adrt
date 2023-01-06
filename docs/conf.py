@@ -95,7 +95,7 @@ def adrt_find_anchors():
     if not (source_root.exists() and source_root.is_dir()):
         return {}
     anchor_re = re.compile(
-        r"^\s*//\s*DOC ANCHOR:\s+(?P<name>\S+)(?:\s+\+\s*(?P<offset>\d+))?\s*$"
+        r"^\s*//\s*DOC\s+ANCHOR\s*:\s+(?P<name>\S+)(?:\s+\+\s*(?P<offset>\d+))?\s*$"
     )
     anchor_map = {}
     for source_path in source_root.glob("*.[ch]pp"):
