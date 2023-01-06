@@ -22,6 +22,8 @@ __pycache__/
 *.tar
 *.tar.*
 *.zip
+*.pdf
+*.jats
 *.egg-info/
 build/
 dist/
