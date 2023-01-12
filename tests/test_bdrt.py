@@ -1,5 +1,6 @@
-# Copyright (c) 2023 Karl Otness, Donsub Rim
-# All rights reserved
+# Copyright Karl Otness, Donsub Rim
+#
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
