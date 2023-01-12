@@ -34,7 +34,8 @@ classifiers = [
   "Programming Language :: C++",
   "Operating System :: POSIX :: Linux",
   "Operating System :: Microsoft :: Windows",
-  "Operating System :: MacOS"
+  "Operating System :: MacOS",
+  "Typing :: Typed",
 ]
 dynamic = ["version"]
 
