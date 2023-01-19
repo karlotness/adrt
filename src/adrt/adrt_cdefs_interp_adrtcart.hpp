@@ -90,12 +90,16 @@ namespace adrt {
                     const float_index th0 = adrt::_const::pi_4<float_index>() - std::abs(std::abs(th) - adrt::_const::pi_4<float_index>());
                     const float_index tan_theta = adrt::_common::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
                     const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
+                    assert(std::isfinite(si));
+                    assert(si >= static_cast<float_index>(0));
+                    assert(si < static_cast<float_index>(std::get<3>(in_shape)));
                     // Compute the scaling factor
                     const larger_float sidea = static_cast<larger_float>(si) / static_cast<larger_float>(N - 1_uz);
                     const larger_float sideb = static_cast<larger_float>(1);
                     const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt(sidea * sidea + sideb));
                     const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) + ((sgn >= 0 ? t : -t) / std::cos(th0));
                     const float_index hi = (std::round(h0 * static_cast<float_index>(2_uz * N)) - static_cast<float_index>(1)) / static_cast<float_index>(2);
+                    assert(std::isfinite(hi));
                     // Perform the updates
                     if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(std::get<2>(in_shape))) {
                         // Intended access is in bounds
