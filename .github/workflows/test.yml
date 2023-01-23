@@ -98,7 +98,7 @@ jobs:
       id: cache-catch2
       with:
         path: tests/cpp/catch2/catch.hpp
-        key: catch2-3725c0f0a75f376
+        key: catch2-b7dd8acce2d32e8
     - name: Setup Python
       if: steps.cache-catch2.outputs.cache-hit != 'true'
       uses: actions/setup-python@v4

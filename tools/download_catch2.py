@@ -40,15 +40,12 @@ import requests
 
 
 CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.10/catch.hpp"
-CATCH2_SHA256 = "3725c0f0a75f376a5005dde31ead0feb8f7da7507644c201b814443de8355170"
-CATCH2_DIGEST = bytes.fromhex(CATCH2_SHA256)
+CATCH2_SHA512 = "b7dd8acce2d32e86f5356c7b7e96a72c6aecb0529af29a7ab85b8dfb1649d510bcfe117f57691b75783ca90fd21c347f64c9cf6d4b996d686f82f081840e89cb"  # noqa: E501,B950
+CATCH2_DIGEST = bytes.fromhex(CATCH2_SHA512)
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("out_path", help="Path to write downloaded header")
-parser.add_argument(
-    "--cache_dir", default=None, help="Directory to check for cached files"
-)
 
 
 def download_catch2():
@@ -56,44 +53,10 @@ def download_catch2():
         response.raise_for_status()
         body = response.content
     # Check the hash
-    digest = hashlib.sha256(body)
+    digest = hashlib.sha512(body)
     if digest.digest() != CATCH2_DIGEST:
         raise ValueError(f"Invalid hash for catch2 header. Got: {digest.hexdigest()}")
-    print("Downloaded Catch2", file=sys.stderr)
     return body
-
-
-def check_cache_dir(cache_dir):
-    if not cache_dir:
-        print("No cache specified", file=sys.stderr)
-        return None
-    cache_path = pathlib.Path(cache_dir)
-    if not cache_path.is_dir():
-        print(f"Cache directory does not exist: {cache_dir}", file=sys.stderr)
-        return None
-    digest_prefix = CATCH2_SHA256[:15].lower()
-    candidate_path = cache_path / f"catch-{digest_prefix}.hpp"
-    if candidate_path.is_file():
-        with open(candidate_path, "rb") as candidate_file:
-            body = candidate_file.read()
-            digest = hashlib.sha256(body)
-            if digest.digest() == CATCH2_DIGEST:
-                print(f"Found cached headers: {candidate_path}", file=sys.stderr)
-                return body
-    print("Header not found in cache", file=sys.stderr)
-    return None
-
-
-def store_cache(cache_dir, body):
-    if not cache_dir:
-        return None
-    digest_prefix = hashlib.sha256(body).hexdigest()[:15].lower()
-    file_name = f"catch-{digest_prefix}.hpp"
-    cache_path = pathlib.Path(cache_dir)
-    cache_path.mkdir(parents=True, exist_ok=True)
-    with open(cache_path / file_name, "wb") as out_file:
-        out_file.write(body)
-        print(f"Cached headers as {file_name}", file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -103,24 +66,14 @@ if __name__ == "__main__":
         print("Catch2 already present", file=sys.stderr)
         sys.exit(0)
 
-    # Find the contents
-    body = None
-    from_cache = False
-    if args.cache_dir:
-        # Check in cache directory
-        body = check_cache_dir(args.cache_dir)
-        from_cache = bool(body)
-    if not body:
-        # Fall back to a fresh download
-        body = download_catch2()
-        from_cache = False
-    if not body:
+    # Download fresh copy
+    body = download_catch2()
+    if body:
+        print("Downloaded Catch2", file=sys.stderr)
+    else:
         # Failed to retrieve header
         print("Failed to retrieve headers", file=sys.stderr)
         sys.exit(1)
-    if args.cache_dir and not from_cache:
-        # Retrieved header but not from cache, store it
-        store_cache(args.cache_dir, body)
 
     # Write out the result
     out_path.parent.mkdir(parents=True, exist_ok=True)
