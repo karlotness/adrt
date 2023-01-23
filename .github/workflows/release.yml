@@ -273,6 +273,9 @@ jobs:
         {
           echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
           sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>\n'
+          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          sha512sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
           echo -e '```\n\n</details>'
         } > release_body.md
     - name: Create release
@@ -289,10 +292,14 @@ jobs:
     - name: Summarize checksums
       run: |
         {
-          echo -e '## SHA256 Checksums\n```'
+          echo -e '## Checksums\n'
+          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
           sha256sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
-          echo -e '```\n'
-        } >>  $GITHUB_STEP_SUMMARY
+          echo -e '```\n\n</details>\n'
+          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          sha512sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>\n'
+        } >> $GITHUB_STEP_SUMMARY
     - name: Summarize contents
       run: |
         echo '## Contents' >> $GITHUB_STEP_SUMMARY
