@@ -48,7 +48,7 @@ def _gen_dline(n, h, ds):
         s = (ds - 1) // 2
         a = _gen_dline(n // 2, h, s)
         b = _gen_dline(n // 2, h + s + 1, s)
-    b = set((i + (n // 2), j) for i, j in b)
+    b = {(i + (n // 2), j) for i, j in b}
     return a.union(b)
 
 

@@ -131,11 +131,11 @@ def iadrt_fmg(
     # Following recipe for itertools.pairwise from Python 3.10
     i1, i2 = itertools.tee(
         itertools.chain(
-            map(
+            (
                 # Pair each estimated inverse x with its residual error
-                lambda x: (x, float(np.linalg.norm(adrt(x) - a))),
+                (x, float(np.linalg.norm(adrt(x) - a)))
                 # Use itertools.islice to limit iterations if requested
-                itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters),
+                for x in itertools.islice(core.iadrt_fmg_iter(a, copy=False), max_iters)
             ),
             # Chain i2 with one extra value so we don't exhaust early
             # Use np.inf so the residual will rise and we won't continue iterating
