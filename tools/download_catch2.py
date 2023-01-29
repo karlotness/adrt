@@ -40,7 +40,7 @@ import requests
 
 
 CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.10/catch.hpp"
-CATCH2_SHA512 = "b7dd8acce2d32e86f5356c7b7e96a72c6aecb0529af29a7ab85b8dfb1649d510bcfe117f57691b75783ca90fd21c347f64c9cf6d4b996d686f82f081840e89cb"  # noqa: E501,B950
+CATCH2_SHA512 = "b7dd8acce2d32e86f5356c7b7e96a72c6aecb0529af29a7ab85b8dfb1649d510bcfe117f57691b75783ca90fd21c347f64c9cf6d4b996d686f82f081840e89cb"  # noqa: E501
 CATCH2_DIGEST = bytes.fromhex(CATCH2_SHA512)
 
 
