@@ -154,22 +154,15 @@ altogether.
 Linter Versions
 ---------------
 
-We pin versions of linters to avoid surprise errors from upgrades or
-inconsistencies between local runs and checks on GitHub Actions. These
-should be updated to the most recent version periodically. Check PyPI
-for the most recent version and update the pins under
-``[testenv:lint]`` in ``tox.ini``.
+We restrict versions of some linters to avoid surprise errors from
+upgrades or inconsistencies between local runs and checks on GitHub
+Actions. These should be updated to the most recent version
+periodically. Check PyPI for the most recent version and update the
+pins under ``[testenv:lint]`` in ``tox.ini``.
 
-Linters to update:
+In particular, we use `Black <https://pypi.org/project/black/>`__ to
+style our Python source code. This should be limited to a range from
+the latest version through the current year.
 
-* `Black <https://pypi.org/project/black/>`__: limit to a range from
-  the latest version through the current year
-* `Flake8 <https://pypi.org/project/flake8/>`__: limit to a range from
-  the latest version through the current major version
-* `pep8-naming <https://pypi.org/project/pep8-naming/>`__: pin to the
-  most recent exact release
-* `flake8-bugbear <https://pypi.org/project/flake8-bugbear/>`__: pin
-  to the most recent exact release
-
-After updating the versions, run the linters locally and fix any new
-style issues.
+After updating any linter versions, run the linters locally and fix
+any new style issues.
