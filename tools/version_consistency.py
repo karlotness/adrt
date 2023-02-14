@@ -114,7 +114,7 @@ def find_package_version(init_py):
         r"^__version__\s*(?::\s*[^=\s]+\s*)?=(?P<ver>.+)$", re.MULTILINE
     )
     if re_match := version_re.search(content):
-        ver_str = ast.literal_eval(re_match.group("ver"))
+        ver_str = ast.literal_eval(re_match.group("ver").strip())
         if not isinstance(ver_str, str):
             raise ValueError(f"Version attribute is not a string {ver_str}")
         return ver_str
