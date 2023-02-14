@@ -38,9 +38,10 @@ identity matrix, and :math:`\lambda \ge 0` is the ridge parameter.
 Forward Data
 -------------
 
-For this demonstration, we will make use of synthetic forward measurement data
-for the CT problem. We will attempt to recover the Shepp-Logan phantom from its
-Radon transform.
+For this demonstration, we will make use of synthetic forward
+measurement data for the CT problem. We will attempt to recover the
+Shepp-Logan phantom (:download:`data file <data/shepp-logan.npz>`)
+from its Radon transform.
 
 .. plot::
    :context: close-figs
