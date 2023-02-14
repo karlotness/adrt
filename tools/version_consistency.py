@@ -101,9 +101,9 @@ def find_cpp_macro_def(macro, cpp_path):
     )
     with open(cpp_path, "r", encoding="utf8") as cpp_file:
         content = cpp_file.read()
-    if match := macro_re.search(content):
+    if re_match := macro_re.search(content):
         # Normalize tokens
-        return " ".join(match.group("val").strip().split())
+        return " ".join(re_match.group("val").strip().split())
     raise ValueError(f"Could not find macro {macro}")
 
 
@@ -113,8 +113,8 @@ def find_package_version(init_py):
     version_re = re.compile(
         r"^__version__\s*(?::\s*[^=\s]+\s*)?=(?P<ver>.+)$", re.MULTILINE
     )
-    if match := version_re.search(content):
-        ver_str = ast.literal_eval(match.group("ver"))
+    if re_match := version_re.search(content):
+        ver_str = ast.literal_eval(re_match.group("ver"))
         if not isinstance(ver_str, str):
             raise ValueError(f"Version attribute is not a string {ver_str}")
         return ver_str
@@ -125,8 +125,8 @@ def find_release_tag_version(tag_string):
     if tag_string is None:
         return None
     ver_re = re.compile(r"^refs/tags/v(?P<ver>.+)$")
-    if match := ver_re.match(tag_string):
-        return match.group("ver")
+    if re_match := ver_re.match(tag_string):
+        return re_match.group("ver")
     else:
         raise ValueError(f"Invalid tag format {tag_string}")
 
@@ -163,9 +163,9 @@ def find_package_min_numpy(pyproject_toml):
 def find_macro_numpy_api(py_cpp):
     min_numpy = find_cpp_macro_def("NPY_NO_DEPRECATED_API", py_cpp)
     rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
-    if match := rgx.match(min_numpy):
-        major = int(match.group("major"))
-        minor = int(match.group("minor"))
+    if re_match := rgx.match(min_numpy):
+        major = int(re_match.group("major"))
+        minor = int(re_match.group("minor"))
         # NumPy<1.18 is missing some API version definitions.
         # There were no changes in this range so we can safely round up
         if (major, minor) <= (1, 17):
