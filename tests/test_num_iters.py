@@ -44,7 +44,7 @@ SIZE_T_MAX = (2**SIZE_T_BITS) - 1
 
 
 def test_reject_negative():
-    with pytest.raises(OverflowError):
+    with pytest.raises((OverflowError, ValueError)):
         adrt.core.num_iters(-1)
 
 
