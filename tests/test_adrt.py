@@ -82,10 +82,9 @@ def _naive_adrt(a):
 
 def make_unaligned(a):
     assert a.dtype.alignment >= 2, "One-byte dtypes cannot be made unaligned"
-    offset = a.dtype.alignment // 2
-    b = np.frombuffer(
-        b"\x00" * offset + a.tobytes("C"), dtype=a.dtype, offset=offset
-    ).reshape(a.shape)
+    b = np.frombuffer(b"\x00" + a.tobytes("C"), dtype=a.dtype, offset=1).reshape(
+        a.shape
+    )
     assert not b.flags.aligned
     assert np.all(b == a)
     return b
