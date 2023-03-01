@@ -1,8 +1,8 @@
 --only-binary :all:
-sphinx>=5.3.0,<6
-sphinx-rtd-theme>=1.1.1,<2
+sphinx>=6.1.3,<7
+sphinx-rtd-theme>=1.2.0,<2
 numpy
 scipy
-matplotlib>=3.6.1,<4
+matplotlib
 scikit-image
 packaging
