@@ -34,7 +34,7 @@ The library source code is available in our `repository on GitHub
 
 
 Indices
-=======
+-------
 
 * :ref:`genindex`
 * :ref:`modindex`
