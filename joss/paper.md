@@ -16,9 +16,9 @@ authors:
     orcid: 0000-0002-6721-2070
     affiliation: 2
 affiliations:
- - name: New York University, USA
+ - name: New York University, New York, NY, USA
    index: 1
- - name: Washington University in St. Louis, USA
+ - name: Washington University in St. Louis, St. Louis, MO, USA
    index: 2
 date: 14 March 2023
 bibliography: paper.bib
