@@ -50,7 +50,7 @@ new specialized software implementations.
 The ADRT has demonstrated usefulness in scientific computing [@Rim2018] and has
 applications in imaging, image processing, and machine learning which can
 benefit from the increased performance of the ADRT, which has a time complexity
-of $\mathcal{O}(N^2 \log N)$ for an $N \times N$ image, compared to
+of $\mathcal{O}(N^2 \log N)$ for an $N \times N$ image (see \autoref{fig:timing}), compared to
 $\mathcal{O}(N^3)$ for the standard Radon transform [@Press2006]. The ADRT
 approximates the Radon transform with $\mathcal{O}(N^{-1} \log N)$ error, and it
 possesses important inversion properties which enable it to be used to
@@ -59,6 +59,8 @@ documentation includes examples of the application of these routines to sample
 problems in tomography and PDEs, as well as recipes for implementing other
 transforms with our core routines, including an iterative inverse using
 the conjugate gradient iteration.
+
+![Running time of the ADRT for several image sizes with asymptotic trendline.\label{fig:timing}](timing.png){ width=60% }
 
 These routines also support research into the ADRT itself. While some private
 implementations exist [@radonopencl], to the best of our knowledge this is the
