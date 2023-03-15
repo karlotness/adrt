@@ -60,7 +60,7 @@ problems in tomography and PDEs, as well as recipes for implementing other
 transforms with our core routines, including an iterative inverse using
 the conjugate gradient iteration.
 
-![Running time of the ADRT for several image sizes with asymptotic trendline.\label{fig:timing}](timing.png){ width=60% }
+![Running time of the ADRT for several image sizes with asymptotic trendline. Tests were run single-threaded on an Intel Xeon Platinum 8268 processor.\label{fig:timing}](timing.png){ width=60% }
 
 These routines also support research into the ADRT itself. While some private
 implementations exist [@radonopencl], to the best of our knowledge this is the
