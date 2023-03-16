@@ -21,6 +21,27 @@ function is included in the :doc:`API reference <reference>`.
 The library source code is available in our `repository on GitHub
 <https://github.com/karlotness/adrt>`__.
 
+Citation
+--------
+
+If you use this software in your research, please cite our associated
+`JOSS paper <https://doi.org/10.21105/joss.05083>`__.
+
+.. code-block:: bibtex
+
+   @article{adrt,
+     title={adrt: approximate discrete {R}adon transform for {P}ython},
+     author={Karl Otness and Donsub Rim},
+     journal={Journal of Open Source Software},
+     publisher={The Open Journal},
+     year=2023,
+     doi={10.21105/joss.05083},
+     url={https://doi.org/10.21105/joss.05083},
+     volume=8,
+     number=83,
+     pages=5083,
+   }
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents
