@@ -3,6 +3,7 @@
 [![adrt on PyPI](https://img.shields.io/pypi/v/adrt)][pypi]
 [![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][tests]
+[![JOSS Paper](https://joss.theoj.org/papers/10.21105/joss.05083/status.svg)][joss]
 
 Fast approximate discrete Radon transform for
 [NumPy](https://numpy.org/) arrays.
