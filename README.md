@@ -28,6 +28,26 @@ $ python -m pip install adrt
 For further details on installation or building from source, consult
 the [documentation][docs].
 
+## Citation
+
+If you use this software in your research, please cite our associated
+[JOSS paper][joss].
+
+```BibTeX
+@article{adrt,
+  title={adrt: approximate discrete {R}adon transform for {P}ython},
+  author={Karl Otness and Donsub Rim},
+  journal={Journal of Open Source Software},
+  publisher={The Open Journal},
+  year=2023,
+  doi={10.21105/joss.05083},
+  url={https://doi.org/10.21105/joss.05083},
+  volume=8,
+  number=83,
+  pages=5083,
+}
+```
+
 ## References
 
 This implementation is based on descriptions in several publications:
@@ -48,6 +68,7 @@ LICENSE.txt file in the binary build package for more information.
 [pypi]: https://pypi.org/project/adrt/
 [docs]: https://adrt.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/adrt/actions
+[joss]: https://doi.org/10.21105/joss.05083
 [brady98]: https://doi.org/10.1137/S0097539793256673
 [press06]: https://doi.org/10.1073/pnas.0609228103
 [rim20]: https://doi.org/10.1016/j.aml.2019.106159
