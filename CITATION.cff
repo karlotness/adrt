@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software in your work, please cite our JOSS paper."
+authors:
+- family-names: "Otness"
+  given-names: "Karl"
+  orcid: "https://orcid.org/0000-0001-8534-2648"
+- family-names: "Rim"
+  given-names: "Donsub"
+  orcid: "https://orcid.org/0000-0002-6721-2070"
+title: "adrt: approximate discrete Radon transform for Python"
+doi: "10.5281/zenodo.7738253"
+url: "https://github.com/karlotness/adrt"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Otness"
+    given-names: "Karl"
+    orcid: "https://orcid.org/0000-0001-8534-2648"
+  - family-names: "Rim"
+    given-names: "Donsub"
+    orcid: "https://orcid.org/0000-0002-6721-2070"
+  title: "adrt: approximate discrete Radon transform for Python"
+  doi: "10.21105/joss.05083"
+  url: "https://doi.org/10.21105/joss.05083"
+  publisher:
+    name: "The Open Journal"
+  journal: "Journal of Open Source Software"
+  volume: 8
+  number: 83
+  pages: 5083
+  year: 2023
