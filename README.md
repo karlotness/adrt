@@ -26,6 +26,10 @@ Install from [PyPI][pypi] using pip:
 ``` console
 $ python -m pip install adrt
 ```
+or from [conda-forge][condaforge]:
+``` console
+$ conda install -c conda-forge adrt
+```
 
 For further details on installation or building from source, consult
 the [documentation][docs].
