@@ -1,6 +1,7 @@
 # Approximate Discrete Radon Transform
 
 [![adrt on PyPI](https://img.shields.io/pypi/v/adrt)][pypi]
+[![adrt on conda-forge](https://img.shields.io/conda/vn/conda-forge/adrt.svg)][condaforge]
 [![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][tests]
 [![JOSS Paper](https://joss.theoj.org/papers/10.21105/joss.05083/status.svg)][joss]
@@ -67,6 +68,7 @@ terms for runtime code included as part of the software. Review the
 LICENSE.txt file in the binary build package for more information.
 
 [pypi]: https://pypi.org/project/adrt/
+[condaforge]: https://anaconda.org/conda-forge/adrt
 [docs]: https://adrt.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/adrt/actions
 [joss]: https://doi.org/10.21105/joss.05083
