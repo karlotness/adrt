@@ -72,6 +72,6 @@ TEST_CASE("floor_div2 gives correct result for small values", "[common][div][flo
 
 TEST_CASE("floor_div2 gives correct result for max value", "[common][div][floor_div2]") {
     const size_t val = std::numeric_limits<size_t>::max();
-    const size_t expected = val ^ (size_t{1} << (std::numeric_limits<size_t>::digits - 1));
+    const size_t expected = (size_t{1} << (std::numeric_limits<size_t>::digits - 1)) - size_t{1};
     CHECK(adrt::_common::floor_div2(val) == expected);
 }
