@@ -99,7 +99,6 @@ src = ["src"]
 line-length = 88
 respect-gitignore = false
 fix = false
-update-check = false
 
 [tool.ruff.per-file-ignores]
 "setup.py" = ["ICN001"]
