@@ -132,7 +132,7 @@ namespace adrt {
         struct index_sequence {};
 
         template<size_t N, size_t... Build_Idx>
-        struct _impl_make_index_sequence : adrt::_common::_impl_make_index_sequence<N - 1, N - 1, Build_Idx...> {};
+        struct _impl_make_index_sequence : adrt::_common::_impl_make_index_sequence<N - 1_uz, N - 1_uz, Build_Idx...> {};
 
         template<size_t... Build_Idx>
         struct _impl_make_index_sequence<0, Build_Idx...> {
@@ -241,7 +241,7 @@ namespace adrt {
         struct _impl_compute_strides {
             static inline size_t compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
                 static_assert(I < N && I > 0u, "Index out of range. Do not use this template manually!");
-                const size_t step_size = adrt::_common::_impl_compute_strides<N, I + 1>::compute_strides(shape_in, strides_out);
+                const size_t step_size = adrt::_common::_impl_compute_strides<N, I + 1_uz>::compute_strides(shape_in, strides_out);
                 std::get<I>(strides_out) = step_size;
                 return step_size * std::get<I>(shape_in);
             }
@@ -275,7 +275,7 @@ namespace adrt {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
                 static_assert(sizeof...(idxs) == N - I - 1_uz, "Parameters unpacked incorrectly. Do not use this template manually!");
                 static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
-                return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1>::compute_offset(strides, idxs...);
+                return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1_uz>::compute_offset(strides, idxs...);
             }
         };
 
