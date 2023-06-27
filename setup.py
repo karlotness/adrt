@@ -40,8 +40,8 @@ import sys
 
 
 COMPILER_EXTRA_ARGS = {
-    "unix": ["-std=c++11"],
-    "msvc": ["/std:c++14"],
+    "unix": ["-std=c++17"],
+    "msvc": ["/std:c++17"],
 }
 
 

@@ -47,9 +47,9 @@ This makes it possible to customize the compiler flags used when
 building the native extensions. In particular, OpenMP support can be
 enabled as discussed :ref:`below <openmp-build>`.
 
-The code requires C++11 support to build and makes use of a few
-compiler built-in functions for performance. We require GCC>=4.8, a
-recent version of Clang, or a recent MSVC.
+The code requires C++17 support to build and makes use of a few
+compiler built-in functions for performance. We require recent GCC,
+Clang, or MSVC.
 
 To install the package from source with default compiler flags,
 navigate to the directory containing your copy of the source code and

@@ -77,14 +77,14 @@ jobs:
         python tools/download_catch2.py tests/cpp/catch2/catch.hpp
     - name: Build tests (Linux)
       if: runner.os == 'Linux'
-      run: g++ -std=c++11 -g0 -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all.exe
+      run: g++ -std=c++17 -g0 -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all.exe
     - name: Build tests (Windows)
       if: runner.os == 'Windows'
       run: |
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
         & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
         $cppfiles=Get-ChildItem -Path src\adrt\*,tests\cpp\* -Include *.cpp -Exclude adrt_cdefs_py.cpp
-        cl /std:c++14 /EHsc /MDd /UNDEBUG /permissive- /Zc:inline,preprocessor,__cplusplus /wd5105 /I src\adrt\ $cppfiles.FullName /link /out:tests\cpp\test_all.exe
+        cl /std:c++17 /EHsc /MDd /UNDEBUG /permissive- /Zc:inline,preprocessor,__cplusplus /wd5105 /I src\adrt\ $cppfiles.FullName /link /out:tests\cpp\test_all.exe
     - name: Run tests
       run: ./tests/cpp/test_all.exe
   sdist:
