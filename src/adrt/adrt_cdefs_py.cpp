@@ -246,7 +246,7 @@ bool module_add_bool(PyObject *module, const char *name, bool value) {
 
 template <typename scalar>
 scalar *py_malloc(size_t n_elem) {
-    static_assert(!std::is_same<PyObject*, scalar*>::value && !std::is_same<PyArrayObject*, scalar*>::value, "Do not malloc Python objects!");
+    static_assert(!std::is_same_v<PyObject*, scalar*> && !std::is_same_v<PyArrayObject*, scalar*>, "Do not malloc Python objects!");
     return static_cast<scalar*>(adrt::_py::py_malloc(n_elem, sizeof(scalar)));
 }
 

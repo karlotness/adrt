@@ -50,7 +50,7 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void fmg_restriction(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out) {
-        static_assert(std::is_floating_point<adrt_scalar>::value, "FMG restriction requires floating point");
+        static_assert(std::is_floating_point_v<adrt_scalar>, "FMG restriction requires floating point");
         assert(data);
         assert(out);
         assert(adrt::fmg_restriction_is_valid_shape(shape));
@@ -95,7 +95,7 @@ namespace adrt {
 
     template <typename adrt_scalar>
     void fmg_highpass(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT out) {
-        static_assert(std::is_floating_point<adrt_scalar>::value, "FMG high-pass filter requires floating point");
+        static_assert(std::is_floating_point_v<adrt_scalar>, "FMG high-pass filter requires floating point");
         assert(data);
         assert(out);
         assert(adrt::fmg_highpass_is_valid_shape(shape));

@@ -88,7 +88,7 @@ namespace adrt {
 
         template<typename scalar>
         constexpr typename std::enable_if_t<(std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
-            static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
+            static_assert(std::is_floating_point_v<scalar>, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<scalar>::digits, "Max exponent is too small to cover digits");
             return 1_uz << std::numeric_limits<scalar>::digits;
@@ -96,7 +96,7 @@ namespace adrt {
 
         template<typename scalar>
         constexpr typename std::enable_if_t<(std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
-            static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
+            static_assert(std::is_floating_point_v<scalar>, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<size_t>::digits - 1, "Max exponent is too small to cover digits");
             return std::numeric_limits<size_t>::max();
@@ -148,7 +148,7 @@ namespace adrt {
         // Similar to C++20's std::lerp
         template<typename scalar>
         scalar lerp(scalar a, scalar b, scalar t) {
-            static_assert(std::is_floating_point<scalar>::value, "Interpolation requires floating point");
+            static_assert(std::is_floating_point_v<scalar>, "Interpolation requires floating point");
             if((a <= static_cast<scalar>(0) && b <= static_cast<scalar>(0)) || (a >= static_cast<scalar>(0) && b >= static_cast<scalar>(0))) {
                 // a and b have same sign, subtraction won't magnify
                 return a + t * (b - a);
@@ -197,7 +197,7 @@ namespace adrt {
             static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, Idx... idxs) {
                 static_assert(I < N, "Index out of range. Do not use this template manually!");
                 static_assert(sizeof...(idxs) == N - I - 1_uz, "Parameters unpacked incorrectly. Do not use this template manually!");
-                static_assert(std::is_same<size_t, T>::value, "All indexing arguments should be size_t");
+                static_assert(std::is_same_v<size_t, T>, "All indexing arguments should be size_t");
                 return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1_uz>::compute_offset(strides, idxs...);
             }
         };

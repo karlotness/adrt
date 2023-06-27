@@ -60,15 +60,15 @@ namespace adrt {
     template <typename adrt_scalar, typename float_index = double>
     void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic
-        static_assert(std::is_floating_point<adrt_scalar>::value, "Cartesian interpolation requires floating point");
-        static_assert(std::is_floating_point<float_index>::value, "Floating point index type must be a floating point type");
+        static_assert(std::is_floating_point_v<adrt_scalar>, "Cartesian interpolation requires floating point");
+        static_assert(std::is_floating_point_v<float_index>, "Floating point index type must be a floating point type");
 
         assert(data);
         assert(out);
         assert(adrt::interp_adrtcart_is_valid_shape(in_shape));
         assert(adrt::interp_adrtcart_is_valid_float_index<float_index>(in_shape));
 
-        using larger_float = typename std::conditional<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>::type;
+        using larger_float = typename std::conditional_t<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>;
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
         const size_t N = std::get<3>(in_shape);
