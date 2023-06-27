@@ -126,7 +126,7 @@ namespace adrt {
                     const adrt_scalar v31 = conv_a * adrt::_common::array_access(data, shape, batch, next_row, prev_col);
                     const adrt_scalar v32 = conv_b * adrt::_common::array_access(data, shape, batch, next_row, col);
                     // Store result
-                    adrt::_common::array_access(out, shape, batch, row, col) = (v11 + v21 + v31) + (v12 + v22 + v32)  + (v11 + v21 + v31);
+                    adrt::_common::array_access(out, shape, batch, row, col) = (v11 + v21 + v31) + (v12 + v22 + v32) + (v11 + v21 + v31);
                 }
 
                 // Middle columns
