@@ -70,8 +70,6 @@ setup(
         "bdist_wheel": {
             # Automatically build wheels for current Python version and later.
             # Override by providing command-line arguments to bdist_wheel.
-            # Combined with oldest-supported-numpy this ensures that
-            # built wheels use an old NumPy version.
             "py_limited_api": f"cp{sys.version_info.major}{sys.version_info.minor}",
         },
     },

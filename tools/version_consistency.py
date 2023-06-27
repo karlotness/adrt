@@ -36,9 +36,6 @@ import argparse
 import re
 import ast
 import sys
-import itertools
-import importlib.metadata
-import platform
 from packaging.requirements import Requirement
 from packaging.version import Version, InvalidVersion
 from packaging.utils import canonicalize_name, canonicalize_version
@@ -172,10 +169,10 @@ def find_package_min_numpy(pyproject_toml):
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
-def find_macro_numpy_api(py_cpp):
-    min_numpy = find_cpp_macro_def("NPY_NO_DEPRECATED_API", py_cpp)
+def numpy_version_from_macro(py_cpp, macro):
+    macro_text = find_cpp_macro_def(macro, py_cpp)
     rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
-    if re_match := rgx.match(min_numpy):
+    if re_match := rgx.match(macro_text):
         major = int(re_match.group("major"))
         minor = int(re_match.group("minor"))
         # NumPy<1.18 is missing some API version definitions.
@@ -185,55 +182,14 @@ def find_macro_numpy_api(py_cpp):
             minor = 17
         return f"{major}.{minor}"
     else:
-        raise ValueError(f"Invalid NumPy API macro: {min_numpy}")
+        raise ValueError(f"Invalid NumPy API macro: {macro_text}")
 
 
-def find_min_supported_numpy(pyproject_toml):
-    # Known values for markers in oldest-supported-numpy
-    known_implementations = {
-        "CPython",
-        "PyPy",
-        "IronPython",
-        "Jython",
-        platform.python_implementation(),
-    }
-    known_systems = {"Linux", "Windows", "Darwin", "AIX", "OS400", platform.system()}
-    known_machines = {
-        "x86",
-        "x86_64",
-        "aarch64",
-        "s390x",
-        "arm64",
-        "loongarch64",
-        platform.machine(),
-    }
-    # Load minimum Python version and requirements from oldest-supported-numpy
-    python_version = ".".join(find_meta_min_python(pyproject_toml).split(".")[:2])
-    if python_version.count(".") != 1:
-        raise ValueError(
-            f"Version in requires-python had only major version '{python_version}'"
-        )
-    package_reqs = importlib.metadata.requires("oldest-supported-numpy")
-    if package_reqs is None:
-        raise ValueError("No declared dependencies from oldest-supported-numpy")
-    # Filter to requirements for minimum Python version
-    numpy_pins = []
-    for req in map(Requirement, package_reqs):
-        if req.marker is None or any(
-            req.marker.evaluate(
-                {
-                    "python_version": python_version,
-                    "platform_python_implementation": plat_py_impl,
-                    "platform_system": plat_sys,
-                    "platform_machine": plat_mach,
-                }
-            )
-            for plat_py_impl, plat_sys, plat_mach in itertools.product(
-                known_implementations, known_systems, known_machines
-            )
-        ):
-            numpy_pins.append(str(req))
-    return ".".join(str(find_min_version("numpy", numpy_pins)).split(".")[:2])
+def find_build_min_numpy(pyproject_toml):
+    with open(pyproject_toml, "rb") as pyproj_file:
+        defs = tomllib.load(pyproj_file)
+    ver_constraint = defs["build-system"]["requires"]
+    return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
 if __name__ == "__main__":
@@ -279,16 +235,28 @@ if __name__ == "__main__":
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
-    build_min_numpy = find_min_supported_numpy("pyproject.toml")
-    macro_min_numpy = find_macro_numpy_api("src/adrt/adrt_cdefs_py.cpp")
+    macro_numpy_target = numpy_version_from_macro(
+        "src/adrt/adrt_cdefs_py.cpp", "NPY_TARGET_VERSION"
+    )
+    build_min_numpy = find_build_min_numpy("pyproject.toml")
+    macro_numpy_deprecated = numpy_version_from_macro(
+        "src/adrt/adrt_cdefs_py.cpp", "NPY_NO_DEPRECATED_API"
+    )
     print(f"Package min NumPy: {package_min_numpy}")
+    print(f"Macro NumPy API Target: {macro_numpy_target}")
     print(f"Build min NumPy: {build_min_numpy}")
-    print(f"Macro min NumPy: {macro_min_numpy}")
-    if Version(package_min_numpy) < Version(macro_min_numpy):
-        print("NumPy version mismatch")
+    print(f"Macro NumPy Deprecated API: {macro_numpy_deprecated}")
+    if package_min_numpy != macro_numpy_target:
+        print("NumPy target runtime API version mismatch")
         failure = True
-    if macro_min_numpy != build_min_numpy:
-        print("NumPy C API version mismatch")
+    if build_min_numpy != macro_numpy_deprecated:
+        print("NumPy build and deprecation API version mismatch")
+        failure = True
+    if Version(package_min_numpy) > Version(build_min_numpy):
+        print("Runtime NumPy version is newer than the build version")
+        failure = True
+    if Version(build_min_numpy) < Version("1.25"):
+        print("NumPy >=1.25 required for API target version")
         failure = True
 
     # Make sure versions match
