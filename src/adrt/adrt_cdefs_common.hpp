@@ -150,19 +150,6 @@ namespace adrt {
             return adrt::_common::ceil_div(val, 2_uz);
         }
 
-        // Similar to C++17's std::clamp
-        template<typename scalar>
-        scalar clamp(scalar v, scalar lo, scalar hi) {
-            assert(lo <= hi);
-            if(v < lo) {
-                return lo;
-            }
-            else if (v > hi) {
-                return hi;
-            }
-            return v;
-        }
-
         // Similar to C++20's std::lerp
         template<typename scalar>
         scalar lerp(scalar a, scalar b, scalar t) {

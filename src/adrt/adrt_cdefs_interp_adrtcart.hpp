@@ -38,6 +38,7 @@
 #include <utility>
 #include <type_traits>
 #include <limits>
+#include <algorithm>
 #include <cassert>
 #include "adrt_cdefs_common.hpp"
 
@@ -83,12 +84,12 @@ namespace adrt {
                     const float_index t = t_left * adrt::_common::lerp(-static_cast<float_index>(1), static_cast<float_index>(1), offset_fraction);
                     const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
-                    const int q = static_cast<int>(std::floor(adrt::_common::clamp(-th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1))) + 2);
+                    const int q = static_cast<int>(std::floor(std::clamp(-th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1))) + 2);
                     const int sgn = q % 2 == 0 ? 1 : -1;
                     // Compute angle and offset for indexing
                     // We know th is in [-pi/2, pi/2] so we can compute th0 with some arithmetic
                     const float_index th0 = adrt::_const::pi_4<float_index>() - std::abs(std::abs(th) - adrt::_const::pi_4<float_index>());
-                    const float_index tan_theta = adrt::_common::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
+                    const float_index tan_theta = std::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
                     const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
                     assert(std::isfinite(si));
                     assert(si >= static_cast<float_index>(0));
