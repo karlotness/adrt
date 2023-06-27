@@ -39,6 +39,7 @@
 #include <limits>
 #include <cassert>
 #include <algorithm>
+#include <optional>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -143,49 +144,12 @@ namespace adrt {
         template<size_t I>
         using make_index_sequence = typename adrt::_common::_impl_make_index_sequence<I>::type;
 
-        // Similar to (but simpler than) C++17's std::optional
-        template <typename V>
-        class Optional {
-            static_assert(std::is_trivially_destructible<V>::value, "Optional<V> may only be used with trivially-destructible types.");
+        std::optional<size_t> mul_check(size_t a, size_t b);
 
-            struct Empty {};
-
-            bool ok;
-            union {
-                V val;
-                Empty none;
-            };
-
-        public:
-            Optional(): ok(false), none() {}
-
-            Optional(V value): ok(true), val(value) {}
-
-            bool has_value() const {
-                return ok;
-            }
-
-            V &operator*() {
-                assert(has_value());
-                return val;
-            }
-
-            const V &operator*() const {
-                assert(has_value());
-                return val;
-            }
-
-            explicit operator bool() const {
-                return has_value();
-            }
-        };
-
-        adrt::_common::Optional<size_t> mul_check(size_t a, size_t b);
-
-        adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n);
+        std::optional<size_t> shape_product(const size_t *shape, size_t n);
 
         template<size_t N>
-        adrt::_common::Optional<size_t> shape_product(const std::array<size_t, N> &shape) {
+        std::optional<size_t> shape_product(const std::array<size_t, N> &shape) {
             return adrt::_common::shape_product(shape.data(), shape.size());
         }
 
@@ -318,8 +282,8 @@ namespace adrt {
         bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
             static_assert(NA > 0u, "Must have at least one entry in array a");
             static_assert(NB > 0u, "Must have at least one entry in array b");
-            const adrt::_common::Optional<size_t> size_a = adrt::_common::shape_product(a);
-            const adrt::_common::Optional<size_t> size_b = adrt::_common::shape_product(b);
+            const std::optional<size_t> size_a = adrt::_common::shape_product(a);
+            const std::optional<size_t> size_b = adrt::_common::shape_product(b);
             return size_a.has_value() && size_b.has_value() && (*size_a == *size_b);
         }
     } // end namespace adrt::_assert

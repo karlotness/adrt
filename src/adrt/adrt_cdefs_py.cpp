@@ -46,6 +46,7 @@
 #include <cstddef>
 #include <algorithm>
 #include <iterator>
+#include <optional>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -82,7 +83,7 @@ PyObject *array_to_pyobject(PyArrayObject *arr) {
     return reinterpret_cast<PyObject*>(arr);
 }
 
-adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
+std::optional<size_t> extract_size_t(PyObject *arg) {
     assert(arg);
     const size_t val = PyLong_AsSize_t(arg);
     if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
@@ -91,7 +92,7 @@ adrt::_common::Optional<size_t> extract_size_t(PyObject *arg) {
     return {val};
 }
 
-adrt::_common::Optional<int> extract_int(PyObject *arg) {
+std::optional<int> extract_int(PyObject *arg) {
     assert(arg);
     const long val = PyLong_AsLong(arg);
     if(val == -1L) {
@@ -113,7 +114,7 @@ adrt::_common::Optional<int> extract_int(PyObject *arg) {
 }
 
 template <size_t min_dim, size_t max_dim>
-adrt::_common::Optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
+std::optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     static_assert(min_dim > 0u, "Min dimensions must be positive.");
     assert(arr);
@@ -180,9 +181,9 @@ PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virt
 }
 
 template <size_t ndim>
-adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
+std::optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
     static_assert(ndim > 0u, "Need at least one shape dimension");
-    const adrt::_common::Optional<size_t> n_elem = adrt::_common::shape_product(shape);
+    const std::optional<size_t> n_elem = adrt::_common::shape_product(shape);
     if(!n_elem) {
         PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
     }
@@ -190,7 +191,7 @@ adrt::_common::Optional<size_t> shape_product(const std::array<size_t, ndim> &sh
 }
 
 template <size_t N, size_t... Ints>
-adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
+std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
     static_assert(N >= 1u, "Must accept at least one argument");
     static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Required tuple size is too large for Py_ssize_t");
     static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
@@ -206,12 +207,12 @@ adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, 
 }
 
 template <size_t N>
-adrt::_common::Optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name) {
+std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name) {
     return adrt::_py::unpack_tuple<N>(tuple, name, adrt::_common::make_index_sequence<N>{});
 }
 
 void *py_malloc(size_t n_elem, size_t elem_size) {
-    const adrt::_common::Optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
+    const std::optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
     if(!alloc_size) {
         PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
         return nullptr;
@@ -282,7 +283,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -292,7 +293,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_result_shape(*input_shape);
-    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::adrt_buffer_shape(*input_shape));
+    const std::optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::adrt_buffer_shape(*input_shape));
     if(!tmp_buf_elems) {
         return nullptr;
     }
@@ -345,7 +346,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
-    const adrt::_common::Optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "adrt_step");
+    const std::optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "adrt_step");
     if(!unpacked_args) {
         return nullptr;
     }
@@ -355,7 +356,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Extract shape and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -364,7 +365,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
+    const std::optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }
@@ -421,7 +422,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -431,7 +432,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::iadrt_result_shape(*input_shape);
-    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
+    const std::optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::iadrt_buffer_shape(*input_shape));
     if(!tmp_buf_elems) {
         return nullptr;
     }
@@ -489,7 +490,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -499,7 +500,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_result_shape(*input_shape);
-    const adrt::_common::Optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::bdrt_buffer_shape(*input_shape));
+    const std::optional<size_t> tmp_buf_elems = adrt::_py::shape_product(adrt::bdrt_buffer_shape(*input_shape));
     if(!tmp_buf_elems) {
         return nullptr;
     }
@@ -552,7 +553,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
 
 static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     // Unpack function arguments
-    const adrt::_common::Optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "bdrt_step");
+    const std::optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "bdrt_step");
     if(!unpacked_args) {
         return nullptr;
     }
@@ -562,7 +563,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Extract shape and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -571,7 +572,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const adrt::_common::Optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
+    const std::optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }
@@ -628,7 +629,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -691,7 +692,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -747,7 +748,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -803,7 +804,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const adrt::_common::Optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
     if(!input_shape) {
         return nullptr;
     }
@@ -853,7 +854,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
 }
 
 static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
-    const adrt::_common::Optional<size_t> val = adrt::_py::extract_size_t(arg);
+    const std::optional<size_t> val = adrt::_py::extract_size_t(arg);
     if(!val) {
         return nullptr;
     }

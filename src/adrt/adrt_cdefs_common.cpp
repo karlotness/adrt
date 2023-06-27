@@ -34,6 +34,7 @@
 #include <limits>
 #include <array>
 #include <cassert>
+#include <optional>
 
 #ifdef _MSC_VER
 // MSVC intrinsics
@@ -189,7 +190,7 @@ namespace adrt {
     }
 
     namespace _common {
-        adrt::_common::Optional<size_t> mul_check(size_t a, size_t b) {
+        std::optional<size_t> mul_check(size_t a, size_t b) {
             size_t prod;
             const bool ok = adrt::_impl::mul_check(a, b, prod);
             if(!ok) {
@@ -198,12 +199,12 @@ namespace adrt {
             return {prod};
         }
 
-        adrt::_common::Optional<size_t> shape_product(const size_t *shape, size_t n) {
+        std::optional<size_t> shape_product(const size_t *shape, size_t n) {
             assert((n == 0u) || shape);
             if(n == 0u) {
                 return {};
             }
-            adrt::_common::Optional<size_t> prod = shape[0];
+            std::optional<size_t> prod = shape[0];
             for(size_t i = 1; i < n; ++i) {
                 if(prod) {
                     prod = adrt::_common::mul_check(*prod, shape[i]);
