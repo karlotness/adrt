@@ -64,7 +64,7 @@ bool is_pow2(size_t val) {
     return (val & (val - 1_uz)) == 0u;
 }
 
-int num_iters_fallback(size_t shape) {
+[[maybe_unused]] int num_iters_fallback(size_t shape) {
     // Relies on earlier check that shape != 0
     assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
@@ -76,7 +76,7 @@ int num_iters_fallback(size_t shape) {
     return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
-bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
+[[maybe_unused]] bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0u) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
@@ -107,22 +107,24 @@ int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
-    if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
+    if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         const unsigned int ushape = static_cast<unsigned int>(shape);
         const int lead_zero = __builtin_clz(ushape);
         return (std::numeric_limits<unsigned int>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
-    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+    else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         const unsigned long ushape = static_cast<unsigned long>(shape);
         const int lead_zero = __builtin_clzl(ushape);
         return (std::numeric_limits<unsigned long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
-    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long long>::max()) {
+    else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long long>::max()) {
         const unsigned long long ushape = static_cast<unsigned long long>(shape);
         const int lead_zero = __builtin_clzll(ushape);
         return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
     }
-    return adrt::_impl::num_iters_fallback(shape);
+    else {
+        return adrt::_impl::num_iters_fallback(shape);
+    }
 }
 
 bool mul_check(size_t a, size_t b, size_t &prod) {
@@ -143,7 +145,7 @@ int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
-    if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+    if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
         unsigned long index;
         const unsigned long ushape = static_cast<unsigned long>(shape);
         _BitScanReverse(&index, ushape);
@@ -151,7 +153,7 @@ int num_iters(size_t shape) {
     }
 
     #if defined(_M_X64) || defined(_M_ARM64)
-    else if(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+    else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
         unsigned long index;
         const unsigned __int64 ushape = static_cast<unsigned __int64>(shape);
         _BitScanReverse64(&index, ushape);
@@ -159,7 +161,9 @@ int num_iters(size_t shape) {
     }
     #endif // End: 64bit arch
 
-    return adrt::_impl::num_iters_fallback(shape);
+    else {
+        return adrt::_impl::num_iters_fallback(shape);
+    }
 }
 
 bool mul_check(size_t a, size_t b, size_t &prod) {
