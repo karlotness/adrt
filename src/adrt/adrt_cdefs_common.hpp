@@ -121,22 +121,6 @@ namespace adrt {
 
     namespace _common {
 
-        // Simplified version of C++14's std::index_sequence
-        template <size_t... Idx>
-        struct index_sequence {};
-
-        template<size_t N, size_t... Build_Idx>
-        struct _impl_make_index_sequence : adrt::_common::_impl_make_index_sequence<N - 1_uz, N - 1_uz, Build_Idx...> {};
-
-        template<size_t... Build_Idx>
-        struct _impl_make_index_sequence<0, Build_Idx...> {
-            using type = adrt::_common::index_sequence<Build_Idx...>;
-        };
-
-        // Simplified version of C++14's std::make_index_sequence
-        template<size_t I>
-        using make_index_sequence = typename adrt::_common::_impl_make_index_sequence<I>::type;
-
         std::optional<size_t> mul_check(size_t a, size_t b);
 
         std::optional<size_t> shape_product(const size_t *shape, size_t n);

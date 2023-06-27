@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <utility>
 
 #include "adrt_cdefs_common.hpp"
 #include "adrt_cdefs_adrt.hpp"
@@ -191,10 +192,10 @@ std::optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
 }
 
 template <size_t N, size_t... Ints>
-std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, adrt::_common::index_sequence<Ints...>) {
+std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, std::index_sequence<Ints...>) {
     static_assert(N >= 1u, "Must accept at least one argument");
     static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Required tuple size is too large for Py_ssize_t");
-    static_assert(std::is_same<adrt::_common::index_sequence<Ints...>, adrt::_common::make_index_sequence<N>>::value, "Wrong list of indices. Do not call this overload directly!");
+    static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Wrong list of indices. Do not call this overload directly!");
     assert(tuple);
     assert(name);
     std::array<PyObject*, N> ret;
@@ -208,7 +209,7 @@ std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char
 
 template <size_t N>
 std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name) {
-    return adrt::_py::unpack_tuple<N>(tuple, name, adrt::_common::make_index_sequence<N>{});
+    return adrt::_py::unpack_tuple<N>(tuple, name, std::make_index_sequence<N>{});
 }
 
 void *py_malloc(size_t n_elem, size_t elem_size) {
