@@ -121,13 +121,6 @@ namespace adrt {
 
     namespace _common {
 
-        // Template computing a logical and of its parameters (like C++17's std::conjunction)
-        template<typename... terms>
-        struct conjunction : std::true_type {};
-
-        template<typename term, typename... terms>
-        struct conjunction<term, terms...> : std::conditional<bool(term::value), adrt::_common::conjunction<terms...>, std::false_type>::type {};
-
         // Simplified version of C++14's std::index_sequence
         template <size_t... Idx>
         struct index_sequence {};
@@ -263,7 +256,7 @@ namespace adrt {
         inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
             static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
-            static_assert(adrt::_common::conjunction<std::is_same<size_t, Idx>...>::value, "All indexing arguments should be size_t");
+            static_assert(std::conjunction_v<std::is_same<size_t, Idx>...>, "All indexing arguments should be size_t");
             assert(buf);
             const size_t offset = adrt::_common::_impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
             return buf[offset];
