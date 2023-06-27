@@ -904,7 +904,7 @@ PyInit__adrt_cdefs()
     if(!module) {
         return nullptr;
     }
-    if(!adrt::_py::module_add_bool(module, "OPENMP_ENABLED", adrt::_const::openmp_enabled())) {
+    if(!adrt::_py::module_add_bool(module, "OPENMP_ENABLED", adrt::_const::openmp_enabled)) {
         adrt::_py::xdecref(module);
         return nullptr;
     }

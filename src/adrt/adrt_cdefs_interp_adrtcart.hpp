@@ -53,7 +53,7 @@ namespace adrt {
         // The input shape is (batch, 4, 2*n-1, n)
         // The output shape is (batch, n, 4*n)
         // We ensure that 4*n fits in a float, so n and 2*n-1 will fit as well
-        return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>(), 4_uz);
+        return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>, 4_uz);
     }
 
     // DOC ANCHOR: adrt.utils.interp_to_cart +2
@@ -72,8 +72,8 @@ namespace adrt {
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
         const size_t N = std::get<3>(in_shape);
-        const float_index t_left = adrt::_const::sqrt2_2<float_index>() - (adrt::_const::sqrt2_2<float_index>() / static_cast<float_index>(N));
-        const float_index th_left = adrt::_const::pi_2<float_index>() - (adrt::_const::pi_8<float_index>() / static_cast<float_index>(N));
+        const float_index t_left = adrt::_const::sqrt2_2<float_index> - (adrt::_const::sqrt2_2<float_index> / static_cast<float_index>(N));
+        const float_index th_left = adrt::_const::pi_2<float_index> - (adrt::_const::pi_8<float_index> / static_cast<float_index>(N));
 
         ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, t_left, th_left)")
         for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
@@ -84,11 +84,11 @@ namespace adrt {
                     const float_index t = t_left * adrt::_common::lerp(-static_cast<float_index>(1), static_cast<float_index>(1), offset_fraction);
                     const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
-                    const int q = static_cast<int>(std::floor(std::clamp(-th / adrt::_const::pi_4<float_index>(), -static_cast<float_index>(2), static_cast<float_index>(1))) + 2);
+                    const int q = static_cast<int>(std::floor(std::clamp(-th / adrt::_const::pi_4<float_index>, -static_cast<float_index>(2), static_cast<float_index>(1))) + 2);
                     const int sgn = q % 2 == 0 ? 1 : -1;
                     // Compute angle and offset for indexing
                     // We know th is in [-pi/2, pi/2] so we can compute th0 with some arithmetic
-                    const float_index th0 = adrt::_const::pi_4<float_index>() - std::abs(std::abs(th) - adrt::_const::pi_4<float_index>());
+                    const float_index th0 = adrt::_const::pi_4<float_index> - std::abs(std::abs(th) - adrt::_const::pi_4<float_index>);
                     const float_index tan_theta = std::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
                     const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
                     assert(std::isfinite(si));

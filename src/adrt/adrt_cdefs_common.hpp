@@ -67,33 +67,27 @@ namespace adrt {
 
     namespace _const {
 
-        // Constants as function templates standing in for C++14 variable templates
-        template<typename scalar>
-        constexpr scalar pi_2() {
-            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
-            return static_cast<scalar>(1.570796326794896619231321691639751442L);
+        template<typename result, typename value>
+        constexpr result as_floating_point(value val) {
+            static_assert(std::is_floating_point_v<result>, "Float constants only available for floating point types");
+            static_assert(std::is_same_v<value, long double>, "Float value should be specified as long double");
+            return static_cast<result>(val);
         }
 
         template<typename scalar>
-        constexpr scalar pi_4() {
-            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
-            return static_cast<scalar>(0.785398163397448309615660845819875721L);
-        }
+        constexpr scalar pi_2 = adrt::_const::as_floating_point<scalar>(1.570796326794896619231321691639751442L);
 
         template<typename scalar>
-        constexpr scalar pi_8() {
-            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
-            return static_cast<scalar>(0.392699081698724154807830422909937861L);
-        }
+        constexpr scalar pi_4 = adrt::_const::as_floating_point<scalar>(0.785398163397448309615660845819875721L);
 
         template<typename scalar>
-        constexpr scalar sqrt2_2() {
-            static_assert(std::is_floating_point<scalar>::value, "Float constants only available for floating point types");
-            return static_cast<scalar>(0.707106781186547524400844362104849039L);
-        }
+        constexpr scalar pi_8 = adrt::_const::as_floating_point<scalar>(0.392699081698724154807830422909937861L);
 
         template<typename scalar>
-        constexpr typename std::enable_if<std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
+        constexpr scalar sqrt2_2 = adrt::_const::as_floating_point<scalar>(0.707106781186547524400844362104849039L);
+
+        template<typename scalar>
+        constexpr typename std::enable_if_t<(std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
             static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<scalar>::digits, "Max exponent is too small to cover digits");
@@ -101,21 +95,22 @@ namespace adrt {
         }
 
         template<typename scalar>
-        constexpr typename std::enable_if<std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits, size_t>::type largest_consecutive_float_size_t() {
+        constexpr typename std::enable_if_t<(std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
             static_assert(std::is_floating_point<scalar>::value, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<size_t>::digits - 1, "Max exponent is too small to cover digits");
             return std::numeric_limits<size_t>::max();
         }
 
+        template<typename scalar>
+        constexpr size_t largest_consecutive_float_size_t = adrt::_const::_largest_consecutive_float_size_t<scalar>();
+
         // DOC ANCHOR: adrt.core.threading_enabled
-        constexpr bool openmp_enabled() {
-            #ifdef _OPENMP
-            return true;
-            #else
-            return false;
-            #endif
-        }
+        #ifdef _OPENMP
+        constexpr bool openmp_enabled = true;
+        #else
+        constexpr bool openmp_enabled = false;
+        #endif
 
     } // end namespace adrt::_const
 
