@@ -160,42 +160,21 @@ namespace adrt {
             }
         }
 
-        // Implementation struct: unrolls compute_strides loop
-        template<size_t N, size_t I>
-        struct _impl_compute_strides {
-            static inline size_t compute_strides(const std::array<size_t, N> &shape_in, std::array<size_t, N> &strides_out) {
-                static_assert(I < N && I > 0u, "Index out of range. Do not use this template manually!");
-                const size_t step_size = adrt::_common::_impl_compute_strides<N, I + 1_uz>::compute_strides(shape_in, strides_out);
-                std::get<I>(strides_out) = step_size;
-                return step_size * std::get<I>(shape_in);
-            }
-        };
-
-        template<size_t N>
-        struct _impl_compute_strides<N, 0> {
-            static inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
-                static_assert(N > 0u, "Strides to compute must have at least one dimension");
-                std::array<size_t, N> strides_out;
-                const size_t step_size = adrt::_common::_impl_compute_strides<N, 1>::compute_strides(shape_in, strides_out);
-                std::get<0>(strides_out) = step_size;
-                return strides_out;
-            }
-        };
-
-        template<size_t N>
-        struct _impl_compute_strides<N, N> {
-            static inline size_t compute_strides(const std::array<size_t, N>&, std::array<size_t, N>&) {
-                static_assert(N > 0u, "Strides to compute must have at least one dimension");
-                // Terminate recursion with initial stride of 1
-                return 1_uz;
-            }
-        };
+        template<size_t N, size_t... Ints>
+        inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in, std::index_sequence<Ints...>) {
+            static_assert(N > 0u, "Strides to compute must have at least one dimension");
+            static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N - 1_uz>>, "Invalid indexing pack. Do not call this overload directly!");
+            assert(std::all_of(shape_in.cbegin(), shape_in.cend(), [](size_t v){return v > 0u;}));
+            std::array<size_t, N> strides_out;
+            std::get<N - 1_uz>(strides_out) = 1_uz;
+            (static_cast<void>(std::get<N - Ints - 2_uz>(strides_out) = std::get<N - Ints - 1_uz>(shape_in) * std::get<N - Ints - 1_uz>(strides_out)), ...);
+            return strides_out;
+        }
 
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
-            assert(std::all_of(shape_in.cbegin(), shape_in.cend(), [](size_t v){return v > 0u;}));
-            return adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in);
+            return adrt::_common::compute_strides(shape_in, std::make_index_sequence<N - 1_uz>{});
         }
 
         template <size_t... Ints, typename scalar, size_t N, typename... Idx>
