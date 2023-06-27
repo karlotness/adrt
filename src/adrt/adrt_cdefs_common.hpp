@@ -40,6 +40,7 @@
 #include <cassert>
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -190,27 +191,6 @@ namespace adrt {
             }
         };
 
-        // Implementation struct: unrolls array_stride_access loop
-        template<size_t N, size_t I>
-        struct _impl_array_stride_access {
-            template<typename T, typename... Idx>
-            static inline size_t compute_offset(const std::array<size_t, N> &strides, T idx, Idx... idxs) {
-                static_assert(I < N, "Index out of range. Do not use this template manually!");
-                static_assert(sizeof...(idxs) == N - I - 1_uz, "Parameters unpacked incorrectly. Do not use this template manually!");
-                static_assert(std::is_same_v<size_t, T>, "All indexing arguments should be size_t");
-                return (std::get<I>(strides) * idx) + adrt::_common::_impl_array_stride_access<N, I + 1_uz>::compute_offset(strides, idxs...);
-            }
-        };
-
-        template<size_t N>
-        struct _impl_array_stride_access<N, N> {
-            static inline size_t compute_offset(const std::array<size_t, N>&) {
-                static_assert(N > 0u, "Array must have at least one dimension");
-                // Terminate recursion, initialize accumulator to zero
-                return 0_uz;
-            }
-        };
-
         template<size_t N>
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
@@ -218,14 +198,19 @@ namespace adrt {
             return adrt::_common::_impl_compute_strides<N, 0>::compute_strides(shape_in);
         }
 
-        template <typename scalar, size_t N, typename... Idx>
-        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
+        template <size_t... Ints, typename scalar, size_t N, typename... Idx>
+        inline scalar& array_stride_access(std::index_sequence<Ints...>, scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
             static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
+            static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Invalid indexing pack. Do not call this overload directly!");
             static_assert(std::conjunction_v<std::is_same<size_t, Idx>...>, "All indexing arguments should be size_t");
             assert(buf);
-            const size_t offset = adrt::_common::_impl_array_stride_access<N, 0>::compute_offset(strides, idxs...);
-            return buf[offset];
+            return buf[(... + (std::get<Ints>(strides) * idxs))];
+        }
+
+        template <typename scalar, size_t N, typename... Idx>
+        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
+            return adrt::_common::array_stride_access(std::make_index_sequence<N>{}, buf, strides, idxs...);
         }
 
         template <typename scalar, size_t N, typename... Idx>
