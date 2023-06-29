@@ -33,7 +33,7 @@
 #include <cmath>
 #include <tuple>
 #include <limits>
-#include "catch2/catch.hpp"
+#include "catch2/catch_amalgamated.hpp"
 #include "adrt_cdefs_common.hpp"
 
 using float_test_types = std::tuple<float, double>;

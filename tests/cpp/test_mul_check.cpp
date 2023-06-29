@@ -32,7 +32,7 @@
 
 #include <limits>
 #include <cstddef>
-#include "catch2/catch.hpp"
+#include "catch2/catch_amalgamated.hpp"
 #include "adrt_cdefs_common.hpp"
 
 using std::size_t;

@@ -39,44 +39,43 @@ import pathlib
 import requests
 
 
-CATCH2_URL = "https://github.com/catchorg/Catch2/releases/download/v2.13.10/catch.hpp"
-CATCH2_SHA512 = "b7dd8acce2d32e86f5356c7b7e96a72c6aecb0529af29a7ab85b8dfb1649d510bcfe117f57691b75783ca90fd21c347f64c9cf6d4b996d686f82f081840e89cb"  # noqa: E501
-CATCH2_DIGEST = bytes.fromhex(CATCH2_SHA512)
+CATCH2_VERSION = "3.3.2"
+CATCH2_URLS = {
+    "catch_amalgamated.cpp": (
+        f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.cpp",
+        "f09cfd81edd253636fed7d66ce52faa1377221cb6aa22c102aeb5f4c2fe6c94fab1a6d1aa034454595fcece9b747b4ac7d2373dbd30e024d29726b6319425b8d",
+    ),
+    "catch_amalgamated.hpp": (
+        f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.hpp",
+        "46553a16a4b13e8cbf68e9f3a0dba539c786df98c8ec0cdb5215c4dd0ffd4e5aa37cd0b37eec7e3afccd263825c3dba04a36addd1d39bed71df0376b9d3f965f",
+    ),
+}
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("out_path", help="Path to write downloaded header")
+parser.add_argument("out_dir", help="Directory for downloaded sources")
 
 
 def download_catch2():
-    with requests.get(CATCH2_URL) as response:
-        response.raise_for_status()
-        body = response.content
-    # Check the hash
-    digest = hashlib.sha512(body)
-    if digest.digest() != CATCH2_DIGEST:
-        raise ValueError(f"Invalid hash for catch2 header. Got: {digest.hexdigest()}")
-    return body
+    sources = {}
+    with requests.Session() as sess:
+        for name, (url, sha512) in CATCH2_URLS.items():
+            with sess.get(url) as response:
+                response.raise_for_status()
+                body = response.content
+            # Check the hash
+            digest = hashlib.sha512(body)
+            if digest.digest() != bytes.fromhex(sha512):
+                raise ValueError(f"Invalid hash for {name}. Got: {digest.hexdigest()}")
+            sources[name] = body
+    return sources
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    out_path = pathlib.Path(args.out_path)
-    if out_path.is_file():
-        print("Catch2 already present", file=sys.stderr)
-        sys.exit(0)
-
-    # Download fresh copy
-    body = download_catch2()
-    if body:
-        print("Downloaded Catch2", file=sys.stderr)
-    else:
-        # Failed to retrieve header
-        print("Failed to retrieve headers", file=sys.stderr)
-        sys.exit(1)
-
-    # Write out the result
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(out_path, "wb") as out_file:
-        out_file.write(body)
+    out_dir = pathlib.Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name, body in download_catch2().items():
+        (out_dir / name).write_bytes(body)
+    print("Downloaded Catch2", file=sys.stderr)
     sys.exit(0)

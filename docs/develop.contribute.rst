@@ -208,11 +208,11 @@ them or have edited the functions they cover (in particular those in
 section.
 
 To run the tests, you will need a copy of `Catch2
-<https://github.com/catchorg/Catch2>`__ version 2. We have a Python
+<https://github.com/catchorg/Catch2>`__ version 3. We have a Python
 script ``tools/download_catch2.py`` to retrieve one (requires
 `requests <https://requests.readthedocs.io>`__)::
 
-  $ python tools/download_catch2.py tests/cpp/catch2/catch.hpp
+  $ python tools/download_catch2.py tests/cpp/catch2/
 
 Then on a Linux system, run::
 
