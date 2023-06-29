@@ -135,6 +135,28 @@ def find_meta_min_python(pyproject_toml):
     return find_min_version("python", ["python" + ver_constraint])
 
 
+def find_wheel_min_python(setup_py):
+    options_re = re.compile(
+        r"setup\s*\(.*options\s*=\s*(?P<options>{.*})\s*,.*\)", re.DOTALL
+    )
+    with open(setup_py, "r", encoding="utf8") as setup_file:
+        content = setup_file.read()
+    if re_match := options_re.search(content):
+        options = ast.literal_eval(re_match.group("options").strip())
+        if not isinstance(options, dict):
+            raise ValueError("Setup options attribute is not a dict")
+        min_python = options["bdist_wheel"]["py_limited_api"]
+        if (
+            min_python.lower() != min_python
+            or min_python.strip() != min_python
+            or not min_python.startswith("cp3")
+        ):
+            raise ValueError("Invalid wheel tag format '{min_python}'")
+        minor = int(min_python[3:])
+        return f"3.{minor}"
+    raise ValueError("Could find not setup options argument")
+
+
 def find_linter_min_python(pyproject_toml):
     with open(pyproject_toml, "rb") as pyproj_file:
         defs = tomllib.load(pyproj_file)
@@ -222,13 +244,19 @@ if __name__ == "__main__":
 
     # Check Python version requirements
     meta_min_python = find_meta_min_python("pyproject.toml")
+    wheel_min_python = find_wheel_min_python("setup.py")
     macro_limited_api = find_macro_min_python("src/adrt/adrt_cdefs_py.cpp")
     linter_min_python = find_linter_min_python("pyproject.toml")
     print(f"Metadata min Python: {meta_min_python}")
+    print(f"Wheel min Python: {wheel_min_python}")
     print(f"Limited API macro: {macro_limited_api}")
     print(f"Linter min Python: {linter_min_python}")
     # Check consistency
-    if meta_min_python != macro_limited_api or meta_min_python != linter_min_python:
+    if (
+        meta_min_python != macro_limited_api
+        or meta_min_python != linter_min_python
+        or meta_min_python != wheel_min_python
+    ):
         print("Python version mismatch")
         failure = True
     print("")

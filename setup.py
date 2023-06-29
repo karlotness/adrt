@@ -36,7 +36,6 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import numpy
 import glob
-import sys
 
 
 COMPILER_EXTRA_ARGS = {
@@ -66,11 +65,5 @@ adrt_c_ext = Extension(
 setup(
     ext_modules=[adrt_c_ext],
     cmdclass={"build_ext": CPPVersionBuildExt},
-    options={
-        "bdist_wheel": {
-            # Automatically build wheels for current Python version and later.
-            # Override by providing command-line arguments to bdist_wheel.
-            "py_limited_api": f"cp{sys.version_info.major}{sys.version_info.minor}",
-        },
-    },
+    options={"bdist_wheel": {"py_limited_api": "cp39"}},
 )
