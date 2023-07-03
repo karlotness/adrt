@@ -71,41 +71,30 @@ On occasion we should raise the minimum version of NumPy we accept.
 There are generally two versions involved:
 
 * the version of NumPy used to *build* the native extension using its
-  C API (used for ``NPY_NO_DEPRECATED_API`` in ``adrt_cdefs_py.cpp``)
-* the version of NumPy used at runtime (in ``project.dependencies`` in
-  ``pyproject.toml``)
+  C API
+* the version of NumPy used at runtime
 
 See below for more information on how these interact and should be
 selected.
 
-The version used for building is controlled by `oldest-supported-numpy
-<https://pypi.org/project/oldest-supported-numpy/>`__ maintained by
-SciPy. This chooses the oldest version of NumPy that has support for
-the current version of Python to ensure maximum compatibility. This is
-why we build our releases on the oldest Python we support.
+The version used for building should be chosen to be at least the
+version required for runtime, and also more recent than NumPy version
+1.25. The minimum build-time version should be set as a constraint in
+``build-system.requires`` in ``pyproject.toml`` and as the value of
+``NPY_NO_DEPRECATED_API`` in ``adrt_cdefs_py.cpp``.
 
-This build version of NumPy is the version that should be used for
-``NPY_NO_DEPRECATED_API``. Check the definitions in
-oldest-supported-numpy for the oldest version of Python we support,
-choose the minimum listed NumPy version and use that version.
-
-.. note::
-
-   NumPy<1.18 did not include preprocessor definitions for all
-   released versions so for versions before 1.18 instead specify
-   version 1.15.
-
-The runtime version is controlled by our dependency declaration in
-``pyproject.toml`` under ``project.dependencies``. For this we
+The minimum runtime version should be older than the build time
+version and this should be set as a constraint in
+``project.dependencies`` in ``pyproject.toml`` and as the value for
+``NPY_TARGET_VERSION`` in ``adrt_cdefs_py.cpp``. For this version, we
 generally follow `NEP 29
 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`__ but may
 raise our minimum version a bit early if needed.
 
-Make sure that the version in ``pyproject.toml`` is *not* older than
-the version listed for ``NPY_NO_DEPRECATED_API``. If the versions are
-different make sure that the runtime version of NumPy has a pre-built
-wheel for the oldest supported Python versions on PyPI to make sure
-our package is installable with old Python.
+Ensure that the minimum required versions for both build-time and
+runtime support the oldest version of Python supported by the package
+and that NumPy binary wheels are available for all platforms for which
+we build wheels.
 
 Python Versions
 ---------------
