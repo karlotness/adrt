@@ -75,7 +75,7 @@ jobs:
       run: python -m build --wheel
       env:
         CPPFLAGS: '-U_FORTIFY_SOURCE -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
-        CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Wdouble-promotion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=4 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness'
+        CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wdouble-promotion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=3 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -Wlogical-op'
     - name: Install package
       run: python -m pip install dist/adrt-*.whl
     - name: Run tests
