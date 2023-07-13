@@ -3,7 +3,7 @@
 [![adrt on PyPI](https://img.shields.io/pypi/v/adrt)][pypi]
 [![adrt on conda-forge](https://img.shields.io/conda/vn/conda-forge/adrt.svg)][condaforge]
 [![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
-[![Tests](https://github.com/karlotness/adrt/workflows/Tests/badge.svg)][tests]
+[![Tests](https://github.com/karlotness/adrt/actions/workflows/test.yml/badge.svg)][tests]
 [![JOSS Paper](https://joss.theoj.org/papers/10.21105/joss.05083/status.svg)][joss]
 
 Fast approximate discrete Radon transform for
