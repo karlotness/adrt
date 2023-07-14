@@ -86,15 +86,18 @@ version required for runtime, and also more recent than NumPy version
 The minimum runtime version should be older than the build time
 version and this should be set as a constraint in
 ``project.dependencies`` in ``pyproject.toml`` and as the value for
-``NPY_TARGET_VERSION`` in ``adrt_cdefs_py.cpp``. For this version, we
-generally follow `NEP 29
-<https://numpy.org/neps/nep-0029-deprecation_policy.html>`__ but may
-raise our minimum version a bit early if needed.
+``NPY_TARGET_VERSION`` in ``adrt_cdefs_py.cpp``.
 
 Ensure that the minimum required versions for both build-time and
 runtime support the oldest version of Python supported by the package
 and that NumPy binary wheels are available for all platforms for which
 we build wheels.
+
+.. note::
+
+   For both NumPy and Python versions we roughly follow `SPEC 0
+   <https://scientific-python.org/specs/spec-0000/>`__ and `NEP 29
+   <https://numpy.org/neps/nep-0029-deprecation_policy.html>`__.
 
 Python Versions
 ---------------
