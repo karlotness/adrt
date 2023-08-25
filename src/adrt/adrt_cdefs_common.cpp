@@ -167,6 +167,31 @@ int num_iters(size_t shape) {
 }
 
 bool mul_check(size_t a, size_t b, size_t &prod) {
+
+    #if (_MSC_VER >= 1937) && (defined(_M_IX86) || defined(_M_X64))
+    if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
+        const unsigned int ua = static_cast<unsigned int>(a);
+        const unsigned int ub = static_cast<unsigned int>(b);
+        unsigned int res_low, res_high;
+        const bool overflow = static_cast<bool>(_mul_full_overflow_u32(ua, ub, &res_low, &res_high));
+        assert(overflow == (res_high != 0u));
+        prod = static_cast<size_t>(res_low);
+        return !overflow && (res_low <= std::numeric_limits<size_t>::max());
+    }
+    #endif
+
+    #if (_MSC_VER >= 1937) && defined(_M_X64)
+    if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+        const unsigned __int64 ua = static_cast<unsigned __int64>(a);
+        const unsigned __int64 ub = static_cast<unsigned __int64>(b);
+        unsigned __int64 res_low, res_high;
+        const bool overflow = static_cast<bool>(_mul_full_overflow_u64(ua, ub, &res_low, &res_high));
+        assert(overflow == (res_high != 0u));
+        prod = static_cast<size_t>(res_low);
+        return !overflow && (res_low <= std::numeric_limits<size_t>::max());
+    }
+    #endif
+
     return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
