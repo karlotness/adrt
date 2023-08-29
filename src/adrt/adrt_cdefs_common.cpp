@@ -76,7 +76,7 @@ bool is_pow2(size_t val) {
     return r + (is_power_of_two ? 0 : 1) - 1;
 }
 
-[[maybe_unused]] bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
+[[maybe_unused, nodiscard]] bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0u) && (a > std::numeric_limits<size_t>::max() / b);
     return !overflow;
@@ -127,7 +127,7 @@ int num_iters(size_t shape) {
     }
 }
 
-bool mul_check(size_t a, size_t b, size_t &prod) {
+[[nodiscard]] bool mul_check(size_t a, size_t b, size_t &prod) {
 
     #if __has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && (__GNUC__ >= 5))
     {
@@ -166,7 +166,7 @@ int num_iters(size_t shape) {
     }
 }
 
-bool mul_check(size_t a, size_t b, size_t &prod) {
+[[nodiscard]] bool mul_check(size_t a, size_t b, size_t &prod) {
 
     #if (_MSC_VER >= 1937) && (defined(_M_IX86) || defined(_M_X64))
     if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
@@ -201,7 +201,7 @@ int num_iters(size_t shape) {
     return adrt::_impl::num_iters_fallback(shape);
 }
 
-bool mul_check(size_t a, size_t b, size_t &prod) {
+[[nodiscard]] bool mul_check(size_t a, size_t b, size_t &prod) {
     return adrt::_impl::mul_check_fallback(a, b, prod);
 }
 
