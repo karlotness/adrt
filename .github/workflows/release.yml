@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 10
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
     - name: Setup Python
@@ -54,7 +54,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
     - name: Cache Catch2
@@ -94,7 +94,7 @@ jobs:
     needs: check-cpp
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
     - name: Setup Python
@@ -127,7 +127,7 @@ jobs:
         name: sdist
         path: dist/
     - name: Checkout repository (Windows)
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: runner.os == 'Windows'
       with:
         persist-credentials: false
