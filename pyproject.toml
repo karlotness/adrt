@@ -103,3 +103,6 @@ fix = false
 "setup.py" = ["ICN001"]
 "tools/version_consistency.py" = ["T20"]
 "tools/download_catch2.py" = ["T20"]
+
+[tool.mypy]
+strict = true
