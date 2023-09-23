@@ -32,7 +32,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade tox
     - name: Check version strings
-      run: python -m tox run -e checkver -- --tag_ref '${{ github.ref }}' --not_dev
+      run: python -m tox run -e checkver -- --tag_ref "$GITHUB_REF" --not_dev
     - name: Check types
       run: python -m tox run -e type
       env:
@@ -280,7 +280,7 @@ jobs:
           echo -e '```\n\n</details>'
         } > release_body.md
     - name: Create release
-      run: gh release create '${{ github.ref_name }}' --title '${{ github.ref_name }}' --target '${{ github.sha }}' --draft --notes-file 'release_body.md' --repo '${{ github.repository }}' dist/adrt-*.tar.gz dist/adrt-*.whl
+      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --target "$GITHUB_SHA" --draft --notes-file 'release_body.md' --repo "$GITHUB_REPOSITORY" dist/adrt-*.tar.gz dist/adrt-*.whl
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
@@ -358,6 +358,6 @@ jobs:
       contents: write
     steps:
     - name: Publish GitHub release
-      run: gh release edit '${{ github.ref_name }}' --draft=false --repo '${{ github.repository }}'
+      run: gh release edit "$GITHUB_REF_NAME" --draft=false --repo "$GITHUB_REPOSITORY"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
