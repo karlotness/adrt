@@ -289,7 +289,7 @@ jobs:
         name: diagnostics
         path: diagnostics/
     - name: Prepare step summary
-      run: echo '# Artifact Contents and Diagnostics' > $GITHUB_STEP_SUMMARY
+      run: echo '# Artifact Contents and Diagnostics' > "$GITHUB_STEP_SUMMARY"
     - name: Summarize checksums
       run: |
         {
@@ -300,27 +300,27 @@ jobs:
           echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
           sha512sum dist/adrt-*.tar.gz dist/adrt-*.whl | sed 's!dist/!!'
           echo -e '```\n\n</details>\n'
-        } >> $GITHUB_STEP_SUMMARY
+        } >> "$GITHUB_STEP_SUMMARY"
     - name: Summarize contents
       run: |
-        echo '## Contents' >> $GITHUB_STEP_SUMMARY
+        echo '## Contents' >> "$GITHUB_STEP_SUMMARY"
         for f in dist/*.tar.gz; do
           {
             echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
             tar -tzvf "$f"
             echo -e '```\n\n</details>\n'
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
         done
         for f in dist/*.whl; do
           {
             echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
             zipinfo "$f"
             echo -e '```\n\n</details>\n'
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
         done
     - name: Summarize diagnostics
       run: |
-        echo '## Diagnostics' >> $GITHUB_STEP_SUMMARY
+        echo '## Diagnostics' >> "$GITHUB_STEP_SUMMARY"
         for f in diagnostics/diagnostics-*.txt; do
           fbasename="$(basename -s '.txt' "$f")"
           wheelname="${fbasename#diagnostics-}.whl"
@@ -328,7 +328,7 @@ jobs:
             echo -e "<details><summary>${wheelname}</summary>\n\n\`\`\`"
             sed 's/\r$//g; H; $be; d; :e; g; s/^[[:space:]]*//; s/[[:space:]]*$//;' "$f"
             echo -e '```\n\n</details>\n'
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
         done
   upload:
     runs-on: ubuntu-latest
