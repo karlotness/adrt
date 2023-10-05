@@ -58,16 +58,8 @@ def _naive_adrt(a):
     assert a.shape[0] == a.shape[1]  # nosec: B101
     n = a.shape[0]
     res = np.zeros((4, 2 * a.shape[0] - 1, a.shape[1]), dtype=a.dtype)
-
-    for quad in range(4):
-        if quad == 0:
-            img = a
-        elif quad == 1:
-            img = a.T
-        elif quad == 2:
-            img = np.flipud(a).T
-        elif quad == 3:
-            img = np.flipud(a)
+    imgs = [a, a.T, np.flipud(a).T, np.flipud(a)]
+    for quad, img in enumerate(imgs):
         for hi, h in enumerate(reversed(range(-n + 1, n))):
             for si, s in enumerate(range(n)):
                 v = 0

@@ -44,12 +44,8 @@ def _cellcenters(a, b, n):
 
 
 def py_interp_to_cart(adrt_out, /):
-    if adrt_out.ndim == 4:
-        n = adrt_out.shape[3]
-        adrt_cart_out = np.zeros((adrt_out.shape[0], n, 4 * n))
-    elif adrt_out.ndim == 3:
-        n = adrt_out.shape[2]
-        adrt_cart_out = np.zeros((n, 4 * n))
+    n = adrt_out.shape[-1]
+    adrt_cart_out = np.zeros(adrt_out.shape[:-3] + (n, 4 * n))
     theta_cart_out = _cellcenters(-0.5 * np.pi, 0.5 * np.pi, 4 * n)
     s_cart_out = _cellcenters(np.sqrt(2) / 2, -np.sqrt(2) / 2, n)
     angle, offset = np.meshgrid(theta_cart_out, s_cart_out)
