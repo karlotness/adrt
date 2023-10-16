@@ -37,6 +37,7 @@ import re
 import ast
 import sys
 from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 from packaging.version import Version, InvalidVersion
 from packaging.utils import canonicalize_name, canonicalize_version
 
@@ -214,6 +215,20 @@ def find_build_min_numpy(pyproject_toml):
     return find_min_version("numpy", filter(bool, map(str, ver_constraint)))
 
 
+def find_inconsistent_python_classifiers(pyproject_toml):
+    with open(pyproject_toml, "rb") as pyproj_file:
+        defs = tomllib.load(pyproj_file)
+    rgx = re.compile(r"Programming Language :: Python :: (?P<version>\d+\.\d+)")
+    min_python = SpecifierSet(defs["project"]["requires-python"])
+    inconsistent_versions = set()
+    for classifier in defs["project"]["classifiers"]:
+        if (re_match := rgx.fullmatch(classifier)) and Version(
+            re_match.group("version")
+        ) not in min_python:
+            inconsistent_versions.add(re_match.group("version"))
+    return inconsistent_versions
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     failure = False
@@ -239,6 +254,11 @@ if __name__ == "__main__":
         failure = True
     if args.not_dev and is_dev_version(var_version):
         print("Package version is a development release")
+        failure = True
+    # Check package classifiers
+    if wrong_classifiers := find_inconsistent_python_classifiers("pyproject.toml"):
+        class_str = ", ".join(wrong_classifiers)
+        print(f"Python classifiers do not match requires-python (remove {class_str})")
         failure = True
     print("")
 
