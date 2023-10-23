@@ -149,7 +149,7 @@ std::optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
 }
 
 template <size_t n_virtual_dim>
-PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+[[nodiscard]] PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
     static_assert(n_virtual_dim <= static_cast<unsigned int>(std::numeric_limits<int>::max()), "n_virtual_dim too large, will cause problems with debug assertions");
     assert(ndim > 0);
@@ -212,7 +212,7 @@ std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char
     return adrt::_py::unpack_tuple<N>(tuple, name, std::make_index_sequence<N>{});
 }
 
-void *py_malloc(size_t n_elem, size_t elem_size) {
+[[nodiscard]] void *py_malloc(size_t n_elem, size_t elem_size) {
     const std::optional<size_t> alloc_size = adrt::_common::mul_check(n_elem, elem_size);
     if(!alloc_size) {
         PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
@@ -227,7 +227,7 @@ void *py_malloc(size_t n_elem, size_t elem_size) {
     return ret;
 }
 
-bool module_add_object_ref(PyObject *module, const char *name, PyObject *value) {
+[[nodiscard]] bool module_add_object_ref(PyObject *module, const char *name, PyObject *value) {
     assert(module);
     assert(name);
     assert(value);
@@ -240,12 +240,12 @@ bool module_add_object_ref(PyObject *module, const char *name, PyObject *value) 
     return true;
 }
 
-bool module_add_bool(PyObject *module, const char *name, bool value) {
+[[nodiscard]] bool module_add_bool(PyObject *module, const char *name, bool value) {
     return adrt::_py::module_add_object_ref(module, name, value ? Py_True : Py_False);
 }
 
 template <typename scalar>
-scalar *py_malloc(size_t n_elem) {
+[[nodiscard]] scalar *py_malloc(size_t n_elem) {
     static_assert(!std::is_same_v<PyObject*, scalar*> && !std::is_same_v<PyArrayObject*, scalar*>, "Do not malloc Python objects!");
     return static_cast<scalar*>(adrt::_py::py_malloc(n_elem, sizeof(scalar)));
 }
