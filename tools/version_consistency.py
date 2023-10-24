@@ -137,25 +137,40 @@ def find_meta_min_python(pyproject_toml):
 
 
 def find_wheel_min_python(setup_py):
-    options_re = re.compile(
-        r"setup\s*\(.*options\s*=\s*(?P<options>{.*})\s*,.*\)", re.DOTALL
-    )
     with open(setup_py, "r", encoding="utf8") as setup_file:
         content = setup_file.read()
-    if re_match := options_re.search(content):
-        options = ast.literal_eval(re_match.group("options").strip())
-        if not isinstance(options, dict):
-            raise ValueError("Setup options attribute is not a dict")
-        min_python = options["bdist_wheel"]["py_limited_api"]
-        if (
-            min_python.lower() != min_python
-            or min_python.strip() != min_python
-            or not min_python.startswith("cp3")
-        ):
-            raise ValueError("Invalid wheel tag format '{min_python}'")
-        minor = int(min_python[3:])
-        return f"3.{minor}"
-    raise ValueError("Could find not setup options argument")
+    # Locate setup() calls in the AST
+    calls = [
+        node
+        for node in ast.walk(ast.parse(content))
+        if isinstance(node, ast.Call)
+        and (
+            (isinstance(node.func, ast.Name) and node.func.id == "setup")
+            or (isinstance(node.func, ast.Attribute) and node.func.attr == "setup")
+        )
+    ]
+    if len(calls) != 1:
+        raise ValueError(f"Could not locate unique setup() call, found {len(calls)}")
+    setup_call = calls.pop()
+    # Find options keyword in the call
+    options = None
+    for keyword in setup_call.keywords:
+        if keyword.arg == "options":
+            options = ast.literal_eval(keyword.value)
+            break
+    else:
+        raise ValueError("Could not find setup options argument")
+    if not isinstance(options, dict):
+        raise ValueError("Setup options attribute is not a dict")
+    min_python = options["bdist_wheel"]["py_limited_api"]
+    if (
+        min_python.lower() != min_python
+        or min_python.strip() != min_python
+        or not min_python.startswith("cp3")
+    ):
+        raise ValueError(f"Invalid wheel tag format '{min_python}'")
+    minor = int(min_python[3:])
+    return f"3.{minor}"
 
 
 def find_linter_min_python(pyproject_toml):
