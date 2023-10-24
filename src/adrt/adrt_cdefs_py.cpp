@@ -182,25 +182,20 @@ std::optional<size_t> shape_product(std::span<const size_t> shape) {
     return n_elem;
 }
 
-template <size_t N, size_t... Ints>
-std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name, std::index_sequence<Ints...>) {
-    static_assert(N >= 1u, "Must accept at least one argument");
-    static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Required tuple size is too large for Py_ssize_t");
-    static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Wrong list of indices. Do not call this overload directly!");
-    assert(tuple);
+template <size_t N>
+std::optional<std::span<PyObject *const, N>> unpack_fastcall(PyObject *const *args, Py_ssize_t nargs, const char *name) {
+    static_assert(N > 1u, "Functions of zero or one argument should use METH_NOARGS or METH_O");
+    static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Requesting too many arguments for range check");
+    assert(args);
     assert(name);
-    std::array<PyObject*, N> ret;
-    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &adrt::_common::get<Ints>(ret)...);
-    if(!ok) {
+    if(nargs != static_cast<Py_ssize_t>(N)) {
+        // Wrong number of arguments provided
+        PyErr_Format(PyExc_TypeError, "%s expected %zu arguments, got %zd", name, N, nargs);
         return {};
     }
+    const std::span<PyObject *const, N> ret{args, N};
     assert(std::ranges::all_of(ret, [](PyObject *obj){return obj != nullptr;}));
     return {ret};
-}
-
-template <size_t N>
-std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char *name) {
-    return adrt::_py::unpack_tuple<N>(tuple, name, std::make_index_sequence<N>{});
 }
 
 [[nodiscard]] void *py_malloc(size_t n_elem, size_t elem_size) {
@@ -331,9 +326,9 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
 }
 
-static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
+static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *const *args, Py_ssize_t nargs) {
     // Unpack function arguments
-    const std::optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "adrt_step");
+    const std::optional<std::span<PyObject *const, 2>> unpacked_args = adrt::_py::unpack_fastcall<2>(args, nargs, "adrt_step");
     if(!unpacked_args) {
         return nullptr;
     }
@@ -538,9 +533,9 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
 }
 
-static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
+static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *const *args, Py_ssize_t nargs) {
     // Unpack function arguments
-    const std::optional<std::array<PyObject*, 2>> unpacked_args = adrt::_py::unpack_tuple<2>(args, "bdrt_step");
+    const std::optional<std::span<PyObject *const, 2>> unpacked_args = adrt::_py::unpack_fastcall<2>(args, nargs, "bdrt_step");
     if(!unpacked_args) {
         return nullptr;
     }
@@ -842,10 +837,10 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
 
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
-    {"adrt_step", adrt_py_adrt_step, METH_VARARGS, "Compute one step of the ADRT"},
+    {"adrt_step", reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(adrt_py_adrt_step)), METH_FASTCALL, "Compute one step of the ADRT"},
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
-    {"bdrt_step", adrt_py_bdrt_step, METH_VARARGS, "Compute one step of the bdrt"},
+    {"bdrt_step", reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(adrt_py_bdrt_step)), METH_FASTCALL, "Compute one step of the bdrt"},
     {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
     {"press_fmg_restriction", adrt_py_fmg_restriction, METH_O, "Multigrid restriction operator"},
     {"press_fmg_prolongation", adrt_py_fmg_prolongation, METH_O, "Multigrid prolongation operator"},
