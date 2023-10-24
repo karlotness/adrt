@@ -88,7 +88,7 @@ if not adrt_magick_available():
 
 
 # Linkcode configuration
-@functools.lru_cache(maxsize=1)
+@functools.cache
 def adrt_find_anchors():
     repo_root = pathlib.Path(__file__).parent.resolve().parent
     source_root = repo_root / "src" / "adrt"
