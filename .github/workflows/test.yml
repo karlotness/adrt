@@ -45,13 +45,13 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.10', '3.11', '3.12']
         include:
           - cflags: '-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all'
             constraints: 'numpy>=2'
-          - python: '3.10'
+          - python: '3.11'
             constraints: 'numpy<2'
-          - python: '3.9'
+          - python: '3.10'
             cflags: '-fopenmp'
     steps:
     - name: Checkout repository

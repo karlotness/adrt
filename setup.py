@@ -65,5 +65,5 @@ adrt_c_ext = Extension(
 setup(
     ext_modules=[adrt_c_ext],
     cmdclass={"build_ext": CPPVersionBuildExt},
-    options={"bdist_wheel": {"py_limited_api": "cp39"}},
+    options={"bdist_wheel": {"py_limited_api": "cp310"}},
 )
