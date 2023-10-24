@@ -122,8 +122,8 @@ def find_package_version(init_py):
 def find_release_tag_version(tag_string):
     if tag_string is None:
         return None
-    ver_re = re.compile(r"^refs/tags/v(?P<ver>.+)$")
-    if re_match := ver_re.match(tag_string):
+    ver_re = re.compile(r"refs/tags/v(?P<ver>\S+)")
+    if re_match := ver_re.fullmatch(tag_string):
         return re_match.group("ver")
     else:
         raise ValueError(f"Invalid tag format {tag_string}")
@@ -162,8 +162,8 @@ def find_linter_min_python(pyproject_toml):
     with open(pyproject_toml, "rb") as pyproj_file:
         defs = tomllib.load(pyproj_file)
     target_version = defs["tool"]["ruff"]["target-version"]
-    ver_re = re.compile(r"^py(?P<major>\d)(?P<minor>\d+)$")
-    if re_match := ver_re.match(target_version):
+    ver_re = re.compile(r"py(?P<major>\d)(?P<minor>\d+)")
+    if re_match := ver_re.fullmatch(target_version):
         major_ver = re_match.group("major")
         minor_ver = re_match.group("minor")
         return f"{major_ver}.{minor_ver}"
@@ -194,8 +194,8 @@ def find_package_min_numpy(pyproject_toml):
 
 def numpy_version_from_macro(py_cpp, macro):
     macro_text = find_cpp_macro_def(macro, py_cpp)
-    rgx = re.compile(r"^NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION$")
-    if re_match := rgx.match(macro_text):
+    rgx = re.compile(r"NPY_(?P<major>\d+)_(?P<minor>\d+)_API_VERSION")
+    if re_match := rgx.fullmatch(macro_text):
         major = int(re_match.group("major"))
         minor = int(re_match.group("minor"))
         # NumPy<1.18 is missing some API version definitions.
