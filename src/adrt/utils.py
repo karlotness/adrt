@@ -334,8 +334,8 @@ class ADRTIndex(typing.NamedTuple):
 
 
 def coord_cart_to_adrt(
-    theta: npt.NDArray[typing.Union[np.float32, np.float64]],
-    t: npt.NDArray[typing.Union[np.float32, np.float64]],
+    theta: npt.NDArray[np.float32 | np.float64],
+    t: npt.NDArray[np.float32 | np.float64],
     n: typing.SupportsIndex,
 ) -> ADRTIndex:
     r"""Convert continuous Radon points to the closest ADRT indices.

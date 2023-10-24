@@ -68,7 +68,7 @@ _F = typing.TypeVar("_F", np.float32, np.float64)
 
 
 def iadrt_fmg(
-    a: npt.NDArray[_F], /, *, max_iters: typing.Optional[int] = None
+    a: npt.NDArray[_F], /, *, max_iters: int | None = None
 ) -> npt.NDArray[_F]:
     r"""Approximate inverse to the ADRT by the full multigrid method.
 
@@ -144,7 +144,7 @@ def iadrt_fmg(
         2,
     )
     next(i2, None)
-    for (_inv1, res1), (_, res2) in zip(i1, i2):
+    for (_inv1, res1), (_, res2) in zip(i1, i2, strict=True):
         if not res2 < res1:
             # Residual failed to decrease, stop early
             break
