@@ -232,12 +232,7 @@ std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char
     assert(name);
     assert(value);
     assert(PyModule_Check(module));
-    Py_IncRef(value);
-    if(PyModule_AddObject(module, name, value) != 0) {
-        Py_DecRef(value);
-        return false;
-    }
-    return true;
+    return PyModule_AddObjectRef(module, name, value) == 0;
 }
 
 [[nodiscard]] bool module_add_bool(PyObject *module, const char *name, bool value) {
