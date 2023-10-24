@@ -108,15 +108,32 @@ def find_cpp_macro_def(macro, cpp_path):
 def find_package_version(init_py):
     with open(init_py, "r", encoding="utf8") as init_file:
         content = init_file.read()
-    version_re = re.compile(
-        r"^__version__\s*(?::\s*[^=\s]+\s*)?=(?P<ver>.+)$", re.MULTILINE
-    )
-    if re_match := version_re.search(content):
-        ver_str = ast.literal_eval(re_match.group("ver").strip())
-        if not isinstance(ver_str, str):
-            raise ValueError(f"Version attribute is not a string {ver_str}")
-        return ver_str
-    raise ValueError("Could not find package __version__ attribute")
+    assignments = [
+        node
+        for node in ast.walk(ast.parse(content))
+        if (
+            isinstance(node, ast.Assign)
+            and any(
+                isinstance(t, ast.Name) and t.id == "__version__" for t in node.targets
+            )
+        )
+        or (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == "__version__"
+        )
+    ]
+    if len(assignments) != 1:
+        raise ValueError(
+            f"Could not locate unique __version__ assignment, found {len(assignments)}"
+        )
+    ver_assign = assignments.pop()
+    if ver_assign.value is None:
+        raise ValueError("Version assignment missing value")
+    ver_str = ast.literal_eval(ver_assign.value)
+    if not isinstance(ver_str, str):
+        raise ValueError(f"Version attribute is not a string {ver_str}")
+    return ver_str
 
 
 def find_release_tag_version(tag_string):
