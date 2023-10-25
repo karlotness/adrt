@@ -59,13 +59,13 @@ image is scaled to be unit square, so the image is viewed as supported on
    ax.vlines(0.5, y0, y1, "k", linestyles="--")
 
    # display s calculation
-   ax.annotate('$\\frac{s}{N-1} = \\arctan(\\theta)$',
+   ax.annotate(r"$\frac{s}{N-1} = \arctan(\theta)$",
                xy=(0.5 + xoffset, 0.5*(y0 + y1)),
                color="b")
    ax.vlines(0.5 + 0.5*xoffset, y0, y1, "b")
 
-   ax.annotate('$\\theta$', xy=(-0.5 + 1.5*xoffset, y0 + 0.02))
-   ax.annotate('$\\frac{h}{N} = \\frac{t}{\cos(\\theta)} + \\frac{1 + \\tan(\\theta)}{2}$',
+   ax.annotate(r"$\theta$", xy=(-0.5 + 1.5*xoffset, y0 + 0.02))
+   ax.annotate(r"$\frac{h}{N} = \frac{t}{\cos(\theta)} + \frac{1 + \tan(\theta)}{2}$",
                xy=(-0.5 - 8*xoffset, y0),
                color="b")
 
@@ -157,12 +157,12 @@ the same color.
                color=cmap(z[i]))
 
    plt.yticks([-0.5*np.sqrt(2), 0, 0.5*np.sqrt(2)],
-              ["-$1/\sqrt{2}$", "0", "$1/\sqrt{2}$"])
+              [r"-$1/\sqrt{2}$", "0", r"$1/\sqrt{2}$"])
    plt.ylabel("$t$")
 
    plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
-              ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
-   plt.xlabel('$\\theta$')
+              [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
+   plt.xlabel(r"$\theta$")
 
 
 .. [#press06] William Press, *Discrete Radon transform has an exact, fast

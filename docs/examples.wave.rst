@@ -111,16 +111,16 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    im = ax.imshow(adrt.utils.interp_to_cart(init_adrt), aspect="auto", extent=cart_extent)
    plt.colorbar(im, ax=ax)
    ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-                 ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
-   ax.set_xlabel('$\\theta$')
+                 [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
+   ax.set_xlabel(r"$\theta$")
    ax.set_ylabel("$t$")
 
    ax = axs[1, 1]
    im = ax.imshow(adrt.utils.interp_to_cart(sol_adrt), aspect="auto", extent=cart_extent)
    plt.colorbar(im, ax=ax)
    ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-                 ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
-   ax.set_xlabel('$\\theta$')
+                 [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
+   ax.set_xlabel(r"$\theta$")
    ax.set_ylabel("$t$")
 
    ax = axs[0, 0]

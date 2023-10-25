@@ -70,9 +70,9 @@ a sinusoidal curve of commensurate width in the sinogram.
    plt.imshow(img_cart, aspect="auto", extent=img_extent)
    plt.colorbar()
    plt.xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-              ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
+              [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
    plt.ylabel("$t$")
-   plt.xlabel("$\\theta$")
+   plt.xlabel(r"$\theta$")
 
 
 .. _adrt shepplogan page:
@@ -127,6 +127,6 @@ These can be interpolated to a Cartesian grid with
    plt.imshow(img_cart, aspect="auto", extent=img_extent)
    plt.colorbar()
    plt.xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-              ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
+              [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
    plt.ylabel("$t$")
-   plt.xlabel("$\\theta$")
+   plt.xlabel(r"$\theta$")

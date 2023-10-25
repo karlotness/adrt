@@ -111,7 +111,7 @@ from a normal distribution :math:`\mathcal{N}(0, \sigma I)`.
        cg_inv = iadrt_cg(img_plain_adrt + noise)
        im_plot = ax.imshow(cg_inv)
        fig.colorbar(im_plot, ax=ax)
-       ax.set_title(f"$\\sigma = {scale}$")
+       ax.set_title(rf"$\sigma = {scale}$")
    fig.tight_layout()
 
 The results produced by ``iadrt_cg`` remain relatively clean even at
