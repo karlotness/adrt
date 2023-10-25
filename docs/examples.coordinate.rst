@@ -125,7 +125,7 @@ entry in the four quadrants as follows.
                 vmin=0.0,
                 vmax=1.0,
                 extent=(0, n-1, 2*n-1.5, -0.5))
-      ax.set_title("Quadrant {:d}".format(i + 1))
+      ax.set_title(f"Quadrant {i + 1:d}")
       ax.set_xlabel("s")
 
 

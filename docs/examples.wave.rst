@@ -125,14 +125,14 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
 
    ax = axs[0, 0]
    im = ax.imshow(init, extent=(0, 1, 0, 1))
-   ax.set_title('time = {:1.1f}'.format(0))
+   ax.set_title("time = 0.0")
    plt.colorbar(im, ax=ax)
    ax.set_aspect(1)
    ax.set_xlabel("$x$")
    ax.set_ylabel("$y$")
 
    ax = axs[1, 0]
-   ax.set_title('time = {:1.1f}'.format(time))
+   ax.set_title(f"time = {time:1.1f}")
    im = ax.imshow(sol, extent=(0, 1, 0, 1))
    plt.colorbar(im, ax=ax)
    ax.set_aspect(1)
