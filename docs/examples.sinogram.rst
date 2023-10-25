@@ -18,13 +18,13 @@ The simple geometry relating the two coordinates :math:`(s, h)` and
 :math:`(\theta, t)` is detailed in the :doc:`Coordinate Transform
 Section <examples.coordinate>`.
 
-Gaussian humps
+Gaussian Humps
 --------------
 
 We compute an image that is a sum of two Gaussian humps.
 
 .. plot::
-   :context: close-figs
+   :context: reset
    :align: center
 
    n = 2**9
@@ -33,9 +33,9 @@ We compute an image that is a sum of two Gaussian humps.
    s1 = 200
    s2 = 100
 
-   gaussians = np.exp( -s1*(X - 0.75)**2 - s1*(Y - 0.3)**2) \
-             + np.exp( -s2*(X - 0.25)**2 - s2*(Y - 0.8)**2)
-
+   gaussians = np.exp(-s1 * (X - 0.75) ** 2 - s1 * (Y - 0.3) ** 2) + np.exp(
+       -s2 * (X - 0.25) ** 2 - s2 * (Y - 0.8) ** 2
+   )
    plt.imshow(gaussians, extent=(0, 1, 0, 1))
    plt.colorbar()
 
@@ -69,8 +69,10 @@ a sinusoidal curve of commensurate width in the sinogram.
 
    plt.imshow(img_cart, aspect="auto", extent=img_extent)
    plt.colorbar()
-   plt.xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-              [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
+   plt.xticks(
+       [-np.pi / 2, -np.pi / 4, 0, np.pi / 4, np.pi / 2],
+       [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"],
+   )
    plt.ylabel("$t$")
    plt.xlabel(r"$\theta$")
 
@@ -126,7 +128,9 @@ These can be interpolated to a Cartesian grid with
 
    plt.imshow(img_cart, aspect="auto", extent=img_extent)
    plt.colorbar()
-   plt.xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
-              [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
+   plt.xticks(
+       [-np.pi / 2, -np.pi / 4, 0, np.pi / 4, np.pi / 2],
+       [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"],
+   )
    plt.ylabel("$t$")
    plt.xlabel(r"$\theta$")
