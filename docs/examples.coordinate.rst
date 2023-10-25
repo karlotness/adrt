@@ -32,18 +32,18 @@ image is scaled to be unit square, so the image is viewed as supported on
    # draw auxiliary line normal to the hyperplane
    z = np.array([-1.0, 1.0])
    ax.plot([0, - t*np.sin(theta)],
-           [0, + t*np.cos(theta)], 'r')
+           [0, + t*np.cos(theta)], "r")
 
    # draw t-coordinate
-   ax.annotate('$t$',
+   ax.annotate("$t$",
            xy=(-0.5*t*np.sin(theta)+0.02, 0.5*t*np.cos(theta)))
 
    # draw line
    ax.plot(z*np.cos(theta) - t*np.sin(theta),
-           z*np.sin(theta) + t*np.cos(theta), 'k')
+           z*np.sin(theta) + t*np.cos(theta), "k")
 
    # mark origin
-   ax.plot(0, 0, 'k.', markersize=10)
+   ax.plot(0, 0, "k.", markersize=10)
 
    # left-intercept
    x0, y0 = (-0.5, -0.5*np.tan(theta) + t/np.cos(theta))
@@ -52,37 +52,37 @@ image is scaled to be unit square, so the image is viewed as supported on
        (0.5, (0.5 + t*np.sin(theta))/np.cos(theta)*np.sin(theta) + t*np.cos(theta))
 
    # mark intercept
-   ax.plot(x0, y0, 'k+')
+   ax.plot(x0, y0, "k+")
 
    # draw legs
-   ax.hlines(y0, -0.5, 0.5, 'k', linestyles='--')
-   ax.vlines(0.5, y0, y1, 'k', linestyles='--')
+   ax.hlines(y0, -0.5, 0.5, "k", linestyles="--")
+   ax.vlines(0.5, y0, y1, "k", linestyles="--")
 
    # display s calculation
    ax.annotate('$\\frac{s}{N-1} = \\arctan(\\theta)$',
                xy=(0.5 + xoffset, 0.5*(y0 + y1)),
-               color='b')
-   ax.vlines(0.5 + 0.5*xoffset, y0, y1, 'b')
+               color="b")
+   ax.vlines(0.5 + 0.5*xoffset, y0, y1, "b")
 
    ax.annotate('$\\theta$', xy=(-0.5 + 1.5*xoffset, y0 + 0.02))
    ax.annotate('$\\frac{h}{N} = \\frac{t}{\cos(\\theta)} + \\frac{1 + \\tan(\\theta)}{2}$',
                xy=(-0.5 - 8*xoffset, y0),
-               color='b')
+               color="b")
 
    # show h-coordinates for bottom and top edges
-   ax.annotate('$h=0$', xy=(-0.5 - 2.5*xoffset,  0.5 - yoffset), alpha=0.5)
-   ax.annotate('$h=N$', xy=(-0.5 - 2.5*xoffset, -0.5 - yoffset), alpha=0.5)
+   ax.annotate("$h=0$", xy=(-0.5 - 2.5*xoffset,  0.5 - yoffset), alpha=0.5)
+   ax.annotate("$h=N$", xy=(-0.5 - 2.5*xoffset, -0.5 - yoffset), alpha=0.5)
 
-   ax.hlines(-0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
-   ax.hlines( 0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, 'k')
+   ax.hlines(-0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, "k")
+   ax.hlines( 0.5, -0.5 - xoffset/3, -0.5 + xoffset/3, "k")
 
-   ax.spines['top'].set_visible(False)
-   ax.spines['right'].set_visible(False)
+   ax.spines["top"].set_visible(False)
+   ax.spines["right"].set_visible(False)
    ax.set_xticks([-0.5, -0.25, 0.0, 0.25, 0.5])
    ax.set_yticks([-0.5, -0.25, 0.0, 0.25, 0.5])
    ax.set_xlim([-1.2, 1.2])
-   ax.set_xlabel('$x$')
-   ax.set_ylabel('$y$')
+   ax.set_xlabel("$x$")
+   ax.set_ylabel("$y$")
    ax.grid(True)
 
 
@@ -118,7 +118,7 @@ entry in the four quadrants as follows.
    z_stitched = adrt.utils.stitch_adrt(z_adrtshape)
 
    fig, axs = plt.subplots(ncols=4, sharey=True)
-   axs[0].set_ylabel('h')
+   axs[0].set_ylabel("h")
    for i in range(4):
       ax = axs[i]
       ax.imshow(z_adrtshape[i, ...],
@@ -126,7 +126,7 @@ entry in the four quadrants as follows.
                 vmax=1.0,
                 extent=(0, n-1, 2*n-1.5, -0.5))
       ax.set_title("Quadrant {:d}".format(i + 1))
-      ax.set_xlabel('s')
+      ax.set_xlabel("s")
 
 
 In the stitched view, these would be assembled as follows.
@@ -153,12 +153,12 @@ the same color.
    for i in range(m):
       plt.plot(angles.flatten()[i],
                offsets.flatten()[i],
-               marker='.',
+               marker=".",
                color=cmap(z[i]))
 
    plt.yticks([-0.5*np.sqrt(2), 0, 0.5*np.sqrt(2)],
               ["-$1/\sqrt{2}$", "0", "$1/\sqrt{2}$"])
-   plt.ylabel('$t$')
+   plt.ylabel("$t$")
 
    plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
               ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])

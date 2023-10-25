@@ -52,8 +52,8 @@ We compute the ADRT of this image and plot the image.
    plt.colorbar()
    for i in range(1, 4):
        plt.axvline(n * i - 0.5, color="white", linestyle="--")
-   plt.ylabel('$h$')
-   plt.xlabel('$s$')
+   plt.ylabel("$h$")
+   plt.xlabel("$s$")
    plt.tight_layout()
 
 From the ADRT data we compute the sinogram by using the function
@@ -110,8 +110,8 @@ We can start by computing the ADRT of this image
    plt.colorbar()
    for i in range(1, 4):
        plt.axvline(n * i - 0.5, color="white", linestyle="--")
-   plt.ylabel('$h$')
-   plt.xlabel('$s$')
+   plt.ylabel("$h$")
+   plt.xlabel("$s$")
    plt.tight_layout()
 
 These can be interpolated to a Cartesian grid with

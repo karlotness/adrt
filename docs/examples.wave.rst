@@ -84,8 +84,8 @@ Finally, we plot the solution.
    :align: center
 
 
-   plt.plot(init_adrt[0, :, m//2], label='initial ADRT slice')
-   plt.plot(sol_adrt[0, :, m//2], label='solution ADRT slice')
+   plt.plot(init_adrt[0, :, m//2], label="initial ADRT slice")
+   plt.plot(sol_adrt[0, :, m//2], label="solution ADRT slice")
    plt.legend()
 
 Finally, we invert the ADRT.
@@ -108,36 +108,36 @@ We plot the solution, and also show the Cartesian view of the ADRT data.
    cart_extent = 0.5 * np.array([-np.pi, np.pi, -np.sqrt(2), np.sqrt(2)])
 
    ax = axs[0, 1]
-   im = ax.imshow(adrt.utils.interp_to_cart(init_adrt), aspect='auto', extent=cart_extent)
+   im = ax.imshow(adrt.utils.interp_to_cart(init_adrt), aspect="auto", extent=cart_extent)
    plt.colorbar(im, ax=ax)
    ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
                  ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
    ax.set_xlabel('$\\theta$')
-   ax.set_ylabel('$t$')
+   ax.set_ylabel("$t$")
 
    ax = axs[1, 1]
-   im = ax.imshow(adrt.utils.interp_to_cart(sol_adrt), aspect='auto', extent=cart_extent)
+   im = ax.imshow(adrt.utils.interp_to_cart(sol_adrt), aspect="auto", extent=cart_extent)
    plt.colorbar(im, ax=ax)
    ax.set_xticks([ -np.pi/2,    -np.pi/4,   0,   np.pi/4,   np.pi/2],
                  ["-$\pi/2$", "$-\pi/4$", "0", "$\pi/4$", "$\pi/2$"])
    ax.set_xlabel('$\\theta$')
-   ax.set_ylabel('$t$')
+   ax.set_ylabel("$t$")
 
    ax = axs[0, 0]
    im = ax.imshow(init, extent=(0, 1, 0, 1))
    ax.set_title('time = {:1.1f}'.format(0))
    plt.colorbar(im, ax=ax)
    ax.set_aspect(1)
-   ax.set_xlabel('$x$')
-   ax.set_ylabel('$y$')
+   ax.set_xlabel("$x$")
+   ax.set_ylabel("$y$")
 
    ax = axs[1, 0]
    ax.set_title('time = {:1.1f}'.format(time))
    im = ax.imshow(sol, extent=(0, 1, 0, 1))
    plt.colorbar(im, ax=ax)
    ax.set_aspect(1)
-   ax.set_xlabel('$x$')
-   ax.set_ylabel('$y$')
+   ax.set_xlabel("$x$")
+   ax.set_ylabel("$y$")
 
    fig.tight_layout()
    fig.show()
