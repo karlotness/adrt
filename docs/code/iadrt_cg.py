@@ -21,7 +21,7 @@ class ADRTNormalOperator(LinearOperator):
         return self
 
 
-def iadrt_cg(b, op_cls=ADRTNormalOperator, **kwargs):
+def iadrt_cg(b, /, *, op_cls=ADRTNormalOperator, **kwargs):
     if b.ndim > 3:
         raise ValueError("batch dimension not supported for iadrt_cg")
     img_size = b.shape[-1]
