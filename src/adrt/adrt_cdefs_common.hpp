@@ -61,7 +61,7 @@ namespace adrt {
     int num_iters(size_t shape);
 
     inline namespace _literals {
-        constexpr size_t operator"" _uz(unsigned long long val) {
+        constexpr size_t operator""_uz(unsigned long long val) {
             return static_cast<size_t>(val);
         }
     }
