@@ -58,12 +58,12 @@ single-step routines make that possible.
 
 
 import typing
+import operator
 import numpy as np
 import numpy.typing as npt
 from .utils import truncate as _truncate
 from ._wrappers import (
     _format_object_type,
-    num_iters,
     adrt_step,
     bdrt_step,
     threading_enabled,
@@ -90,6 +90,33 @@ __all__: typing.Final[typing.Sequence[str]] = [
 
 _A = typing.TypeVar("_A", bound=np.generic)
 _F = typing.TypeVar("_F", np.float32, np.float64)
+
+
+def num_iters(n: typing.SupportsIndex, /) -> int:
+    r"""Number of adrt iterations needed for an image of size n.
+
+    Many of the algorithms in this package are iterative. For an image
+    of size :math:`n \times n` (powers of two), the core loop must be
+    run :math:`\log_2(n)` times. This function computes the number of
+    iterations necessary and is equivalent to
+    :math:`\lceil{\log_2(n)}\rceil`, with the special case
+    :pycode:`num_iters(0) == 0`.
+
+    Parameters
+    ----------
+    n : int
+        The integer size of the image array which is to be processed.
+
+    Returns
+    -------
+    int
+        The number of iterations needed to fully process the image of
+        size `n`.
+    """
+    n = operator.index(n)
+    if n < 0:
+        raise ValueError("non-negative value required for iteration count")
+    return n.bit_length() - (n.bit_count() == 1)
 
 
 def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:

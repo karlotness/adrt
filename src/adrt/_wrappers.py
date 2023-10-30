@@ -362,31 +362,6 @@ def interp_to_cart(a: npt.NDArray[F], /) -> npt.NDArray[F]:
 
 
 @_set_module("adrt.core")
-def num_iters(n: typing.SupportsIndex, /) -> int:
-    r"""Number of adrt iterations needed for an image of size n.
-
-    Many of the algorithms in this package are iterative. For an image
-    of size :math:`n \times n` (powers of two), the core loop must be
-    run :math:`\log_2(n)` times. This function computes the number of
-    iterations necessary and is equivalent to
-    :math:`\lceil{\log_2(n)}\rceil`, with the special case
-    :pycode:`num_iters(0) == 0`.
-
-    Parameters
-    ----------
-    n : int
-        The integer size of the image array which is to be processed.
-
-    Returns
-    -------
-    int
-        The number of iterations needed to fully process the image of
-        size `n`.
-    """
-    return _adrt_cdefs.num_iters(operator.index(n))
-
-
-@_set_module("adrt.core")
 def threading_enabled() -> bool:
     r"""Indicate whether core routines provide multithreading.
 

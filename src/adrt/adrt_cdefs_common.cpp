@@ -135,7 +135,6 @@ bool is_pow2(size_t val) {
 
 namespace adrt {
 
-    // DOC ANCHOR: adrt.core.num_iters
     int num_iters(size_t shape) {
         return static_cast<int>(std::bit_width(shape)) - (adrt::_impl::is_pow2(shape) ? 1 : 0);
     }

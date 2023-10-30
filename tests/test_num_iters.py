@@ -48,9 +48,8 @@ def test_reject_negative():
         adrt.core.num_iters(-1)
 
 
-def test_reject_overflow():
-    with pytest.raises(OverflowError):
-        adrt.core.num_iters(SIZE_T_MAX + 1)
+def test_handles_size_t_overflow():
+    assert adrt.core.num_iters(SIZE_T_MAX + 1) == adrt.core.num_iters(SIZE_T_MAX)
 
 
 @pytest.mark.parametrize(

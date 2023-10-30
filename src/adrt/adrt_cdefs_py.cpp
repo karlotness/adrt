@@ -84,15 +84,6 @@ PyObject *array_to_pyobject(PyArrayObject *arr) {
     return reinterpret_cast<PyObject*>(arr);
 }
 
-std::optional<size_t> extract_size_t(PyObject *arg) {
-    assert(arg);
-    const size_t val = PyLong_AsSize_t(arg);
-    if(val == static_cast<size_t>(-1) && PyErr_Occurred()) {
-        return {};
-    }
-    return {val};
-}
-
 std::optional<int> extract_int(PyObject *arg) {
     assert(arg);
     const long val = PyLong_AsLong(arg);
@@ -849,21 +840,12 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
     }
 }
 
-static PyObject *adrt_py_num_iters(PyObject* /* self */, PyObject *arg){
-    const std::optional<size_t> val = adrt::_py::extract_size_t(arg);
-    if(!val) {
-        return nullptr;
-    }
-    return PyLong_FromLong(adrt::num_iters(*val));
-}
-
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
     {"adrt_step", adrt_py_adrt_step, METH_VARARGS, "Compute one step of the ADRT"},
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
     {"bdrt_step", adrt_py_bdrt_step, METH_VARARGS, "Compute one step of the bdrt"},
-    {"num_iters", adrt_py_num_iters, METH_O, "Compute the number of iterations needed for the ADRT"},
     {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
     {"press_fmg_restriction", adrt_py_fmg_restriction, METH_O, "Multigrid restriction operator"},
     {"press_fmg_prolongation", adrt_py_fmg_prolongation, METH_O, "Multigrid prolongation operator"},
