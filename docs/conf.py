@@ -120,11 +120,9 @@ def linkcode_resolve(domain, info):
     if mod_name != "adrt" and not mod_name.startswith("adrt."):
         return None
     fullname = info["fullname"]
-    qualname = f"{mod_name}.{fullname}"
-    link_name_map = adrt_find_anchors()
-    if qualname in link_name_map:
+    if anchor_lookup := adrt_find_anchors().get(f"{mod_name}.{fullname}"):
         # Use the provided anchor
-        source_file, line_start = link_name_map[qualname]
+        source_file, line_start = anchor_lookup
         line_end = None
     else:
         pkg_root = pathlib.Path(adrt.__file__).parent
