@@ -2,7 +2,7 @@ import sys
 import shutil
 import pathlib
 import inspect
-import importlib
+import pkgutil
 import functools
 import re
 import packaging.version
@@ -126,16 +126,23 @@ def linkcode_resolve(domain, info):
         line_end = None
     else:
         pkg_root = pathlib.Path(adrt.__file__).parent
-        module = importlib.import_module(mod_name)
-        obj = getattr(module, fullname)
         try:
-            source_file = str(
-                pathlib.Path(inspect.getsourcefile(obj)).relative_to(pkg_root)
-            )
-        except ValueError:
+            obj = pkgutil.resolve_name(f"{mod_name}:{fullname}")
+        except AttributeError:
             return None
-        lines, line_start = inspect.getsourcelines(obj)
-        line_end = line_start + len(lines) - 1
+        if isinstance(obj, property):
+            obj = obj.fget
+        if obj is None:
+            return None
+        try:
+            source_file = inspect.getsourcefile(obj)
+            if source_file is None:
+                return None
+            source_file = pathlib.Path(source_file).relative_to(pkg_root)
+            lines, line_start = inspect.getsourcelines(obj)
+            line_end = line_start + len(lines) - 1
+        except (ValueError, TypeError):
+            return None
     # Form the URL from the pieces
     repo_url = "https://github.com/karlotness/adrt"
     if packaging.version.Version(version).is_devrelease:
@@ -148,4 +155,4 @@ def linkcode_resolve(domain, info):
         line_suffix = f"#L{line_start}"
     else:
         line_suffix = ""
-    return f"{repo_url}/blob/{ref}/src/adrt/{source_file}{line_suffix}"
+    return f"{repo_url}/blob/{ref}/src/adrt/{source_file!s}{line_suffix}"
