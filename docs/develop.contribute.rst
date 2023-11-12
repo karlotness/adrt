@@ -210,7 +210,7 @@ section.
 To run the tests, you will need a copy of `Catch2
 <https://github.com/catchorg/Catch2>`__ version 3. We have a Python
 script ``tools/download_catch2.py`` to retrieve one (requires
-`requests <https://requests.readthedocs.io>`__)::
+`httpx[http2] <https://www.python-httpx.org>`__)::
 
   $ python tools/download_catch2.py tests/cpp/catch2/
 
