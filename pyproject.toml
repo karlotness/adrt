@@ -92,15 +92,17 @@ addopts = [
 
 [tool.ruff]
 target-version = "py39"
-select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY"]
-ignore = ["UP015", "SIM108"]
-exclude = ["docs/_build/"]
+extend-exclude = ["docs/_build/"]
 src = ["src"]
 line-length = 88
-respect-gitignore = false
+respect-gitignore = true
 fix = false
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY"]
+ignore = ["UP015", "SIM108"]
+
+[tool.ruff.lint.per-file-ignores]
 "setup.py" = ["ICN001"]
 "tools/version_consistency.py" = ["T20"]
 "tools/download_catch2.py" = ["T20"]
