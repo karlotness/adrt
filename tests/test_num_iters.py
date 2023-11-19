@@ -33,23 +33,14 @@
 
 
 import math
-import struct
 import pytest
 import numpy as np
 import adrt
 
 
-SIZE_T_BITS = struct.calcsize("N") * 8
-SIZE_T_MAX = (2**SIZE_T_BITS) - 1
-
-
 def test_reject_negative():
     with pytest.raises((OverflowError, ValueError)):
         adrt.core.num_iters(-1)
-
-
-def test_handles_size_t_overflow():
-    assert adrt.core.num_iters(SIZE_T_MAX + 1) == adrt.core.num_iters(SIZE_T_MAX)
 
 
 @pytest.mark.parametrize(
@@ -58,10 +49,6 @@ def test_handles_size_t_overflow():
 def test_reject_non_integer(in_val):
     with pytest.raises(TypeError):
         adrt.core.num_iters(in_val)
-
-
-def test_size_t_max():
-    assert adrt.core.num_iters(SIZE_T_MAX) == SIZE_T_BITS
 
 
 def test_zero():
@@ -95,3 +82,9 @@ def test_numpy_integer(cls):
 def test_reject_numpy_non_integer(cls):
     with pytest.raises(TypeError):
         adrt.core.num_iters(cls(4))
+
+
+@pytest.mark.parametrize("exp", [32, 64, 128])
+@pytest.mark.parametrize("offset", [-1, 0, 1])
+def test_large_value(exp, offset):
+    assert adrt.core.num_iters((2**exp) + offset) == exp + (1 if offset > 0 else 0)
