@@ -168,7 +168,7 @@ As much as possible, test not only expected use, but also error cases
 
 Functions in C++ that are *not* exposed to Python, like many of the
 functions in ``adrt_cdefs_common.hpp`` can be tested using `Catch2
-<https://github.com/catchorg/Catch2/tree/v2.x>`__. Each function being
+<https://github.com/catchorg/Catch2>`__. Each function being
 tested has its own test file under ``tests/cpp/``.
 
 Commit Messages
