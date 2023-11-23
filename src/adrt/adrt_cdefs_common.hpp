@@ -76,16 +76,16 @@ namespace adrt {
         }
 
         template<typename scalar>
-        constexpr scalar pi_2 = adrt::_const::as_floating_point<scalar>(1.570796326794896619231321691639751442L);
+        inline constexpr scalar pi_2 = adrt::_const::as_floating_point<scalar>(1.570796326794896619231321691639751442L);
 
         template<typename scalar>
-        constexpr scalar pi_4 = adrt::_const::as_floating_point<scalar>(0.785398163397448309615660845819875721L);
+        inline constexpr scalar pi_4 = adrt::_const::as_floating_point<scalar>(0.785398163397448309615660845819875721L);
 
         template<typename scalar>
-        constexpr scalar pi_8 = adrt::_const::as_floating_point<scalar>(0.392699081698724154807830422909937861L);
+        inline constexpr scalar pi_8 = adrt::_const::as_floating_point<scalar>(0.392699081698724154807830422909937861L);
 
         template<typename scalar>
-        constexpr scalar sqrt2_2 = adrt::_const::as_floating_point<scalar>(0.707106781186547524400844362104849039L);
+        inline constexpr scalar sqrt2_2 = adrt::_const::as_floating_point<scalar>(0.707106781186547524400844362104849039L);
 
         template<typename scalar>
         constexpr typename std::enable_if_t<(std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
@@ -104,13 +104,13 @@ namespace adrt {
         }
 
         template<typename scalar>
-        constexpr size_t largest_consecutive_float_size_t = adrt::_const::_largest_consecutive_float_size_t<scalar>();
+        inline constexpr size_t largest_consecutive_float_size_t = adrt::_const::_largest_consecutive_float_size_t<scalar>();
 
         // DOC ANCHOR: adrt.core.threading_enabled
         #ifdef _OPENMP
-        constexpr bool openmp_enabled = true;
+        inline constexpr bool openmp_enabled = true;
         #else
-        constexpr bool openmp_enabled = false;
+        inline constexpr bool openmp_enabled = false;
         #endif
 
     } // end namespace adrt::_const
