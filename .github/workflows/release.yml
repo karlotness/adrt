@@ -15,7 +15,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       id: setup-python
       with:
         python-version: '3.12'
@@ -65,7 +65,7 @@ jobs:
         enableCrossOsArchive: true
     - name: Setup Python
       if: steps.cache-catch2.outputs.cache-hit != 'true'
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       id: setup-python
       with:
         python-version: '3.12'
@@ -97,7 +97,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
     - name: Install dependencies
@@ -132,7 +132,7 @@ jobs:
         persist-credentials: false
         path: repo
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
     - name: Install cibuildwheel
@@ -220,7 +220,7 @@ jobs:
     needs: wheel
     steps:
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       id: setup-python
       with:
         python-version: '3.12'
