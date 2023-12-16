@@ -34,12 +34,12 @@ jobs:
     - name: Check version strings
       run: python -m tox run -e checkver -- --tag_ref "$GITHUB_REF" --not_dev
     - name: Check types
-      run: python -m tox run -e type
+      run: CXXFLAGS="$CFLAGS" python -m tox run -e type
       env:
         CPPFLAGS: '-U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Run tox tests
-      run: python -m tox run -e py
+      run: CXXFLAGS="$CFLAGS" python -m tox run -e py
       env:
         CPPFLAGS: '-UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
         CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
@@ -149,6 +149,7 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: >-
           CPPFLAGS='-D_FORTIFY_SOURCE=2 -DNDEBUG'
           CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fno-semantic-interposition -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno'
+          CXXFLAGS="$CFLAGS"
           LDFLAGS='-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         # Windows configuration
         CIBW_ARCHS_WINDOWS: 'auto64'
@@ -160,6 +161,7 @@ jobs:
         CIBW_ENVIRONMENT_MACOS: >-
           CPPFLAGS='-DNDEBUG'
           CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
+          CXXFLAGS="$CFLAGS"
           LDFLAGS='-Wl,-S,-x,-dead_strip_dylibs'
     - name: Store artifact
       uses: actions/upload-artifact@v3
