@@ -33,7 +33,7 @@ jobs:
     - name: Run linters
       run: python -m tox run -e lint,checkver
     - name: Check types
-      run: python -m tox run -e type
+      run: CXXFLAGS="$CFLAGS" python -m tox run -e type
       env:
         CPPFLAGS: '-U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
