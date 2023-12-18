@@ -107,7 +107,7 @@ jobs:
     - name: Build sdist
       run: python -m build --sdist
     - name: Store artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sdist
         path: dist/adrt-*.tar.gz
@@ -121,7 +121,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
         path: dist/
@@ -164,9 +164,9 @@ jobs:
           CXXFLAGS="$CFLAGS"
           LDFLAGS='-Wl,-S,-x,-dead_strip_dylibs'
     - name: Store artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: wheel
+        name: wheel-${{ runner.os }}-${{ runner.arch }}
         path: wheelhouse/adrt-*.whl
         if-no-files-found: error
     - name: Diagnostics (Linux)
@@ -211,9 +211,9 @@ jobs:
           } > "diagnostics-$(basename -s '.whl' "$wheelfile").txt"
         done
     - name: Store diagnostics
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: diagnostics
+        name: diagnostics-${{ runner.os }}-${{ runner.arch }}
         path: diagnostics-*.txt
         if-no-files-found: error
   check-artifacts:
@@ -240,14 +240,15 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade twine abi3audit
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: wheel
+        pattern: wheel-*
+        merge-multiple: true
         path: dist/
     - name: Check artifacts
       run: python -m twine check --strict dist/*
@@ -261,14 +262,15 @@ jobs:
       contents: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: wheel
+        pattern: wheel-*
+        merge-multiple: true
         path: dist/
     - name: Draft release body
       run: |
@@ -285,9 +287,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: diagnostics
+        pattern: diagnostics-*
+        merge-multiple: true
         path: diagnostics/
     - name: Prepare step summary
       run: printf '# Artifact Contents and Diagnostics\n' > "$GITHUB_STEP_SUMMARY"
@@ -340,14 +343,15 @@ jobs:
       id-token: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: wheel
+        pattern: wheel-*
+        merge-multiple: true
         path: dist/
     - name: Upload package
       uses: pypa/gh-action-pypi-publish@release/v1
