@@ -41,15 +41,15 @@ import io
 import httpx
 
 
-CATCH2_VERSION = "3.5.1"
+CATCH2_VERSION = "3.5.2"
 CATCH2_URLS = {
     "catch_amalgamated.cpp": (
         f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.cpp",
-        "af725d64d397b79240a4c629d13c59848e1b0a435de89b17e0e1a20af0cae0a43f61ae30ecbe9fcd12b3123ba6061d447a37bf0610bbb35ea67123efee737729",
+        "d156c6e258b07bfd337fa214168155372955defa7131cc7a0b63b168d8f2621487a1cd8a74a9b233b950d471bccc7538e95309f23a41f0e6b3a33c818a15dbb3",
     ),
     "catch_amalgamated.hpp": (
         f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.hpp",
-        "c11b689a60cca640437391b0477f963477ba3773bc497b748dd8d78723c4b903c464990ee9ef4b2a451d114ec17747382c8e21b650fa218b5c476a25f3fa2507",
+        "2b354ef67dbe39a1babf1a04008b1e263e39b47984aaed89407fae56cede9ccc2ccb8a06bec11b40b62611345cab0de16313c04e192d32b614c9be8fe8c2ad40",
     ),
 }
 
