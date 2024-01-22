@@ -20,7 +20,7 @@ jobs:
       with:
         python-version: '3.12'
     - name: Cache pip downloads
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
@@ -57,7 +57,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Cache Catch2
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-catch2
       with:
         path: tests/cpp/catch2
@@ -227,7 +227,7 @@ jobs:
       with:
         python-version: '3.12'
     - name: Cache pip downloads
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
