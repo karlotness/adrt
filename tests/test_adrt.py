@@ -141,7 +141,7 @@ class TestAdrtCdefs:
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_byteswapped(self):
-        inarr = np.ones((16, 16), dtype=np.float32).newbyteorder()
+        inarr = np.ones((16, 16), dtype=np.dtype(np.float32).newbyteorder())
         with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.adrt(inarr)
 

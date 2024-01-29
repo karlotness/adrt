@@ -125,7 +125,9 @@ class TestBdrtCdefs:
 
     def test_refuses_byteswapped(self):
         size = 16
-        inarr = np.ones((4, 2 * size - 1, size), dtype=np.float32).newbyteorder()
+        inarr = np.ones(
+            (4, 2 * size - 1, size), dtype=np.dtype(np.float32).newbyteorder()
+        )
         with pytest.raises(ValueError):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
