@@ -153,7 +153,7 @@ int num_iters(size_t shape) {
     }
 
     #if defined(_M_X64) || defined(_M_ARM64)
-    else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+    if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
         unsigned long index;
         const unsigned __int64 ushape = static_cast<unsigned __int64>(shape);
         _BitScanReverse64(&index, ushape);
@@ -161,9 +161,7 @@ int num_iters(size_t shape) {
     }
     #endif // End: 64bit arch
 
-    else {
-        return adrt::_impl::num_iters_fallback(shape);
-    }
+    return adrt::_impl::num_iters_fallback(shape);
 }
 
 [[nodiscard]] bool mul_check(size_t a, size_t b, size_t &prod) {
