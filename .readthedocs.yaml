@@ -7,7 +7,6 @@ build:
     python: '3.12'
   apt_packages:
     - g++
-    - imagemagick
 python:
   install:
     - requirements: docs/requirements.txt
