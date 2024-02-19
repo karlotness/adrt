@@ -24,7 +24,6 @@ extensions = [
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "myst_nb",
-    "matplotlib.sphinxext.plot_directive",
 ]
 
 templates_path = ["_templates"]
@@ -68,19 +67,6 @@ intersphinx_mapping = {
     "pypug": ("https://packaging.python.org/en/latest/", None),
 }
 
-# Matplotlib plot directive configuration
-plot_formats = [("png", 100), ("hires.png", 200)]
-plot_rcparams = {
-    "savefig.bbox": "tight",
-}
-plot_apply_rcparams = True
-plot_include_source = True
-plot_html_show_source_link = False
-plot_pre_code = """
-import numpy as np
-from matplotlib import pyplot as plt
-import adrt
-"""
 # MyST-NB configuration
 nb_output_stderr = "remove"
 nb_merge_streams = True
