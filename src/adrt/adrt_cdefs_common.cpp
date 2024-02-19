@@ -107,6 +107,14 @@ int num_iters(size_t shape) {
     // Relies on earlier check that shape != 0
     assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
+
+    #if __has_builtin(__builtin_clzg)
+    {
+        const int lead_zero = __builtin_clzg(shape);
+        return (std::numeric_limits<size_t>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+    }
+    #endif
+
     if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
         const unsigned int ushape = static_cast<unsigned int>(shape);
         const int lead_zero = __builtin_clz(ushape);
