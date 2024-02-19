@@ -51,6 +51,7 @@ If you use this software in your research, please cite our associated
    examples
    reference
    develop
+   changes
    license
 
 
