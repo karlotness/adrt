@@ -23,6 +23,7 @@ extensions = [
     "sphinx.ext.imgconverter",
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
+    "myst_nb",
     "matplotlib.sphinxext.plot_directive",
 ]
 
@@ -30,6 +31,12 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_static_path = ["_static"]
 suppress_warnings = ["epub.unknown_project_files"]
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".ipynb": "myst-nb",
+    ".md": "myst-nb",
+}
 
 # Insert code into each rst file
 rst_prolog = r"""
@@ -74,6 +81,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 import adrt
 """
+# MyST-NB configuration
+nb_output_stderr = "remove"
+nb_merge_streams = True
+nb_execution_timeout = 180
+nb_execution_raise_on_error = True
+nb_render_image_options = {"align": "center"}
+myst_enable_extensions = {"dollarmath"}
+myst_dmath_double_inline = True
 
 
 # Image converter settings

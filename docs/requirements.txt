@@ -6,3 +6,4 @@ scipy
 matplotlib
 scikit-image
 packaging
+myst-nb
