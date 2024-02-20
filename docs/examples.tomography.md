@@ -167,8 +167,7 @@ for ax, data, title in zip(
     [phantom, cg_inv, fmg_inv],
     ["Original", "CG Ridge Inverse", "FMG Inverse"],
 ):
-    im_ax = ax[0]
-    plot_ax = ax[1]
+    im_ax, plot_ax = ax
     im_ax.imshow(
         data,
         cmap="bone",
