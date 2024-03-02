@@ -104,7 +104,7 @@ $\arctan$. Note that the integer $\lceil h \rceil - 1$ agrees with
 the discrete height index of the digital line.
 
 We remark here that the discrete height index is incremented in the direction
-that is opposite from that used in [Press](https://doi.org/10.1073/pnas.0609228103) and starts from 0 at the top of
+that is opposite from that used in Press[^press06] and starts from 0 at the top of
 the image. This choice was made to make the height indexing agree with the 2D
 array indexing adopted for this implementation.
 
@@ -162,3 +162,8 @@ plt.xticks([-0.5*np.pi, -0.25*np.pi, 0, 0.25*np.pi, 0.5*np.pi],
            [r"$-\pi/2$", r"$-\pi/4$", "0", r"$\pi/4$", r"$\pi/2$"])
 plt.xlabel(r"$\theta$");
 ```
+
+[^press06]: William Press, *Discrete Radon transform has an exact,
+    fast inverse and generalizes to operations other than sums along
+    lines*, Proceedings of the National Academy of Sciences, 103.
+    [doi:10.1073/pnas.0609228103](https://doi.org/10.1073/pnas.0609228103)

@@ -8,7 +8,7 @@ kernelspec:
 
 We can solve the Computerized Tomography (CT) problem using the
 routines in {mod}`adrt`. For a detailed mathematical description,
-see standard references (for example [Natterer](https://doi.org/10.1137/1.9780898719284)) on the topic.
+see standard references[^natterer01] on the topic.
 
 Here we will be using SciPy's {func}`scipy.sparse.linalg.cg` routine as
 illustrated in the {doc}`Iterative Inverse Section <examples.cginverse>`. We first
@@ -181,3 +181,7 @@ for ax, data, title in zip(
     plot_ax.grid(True)
 fig.tight_layout();
 ```
+
+[^natterer01]: Frank Natterer, *The Mathematics of Computerized
+    Tomography*, SIAM 2001.
+    [doi:10.1137/1.9780898719284](https://doi.org/10.1137/1.9780898719284)

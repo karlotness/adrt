@@ -10,7 +10,7 @@ This example presents a method for inverting the forward ADRT which
 takes a different approach to the inverse implemented in
 {func}`adrt.iadrt`. The inverse here uses an iterative solver, in
 particular SciPy's {func}`scipy.sparse.linalg.cg` routine that
-implements the Conjugate Gradient (CG) method (see [Greenbaum](https://doi.org/10.1137/1.9781611970937)) but
+implements the Conjugate Gradient (CG) method[^greenbaum97] but
 another implementation could be used instead, if desired.
 
 The operation defined by {func}`adrt.adrt` is linear. If we consider
@@ -146,3 +146,7 @@ noise with scales much larger than those used for the comparison with
 so an iterative approach such as the one demonstrated here may be
 advantageous for certain applications and can be assembled with the
 help of routines in this package.
+
+[^greenbaum97]: Anne Greenbaum, *Iterative Methods for Solving Linear
+    Systems*, SIAM 1997.
+    [doi:10.1137/1.9781611970937](https://doi.org/10.1137/1.9781611970937)
