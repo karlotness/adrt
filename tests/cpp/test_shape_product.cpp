@@ -43,16 +43,14 @@ TEST_CASE("shape_product handles single elements without overflow", "[common][sh
     size_t val = GENERATE(range(0, 5), std::numeric_limits<size_t>::max());
 
     SECTION("single-element array") {
-        std::array<size_t, 1> arr = {val};
-        auto result = adrt::_common::shape_product(arr);
-        REQUIRE(result.has_value());
-        CHECK(*result == val);
+        const std::array<size_t, 1> arr = {val};
+        const auto result = adrt::_common::shape_product(arr);
+        CHECK(result.value() == val);
     }
 
     SECTION("single scalar") {
-        auto result = adrt::_common::shape_product(&val, size_t{1});
-        REQUIRE(result.has_value());
-        CHECK(*result == val);
+        const auto result = adrt::_common::shape_product(&val, size_t{1});
+        CHECK(result.value() == val);
     }
 }
 
@@ -60,9 +58,8 @@ TEST_CASE("shape_product handles multi-element arrays without overflow", "[commo
     std::array<size_t, 4> vals = {1, 2, 3, 4};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
-        auto result = adrt::_common::shape_product(vals);
-        REQUIRE(result.has_value());
-        CHECK(*result == size_t{24});
+        const auto result = adrt::_common::shape_product(vals);
+        CHECK(result.value() == size_t{24});
     } while(std::next_permutation(vals.begin(), vals.end()));
 }
 
@@ -72,9 +69,8 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     if(max_val % size_t{3} == size_t{0}) {
         do {
-            auto result = adrt::_common::shape_product(vals);
-            REQUIRE(result.has_value());
-            CHECK(*result == max_val);
+            const auto result = adrt::_common::shape_product(vals);
+            CHECK(result.value() == max_val);
         } while(std::next_permutation(vals.begin(), vals.end()));
     }
     else {
@@ -84,20 +80,20 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
 
 TEST_CASE("shape_product handles empty arrays", "[common][shape_product]") {
     SECTION("non-null pointer") {
-        size_t val = 0;
-        auto result = adrt::_common::shape_product(&val, size_t{0});
-        REQUIRE_FALSE(result.has_value());
+        const size_t val = 0;
+        const auto result = adrt::_common::shape_product(&val, size_t{0});
+        CHECK_FALSE(result.has_value());
     }
 
     SECTION("null pointer") {
-        auto result = adrt::_common::shape_product(nullptr, size_t{0});
-        REQUIRE_FALSE(result.has_value());
+        const auto result = adrt::_common::shape_product(nullptr, size_t{0});
+        CHECK_FALSE(result.has_value());
     }
 
     SECTION("zero-size array") {
-        std::array<size_t, 0> arr;
-        auto result = adrt::_common::shape_product(arr);
-        REQUIRE_FALSE(result.has_value());
+        const std::array<size_t, 0> arr;
+        const auto result = adrt::_common::shape_product(arr);
+        CHECK_FALSE(result.has_value());
     }
 }
 
@@ -106,8 +102,8 @@ TEST_CASE("shape_product handles arrays with overflow", "[common][shape_product]
     std::array<size_t, 4> vals = {1, 1, size_t_half, size_t_half << (std::numeric_limits<size_t>::digits % 2)};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
-        auto result = adrt::_common::shape_product(vals);
-        REQUIRE_FALSE(result.has_value());
+        const auto result = adrt::_common::shape_product(vals);
+        CHECK_FALSE(result.has_value());
     } while(std::next_permutation(vals.begin(), vals.end()));
 }
 
@@ -116,8 +112,7 @@ TEST_CASE("shape_product is commutative with overflow and zero", "[common][shape
     std::array<size_t, 4> vals = {0, 1, size_t_half, size_t_half << (std::numeric_limits<size_t>::digits % 2)};
     REQUIRE(std::is_sorted(vals.cbegin(), vals.cend()));
     do {
-        auto result = adrt::_common::shape_product(vals);
-        REQUIRE(result.has_value());
-        CHECK(*result == size_t{0});
+        const auto result = adrt::_common::shape_product(vals);
+        CHECK(result.value() == size_t{0});
     } while(std::next_permutation(vals.begin(), vals.end()));
 }
