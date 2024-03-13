@@ -187,7 +187,7 @@ def find_wheel_min_python(setup_py):
     ):
         raise ValueError(f"Invalid wheel tag format '{min_python}'")
     minor = int(min_python[3:])
-    return f"3.{minor}"
+    return canonicalize_version(f"3.{minor}")
 
 
 def find_linter_min_python(pyproject_toml):
@@ -198,7 +198,7 @@ def find_linter_min_python(pyproject_toml):
     if re_match := ver_re.fullmatch(target_version):
         major_ver = re_match.group("major")
         minor_ver = re_match.group("minor")
-        return f"{major_ver}.{minor_ver}"
+        return canonicalize_version(f"{major_ver}.{minor_ver}")
     raise ValueError(f"invalid linter version target '{target_version}'")
 
 
@@ -235,7 +235,7 @@ def numpy_version_from_macro(py_cpp, macro):
         if (major, minor) <= (1, 17):
             major = 1
             minor = 17
-        return f"{major}.{minor}"
+        return canonicalize_version(f"{major}.{minor}")
     else:
         raise ValueError(f"Invalid NumPy API macro: {macro_text}")
 
