@@ -107,7 +107,7 @@ class TestAdrtCdefs:
 
     def test_refuses_four_dim(self):
         inarr = np.zeros((5, 3, 16, 16), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="4"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_non_power_of_two(self):
@@ -147,7 +147,7 @@ class TestAdrtCdefs:
 
     def test_refuses_zero_axis_array(self):
         inarr = np.zeros((0, 32, 32), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="0"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_zero_size_planes(self):

@@ -60,9 +60,9 @@ class TestAdrtStepCdefs:
 
     def test_refuses_out_of_range(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"\-1"):
             adrt._adrt_cdefs.adrt_step(arr, -1)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="4"):
             adrt._adrt_cdefs.adrt_step(arr, 4)
 
 
