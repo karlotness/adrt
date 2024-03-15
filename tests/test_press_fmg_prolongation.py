@@ -84,5 +84,5 @@ def test_reject_too_many_dims():
 
 def test_reject_non_float():
     arr = np.arange(30).reshape((5, 6)).astype("int32")
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="int32"):
         _ = adrt._wrappers._press_fmg_prolongation(arr)

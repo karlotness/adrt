@@ -91,5 +91,5 @@ def test_reject_mismatch_missing_quadrants():
 
 def test_reject_mismatch_non_float():
     arr = np.arange(4 * 11 * 6).reshape((4, 11, 6)).astype(np.int32)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="int32"):
         _ = adrt._wrappers._press_fmg_restriction(arr)

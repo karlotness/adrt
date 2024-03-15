@@ -65,7 +65,7 @@ class TestInterpToCartCdefs:
 
     def test_refuses_int32(self):
         arr = np.zeros((4, 15, 8), dtype=np.int32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             _ = adrt._adrt_cdefs.interp_to_cart(arr)
 
     def test_refuses_non_array(self):
@@ -162,7 +162,7 @@ class TestInterpToCart:
         assert np.all(out_native == out_swapped)
 
     def test_refuses_int32(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             adrt.utils.interp_to_cart(np.zeros((4, 2 * 8 - 1, 8), dtype=np.int32))
 
     def test_refuses_zero_shape(self):

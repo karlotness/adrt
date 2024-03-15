@@ -94,7 +94,7 @@ def test_correct_iter_length(size):
 def test_refuses_int32():
     size = 16
     inarr = np.ones((4, 2 * size - 1, size)).astype("int32")
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="int32"):
         mi.consume(adrt.core.bdrt_iter(inarr))
 
 

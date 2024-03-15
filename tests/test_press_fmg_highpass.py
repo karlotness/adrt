@@ -132,5 +132,5 @@ def test_rejects_tiny():
 
 def test_rejects_non_float():
     arr = np.ones((16, 16), dtype=np.int32)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="int32"):
         _ = adrt._wrappers._press_fmg_highpass(arr)

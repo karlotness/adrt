@@ -61,7 +61,7 @@ class TestIAdrtCdefs:
     def test_refuses_int32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             _ = adrt._adrt_cdefs.iadrt(inarr)
 
     def test_refuses_mismatched_shape(self):
@@ -154,7 +154,7 @@ class TestIAdrt:
     def test_refuses_int32(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.int32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             _ = adrt.iadrt(inarr)
 
     def test_accepts_fortran_order(self):

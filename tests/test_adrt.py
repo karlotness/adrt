@@ -97,7 +97,7 @@ class TestAdrtCdefs:
 
     def test_refuses_int32(self):
         inarr = np.zeros((16, 16), dtype=np.int32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_non_square(self):
@@ -198,7 +198,7 @@ class TestAdrt:
 
     def test_refuses_int32(self):
         inarr = np.zeros((16, 16), dtype=np.int32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int32"):
             _ = adrt.adrt(inarr)
 
     def test_accepts_fortran_order(self):
