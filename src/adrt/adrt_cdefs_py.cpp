@@ -32,7 +32,6 @@
 
 #define PY_SSIZE_T_CLEAN
 #define Py_LIMITED_API 0x03090000
-// Include this first
 #include <Python.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_25_API_VERSION
