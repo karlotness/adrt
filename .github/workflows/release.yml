@@ -144,7 +144,10 @@ jobs:
       shell: bash
       env:
         CIBW_BUILD: 'cp*'
+        CIBW_SKIP: '*-musllinux* pp*'
+        CIBW_TEST_SKIP: '*-macosx_universal2:arm64 cp3{10,11,12,13}-win32 cp313-*'
         # Linux configuration
+        CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux2014'
         CIBW_ARCHS_LINUX: 'auto64'
         CIBW_ENVIRONMENT_LINUX: >-
           CPPFLAGS='-D_FORTIFY_SOURCE=2 -DNDEBUG'
