@@ -186,11 +186,9 @@ jobs:
         $vsinstance=Get-VSSetupInstance | Select-VSSetupInstance -Require Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -Product * -Latest
         & $(Join-Path -Path $vsinstance.InstallationPath -ChildPath Common7\Tools\Launch-VsDevShell.ps1) -SkipAutomaticLocation
         $ProgressPreference = 'SilentlyContinue'
-        Remove-Item 'wheel-diagnostic' -Recurse -ErrorAction SilentlyContinue
-        $baseextract = New-Item -Path . -Name 'wheel-diagnostic' -ItemType 'directory'
         Get-ChildItem -Path 'wheelhouse' -Filter 'adrt-*.whl' | ForEach-Object {
           $wheelfile = $_
-          $destdir = New-Item -Path $baseextract.FullName -Name $wheelfile.Basename -ItemType 'directory'
+          $destdir = [System.IO.Directory]::CreateTempSubdirectory()
           Expand-Archive -Path $wheelfile.FullName -DestinationPath $destdir.FullName
           dumpbin /exports /imports $((Get-ChildItem -Path $destdir.FullName -Filter '*.pyd' -Recurse).FullName) | Out-File -FilePath "diagnostics-$($wheelfile.Basename).txt"
         }
