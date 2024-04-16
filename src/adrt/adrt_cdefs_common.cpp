@@ -65,15 +65,13 @@ bool is_pow2(size_t val) {
 }
 
 [[maybe_unused]] int num_iters_fallback(size_t shape) {
-    // Relies on earlier check that shape != 0
-    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     int r = 0;
     while(shape != 0u) {
         ++r;
         shape >>= 1;
     }
-    return r + (is_power_of_two ? 0 : 1) - 1;
+    return r - (is_power_of_two ? 1 : 0);
 }
 
 [[maybe_unused, nodiscard]] bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
@@ -104,31 +102,33 @@ bool all_positive(const std::array<size_t, N> &shape) {
 
 // DOC ANCHOR: adrt.core.num_iters
 int num_iters(size_t shape) {
-    // Relies on earlier check that shape != 0
-    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
 
     #if __has_builtin(__builtin_clzg)
     {
-        const int lead_zero = __builtin_clzg(shape);
-        return (std::numeric_limits<size_t>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+        constexpr int ndigits = std::numeric_limits<size_t>::digits;
+        const int lead_zero = __builtin_clzg(shape, ndigits);
+        return ndigits - lead_zero - (is_power_of_two ? 1 : 0);
     }
     #endif
 
     if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned int>::max()) {
+        constexpr int ndigits = std::numeric_limits<unsigned int>::digits;
         const unsigned int ushape = static_cast<unsigned int>(shape);
-        const int lead_zero = __builtin_clz(ushape);
-        return (std::numeric_limits<unsigned int>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+        const int lead_zero = (ushape != 0u ? __builtin_clz(ushape) : ndigits);
+        return ndigits - lead_zero - (is_power_of_two ? 1 : 0);
     }
     else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+        constexpr int ndigits = std::numeric_limits<unsigned long>::digits;
         const unsigned long ushape = static_cast<unsigned long>(shape);
-        const int lead_zero = __builtin_clzl(ushape);
-        return (std::numeric_limits<unsigned long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+        const int lead_zero = (ushape != 0u ? __builtin_clzl(ushape) : ndigits);
+        return ndigits - lead_zero - (is_power_of_two ? 1 : 0);
     }
     else if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long long>::max()) {
+        constexpr int ndigits = std::numeric_limits<unsigned long long>::digits;
         const unsigned long long ushape = static_cast<unsigned long long>(shape);
-        const int lead_zero = __builtin_clzll(ushape);
-        return (std::numeric_limits<unsigned long long>::digits - 1) - lead_zero + (is_power_of_two ? 0 : 1);
+        const int lead_zero = (ushape != 0u ? __builtin_clzll(ushape) : ndigits);
+        return ndigits - lead_zero - (is_power_of_two ? 1 : 0);
     }
     else {
         return adrt::_impl::num_iters_fallback(shape);
@@ -150,21 +150,25 @@ int num_iters(size_t shape) {
 #elif defined(_MSC_VER) // MSVC intrinsics
 
 int num_iters(size_t shape) {
-    // Relies on earlier check that shape != 0
-    assert(shape != 0u);
     const bool is_power_of_two = adrt::_impl::is_pow2(shape);
     if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned long>::max()) {
+        if(shape == 0u) {
+            return 0;
+        }
         unsigned long index;
         const unsigned long ushape = static_cast<unsigned long>(shape);
-        _BitScanReverse(&index, ushape);
+        static_cast<void>(_BitScanReverse(&index, ushape));
         return static_cast<int>(index) + (is_power_of_two ? 0 : 1);
     }
 
     #if defined(_M_X64) || defined(_M_ARM64)
     if constexpr(std::numeric_limits<size_t>::max() <= std::numeric_limits<unsigned __int64>::max()) {
+        if(shape == 0u) {
+            return 0;
+        }
         unsigned long index;
         const unsigned __int64 ushape = static_cast<unsigned __int64>(shape);
-        _BitScanReverse64(&index, ushape);
+        static_cast<void>(_BitScanReverse64(&index, ushape));
         return static_cast<int>(index) + (is_power_of_two ? 0 : 1);
     }
     #endif // End: 64bit arch
@@ -218,9 +222,6 @@ int num_iters(size_t shape) {
 namespace adrt {
 
     int num_iters(size_t shape) {
-        if(shape == 0u) {
-            return 0;
-        }
         return adrt::_impl::num_iters(shape);
     }
 
