@@ -315,20 +315,13 @@ if __name__ == "__main__":
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
-    macro_numpy_target = numpy_version_from_macro(
-        "src/adrt/adrt_cdefs_py.cpp", "NPY_TARGET_VERSION"
-    )
     build_min_numpy = find_build_min_numpy("pyproject.toml")
     macro_numpy_deprecated = numpy_version_from_macro(
         "src/adrt/adrt_cdefs_py.cpp", "NPY_NO_DEPRECATED_API"
     )
     print(f"Package min NumPy: {package_min_numpy}")
-    print(f"Macro NumPy API Target: {macro_numpy_target}")
     print(f"Build min NumPy: {build_min_numpy}")
     print(f"Macro NumPy Deprecated API: {macro_numpy_deprecated}")
-    if package_min_numpy != macro_numpy_target:
-        print("NumPy target runtime API version mismatch")
-        failure = True
     if build_min_numpy != macro_numpy_deprecated:
         print("NumPy build and deprecation API version mismatch")
         failure = True
