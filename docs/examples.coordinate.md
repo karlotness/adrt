@@ -145,9 +145,9 @@ These entries would be mapped to the points on the Cartesian Radon domain with
 the same color.
 
 ```{code-cell} ipython3
-from matplotlib import cm
+import matplotlib
 
-cmap = cm.get_cmap()
+cmap = matplotlib.colormaps[matplotlib.rcParams["image.cmap"]]
 for i in range(m):
    plt.plot(angles.flatten()[i],
             offsets.flatten()[i],
