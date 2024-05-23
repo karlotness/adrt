@@ -16,7 +16,7 @@ authors = [
   {name = "Donsub Rim"}
 ]
 dependencies = [
-  "numpy>=1.22,<2"
+  "numpy>=1.23,<2"
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
