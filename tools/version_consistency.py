@@ -62,6 +62,17 @@ parser.add_argument(
 )
 
 
+# This maps Python version strings to the oldest version of NumPy
+# (without patch version) on PyPI to have binary wheels for that
+# release
+PYTHON_TO_MIN_NUMPY_MAP = {
+    "3.9": "1.19",
+    "3.10": "1.21",
+    "3.11": "1.23",
+    "3.12": "1.26",
+}
+
+
 def is_valid_version(ver_str):
     try:
         _ = Version(ver_str)
@@ -303,7 +314,7 @@ if __name__ == "__main__":
     print(f"Wheel min Python: {wheel_min_python}")
     print(f"Limited API macro: {macro_limited_api}")
     print(f"Linter min Python: {linter_min_python}")
-    # Check consistency
+    # Check consistency (Minimum Python versions should all be the same)
     if (
         meta_min_python != macro_limited_api
         or meta_min_python != linter_min_python
@@ -315,21 +326,53 @@ if __name__ == "__main__":
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
+    macro_numpy_target = numpy_version_from_macro(
+        "src/adrt/adrt_cdefs_py.cpp", "NPY_TARGET_VERSION"
+    )
     build_min_numpy = find_build_min_numpy("pyproject.toml")
     macro_numpy_deprecated = numpy_version_from_macro(
         "src/adrt/adrt_cdefs_py.cpp", "NPY_NO_DEPRECATED_API"
     )
     print(f"Package min NumPy: {package_min_numpy}")
+    print(f"Macro NumPy API Target: {macro_numpy_target}")
     print(f"Build min NumPy: {build_min_numpy}")
     print(f"Macro NumPy Deprecated API: {macro_numpy_deprecated}")
+    # The target API version should match the earliest NumPy release
+    # supporting our minimum version of Python (this makes explicit
+    # NumPy's default behavior) and ensures that all wheels we build
+    # are in fact compatible with all supported versions of Python and
+    # NumPy regardless of which version of Python was used to do the
+    # actual build. The macro must be set equal to this value to keep
+    # Conda-Forge builds simple. Don't use a newer version for the
+    # macro.
+    if macro_numpy_target != canonicalize_version(
+        PYTHON_TO_MIN_NUMPY_MAP[meta_min_python]
+    ):
+        print(
+            "NumPy target runtime API does not support oldest possible version"
+            f" (should use {PYTHON_TO_MIN_NUMPY_MAP[meta_min_python]})"
+        )
+        failure = True
+    # The version used to build must not be older than the target API version
+    if Version(build_min_numpy) < Version(macro_numpy_target):
+        print("Minimum build version must be at least the API target version")
+        failure = True
+    # The version used at runtime must not be older than the target API version
+    if Version(package_min_numpy) < Version(macro_numpy_target):
+        print("Runtime version should be at least the target API version")
+        failure = True
+    # We want to warn on API deprecated since our minimum build version
     if build_min_numpy != macro_numpy_deprecated:
         print("NumPy build and deprecation API version mismatch")
         failure = True
-    if Version(package_min_numpy) > Version(build_min_numpy):
-        print("Runtime NumPy version is newer than the build version")
-        failure = True
+    # We need to use at least NumPy 1.25 to build (for API version support)
     if Version(build_min_numpy) < Version("1.25"):
         print("NumPy >=1.25 required for API target version")
+        failure = True
+    # We should always be able to use a build version that is at least
+    # the runtime version (otherwise we can use a newer NumPy to build)
+    if Version(package_min_numpy) > Version(build_min_numpy):
+        print("Runtime NumPy version is newer than the build version")
         failure = True
 
     # Make sure versions match
