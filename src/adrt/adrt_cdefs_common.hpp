@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <span>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -124,6 +125,16 @@ namespace adrt {
         template<size_t N>
         std::optional<size_t> shape_product(const std::array<size_t, N> &shape) {
             return adrt::_common::shape_product(shape.data(), shape.size());
+        template<size_t I, typename T, size_t Extent>
+        constexpr decltype(auto) get(std::span<T, Extent> span) {
+            static_assert(Extent != std::dynamic_extent, "Span must have statically-known extent");
+            static_assert(I < Extent, "Span access is out of bounds");
+            return span[I];
+        }
+
+        template<size_t I, typename T>
+        constexpr decltype(auto) get(T &&obj) {
+            return std::get<I>(std::forward<T>(obj));
         }
 
         inline size_t floor_div(size_t val, size_t d) {
