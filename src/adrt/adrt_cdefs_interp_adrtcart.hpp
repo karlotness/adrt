@@ -49,7 +49,7 @@ namespace adrt {
     std::array<size_t, 3> interp_adrtcart_result_shape(std::span<const size_t, 4> shape);
 
     template <typename float_index = double>
-    bool interp_adrtcart_is_valid_float_index(const std::array<size_t, 4> &in_shape) {
+    bool interp_adrtcart_is_valid_float_index(std::span<const size_t, 4> in_shape) {
         // The input shape is (batch, 4, 2*n-1, n)
         // The output shape is (batch, n, 4*n)
         // We ensure that 4*n fits in a float, so n and 2*n-1 will fit as well
@@ -58,7 +58,7 @@ namespace adrt {
 
     // DOC ANCHOR: adrt.utils.interp_to_cart +2
     template <typename adrt_scalar, typename float_index = double>
-    void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
+    void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 4> in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic
         static_assert(std::is_floating_point_v<adrt_scalar>, "Cartesian interpolation requires floating point");
         static_assert(std::is_floating_point_v<float_index>, "Floating point index type must be a floating point type");

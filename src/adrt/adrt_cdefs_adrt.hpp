@@ -53,7 +53,7 @@ namespace adrt {
     namespace _impl {
 
     template <typename adrt_scalar>
-    std::array<size_t, 5> adrt_core(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 5> &in_shape, adrt_scalar *const ADRT_RESTRICT out) {
+    std::array<size_t, 5> adrt_core(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 5> in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         assert(data);
         assert(out);
 
@@ -99,7 +99,7 @@ namespace adrt {
 
     // DOC ANCHOR: adrt.adrt +2
     template <typename adrt_scalar>
-    void adrt_basic(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
+    void adrt_basic(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 3> shape, adrt_scalar *const ADRT_RESTRICT tmp, adrt_scalar *const ADRT_RESTRICT out) {
         assert(data);
         assert(tmp);
         assert(out);
@@ -213,13 +213,13 @@ namespace adrt {
 
     // DOC ANCHOR: adrt.core.adrt_step +2
     template <typename adrt_scalar>
-    void adrt_step(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
+    void adrt_step(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 4> shape, adrt_scalar *const ADRT_RESTRICT out, int iter) {
         // Requires 0 <= iter < num_iters(n), must be checked elsewhere
         assert(data);
         assert(out);
         assert(adrt::adrt_step_is_valid_shape(shape));
         assert(adrt::adrt_step_is_valid_iter(shape, iter));
-        assert(shape == adrt::adrt_step_result_shape(shape));
+        assert(std::ranges::equal(shape, adrt::adrt_step_result_shape(shape)));
 
         const size_t iter_exp = 1_uz << iter;
         const size_t iter_exp_next = 1_uz << (iter + 1);

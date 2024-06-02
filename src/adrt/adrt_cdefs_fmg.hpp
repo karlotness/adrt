@@ -50,7 +50,7 @@ namespace adrt {
     std::array<size_t, 3> fmg_highpass_result_shape(std::span<const size_t, 3> shape);
 
     template <typename adrt_scalar>
-    void fmg_restriction(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out) {
+    void fmg_restriction(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 4> shape, adrt_scalar *const ADRT_RESTRICT out) {
         static_assert(std::is_floating_point_v<adrt_scalar>, "FMG restriction requires floating point");
         assert(data);
         assert(out);
@@ -73,7 +73,7 @@ namespace adrt {
     }
 
     template <typename adrt_scalar>
-    void fmg_prolongation(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT out) {
+    void fmg_prolongation(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 3> shape, adrt_scalar *const ADRT_RESTRICT out) {
         assert(data);
         assert(out);
         assert(adrt::fmg_prolongation_is_valid_shape(shape));
@@ -95,12 +95,12 @@ namespace adrt {
     }
 
     template <typename adrt_scalar>
-    void fmg_highpass(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 3> &shape, adrt_scalar *const ADRT_RESTRICT out) {
+    void fmg_highpass(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 3> shape, adrt_scalar *const ADRT_RESTRICT out) {
         static_assert(std::is_floating_point_v<adrt_scalar>, "FMG high-pass filter requires floating point");
         assert(data);
         assert(out);
         assert(adrt::fmg_highpass_is_valid_shape(shape));
-        assert(shape == adrt::fmg_highpass_result_shape(shape));
+        assert(std::ranges::equal(shape, adrt::fmg_highpass_result_shape(shape)));
 
         // Convolution constants for kernel [[a, b, a], [b, c, b], [a, b, a]]
         const adrt_scalar conv_a = static_cast<adrt_scalar>(-0.0625L); // -1/16
