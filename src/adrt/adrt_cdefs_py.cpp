@@ -45,7 +45,7 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
-#include <iterator>
+#include <ranges>
 #include <optional>
 #include <utility>
 
@@ -156,7 +156,7 @@ template <size_t n_virtual_dim>
     assert(ndim > 0);
     assert(static_cast<unsigned int>(ndim) <= n_virtual_dim);
     assert(std::ranges::all_of(virtual_shape, [](size_t v){return v > 0u;}));
-    assert(std::all_of(std::cbegin(virtual_shape), std::next(std::cbegin(virtual_shape), static_cast<int>(n_virtual_dim) - ndim), [](size_t v){return v == 1u;}));
+    assert(std::ranges::all_of(virtual_shape | std::ranges::views::take(std::max(static_cast<int>(n_virtual_dim) - ndim, 0)), [](size_t v){return v == 1u;}));
     const unsigned int undim = static_cast<unsigned int>(ndim);
     std::array<npy_intp, n_virtual_dim> new_shape;
     for(size_t i = 0; i < undim; ++i) {
