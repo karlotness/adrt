@@ -39,6 +39,7 @@
 #include <numpy/arrayobject.h>
 
 #include <array>
+#include <span>
 #include <limits>
 #include <type_traits>
 #include <cassert>
@@ -148,7 +149,8 @@ std::optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
 }
 
 template <size_t n_virtual_dim>
-[[nodiscard]] PyArrayObject *new_array(int ndim, const std::array<size_t, n_virtual_dim> &virtual_shape, int typenum) {
+[[nodiscard]] PyArrayObject *new_array(int ndim, std::span<const size_t, n_virtual_dim> virtual_shape, int typenum) {
+    static_assert(n_virtual_dim != std::dynamic_extent, "Span size must be statically known");
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
     static_assert(n_virtual_dim <= static_cast<unsigned int>(std::numeric_limits<int>::max()), "n_virtual_dim too large, will cause problems with debug assertions");
     assert(ndim > 0);
@@ -180,9 +182,8 @@ template <size_t n_virtual_dim>
     return reinterpret_cast<PyArrayObject*>(arr);
 }
 
-template <size_t ndim>
-std::optional<size_t> shape_product(const std::array<size_t, ndim> &shape) {
-    static_assert(ndim > 0u, "Need at least one shape dimension");
+std::optional<size_t> shape_product(std::span<const size_t> shape) {
+    assert(shape.size() > 0u);
     const std::optional<size_t> n_elem = adrt::_common::shape_product(shape);
     if(!n_elem) {
         PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");
@@ -302,7 +303,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim + 1, std::span{output_shape}, NPY_FLOAT32);
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -321,7 +322,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim + 1, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim + 1, std::span{output_shape}, NPY_FLOAT64);
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -381,7 +382,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -396,7 +397,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -441,7 +442,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -460,7 +461,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -509,7 +510,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         npy_float32 *const tmp_buf = adrt::_py::py_malloc<npy_float32>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -528,7 +529,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         npy_float64 *const tmp_buf = adrt::_py::py_malloc<npy_float64>(*tmp_buf_elems);
         if(!ret || !tmp_buf) {
             adrt::_py::py_free(tmp_buf);
@@ -588,7 +589,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -603,7 +604,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -651,7 +652,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -666,7 +667,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -707,7 +708,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -722,7 +723,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -763,7 +764,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -778,7 +779,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
@@ -819,7 +820,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
     switch(PyArray_TYPE(I)) {
     case NPY_FLOAT32:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT32);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
@@ -834,7 +835,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
     }
     case NPY_FLOAT64:
     {
-        PyArrayObject *const ret = adrt::_py::new_array(ndim, output_shape, NPY_FLOAT64);
+        PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT64);
         if(!ret) {
             return nullptr;
         }
