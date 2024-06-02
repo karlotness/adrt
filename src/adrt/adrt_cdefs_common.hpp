@@ -169,7 +169,7 @@ namespace adrt {
         }
 
         template<size_t N, size_t... Ints>
-        inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in, std::index_sequence<Ints...>) {
+        inline std::array<size_t, N> compute_strides(std::span<const size_t, N> shape_in, std::index_sequence<Ints...>) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N - 1_uz>>, "Invalid indexing pack. Do not call this overload directly!");
             assert(std::all_of(std::cbegin(shape_in), std::cend(shape_in), [](size_t v){return v > 0u;}));
@@ -180,13 +180,13 @@ namespace adrt {
         }
 
         template<size_t N>
-        inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in) {
+        inline std::array<size_t, N> compute_strides(std::span<const size_t, N> shape_in) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
             return adrt::_common::compute_strides(shape_in, std::make_index_sequence<N - 1_uz>{});
         }
 
         template <size_t... Ints, typename scalar, size_t N, typename... Idx>
-        inline scalar& array_stride_access(std::index_sequence<Ints...>, scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
+        inline scalar& array_stride_access(std::index_sequence<Ints...>, scalar *const buf, std::span<const size_t, N> strides, Idx... idxs) {
             static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Invalid indexing pack. Do not call this overload directly!");
@@ -196,12 +196,12 @@ namespace adrt {
         }
 
         template <typename scalar, typename... Idx>
-        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, sizeof...(Idx)> &strides, Idx... idxs) {
+        inline scalar& array_stride_access(scalar *const buf, std::span<const size_t, sizeof...(Idx)> strides, Idx... idxs) {
             return adrt::_common::array_stride_access(std::make_index_sequence<sizeof...(idxs)>{}, buf, strides, idxs...);
         }
 
         template <typename scalar, typename... Idx>
-        inline scalar& array_access(scalar *const buf, const std::array<size_t, sizeof...(Idx)> &shape, Idx... idxs) {
+        inline scalar& array_access(scalar *const buf, std::span<const size_t, sizeof...(Idx)> shape, Idx... idxs) {
             assert(std::equal(std::cbegin(shape), std::cend(shape), std::cbegin(std::array<size_t, sizeof...(idxs)>{idxs...}), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
             return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
         }
