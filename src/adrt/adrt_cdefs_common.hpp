@@ -164,7 +164,7 @@ namespace adrt {
         inline std::array<size_t, N> compute_strides(const std::array<size_t, N> &shape_in, std::index_sequence<Ints...>) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N - 1_uz>>, "Invalid indexing pack. Do not call this overload directly!");
-            assert(std::all_of(shape_in.cbegin(), shape_in.cend(), [](size_t v){return v > 0u;}));
+            assert(std::all_of(std::cbegin(shape_in), std::cend(shape_in), [](size_t v){return v > 0u;}));
             std::array<size_t, N> strides_out;
             std::get<N - 1_uz>(strides_out) = 1_uz;
             (static_cast<void>(std::get<N - Ints - 2_uz>(strides_out) = std::get<N - Ints - 1_uz>(shape_in) * std::get<N - Ints - 1_uz>(strides_out)), ...);
@@ -194,7 +194,7 @@ namespace adrt {
 
         template <typename scalar, typename... Idx>
         inline scalar& array_access(scalar *const buf, const std::array<size_t, sizeof...(Idx)> &shape, Idx... idxs) {
-            assert(std::equal(shape.cbegin(), shape.cend(), std::array<size_t, sizeof...(idxs)>{idxs...}.cbegin(), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
+            assert(std::equal(std::cbegin(shape), std::cend(shape), std::cbegin(std::array<size_t, sizeof...(idxs)>{idxs...}), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
             return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
         }
 
