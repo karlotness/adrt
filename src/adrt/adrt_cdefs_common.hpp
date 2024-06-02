@@ -148,20 +148,6 @@ namespace adrt {
             return adrt::_common::ceil_div(val, 2_uz);
         }
 
-        // Similar to C++20's std::lerp
-        template<typename scalar>
-        scalar lerp(scalar a, scalar b, scalar t) {
-            static_assert(std::is_floating_point_v<scalar>, "Interpolation requires floating point");
-            if((a <= static_cast<scalar>(0) && b <= static_cast<scalar>(0)) || (a >= static_cast<scalar>(0) && b >= static_cast<scalar>(0))) {
-                // a and b have same sign, subtraction won't magnify
-                return a + t * (b - a);
-            }
-            else {
-                // a and b have opposite signs, subtraction would magnify
-                return t * b + (static_cast<scalar>(1) - t) * a;
-            }
-        }
-
         template<size_t N, size_t... Ints>
         inline std::array<size_t, N> compute_strides(std::span<const size_t, N> shape_in, std::index_sequence<Ints...>) {
             static_assert(N > 0u, "Strides to compute must have at least one dimension");

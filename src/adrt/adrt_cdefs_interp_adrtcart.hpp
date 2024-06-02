@@ -81,8 +81,8 @@ namespace adrt {
                 for(size_t angle = 0; angle < adrt::_common::get<2>(output_shape); ++angle) {
                     const float_index offset_fraction = static_cast<float_index>(offset) / static_cast<float_index>(adrt::_common::get<1>(output_shape) - 1_uz);
                     const float_index angle_fraction = static_cast<float_index>(angle) / static_cast<float_index>(adrt::_common::get<2>(output_shape) - 1_uz);
-                    const float_index t = t_left * adrt::_common::lerp(-static_cast<float_index>(1), static_cast<float_index>(1), offset_fraction);
-                    const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
+                    const float_index t = t_left * std::lerp(-static_cast<float_index>(1), static_cast<float_index>(1), offset_fraction);
+                    const float_index th = th_left * std::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
                     const int q = static_cast<int>(std::floor(std::clamp(-th / adrt::_const::pi_4<float_index>, -static_cast<float_index>(2), static_cast<float_index>(1))) + 2);
                     const int sgn = q % 2 == 0 ? 1 : -1;
