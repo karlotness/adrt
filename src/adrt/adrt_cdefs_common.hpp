@@ -177,8 +177,8 @@ namespace adrt {
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N - 1_uz>>, "Invalid indexing pack. Do not call this overload directly!");
             assert(std::all_of(std::cbegin(shape_in), std::cend(shape_in), [](size_t v){return v > 0u;}));
             std::array<size_t, N> strides_out;
-            std::get<N - 1_uz>(strides_out) = 1_uz;
-            (static_cast<void>(std::get<N - Ints - 2_uz>(strides_out) = std::get<N - Ints - 1_uz>(shape_in) * std::get<N - Ints - 1_uz>(strides_out)), ...);
+            adrt::_common::get<N - 1_uz>(strides_out) = 1_uz;
+            (static_cast<void>(adrt::_common::get<N - Ints - 2_uz>(strides_out) = adrt::_common::get<N - Ints - 1_uz>(shape_in) * adrt::_common::get<N - Ints - 1_uz>(strides_out)), ...);
             return strides_out;
         }
 
@@ -195,7 +195,7 @@ namespace adrt {
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Invalid indexing pack. Do not call this overload directly!");
             static_assert(std::conjunction_v<std::is_same<size_t, Idx>...>, "All indexing arguments should be size_t");
             assert(buf);
-            return buf[(... + (std::get<Ints>(strides) * idxs))];
+            return buf[(... + (adrt::_common::get<Ints>(strides) * idxs))];
         }
 
         template <typename scalar, typename... Idx>

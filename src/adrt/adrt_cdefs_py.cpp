@@ -198,7 +198,7 @@ std::optional<std::array<PyObject*, N>> unpack_tuple(PyObject *tuple, const char
     assert(tuple);
     assert(name);
     std::array<PyObject*, N> ret;
-    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &std::get<Ints>(ret)...);
+    const bool ok = PyArg_UnpackTuple(tuple, name, static_cast<Py_ssize_t>(N), static_cast<Py_ssize_t>(N), &adrt::_common::get<Ints>(ret)...);
     if(!ok) {
         return {};
     }
@@ -351,7 +351,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(std::get<0>(*unpacked_args));
+    PyArrayObject *const I = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
     if(!I) {
         return nullptr;
     }
@@ -365,7 +365,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const std::optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
+    const std::optional<int> iter = adrt::_py::extract_int(adrt::_common::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }
@@ -558,7 +558,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(std::get<0>(*unpacked_args));
+    PyArrayObject *const I = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
     if(!I) {
         return nullptr;
     }
@@ -572,7 +572,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *args) {
         return nullptr;
     }
     // Process int argument
-    const std::optional<int> iter = adrt::_py::extract_int(std::get<1>(*unpacked_args));
+    const std::optional<int> iter = adrt::_py::extract_int(adrt::_common::get<1>(*unpacked_args));
     if(!iter) {
         return nullptr;
     }

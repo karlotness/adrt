@@ -260,44 +260,44 @@ namespace adrt {
     bool adrt_is_valid_shape(const std::array<size_t, 3> &shape) {
         // Make sure array is square
         return (adrt::_impl::all_positive(shape) && // All entries must be nonzero
-                (std::get<1>(shape) == std::get<2>(shape)) && // Must be square
-                (std::get<2>(shape) <= adrt::_impl::max_size) &&
-                (adrt::_impl::is_pow2(std::get<2>(shape)))); // Must have power of two shape
+                (adrt::_common::get<1>(shape) == adrt::_common::get<2>(shape)) && // Must be square
+                (adrt::_common::get<2>(shape) <= adrt::_impl::max_size) &&
+                (adrt::_impl::is_pow2(adrt::_common::get<2>(shape)))); // Must have power of two shape
     }
 
     // Implementation for adrt
     bool adrt_step_is_valid_shape(const std::array<size_t, 4> &shape) {
         // Check if the rows & cols are shaped like an ADRT output
         return (adrt::_impl::all_positive(shape) &&
-                (std::get<1>(shape) == 4u) &&
-                (std::get<3>(shape) <= adrt::_impl::max_size) &&
-                (std::get<2>(shape) == (std::get<3>(shape) * 2_uz - 1_uz)) &&
-                (adrt::_impl::is_pow2(std::get<3>(shape))));
+                (adrt::_common::get<1>(shape) == 4u) &&
+                (adrt::_common::get<3>(shape) <= adrt::_impl::max_size) &&
+                (adrt::_common::get<2>(shape) == (adrt::_common::get<3>(shape) * 2_uz - 1_uz)) &&
+                (adrt::_impl::is_pow2(adrt::_common::get<3>(shape))));
     }
 
     // Implementation for adrt
     bool adrt_step_is_valid_iter(const std::array<size_t, 4> &shape, int iter) {
-        return iter >= 0 && iter < adrt::num_iters(std::get<3>(shape));
+        return iter >= 0 && iter < adrt::num_iters(adrt::_common::get<3>(shape));
     }
 
     // Implementation for adrt
     std::array<size_t, 5> adrt_buffer_shape(const std::array<size_t, 3> &shape) {
         return {
-            std::get<0>(shape),
+            adrt::_common::get<0>(shape),
             4,
-            std::get<1>(shape),
+            adrt::_common::get<1>(shape),
             1,
-            2_uz * std::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
+            2_uz * adrt::_common::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
         };
     }
 
     // Implementation for adrt
     std::array<size_t, 4> adrt_result_shape(const std::array<size_t, 3> &shape) {
         return {
-            std::get<0>(shape),
+            adrt::_common::get<0>(shape),
             4,
-            2_uz * std::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
-            std::get<1>(shape)
+            2_uz * adrt::_common::get<2>(shape) - 1_uz, // No overflow because n^2 fits in size_t, so must 2*n
+            adrt::_common::get<1>(shape)
         };
     }
 
@@ -321,11 +321,11 @@ namespace adrt {
     // Implementation for bdrt
     std::array<size_t, 5> bdrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {
-            std::get<0>(shape), // batch
+            adrt::_common::get<0>(shape), // batch
             4,  // quadrant
-            std::get<3>(shape), // col
+            adrt::_common::get<3>(shape), // col
             1, // sections
-            std::get<2>(shape), // row
+            adrt::_common::get<2>(shape), // row
         };
     }
 
@@ -345,11 +345,11 @@ namespace adrt {
 
     std::array<size_t, 5> iadrt_buffer_shape(const std::array<size_t, 4> &shape) {
         return {
-            std::get<0>(shape), // planes
+            adrt::_common::get<0>(shape), // planes
             4, // Quadrants (shape[1])
             1,
-            std::get<3>(shape), // N
-            std::get<2>(shape), // 2 * N - 1
+            adrt::_common::get<3>(shape), // N
+            adrt::_common::get<2>(shape), // 2 * N - 1
         };
     }
 
@@ -359,54 +359,54 @@ namespace adrt {
 
     bool interp_adrtcart_is_valid_shape(const std::array<size_t, 4> &shape) {
         // bdrt also requires its input to have the shape of an adrt result, reuse
-        return adrt::bdrt_is_valid_shape(shape) && std::get<3>(shape) > 1u;
+        return adrt::bdrt_is_valid_shape(shape) && adrt::_common::get<3>(shape) > 1u;
     }
 
     std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape) {
         return {
-            std::get<0>(shape), // batch
-            std::get<3>(shape), // rows
-            4_uz * std::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
+            adrt::_common::get<0>(shape), // batch
+            adrt::_common::get<3>(shape), // rows
+            4_uz * adrt::_common::get<3>(shape), // cols. No overflow, merges quadrant and column dimensions
         };
     }
 
     bool fmg_restriction_is_valid_shape(const std::array<size_t, 4> &shape) {
         return (adrt::_impl::all_positive(shape) &&
-                std::get<1>(shape) == 4u &&
-                std::get<3>(shape) <= adrt::_impl::max_size &&
-                std::get<2>(shape) == (std::get<3>(shape) * 2_uz - 1_uz) &&
-                std::get<3>(shape) >= 2u &&
-                std::get<3>(shape) % 2_uz == 0u);
+                adrt::_common::get<1>(shape) == 4u &&
+                adrt::_common::get<3>(shape) <= adrt::_impl::max_size &&
+                adrt::_common::get<2>(shape) == (adrt::_common::get<3>(shape) * 2_uz - 1_uz) &&
+                adrt::_common::get<3>(shape) >= 2u &&
+                adrt::_common::get<3>(shape) % 2_uz == 0u);
     }
 
     std::array<size_t, 4> fmg_restriction_result_shape(const std::array<size_t, 4> &shape) {
         return {
-            std::get<0>(shape), // batches
+            adrt::_common::get<0>(shape), // batches
             4, // quadrants
-            std::get<3>(shape) - 1_uz, // rows
-            std::get<3>(shape) / 2_uz, // cols (halved)
+            adrt::_common::get<3>(shape) - 1_uz, // rows
+            adrt::_common::get<3>(shape) / 2_uz, // cols (halved)
         };
     }
 
     bool fmg_prolongation_is_valid_shape(const std::array<size_t, 3> &shape) {
         const size_t prl_max_size = adrt::_common::floor_div2(std::numeric_limits<size_t>::max());
         return (adrt::_impl::all_positive(shape) &&
-                std::get<1>(shape) <= prl_max_size &&
-                std::get<2>(shape) <= prl_max_size);
+                adrt::_common::get<1>(shape) <= prl_max_size &&
+                adrt::_common::get<2>(shape) <= prl_max_size);
     }
 
     std::array<size_t, 3> fmg_prolongation_result_shape(const std::array<size_t, 3> &shape) {
         return {
-            std::get<0>(shape), // batch
-            2_uz * std::get<1>(shape), // rows. No overflow, checked in fmg_prolongation_is_valid_shape
-            2_uz * std::get<2>(shape), // cols
+            adrt::_common::get<0>(shape), // batch
+            2_uz * adrt::_common::get<1>(shape), // rows. No overflow, checked in fmg_prolongation_is_valid_shape
+            2_uz * adrt::_common::get<2>(shape), // cols
         };
     }
 
     bool fmg_highpass_is_valid_shape(const std::array<size_t, 3> &shape) {
         return (adrt::_impl::all_positive(shape) &&
-                std::get<1>(shape) >= 2u &&
-                std::get<2>(shape) >= 2u);
+                adrt::_common::get<1>(shape) >= 2u &&
+                adrt::_common::get<2>(shape) >= 2u);
     }
 
     std::array<size_t, 3> fmg_highpass_result_shape(const std::array<size_t, 3> &shape) {

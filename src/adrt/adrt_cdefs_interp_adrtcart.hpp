@@ -52,7 +52,7 @@ namespace adrt {
         // The input shape is (batch, 4, 2*n-1, n)
         // The output shape is (batch, n, 4*n)
         // We ensure that 4*n fits in a float, so n and 2*n-1 will fit as well
-        return std::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>, 4_uz);
+        return adrt::_common::get<3>(in_shape) <= adrt::_common::floor_div(adrt::_const::largest_consecutive_float_size_t<float_index>, 4_uz);
     }
 
     // DOC ANCHOR: adrt.utils.interp_to_cart +2
@@ -70,16 +70,16 @@ namespace adrt {
         using larger_float = std::conditional_t<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>;
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
-        const size_t N = std::get<3>(in_shape);
+        const size_t N = adrt::_common::get<3>(in_shape);
         const float_index t_left = adrt::_const::sqrt2_2<float_index> - (adrt::_const::sqrt2_2<float_index> / static_cast<float_index>(N));
         const float_index th_left = adrt::_const::pi_2<float_index> - (adrt::_const::pi_8<float_index> / static_cast<float_index>(N));
 
         ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, t_left, th_left)")
-        for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
-            for(size_t offset = 0; offset < std::get<1>(output_shape); ++offset) {
-                for(size_t angle = 0; angle < std::get<2>(output_shape); ++angle) {
-                    const float_index offset_fraction = static_cast<float_index>(offset) / static_cast<float_index>(std::get<1>(output_shape) - 1_uz);
-                    const float_index angle_fraction = static_cast<float_index>(angle) / static_cast<float_index>(std::get<2>(output_shape) - 1_uz);
+        for(size_t batch = 0; batch < adrt::_common::get<0>(output_shape); ++batch) {
+            for(size_t offset = 0; offset < adrt::_common::get<1>(output_shape); ++offset) {
+                for(size_t angle = 0; angle < adrt::_common::get<2>(output_shape); ++angle) {
+                    const float_index offset_fraction = static_cast<float_index>(offset) / static_cast<float_index>(adrt::_common::get<1>(output_shape) - 1_uz);
+                    const float_index angle_fraction = static_cast<float_index>(angle) / static_cast<float_index>(adrt::_common::get<2>(output_shape) - 1_uz);
                     const float_index t = t_left * adrt::_common::lerp(-static_cast<float_index>(1), static_cast<float_index>(1), offset_fraction);
                     const float_index th = th_left * adrt::_common::lerp(static_cast<float_index>(1), -static_cast<float_index>(1), angle_fraction);
                     // Compute the quadrant and parity of the angle th
@@ -92,7 +92,7 @@ namespace adrt {
                     const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
                     assert(std::isfinite(si));
                     assert(si >= static_cast<float_index>(0));
-                    assert(si < static_cast<float_index>(std::get<3>(in_shape)));
+                    assert(si < static_cast<float_index>(adrt::_common::get<3>(in_shape)));
                     // Compute the scaling factor
                     const larger_float sidea = static_cast<larger_float>(si) / static_cast<larger_float>(N - 1_uz);
                     const larger_float sideb = static_cast<larger_float>(1);
@@ -101,7 +101,7 @@ namespace adrt {
                     const float_index hi = (std::round(h0 * static_cast<float_index>(2_uz * N)) - static_cast<float_index>(1)) / static_cast<float_index>(2);
                     assert(std::isfinite(hi));
                     // Perform the updates
-                    if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(std::get<2>(in_shape))) {
+                    if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(adrt::_common::get<2>(in_shape))) {
                         // Intended access is in bounds
                         adrt::_common::array_access(out, output_shape, batch, offset, angle) = factor * adrt::_common::array_access(data, in_shape, batch, static_cast<size_t>(q), static_cast<size_t>(hi), static_cast<size_t>(si));
                     }

@@ -58,10 +58,10 @@ namespace adrt {
         const std::array<size_t, 4> output_shape = adrt::fmg_restriction_result_shape(shape);
 
         ADRT_OPENMP("omp parallel for collapse(4) default(none) shared(data, shape, out, output_shape)")
-        for(size_t batch = 0; batch < std::get<0>(output_shape); ++batch) {
+        for(size_t batch = 0; batch < adrt::_common::get<0>(output_shape); ++batch) {
             for(size_t quadrant = 0; quadrant < 4u; ++quadrant) {
-                for(size_t row = 0; row < std::get<2>(output_shape); ++row) {
-                    for(size_t col = 0; col < std::get<3>(output_shape); ++col) {
+                for(size_t row = 0; row < adrt::_common::get<2>(output_shape); ++row) {
+                    for(size_t col = 0; col < adrt::_common::get<3>(output_shape); ++col) {
                         const adrt_scalar val_a = adrt::_common::array_access(data, shape, batch, quadrant, 2_uz * row, 2_uz * col);
                         const adrt_scalar val_b = adrt::_common::array_access(data, shape, batch, quadrant, 2_uz * row + 1_uz, 2_uz * col);
                         adrt::_common::array_access(out, output_shape, batch, quadrant, row, col) = (val_a + val_b) / static_cast<adrt_scalar>(4);
@@ -80,9 +80,9 @@ namespace adrt {
         const std::array<size_t, 3> output_shape = adrt::fmg_prolongation_result_shape(shape);
 
         ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, shape, out, output_shape)")
-        for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
-            for(size_t row = 0; row < std::get<1>(shape); ++row) {
-                for(size_t col = 0; col < std::get<2>(shape); ++col) {
+        for(size_t batch = 0; batch < adrt::_common::get<0>(shape); ++batch) {
+            for(size_t row = 0; row < adrt::_common::get<1>(shape); ++row) {
+                for(size_t col = 0; col < adrt::_common::get<2>(shape); ++col) {
                     const adrt_scalar val = adrt::_common::array_access(data, shape, batch, row, col);
                     adrt::_common::array_access(out, output_shape, batch, 2_uz * row, 2_uz * col) = val;
                     adrt::_common::array_access(out, output_shape, batch, 2_uz * row, 2_uz * col + 1_uz) = val;
@@ -107,10 +107,10 @@ namespace adrt {
         const adrt_scalar conv_c = static_cast<adrt_scalar>(0.75L); // 3/4
 
         ADRT_OPENMP("omp parallel for collapse(2) default(none) shared(data, shape, out, conv_a, conv_b, conv_c)")
-        for(size_t batch = 0; batch < std::get<0>(shape); ++batch) {
-            for(size_t row = 0; row < std::get<1>(shape); ++row) {
+        for(size_t batch = 0; batch < adrt::_common::get<0>(shape); ++batch) {
+            for(size_t row = 0; row < adrt::_common::get<1>(shape); ++row) {
                 const size_t prev_row = (row == 0u ? 1_uz : row - 1_uz);
-                const size_t next_row = (row == std::get<1>(shape) - 1_uz ? row - 1_uz : row + 1_uz);
+                const size_t next_row = (row == adrt::_common::get<1>(shape) - 1_uz ? row - 1_uz : row + 1_uz);
 
                 // First col
                 {
@@ -131,7 +131,7 @@ namespace adrt {
 
                 // Middle columns
                 ADRT_OPENMP("omp simd")
-                for(size_t col = 1; col < std::get<2>(shape) - 1_uz; ++col) {
+                for(size_t col = 1; col < adrt::_common::get<2>(shape) - 1_uz; ++col) {
                     const size_t prev_col = col - 1_uz;
                     const size_t next_col = col + 1_uz;
                     // Conv row 1
@@ -152,7 +152,7 @@ namespace adrt {
 
                 // Last col
                 {
-                    const size_t col = std::get<2>(shape) - 1_uz;
+                    const size_t col = adrt::_common::get<2>(shape) - 1_uz;
                     const size_t prev_col = col - 1_uz;
                     // Conv row 1
                     const adrt_scalar v11 = conv_a * adrt::_common::array_access(data, shape, batch, prev_row, prev_col);
