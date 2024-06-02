@@ -47,7 +47,7 @@ This makes it possible to customize the compiler flags used when
 building the native extensions. In particular, OpenMP support can be
 enabled as discussed :ref:`below <openmp-build>`.
 
-The code requires C++17 support to build and makes use of a few
+The code requires C++20 support to build and makes use of a few
 compiler built-in functions for performance. We require recent GCC,
 Clang, or MSVC.
 

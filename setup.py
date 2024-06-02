@@ -39,8 +39,8 @@ import glob
 
 
 COMPILER_EXTRA_ARGS = {
-    "unix": ["-std=c++17"],
-    "msvc": ["/std:c++17"],
+    "unix": ["-std=c++20"],
+    "msvc": ["/std:c++20"],
 }
 
 

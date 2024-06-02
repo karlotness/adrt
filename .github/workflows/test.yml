@@ -113,7 +113,7 @@ jobs:
         python -m pip install --upgrade -r tools/download_catch2_requirements.txt
         python tools/download_catch2.py tests/cpp/catch2/
     - name: Build tests
-      run: g++ -std=c++17 -g -fsanitize=address -fsanitize=leak -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all -fno-omit-frame-pointer -U_FORTIFY_SOURCE -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all
+      run: g++ -std=c++20 -g -fsanitize=address -fsanitize=leak -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all -fno-omit-frame-pointer -U_FORTIFY_SOURCE -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all
     - name: Run tests
       run: ./tests/cpp/test_all
       env:

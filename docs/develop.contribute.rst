@@ -12,7 +12,7 @@ them first either by opening an issue, or in the `discussion section
 For development you will need:
 
 * Python
-* A C++ compiler with support for C++17 (recent GCC, Clang, or MSVC)
+* A C++ compiler with support for C++20 (recent GCC, Clang, or MSVC)
 * `tox <https://tox.wiki/>`__
 * Git and a GitHub account (if you want to submit your changes to the
   project)
@@ -106,7 +106,7 @@ Don't use Python :pycode:`assert` statements except in tests.
 C++
 ...
 
-Use only features from C++17. The standard library can be used, but
+Use only features from C++20. The standard library can be used, but
 only parts which do not require special C++ runtime support. In
 particular this means no functionality which throws exceptions or
 requires cleanup after exceptions (only trivially-destructible types).
@@ -216,7 +216,7 @@ script ``tools/download_catch2.py`` to retrieve one (requires
 
 Then on a Linux system, run::
 
-  $ g++ -std=c++17 -g -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all
+  $ g++ -std=c++20 -g -Wall -Wextra -Wpedantic $(find src/adrt tests/cpp/ -name '*.cpp' -not -name 'adrt_cdefs_py.cpp') -I src/adrt/ -o tests/cpp/test_all
   $ tests/cpp/test_all
 
 A similar compilation process should work on other systems. Generally,
