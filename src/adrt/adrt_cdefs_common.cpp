@@ -73,17 +73,6 @@ bool is_pow2(size_t val) {
     return !overflow;
 }
 
-template<size_t N>
-bool all_positive(std::span<const size_t, N> shape) {
-    // Make sure all shapes are nonzero
-    for(size_t i = 0; i < shape.size(); ++i) {
-        if(shape[i] <= 0u) {
-            return false;
-        }
-    }
-    return true;
-}
-
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
 // Compatibility with old GCC
@@ -185,7 +174,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_is_valid_shape(std::span<const size_t, 3> shape) {
         // Make sure array is square
-        return (adrt::_impl::all_positive(shape) && // All entries must be nonzero
+        return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) && // All entries must be nonzero
                 (adrt::_common::get<1>(shape) == adrt::_common::get<2>(shape)) && // Must be square
                 (adrt::_common::get<2>(shape) <= adrt::_impl::max_size) &&
                 (adrt::_impl::is_pow2(adrt::_common::get<2>(shape)))); // Must have power of two shape
@@ -194,7 +183,7 @@ namespace adrt {
     // Implementation for adrt
     bool adrt_step_is_valid_shape(std::span<const size_t, 4> shape) {
         // Check if the rows & cols are shaped like an ADRT output
-        return (adrt::_impl::all_positive(shape) &&
+        return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) &&
                 (adrt::_common::get<1>(shape) == 4u) &&
                 (adrt::_common::get<3>(shape) <= adrt::_impl::max_size) &&
                 (adrt::_common::get<2>(shape) == (adrt::_common::get<3>(shape) * 2_uz - 1_uz)) &&
@@ -317,7 +306,7 @@ namespace adrt {
     }
 
     bool fmg_restriction_is_valid_shape(std::span<const size_t, 4> shape) {
-        return (adrt::_impl::all_positive(shape) &&
+        return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) &&
                 adrt::_common::get<1>(shape) == 4u &&
                 adrt::_common::get<3>(shape) <= adrt::_impl::max_size &&
                 adrt::_common::get<2>(shape) == (adrt::_common::get<3>(shape) * 2_uz - 1_uz) &&
@@ -336,7 +325,7 @@ namespace adrt {
 
     bool fmg_prolongation_is_valid_shape(std::span<const size_t, 3> shape) {
         const size_t prl_max_size = adrt::_common::floor_div2(std::numeric_limits<size_t>::max());
-        return (adrt::_impl::all_positive(shape) &&
+        return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) &&
                 adrt::_common::get<1>(shape) <= prl_max_size &&
                 adrt::_common::get<2>(shape) <= prl_max_size);
     }
@@ -350,7 +339,7 @@ namespace adrt {
     }
 
     bool fmg_highpass_is_valid_shape(std::span<const size_t, 3> shape) {
-        return (adrt::_impl::all_positive(shape) &&
+        return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) &&
                 adrt::_common::get<1>(shape) >= 2u &&
                 adrt::_common::get<2>(shape) >= 2u);
     }
