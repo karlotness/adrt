@@ -67,7 +67,7 @@ namespace adrt {
         assert(adrt::interp_adrtcart_is_valid_shape(in_shape));
         assert(adrt::interp_adrtcart_is_valid_float_index<float_index>(in_shape));
 
-        using larger_float = typename std::conditional_t<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>;
+        using larger_float = std::conditional_t<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>;
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
         const size_t N = std::get<3>(in_shape);
