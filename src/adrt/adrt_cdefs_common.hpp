@@ -187,14 +187,14 @@ namespace adrt {
             return buf[(... + (std::get<Ints>(strides) * idxs))];
         }
 
-        template <typename scalar, size_t N, typename... Idx>
-        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, N> &strides, Idx... idxs) {
-            return adrt::_common::array_stride_access(std::make_index_sequence<N>{}, buf, strides, idxs...);
+        template <typename scalar, typename... Idx>
+        inline scalar& array_stride_access(scalar *const buf, const std::array<size_t, sizeof...(Idx)> &strides, Idx... idxs) {
+            return adrt::_common::array_stride_access(std::make_index_sequence<sizeof...(idxs)>{}, buf, strides, idxs...);
         }
 
-        template <typename scalar, size_t N, typename... Idx>
-        inline scalar& array_access(scalar *const buf, const std::array<size_t, N> &shape, Idx... idxs) {
-            assert(std::equal(shape.cbegin(), shape.cend(), std::array<size_t, N>{idxs...}.cbegin(), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
+        template <typename scalar, typename... Idx>
+        inline scalar& array_access(scalar *const buf, const std::array<size_t, sizeof...(Idx)> &shape, Idx... idxs) {
+            assert(std::equal(shape.cbegin(), shape.cend(), std::array<size_t, sizeof...(idxs)>{idxs...}.cbegin(), [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
             return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
         }
 
