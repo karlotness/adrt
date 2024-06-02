@@ -6,6 +6,12 @@ version of `adrt`. More information and release builds are also
 available on the `GitHub releases page
 <https://github.com/karlotness/adrt/releases>`__.
 
+v1.1.0
+------
+
+* Add support for NumPy 2.0
+* Building this version requires a C++17 compiler
+
 v1.0.1
 ------
 * Improve test compatibility with PyPy
