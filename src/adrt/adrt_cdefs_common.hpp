@@ -201,12 +201,10 @@ namespace adrt {
     } // end namespace adrt::_common
 
     namespace _assert {
-        template <size_t NA, size_t NB>
-        bool same_total_size(const std::array<size_t, NA> &a, const std::array<size_t, NB> &b) {
-            static_assert(NA > 0u, "Must have at least one entry in array a");
-            static_assert(NB > 0u, "Must have at least one entry in array b");
-            const std::optional<size_t> size_a = adrt::_common::shape_product(a);
-            const std::optional<size_t> size_b = adrt::_common::shape_product(b);
+        template <typename A, typename B>
+        bool same_total_size(A &&a, B &&b) {
+            const std::optional<size_t> size_a = adrt::_common::shape_product(std::forward<A>(a));
+            const std::optional<size_t> size_b = adrt::_common::shape_product(std::forward<B>(b));
             return size_a.has_value() && size_b.has_value() && (*size_a == *size_b);
         }
     } // end namespace adrt::_assert
