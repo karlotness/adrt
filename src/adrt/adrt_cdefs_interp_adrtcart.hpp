@@ -37,6 +37,7 @@
 #include <array>
 #include <span>
 #include <type_traits>
+#include <concepts>
 #include <limits>
 #include <algorithm>
 #include <cassert>
@@ -57,12 +58,9 @@ namespace adrt {
     }
 
     // DOC ANCHOR: adrt.utils.interp_to_cart +2
-    template <typename adrt_scalar, typename float_index = double>
+    template <std::floating_point adrt_scalar, std::floating_point float_index = double>
     void interp_adrtcart(const adrt_scalar *const ADRT_RESTRICT data, std::span<const size_t, 4> in_shape, adrt_scalar *const ADRT_RESTRICT out) {
         // The current implementation performs floating point arithmetic
-        static_assert(std::is_floating_point_v<adrt_scalar>, "Cartesian interpolation requires floating point");
-        static_assert(std::is_floating_point_v<float_index>, "Floating point index type must be a floating point type");
-
         assert(data);
         assert(out);
         assert(adrt::interp_adrtcart_is_valid_shape(in_shape));

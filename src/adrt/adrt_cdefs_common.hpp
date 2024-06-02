@@ -43,6 +43,7 @@
 #include <utility>
 #include <span>
 #include <numbers>
+#include <concepts>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -70,29 +71,27 @@ namespace adrt {
 
     namespace _const {
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         inline constexpr scalar pi_2 = std::numbers::pi_v<scalar> / static_cast<scalar>(2);
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         inline constexpr scalar pi_4 = std::numbers::pi_v<scalar> / static_cast<scalar>(4);
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         inline constexpr scalar pi_8 = std::numbers::pi_v<scalar> / static_cast<scalar>(8);
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         inline constexpr scalar sqrt2_2 = std::numbers::sqrt2_v<scalar> / static_cast<scalar>(2);
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         constexpr std::enable_if_t<(std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
-            static_assert(std::is_floating_point_v<scalar>, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<scalar>::digits, "Max exponent is too small to cover digits");
             return 1_uz << std::numeric_limits<scalar>::digits;
         }
 
-        template<typename scalar>
+        template<std::floating_point scalar>
         constexpr std::enable_if_t<(std::numeric_limits<scalar>::digits >= std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
-            static_assert(std::is_floating_point_v<scalar>, "Must specify a float type for largest size_t computation");
             static_assert(std::numeric_limits<scalar>::is_iec559 && std::numeric_limits<scalar>::radix == 2, "Our computation for largest consecutive size_t requires standard float");
             static_assert(std::numeric_limits<scalar>::max_exponent >= std::numeric_limits<size_t>::digits - 1, "Max exponent is too small to cover digits");
             return std::numeric_limits<size_t>::max();
@@ -165,22 +164,21 @@ namespace adrt {
             return adrt::_common::compute_strides(shape_in, std::make_index_sequence<N - 1_uz>{});
         }
 
-        template <size_t... Ints, typename scalar, size_t N, typename... Idx>
+        template <size_t... Ints, typename scalar, size_t N, std::same_as<size_t>... Idx>
         inline scalar& array_stride_access(std::index_sequence<Ints...>, scalar *const buf, std::span<const size_t, N> strides, Idx... idxs) {
             static_assert(N > 0u, "Array must have at least one dimension");
             static_assert(sizeof...(idxs) == N, "Must provide N array indices");
             static_assert(std::is_same_v<std::index_sequence<Ints...>, std::make_index_sequence<N>>, "Invalid indexing pack. Do not call this overload directly!");
-            static_assert(std::conjunction_v<std::is_same<size_t, Idx>...>, "All indexing arguments should be size_t");
             assert(buf);
             return buf[(... + (adrt::_common::get<Ints>(strides) * idxs))];
         }
 
-        template <typename scalar, typename... Idx>
+        template <typename scalar, std::same_as<size_t>... Idx>
         inline scalar& array_stride_access(scalar *const buf, std::span<const size_t, sizeof...(Idx)> strides, Idx... idxs) {
             return adrt::_common::array_stride_access(std::make_index_sequence<sizeof...(idxs)>{}, buf, strides, idxs...);
         }
 
-        template <typename scalar, typename... Idx>
+        template <typename scalar, std::same_as<size_t>... Idx>
         inline scalar& array_access(scalar *const buf, std::span<const size_t, sizeof...(Idx)> shape, Idx... idxs) {
             assert(std::ranges::equal(shape, std::array<size_t, sizeof...(idxs)>{idxs...}, [](size_t shape_v, size_t idx_v){return idx_v < shape_v;}));
             return adrt::_common::array_stride_access(buf, adrt::_common::compute_strides(shape), idxs...);
