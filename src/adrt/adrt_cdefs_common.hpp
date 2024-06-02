@@ -42,6 +42,7 @@
 #include <optional>
 #include <utility>
 #include <span>
+#include <numbers>
 
 #ifdef _OPENMP
 #define ADRT_OPENMP(def) _Pragma(def)
@@ -69,24 +70,17 @@ namespace adrt {
 
     namespace _const {
 
-        template<typename result, typename value>
-        constexpr result as_floating_point(value val) {
-            static_assert(std::is_floating_point_v<result>, "Float constants only available for floating point types");
-            static_assert(std::is_same_v<value, long double>, "Float value should be specified as long double");
-            return static_cast<result>(val);
-        }
+        template<typename scalar>
+        inline constexpr scalar pi_2 = std::numbers::pi_v<scalar> / static_cast<scalar>(2);
 
         template<typename scalar>
-        inline constexpr scalar pi_2 = adrt::_const::as_floating_point<scalar>(1.570796326794896619231321691639751442L);
+        inline constexpr scalar pi_4 = std::numbers::pi_v<scalar> / static_cast<scalar>(4);
 
         template<typename scalar>
-        inline constexpr scalar pi_4 = adrt::_const::as_floating_point<scalar>(0.785398163397448309615660845819875721L);
+        inline constexpr scalar pi_8 = std::numbers::pi_v<scalar> / static_cast<scalar>(8);
 
         template<typename scalar>
-        inline constexpr scalar pi_8 = adrt::_const::as_floating_point<scalar>(0.392699081698724154807830422909937861L);
-
-        template<typename scalar>
-        inline constexpr scalar sqrt2_2 = adrt::_const::as_floating_point<scalar>(0.707106781186547524400844362104849039L);
+        inline constexpr scalar sqrt2_2 = std::numbers::sqrt2_v<scalar> / static_cast<scalar>(2);
 
         template<typename scalar>
         constexpr std::enable_if_t<(std::numeric_limits<scalar>::digits < std::numeric_limits<size_t>::digits), size_t> _largest_consecutive_float_size_t() {
