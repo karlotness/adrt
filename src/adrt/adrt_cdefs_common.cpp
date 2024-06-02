@@ -235,13 +235,13 @@ namespace adrt {
             return {prod};
         }
 
-        std::optional<size_t> shape_product(const size_t *shape, size_t n) {
-            assert((n == 0u) || shape);
-            if(n == 0u) {
+        std::optional<size_t> shape_product(std::span<const size_t> shape) {
+            assert((shape.size() == 0u) || (shape.data() != nullptr));
+            if(shape.size() == 0u) {
                 return {};
             }
             std::optional<size_t> prod = shape[0];
-            for(size_t i = 1; i < n; ++i) {
+            for(size_t i = 1; i < shape.size(); ++i) {
                 if(prod) {
                     prod = adrt::_common::mul_check(*prod, shape[i]);
                 }

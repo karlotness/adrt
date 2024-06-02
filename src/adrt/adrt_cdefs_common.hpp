@@ -120,11 +120,8 @@ namespace adrt {
 
         std::optional<size_t> mul_check(size_t a, size_t b);
 
-        std::optional<size_t> shape_product(const size_t *shape, size_t n);
+        std::optional<size_t> shape_product(std::span<const size_t> shape);
 
-        template<size_t N>
-        std::optional<size_t> shape_product(const std::array<size_t, N> &shape) {
-            return adrt::_common::shape_product(shape.data(), shape.size());
         template<size_t I, typename T, size_t Extent>
         constexpr decltype(auto) get(std::span<T, Extent> span) {
             static_assert(Extent != std::dynamic_extent, "Span must have statically-known extent");

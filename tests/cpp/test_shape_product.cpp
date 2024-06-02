@@ -49,7 +49,8 @@ TEST_CASE("shape_product handles single elements without overflow", "[common][sh
     }
 
     SECTION("single scalar") {
-        const auto result = adrt::_common::shape_product(&val, size_t{1});
+        const std::span<size_t, size_t{1}> tmpspan{&val, size_t{1}};
+        const auto result = adrt::_common::shape_product(tmpspan);
         CHECK(result.value() == val);
     }
 }
@@ -81,12 +82,14 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
 TEST_CASE("shape_product handles empty arrays", "[common][shape_product]") {
     SECTION("non-null pointer") {
         const size_t val = 0;
-        const auto result = adrt::_common::shape_product(&val, size_t{0});
+        const std::span<const size_t> tmpspan{&val, size_t{0}};
+        const auto result = adrt::_common::shape_product(tmpspan);
         CHECK_FALSE(result.has_value());
     }
 
     SECTION("null pointer") {
-        const auto result = adrt::_common::shape_product(nullptr, size_t{0});
+        const std::span<const size_t> tmpspan{static_cast<size_t*>(nullptr), size_t{0}};
+        const auto result = adrt::_common::shape_product(tmpspan);
         CHECK_FALSE(result.has_value());
     }
 
