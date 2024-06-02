@@ -34,6 +34,7 @@
 #define ADRT_CDEFS_FMG_H
 
 #include <array>
+#include <span>
 #include <cassert>
 #include <type_traits>
 #include "adrt_cdefs_common.hpp"
@@ -41,12 +42,12 @@
 namespace adrt {
 
     // Defined in: adrt_cdefs_common.cpp
-    bool fmg_restriction_is_valid_shape(const std::array<size_t, 4> &shape);
-    bool fmg_prolongation_is_valid_shape(const std::array<size_t, 3> &shape);
-    bool fmg_highpass_is_valid_shape(const std::array<size_t, 3> &shape);
-    std::array<size_t, 4> fmg_restriction_result_shape(const std::array<size_t, 4> &shape);
-    std::array<size_t, 3> fmg_prolongation_result_shape(const std::array<size_t, 3> &shape);
-    std::array<size_t, 3> fmg_highpass_result_shape(const std::array<size_t, 3> &shape);
+    bool fmg_restriction_is_valid_shape(std::span<const size_t, 4> shape);
+    bool fmg_prolongation_is_valid_shape(std::span<const size_t, 3> shape);
+    bool fmg_highpass_is_valid_shape(std::span<const size_t, 3> shape);
+    std::array<size_t, 4> fmg_restriction_result_shape(std::span<const size_t, 4> shape);
+    std::array<size_t, 3> fmg_prolongation_result_shape(std::span<const size_t, 3> shape);
+    std::array<size_t, 3> fmg_highpass_result_shape(std::span<const size_t, 3> shape);
 
     template <typename adrt_scalar>
     void fmg_restriction(const adrt_scalar *const ADRT_RESTRICT data, const std::array<size_t, 4> &shape, adrt_scalar *const ADRT_RESTRICT out) {

@@ -35,6 +35,7 @@
 
 #include <cmath>
 #include <array>
+#include <span>
 #include <type_traits>
 #include <limits>
 #include <algorithm>
@@ -44,8 +45,8 @@
 namespace adrt {
 
     // Defined in: adrt_cdefs_common.cpp
-    bool interp_adrtcart_is_valid_shape(const std::array<size_t, 4> &shape);
-    std::array<size_t, 3> interp_adrtcart_result_shape(const std::array<size_t, 4> &shape);
+    bool interp_adrtcart_is_valid_shape(std::span<const size_t, 4> shape);
+    std::array<size_t, 3> interp_adrtcart_result_shape(std::span<const size_t, 4> shape);
 
     template <typename float_index = double>
     bool interp_adrtcart_is_valid_float_index(const std::array<size_t, 4> &in_shape) {

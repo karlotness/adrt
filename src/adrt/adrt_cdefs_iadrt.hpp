@@ -34,6 +34,7 @@
 #define ADRT_CDEFS_IADRT_H
 
 #include <array>
+#include <span>
 #include <utility>
 #include <algorithm>
 #include <cassert>
@@ -42,9 +43,9 @@
 namespace adrt {
 
     // Defined in: adrt_cdefs_common.cpp
-    bool iadrt_is_valid_shape(const std::array<size_t, 4> &shape);
-    std::array<size_t, 5> iadrt_buffer_shape(const std::array<size_t, 4> &shape);
-    std::array<size_t, 4> iadrt_result_shape(const std::array<size_t, 4> &shape);
+    bool iadrt_is_valid_shape(std::span<const size_t, 4> shape);
+    std::array<size_t, 5> iadrt_buffer_shape(std::span<const size_t, 4> shape);
+    std::array<size_t, 4> iadrt_result_shape(std::span<const size_t, 4> shape);
 
     namespace _impl {
 
