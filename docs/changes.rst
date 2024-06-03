@@ -10,7 +10,7 @@ v1.1.0
 ------
 
 * Add support for NumPy 2.0
-* Building this version requires a C++17 compiler
+* Building this version requires a C++20 compiler
 
 v1.0.1
 ------
