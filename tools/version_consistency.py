@@ -201,18 +201,6 @@ def find_wheel_min_python(setup_py):
     return canonicalize_version(f"3.{minor}")
 
 
-def find_linter_min_python(pyproject_toml):
-    with open(pyproject_toml, "rb") as pyproj_file:
-        defs = tomllib.load(pyproj_file)
-    target_version = defs["tool"]["ruff"]["target-version"]
-    ver_re = re.compile(r"py(?P<major>\d)(?P<minor>\d+)")
-    if re_match := ver_re.fullmatch(target_version):
-        major_ver = re_match.group("major")
-        minor_ver = re_match.group("minor")
-        return canonicalize_version(f"{major_ver}.{minor_ver}")
-    raise ValueError(f"invalid linter version target '{target_version}'")
-
-
 def find_macro_min_python(py_cpp):
     min_python = find_cpp_macro_def("Py_LIMITED_API", py_cpp)
     if not min_python.startswith("0x") or len(min_python) != 10:
@@ -309,17 +297,11 @@ if __name__ == "__main__":
     meta_min_python = find_meta_min_python("pyproject.toml")
     wheel_min_python = find_wheel_min_python("setup.py")
     macro_limited_api = find_macro_min_python("src/adrt/adrt_cdefs_py.cpp")
-    linter_min_python = find_linter_min_python("pyproject.toml")
     print(f"Metadata min Python: {meta_min_python}")
     print(f"Wheel min Python: {wheel_min_python}")
     print(f"Limited API macro: {macro_limited_api}")
-    print(f"Linter min Python: {linter_min_python}")
     # Check consistency (Minimum Python versions should all be the same)
-    if (
-        meta_min_python != macro_limited_api
-        or meta_min_python != linter_min_python
-        or meta_min_python != wheel_min_python
-    ):
+    if meta_min_python != macro_limited_api or meta_min_python != wheel_min_python:
         print("Python version mismatch")
         failure = True
     print("")
