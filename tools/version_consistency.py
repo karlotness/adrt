@@ -191,14 +191,12 @@ def find_wheel_min_python(setup_py):
     if not isinstance(options, dict):
         raise ValueError("Setup options attribute is not a dict")
     min_python = options["bdist_wheel"]["py_limited_api"]
-    if (
-        min_python.lower() != min_python
-        or min_python.strip() != min_python
-        or not min_python.startswith("cp3")
-    ):
+    if re_match := re.fullmatch(r"cp(?P<major>\d)(?P<minor>\d+)", min_python):
+        major = int(re_match.group("major"))
+        minor = int(re_match.group("minor"))
+        return canonicalize_version(f"{major}.{minor}")
+    else:
         raise ValueError(f"Invalid wheel tag format '{min_python}'")
-    minor = int(min_python[3:])
-    return canonicalize_version(f"3.{minor}")
 
 
 def find_macro_min_python(py_cpp):
