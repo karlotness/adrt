@@ -10,6 +10,7 @@ v1.1.0
 ------
 
 * Add support for NumPy 2.0
+* Drop support for Python 3.8, now requires version 3.9 or later
 * Building this version requires a C++20 compiler
 
 v1.0.1
