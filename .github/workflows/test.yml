@@ -48,6 +48,9 @@ jobs:
         python: ['3.9', '3.10', '3.11', '3.12']
         include:
           - cflags: '-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all'
+            constraints: 'numpy>=2'
+          - python: '3.10'
+            constraints: 'numpy<2'
           - python: '3.9'
             cflags: '-fopenmp'
     steps:
@@ -66,11 +69,21 @@ jobs:
         path: ~/.cache/pip
         key: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
+    - name: Prepare constraints file
+      id: prep-constraint
+      run: |
+        CONSTRAINT_FILE="$(mktemp)"
+        printf '%s\n' "$CONSTRAINTS" | tr ':' '\n' | tee "$CONSTRAINT_FILE"
+        printf 'file=%s\n' "$CONSTRAINT_FILE" >> "$GITHUB_OUTPUT"
+      env:
+        CONSTRAINTS: '${{ matrix.constraints }}'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade build
         python -m pip install --upgrade -r tests/requirements.txt
+      env:
+        PIP_CONSTRAINT: '${{ steps.prep-constraint.outputs.file }}'
     - name: Build package
       run: CXXFLAGS="$CFLAGS" python -m build --wheel
       env:
@@ -78,6 +91,8 @@ jobs:
         CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wdouble-promotion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=3 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -Wlogical-op'
     - name: Install package
       run: python -m pip install dist/adrt-*.whl
+      env:
+        PIP_CONSTRAINT: '${{ steps.prep-constraint.outputs.file }}'
     - name: Run tests
       run: LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" python -m pytest
       env:

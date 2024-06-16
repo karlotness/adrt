@@ -34,7 +34,7 @@
 #define Py_LIMITED_API 0x03090000
 #include <Python.h>
 
-#define NPY_NO_DEPRECATED_API NPY_1_25_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
 #define NPY_TARGET_VERSION NPY_1_19_API_VERSION
 #include <numpy/arrayobject.h>
 

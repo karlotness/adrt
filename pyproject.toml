@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools>=62.6.0",
-    "numpy>=1.25.0,<2",
+    "numpy>=2,<3",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -16,7 +16,7 @@ authors = [
   {name = "Donsub Rim"}
 ]
 dependencies = [
-  "numpy>=1.23,<2"
+  "numpy>=1.23,<3"
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
