@@ -58,6 +58,7 @@ single-step routines make that possible.
 
 
 import typing
+import collections.abc
 import operator
 import numpy as np
 import numpy.typing as npt
@@ -75,7 +76,7 @@ from ._wrappers import (
 )
 
 
-__all__: typing.Final[typing.Sequence[str]] = [
+__all__: typing.Final[collections.abc.Sequence[str]] = [
     "num_iters",
     "adrt_step",
     "adrt_init",
@@ -176,7 +177,7 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
 
 def adrt_iter(
     a: npt.NDArray[_F], /, *, copy: bool = True
-) -> typing.Iterator[npt.NDArray[_F]]:
+) -> collections.abc.Iterator[npt.NDArray[_F]]:
     r"""Yield individual steps of the ADRT.
 
     The ADRT implemented in :func:`adrt.adrt` is internally an
@@ -223,7 +224,7 @@ def adrt_iter(
 
 def bdrt_iter(
     a: npt.NDArray[_F], /, *, copy: bool = True
-) -> typing.Iterator[npt.NDArray[_F]]:
+) -> collections.abc.Iterator[npt.NDArray[_F]]:
     r"""Yield individual steps of the bdrt.
 
     The implementation of :func:`adrt.bdrt` is internally an iterative
@@ -331,7 +332,7 @@ def iadrt_fmg_step(a: npt.NDArray[_F], /) -> npt.NDArray[_F]:
 
 def iadrt_fmg_iter(
     a: npt.NDArray[_F], /, *, copy: bool = True
-) -> typing.Iterator[npt.NDArray[_F]]:
+) -> collections.abc.Iterator[npt.NDArray[_F]]:
     r"""Iteratively improve estimated inverses by the full multigrid method.
 
     Internally computes a recurrence with :func:`iadrt_fmg_step` to

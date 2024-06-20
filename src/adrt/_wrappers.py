@@ -50,20 +50,21 @@ Python documentation.
 
 import operator
 import typing
+import collections.abc
 import numpy as np
 import numpy.typing as npt
 from . import _adrt_cdefs
 
 
-__all__: typing.Final[typing.Sequence[str]] = []
+__all__: typing.Final[collections.abc.Sequence[str]] = []
 
 
-C = typing.TypeVar("C", bound=typing.Callable[..., typing.Any])
+C = typing.TypeVar("C", bound=collections.abc.Callable[..., typing.Any])
 A = typing.TypeVar("A", bound=np.generic)
 F = typing.TypeVar("F", np.float32, np.float64)
 
 
-def _set_module(module: str) -> typing.Callable[[C], C]:
+def _set_module(module: str) -> collections.abc.Callable[[C], C]:
     r"""Override ``__module__`` on functions for documentation.
 
     This is an internal function. Users should not call it. This
