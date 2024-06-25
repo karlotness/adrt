@@ -143,6 +143,7 @@ template <size_t n_virtual_dim>
 [[nodiscard]] PyArrayObject *new_array(int ndim, std::span<const size_t, n_virtual_dim> virtual_shape, int typenum) {
     static_assert(n_virtual_dim != std::dynamic_extent, "Span size must be statically known");
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
+    static_assert(n_virtual_dim != std::dynamic_extent, "Span must have static extent");
     static_assert(n_virtual_dim <= static_cast<unsigned int>(std::numeric_limits<int>::max()), "n_virtual_dim too large, will cause problems with debug assertions");
     assert(ndim > 0);
     assert(static_cast<unsigned int>(ndim) <= n_virtual_dim);
