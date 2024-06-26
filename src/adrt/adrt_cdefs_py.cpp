@@ -60,10 +60,17 @@
 #pragma message ("Building with assertions enabled")
 #endif
 
+#define ADRT_PY_FASTCALL_METH(func) (reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(func)))
+
 using namespace adrt::_literals;
 using std::size_t;
 
 namespace adrt { namespace _py { namespace {
+
+PyArrayObject *unchecked_pyobject_to_array(PyObject *obj) {
+    assert(!obj || PyArray_Check(obj));
+    return reinterpret_cast<PyArrayObject*>(obj);
+}
 
 PyArrayObject *extract_array(PyObject *arg) {
     assert(arg);
@@ -72,7 +79,7 @@ PyArrayObject *extract_array(PyObject *arg) {
         PyErr_SetString(PyExc_TypeError, "array must be a NumPy array or compatible subclass");
         return nullptr;
     }
-    PyArrayObject *const arr = reinterpret_cast<PyArrayObject*>(arg);
+    PyArrayObject *const arr = adrt::_py::unchecked_pyobject_to_array(arg);
     if(!PyArray_ISCARRAY_RO(arr)) {
         PyErr_SetString(PyExc_ValueError, "array must be C-order, contiguous, aligned, and native byte order");
         return nullptr;
@@ -82,6 +89,10 @@ PyArrayObject *extract_array(PyObject *arg) {
 
 PyObject *array_to_pyobject(PyArrayObject *arr) {
     return reinterpret_cast<PyObject*>(arr);
+}
+
+PyObject *descr_to_pyobject(PyArray_Descr *descr) {
+    return reinterpret_cast<PyObject*>(descr);
 }
 
 std::optional<int> extract_int(PyObject *arg) {
@@ -170,8 +181,8 @@ template <size_t n_virtual_dim>
         return nullptr;
     }
     assert(PyArray_Check(arr));
-    assert(PyArray_ISCARRAY(reinterpret_cast<PyArrayObject*>(arr)));
-    return reinterpret_cast<PyArrayObject*>(arr);
+    assert(PyArray_ISCARRAY(adrt::_py::unchecked_pyobject_to_array(arr)));
+    return adrt::_py::unchecked_pyobject_to_array(arr);
 }
 
 std::optional<size_t> shape_product(std::span<const size_t> shape) {
@@ -252,7 +263,7 @@ void report_unsupported_dtype(PyArrayObject *arr) {
     assert(arr);
     PyArray_Descr *const descr = PyArray_DESCR(arr);
     assert(descr);
-    PyErr_Format(PyExc_TypeError, "unsupported array dtype %S", reinterpret_cast<PyObject*>(descr));
+    PyErr_Format(PyExc_TypeError, "unsupported array dtype %S", adrt::_py::descr_to_pyobject(descr));
 }
 
 }}} // End namespace adrt::_py
@@ -838,10 +849,10 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
 
 static PyMethodDef adrt_cdefs_methods[] = {
     {"adrt", adrt_py_adrt, METH_O, "Compute the ADRT"},
-    {"adrt_step", reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(adrt_py_adrt_step)), METH_FASTCALL, "Compute one step of the ADRT"},
+    {"adrt_step", ADRT_PY_FASTCALL_METH(adrt_py_adrt_step), METH_FASTCALL, "Compute one step of the ADRT"},
     {"iadrt", adrt_py_iadrt, METH_O, "Compute the inverse ADRT"},
     {"bdrt", adrt_py_bdrt, METH_O, "Compute the backprojection of the ADRT"},
-    {"bdrt_step", reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(adrt_py_bdrt_step)), METH_FASTCALL, "Compute one step of the bdrt"},
+    {"bdrt_step", ADRT_PY_FASTCALL_METH(adrt_py_bdrt_step), METH_FASTCALL, "Compute one step of the bdrt"},
     {"interp_to_cart", adrt_py_interp_adrtcart, METH_O, "Interpolate ADRT output to Cartesian coordinate system"},
     {"press_fmg_restriction", adrt_py_fmg_restriction, METH_O, "Multigrid restriction operator"},
     {"press_fmg_prolongation", adrt_py_fmg_prolongation, METH_O, "Multigrid prolongation operator"},
