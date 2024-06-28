@@ -27,20 +27,20 @@ jobs:
         restore-keys: |
           pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
     - name: Check version strings
-      run: python -m tox run -e checkver -- --tag_ref "$GITHUB_REF" --not_dev
-    - name: Check types
-      run: CXXFLAGS="$CFLAGS" python -m tox run -e type
+      run: pipx run --python "$WORKFLOW_PYTHON" tox run -e checkver -- --tag_ref "$GITHUB_REF" --not_dev
       env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
+    - name: Check types
+      run: CXXFLAGS="$CFLAGS" pipx run --python "$WORKFLOW_PYTHON" tox run -e type
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Run tox tests
-      run: CXXFLAGS="$CFLAGS" python -m tox run -e py
+      run: CXXFLAGS="$CFLAGS" pipx run --python "$WORKFLOW_PYTHON" tox run -e py
       env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
         CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Clean up
@@ -98,14 +98,13 @@ jobs:
         persist-credentials: false
     - name: Setup Python
       uses: actions/setup-python@v5
+      id: setup-python
       with:
         python-version: '3.12'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade build
     - name: Build sdist
-      run: python -m build --sdist
+      run: pipx run --python "$WORKFLOW_PYTHON" build --sdist
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Store artifact
       uses: actions/upload-artifact@v4
       with:
@@ -133,20 +132,18 @@ jobs:
         path: repo
     - name: Setup Python
       uses: actions/setup-python@v5
+      id: setup-python
       with:
         python-version: '3.12'
-    - name: Install cibuildwheel
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade 'cibuildwheel>=2.5.0'
     - name: Build wheels
       run: |
         if [[ "$RUNNER_ARCH" != 'ARM'* ]]; then
           export CIBW_TEST_SKIP="*-macosx_arm64 *-macosx_universal2:arm64 $CIBW_TEST_SKIP"
         fi
-        python -m cibuildwheel --output-dir wheelhouse dist/adrt-*.tar.gz
+        pipx run --python "$WORKFLOW_PYTHON" 'cibuildwheel>=2.5.0' --output-dir wheelhouse dist/adrt-*.tar.gz
       shell: bash
       env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CIBW_BUILD: 'cp*'
         CIBW_SKIP: '*-musllinux* pp*'
         CIBW_TEST_SKIP: 'cp3{10,11,12,13}-win32 cp313-*'
@@ -240,10 +237,6 @@ jobs:
           pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade twine abi3audit
     - name: Download sdist
       uses: actions/download-artifact@v4
       with:
@@ -256,9 +249,13 @@ jobs:
         merge-multiple: true
         path: dist/
     - name: Check artifacts
-      run: python -m twine check --strict dist/*
+      run: pipx run --python "$WORKFLOW_PYTHON" twine check --strict dist/*
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Check Python ABI
-      run: python -m abi3audit dist/*.whl
+      run: pipx run --python "$WORKFLOW_PYTHON" abi3audit dist/*.whl
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
   attest:
     runs-on: ubuntu-latest
     timeout-minutes: 20

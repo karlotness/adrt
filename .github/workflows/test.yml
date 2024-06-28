@@ -26,15 +26,14 @@ jobs:
         path: ~/.cache/pip
         key: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
     - name: Run linters
-      run: python -m tox run -e lint,checkver
-    - name: Check types
-      run: CXXFLAGS="$CFLAGS" python -m tox run -e type
+      run: pipx run --python "$WORKFLOW_PYTHON" tox run -e lint,checkver
       env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
+    - name: Check types
+      run: CXXFLAGS="$CFLAGS" pipx run --python "$WORKFLOW_PYTHON" tox run -e type
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Clean up
@@ -69,33 +68,29 @@ jobs:
         path: ~/.cache/pip
         key: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Prepare constraints file
-      id: prep-constraint
-      run: |
-        CONSTRAINT_FILE="$(mktemp)"
-        printf '%s\n' "$CONSTRAINTS" | tr ':' '\n' | tee "$CONSTRAINT_FILE"
-        printf 'file=%s\n' "$CONSTRAINT_FILE" >> "$GITHUB_OUTPUT"
-      env:
-        CONSTRAINTS: '${{ matrix.constraints }}'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade build
-        python -m pip install --upgrade -r tests/requirements.txt
-      env:
-        PIP_CONSTRAINT: '${{ steps.prep-constraint.outputs.file }}'
     - name: Build package
-      run: CXXFLAGS="$CFLAGS" python -m build --wheel
+      run: CXXFLAGS="$CFLAGS" pipx run --python "$WORKFLOW_PYTHON" build --wheel
       env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-U_FORTIFY_SOURCE -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
         CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wdouble-promotion -Wstrict-overflow=5 -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=3 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -Wlogical-op'
     - name: Install package
-      run: python -m pip install dist/adrt-*.whl
+      id: install-pkg
+      run: |
+        CONSTRAINT_FILE="$(mktemp)"
+        printf '%s\n' "$CONSTRAINTS" | tr ':' '\n' | tee "$CONSTRAINT_FILE"
+        VENV_DIR="$(mktemp -d)"
+        "$WORKFLOW_PYTHON" -m venv "$VENV_DIR"
+        PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install -r tests/requirements.txt
+        PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install dist/adrt-*.whl
+        printf 'venv-dir=%s\n' "$VENV_DIR" >> "$GITHUB_OUTPUT"
       env:
-        PIP_CONSTRAINT: '${{ steps.prep-constraint.outputs.file }}'
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
+        CONSTRAINTS: '${{ matrix.constraints }}'
     - name: Run tests
-      run: LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" python -m pytest
+      run: LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" "${VENV_DIR}/bin/python" -m pytest
       env:
+        VENV_DIR: '${{ steps.install-pkg.outputs.venv-dir }}'
         PYTHONMALLOC: 'malloc'
         ASAN_OPTIONS: 'detect_leaks=0:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_invalid_pointer_pairs=2'
     - name: Clean up
