@@ -109,7 +109,7 @@ std::optional<int> extract_int(PyObject *arg) {
             return {};
         }
     }
-    else if(val < std::numeric_limits<int>::min() || val > std::numeric_limits<int>::max()) {
+    else if(!std::in_range<int>(val)) {
         PyErr_SetString(PyExc_OverflowError, "Python int too large to convert to C int");
         return {};
     }
@@ -120,14 +120,15 @@ template <size_t min_dim, size_t max_dim>
 std::optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
     static_assert(min_dim <= max_dim, "Min dimensions must be less than max dimensions.");
     static_assert(min_dim > 0u, "Min dimensions must be positive.");
+    static_assert(std::in_range<unsigned int>(max_dim), "Dimension limit must fit in unsigned int.");
     assert(arr);
     std::array<size_t, max_dim> shape_arr;
     const int sndim = PyArray_NDIM(arr);
-    const unsigned int ndim = static_cast<unsigned int>(sndim);
-    if(sndim < 0 || ndim < min_dim || ndim > max_dim) {
+    if(std::cmp_less(sndim, min_dim) || std::cmp_greater(sndim, max_dim)) {
         PyErr_Format(PyExc_ValueError, "array must have between %zu and %zu dimensions, but had %d", min_dim, max_dim, sndim);
         return {};
     }
+    const unsigned int ndim = static_cast<unsigned int>(sndim);
     const npy_intp *const numpy_shape = PyArray_SHAPE(arr);
     assert(numpy_shape);
     // Prepend trivial dimensions
@@ -141,7 +142,7 @@ std::optional<std::array<size_t, max_dim>> array_shape(PyArrayObject *arr) {
             PyErr_Format(PyExc_ValueError, "all array dimensions must be nonzero, but found zero in dimension %zu", i);
             return {};
         }
-        else if(static_cast<npy_uintp>(shape) > std::numeric_limits<size_t>::max()) {
+        else if(std::cmp_greater(shape, std::numeric_limits<size_t>::max())) {
             PyErr_SetString(PyExc_ValueError, "Maximum allowed dimension exceeded");
             return {};
         }
@@ -154,17 +155,16 @@ template <size_t n_virtual_dim>
 [[nodiscard]] PyArrayObject *new_array(int ndim, std::span<const size_t, n_virtual_dim> virtual_shape, int typenum) {
     static_assert(n_virtual_dim != std::dynamic_extent, "Span size must be statically known");
     static_assert(n_virtual_dim > 0u, "Need at least one shape dimension");
-    static_assert(n_virtual_dim != std::dynamic_extent, "Span must have static extent");
-    static_assert(n_virtual_dim <= static_cast<unsigned int>(std::numeric_limits<int>::max()), "n_virtual_dim too large, will cause problems with debug assertions");
+    static_assert(std::in_range<int>(n_virtual_dim), "n_virtual_dim too large, will cause problems with debug assertions");
     assert(ndim > 0);
-    assert(static_cast<unsigned int>(ndim) <= n_virtual_dim);
+    assert(std::cmp_less_equal(ndim, n_virtual_dim));
     assert(std::ranges::all_of(virtual_shape, [](size_t v){return v > 0u;}));
     assert(std::ranges::all_of(virtual_shape | std::ranges::views::take(std::max(static_cast<int>(n_virtual_dim) - ndim, 0)), [](size_t v){return v == 1u;}));
     const unsigned int undim = static_cast<unsigned int>(ndim);
     std::array<npy_intp, n_virtual_dim> new_shape;
     for(size_t i = 0; i < undim; ++i) {
         const size_t shape_val = virtual_shape[(n_virtual_dim - undim) + i];
-        if(shape_val <= static_cast<npy_uintp>(std::numeric_limits<npy_intp>::max())) {
+        if(std::in_range<npy_intp>(shape_val)) {
             new_shape[i] = static_cast<npy_intp>(shape_val);
         }
         else {
@@ -197,7 +197,7 @@ std::optional<size_t> shape_product(std::span<const size_t> shape) {
 template <size_t N>
 std::optional<std::span<PyObject *const, N>> unpack_fastcall(PyObject *const *args, Py_ssize_t nargs, const char *name) {
     static_assert(N > 1u, "Functions of zero or one argument should use METH_NOARGS or METH_O");
-    static_assert(N <= static_cast<size_t>(std::numeric_limits<Py_ssize_t>::max()), "Requesting too many arguments for range check");
+    static_assert(std::in_range<Py_ssize_t>(N), "Requesting too many arguments for range check");
     assert(args);
     assert(name);
     if(nargs != static_cast<Py_ssize_t>(N)) {
