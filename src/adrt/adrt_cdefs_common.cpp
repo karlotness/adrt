@@ -36,6 +36,7 @@
 #include <span>
 #include <cassert>
 #include <optional>
+#include <algorithm>
 #include <bit>
 
 #ifdef _MSC_VER
