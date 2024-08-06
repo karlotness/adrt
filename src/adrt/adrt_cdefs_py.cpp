@@ -272,12 +272,12 @@ extern "C" {
 
 static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -292,8 +292,8 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim + 1, std::span{output_shape}, NPY_FLOAT32);
@@ -303,7 +303,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -322,7 +322,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -333,7 +333,7 @@ static PyObject *adrt_py_adrt(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
@@ -345,12 +345,12 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *const *args, 
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shape and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -371,15 +371,15 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *const *args, 
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::adrt_step_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -394,7 +394,7 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *const *args, 
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -404,19 +404,19 @@ static PyObject *adrt_py_adrt_step(PyObject* /* self */, PyObject *const *args, 
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -431,8 +431,8 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return nullptr;
     }
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
@@ -442,7 +442,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -461,7 +461,7 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -472,19 +472,19 @@ static PyObject *adrt_py_iadrt(PyObject* /* self */, PyObject *arg){
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -499,8 +499,8 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return nullptr;
     }
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
@@ -510,7 +510,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -529,7 +529,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
             adrt::_py::xdecref(ret);
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -540,7 +540,7 @@ static PyObject *adrt_py_bdrt(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
@@ -552,12 +552,12 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *const *args, 
         return nullptr;
     }
     // Process array argument
-    PyArrayObject *const I = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(adrt::_common::get<0>(*unpacked_args));
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shape and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -578,15 +578,15 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *const *args, 
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::bdrt_step_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -601,7 +601,7 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *const *args, 
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -611,19 +611,19 @@ static PyObject *adrt_py_bdrt_step(PyObject* /* self */, PyObject *const *args, 
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -641,15 +641,15 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim - 1, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -664,7 +664,7 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -674,19 +674,19 @@ static PyObject *adrt_py_interp_adrtcart(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(I);
+    const std::optional<std::array<size_t, 4>> input_shape = adrt::_py::array_shape<3, 4>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -697,15 +697,15 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 4> output_shape = adrt::fmg_restriction_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -720,7 +720,7 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -730,19 +730,19 @@ static PyObject *adrt_py_fmg_restriction(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -753,15 +753,15 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 3> output_shape = adrt::fmg_prolongation_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -776,7 +776,7 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -786,19 +786,19 @@ static PyObject *adrt_py_fmg_prolongation(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
 
 static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
     // Process function arguments
-    PyArrayObject *const I = adrt::_py::extract_array(arg);
-    if(!I) {
+    PyArrayObject *const in_arr = adrt::_py::extract_array(arg);
+    if(!in_arr) {
         return nullptr;
     }
     // Extract shapes and check sizes
-    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(I);
+    const std::optional<std::array<size_t, 3>> input_shape = adrt::_py::array_shape<2, 3>(in_arr);
     if(!input_shape) {
         return nullptr;
     }
@@ -809,15 +809,15 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
     // Compute effective output shape
     const std::array<size_t, 3> output_shape = adrt::fmg_highpass_result_shape(*input_shape);
     // Process input array
-    const int ndim = PyArray_NDIM(I);
-    switch(PyArray_TYPE(I)) {
+    const int ndim = PyArray_NDIM(in_arr);
+    switch(PyArray_TYPE(in_arr)) {
     case NPY_FLOAT32:
     {
         PyArrayObject *const ret = adrt::_py::new_array(ndim, std::span{output_shape}, NPY_FLOAT32);
         if(!ret) {
             return nullptr;
         }
-        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(I));
+        const npy_float32 *const in_data = static_cast<npy_float32*>(PyArray_DATA(in_arr));
         npy_float32 *const out_data = static_cast<npy_float32*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -832,7 +832,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
         if(!ret) {
             return nullptr;
         }
-        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(I));
+        const npy_float64 *const in_data = static_cast<npy_float64*>(PyArray_DATA(in_arr));
         npy_float64 *const out_data = static_cast<npy_float64*>(PyArray_DATA(ret));
         // NO PYTHON API BELOW THIS POINT
         Py_BEGIN_ALLOW_THREADS
@@ -842,7 +842,7 @@ static PyObject *adrt_py_fmg_highpass(PyObject* /* self */, PyObject *arg) {
         return adrt::_py::array_to_pyobject(ret);
     }
     default:
-        adrt::_py::report_unsupported_dtype(I);
+        adrt::_py::report_unsupported_dtype(in_arr);
         return nullptr;
     }
 }
