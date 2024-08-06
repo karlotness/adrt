@@ -69,11 +69,11 @@ namespace adrt {
         using larger_float = std::conditional_t<(std::numeric_limits<adrt_scalar>::digits > std::numeric_limits<float_index>::digits), adrt_scalar, float_index>;
         const std::array<size_t, 3> output_shape = adrt::interp_adrtcart_result_shape(in_shape);
 
-        const size_t N = adrt::_common::get<3>(in_shape);
-        const float_index t_left = adrt::_const::sqrt2_2<float_index> - (adrt::_const::sqrt2_2<float_index> / static_cast<float_index>(N));
-        const float_index th_left = adrt::_const::pi_2<float_index> - (adrt::_const::pi_8<float_index> / static_cast<float_index>(N));
+        const size_t shape_n = adrt::_common::get<3>(in_shape);
+        const float_index t_left = adrt::_const::sqrt2_2<float_index> - (adrt::_const::sqrt2_2<float_index> / static_cast<float_index>(shape_n));
+        const float_index th_left = adrt::_const::pi_2<float_index> - (adrt::_const::pi_8<float_index> / static_cast<float_index>(shape_n));
 
-        ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, N, t_left, th_left)")
+        ADRT_OPENMP("omp parallel for collapse(3) default(none) shared(data, in_shape, out, output_shape, shape_n, t_left, th_left)")
         for(size_t batch = 0; batch < adrt::_common::get<0>(output_shape); ++batch) {
             for(size_t offset = 0; offset < adrt::_common::get<1>(output_shape); ++offset) {
                 for(size_t angle = 0; angle < adrt::_common::get<2>(output_shape); ++angle) {
@@ -88,16 +88,16 @@ namespace adrt {
                     // We know th is in [-pi/2, pi/2] so we can compute th0 with some arithmetic
                     const float_index th0 = adrt::_const::pi_4<float_index> - std::abs(std::abs(th) - adrt::_const::pi_4<float_index>);
                     const float_index tan_theta = std::clamp(std::tan(th0), static_cast<float_index>(0), static_cast<float_index>(1));
-                    const float_index si = std::round(tan_theta * static_cast<float_index>(N - 1_uz));
+                    const float_index si = std::round(tan_theta * static_cast<float_index>(shape_n - 1_uz));
                     assert(std::isfinite(si));
                     assert(si >= static_cast<float_index>(0));
                     assert(si < static_cast<float_index>(adrt::_common::get<3>(in_shape)));
                     // Compute the scaling factor
-                    const larger_float sidea = static_cast<larger_float>(si) / static_cast<larger_float>(N - 1_uz);
+                    const larger_float sidea = static_cast<larger_float>(si) / static_cast<larger_float>(shape_n - 1_uz);
                     const larger_float sideb = static_cast<larger_float>(1);
                     const adrt_scalar factor = static_cast<adrt_scalar>(std::sqrt(sidea * sidea + sideb));
                     const float_index h0 = (static_cast<float_index>(0.5L) + (tan_theta / static_cast<float_index>(2))) + ((sgn >= 0 ? t : -t) / std::cos(th0));
-                    const float_index hi = (std::round(h0 * static_cast<float_index>(2_uz * N)) - static_cast<float_index>(1)) / static_cast<float_index>(2);
+                    const float_index hi = (std::round(h0 * static_cast<float_index>(2_uz * shape_n)) - static_cast<float_index>(1)) / static_cast<float_index>(2);
                     assert(std::isfinite(hi));
                     // Perform the updates
                     if(hi >= static_cast<float_index>(0) && hi < static_cast<float_index>(adrt::_common::get<2>(in_shape))) {
