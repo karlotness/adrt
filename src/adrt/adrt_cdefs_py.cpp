@@ -883,9 +883,12 @@ static struct PyModuleDef adrt_cdefs_module = {
 PyMODINIT_FUNC
 PyInit__adrt_cdefs()
 {
-    import_array();
     PyObject *const module = PyModule_Create(&adrt_cdefs_module);
     if(!module) {
+        return nullptr;
+    }
+    if(PyArray_ImportNumPyAPI() < 0) {
+        adrt::_py::xdecref(module);
         return nullptr;
     }
     if(!adrt::_py::module_add_bool(module, "OPENMP_ENABLED", adrt::_const::openmp_enabled)) {
