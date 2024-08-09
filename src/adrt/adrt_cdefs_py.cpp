@@ -61,6 +61,10 @@
 
 #define ADRT_PY_FASTCALL_METH(func) (reinterpret_cast<PyCFunction>(reinterpret_cast<void(*)()>(func)))
 
+#if !defined(Py_GIL_DISABLED) && !defined(Py_LIMITED_API)
+#error "Builds using the GIL must also use the limited API"
+#endif
+
 using namespace adrt::_literals;
 using std::size_t;
 
