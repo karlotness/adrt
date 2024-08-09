@@ -894,6 +894,14 @@ PyInit__adrt_cdefs()
         adrt::_py::xdecref(module);
         return nullptr;
     }
+
+    #ifdef Py_GIL_DISABLED
+    if(PyUnstable_Module_SetGIL(module, Py_MOD_GIL_NOT_USED) < 0) {
+        adrt::_py::xdecref(module);
+        return nullptr;
+    }
+    #endif
+
     return module;
 }
 
