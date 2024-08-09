@@ -116,32 +116,34 @@ def find_cpp_macro_def(macro, cpp_path):
     raise ValueError(f"Could not find macro {macro}")
 
 
-def find_package_version(init_py):
-    with open(init_py, "r", encoding="utf8") as init_file:
-        content = init_file.read()
+def find_global_variable_def(var, py_path):
+    with open(py_path, "r", encoding="utf8") as py_file:
+        content = py_file.read()
     assignments = [
         node
         for node in ast.walk(ast.parse(content))
         if (
             isinstance(node, ast.Assign)
-            and any(
-                isinstance(t, ast.Name) and t.id == "__version__" for t in node.targets
-            )
+            and any(isinstance(t, ast.Name) and t.id == var for t in node.targets)
         )
         or (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id == "__version__"
+            and node.target.id == var
         )
     ]
     if len(assignments) != 1:
         raise ValueError(
-            f"Could not locate unique __version__ assignment, found {len(assignments)}"
+            f"Could not locate unique {var} assignment, found {len(assignments)}"
         )
     ver_assign = assignments.pop()
     if ver_assign.value is None:
-        raise ValueError("Version assignment missing value")
-    ver_str = ast.literal_eval(ver_assign.value)
+        raise ValueError(f"{var} assignment missing value")
+    return ast.literal_eval(ver_assign.value)
+
+
+def find_package_version(init_py):
+    ver_str = find_global_variable_def("__version__", init_py)
     if not isinstance(ver_str, str):
         raise ValueError(f"Version attribute is not a string {ver_str}")
     return ver_str
@@ -164,54 +166,13 @@ def find_meta_min_python(pyproject_toml):
     return find_min_version("python", ["python" + ver_constraint])
 
 
-def find_wheel_min_python(setup_py):
-    with open(setup_py, "r", encoding="utf8") as setup_file:
-        content = setup_file.read()
-    # Locate setup() calls in the AST
-    calls = [
-        node
-        for node in ast.walk(ast.parse(content))
-        if isinstance(node, ast.Call)
-        and (
-            (isinstance(node.func, ast.Name) and node.func.id == "setup")
-            or (isinstance(node.func, ast.Attribute) and node.func.attr == "setup")
-        )
-    ]
-    if len(calls) != 1:
-        raise ValueError(f"Could not locate unique setup() call, found {len(calls)}")
-    setup_call = calls.pop()
-    # Find options keyword in the call
-    options = None
-    for keyword in setup_call.keywords:
-        if keyword.arg == "options":
-            options = ast.literal_eval(keyword.value)
-            break
-    else:
-        raise ValueError("Could not find setup options argument")
-    if not isinstance(options, dict):
-        raise ValueError("Setup options attribute is not a dict")
-    min_python = options["bdist_wheel"]["py_limited_api"]
-    if re_match := re.fullmatch(r"cp(?P<major>\d)(?P<minor>\d+)", min_python):
-        major = int(re_match.group("major"))
-        minor = int(re_match.group("minor"))
-        return canonicalize_version(f"{major}.{minor}")
-    else:
-        raise ValueError(f"Invalid wheel tag format '{min_python}'")
-
-
-def find_macro_min_python(py_cpp):
-    min_python = find_cpp_macro_def("Py_LIMITED_API", py_cpp)
-    if not min_python.startswith("0x") or len(min_python) != 10:
-        raise ValueError(f"Limited API macro is not a valid hex string: {min_python}")
-    min_python = int(min_python, base=16)
-    major = (min_python >> 24) & 0xFF
-    minor = (min_python >> 16) & 0xFF
-    micro = (min_python >> 8) & 0xFF
-    release = min_python & 0xFF
-    if release != 0:
-        raise ValueError("Using pre-release version for limited API")
-    ver = f"{major}.{minor}.{micro}"
-    return str(canonicalize_version(ver))
+def find_limited_api_python(setup_py):
+    ver_str = find_global_variable_def("LIMITED_API_VERSION", setup_py)
+    if not isinstance(ver_str, str):
+        raise ValueError(f"Limited API value is not a string {ver_str}")
+    if not re.fullmatch(r"\d+\.\d+", ver_str, re.ASCII):
+        raise ValueError(f"Limited API value is not formatted correctly {ver_str}")
+    return ver_str
 
 
 def find_package_min_numpy(pyproject_toml):
@@ -293,13 +254,11 @@ if __name__ == "__main__":
 
     # Check Python version requirements
     meta_min_python = find_meta_min_python("pyproject.toml")
-    wheel_min_python = find_wheel_min_python("setup.py")
-    macro_limited_api = find_macro_min_python("src/adrt/adrt_cdefs_py.cpp")
+    limited_api_python = find_limited_api_python("setup.py")
     print(f"Metadata min Python: {meta_min_python}")
-    print(f"Wheel min Python: {wheel_min_python}")
-    print(f"Limited API macro: {macro_limited_api}")
+    print(f"Limited API Python: {limited_api_python}")
     # Check consistency (Minimum Python versions should all be the same)
-    if meta_min_python != macro_limited_api or meta_min_python != wheel_min_python:
+    if meta_min_python != limited_api_python:
         print("Python version mismatch")
         failure = True
     print("")

@@ -36,8 +36,11 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import numpy
 import glob
+import sysconfig
 
 
+LIMITED_API_VERSION = "3.10"
+FREE_THREADING_BUILD = sysconfig.get_config_var("Py_GIL_DISABLED")
 COMPILER_EXTRA_ARGS = {
     "unix": ["-std=c++20"],
     "msvc": ["/std:c++20"],
@@ -52,18 +55,32 @@ class CPPVersionBuildExt(build_ext):
         return super().build_extension(ext, *args, **kwargs)
 
 
-adrt_c_ext = Extension(
-    "adrt._adrt_cdefs",
-    sources=glob.glob("src/adrt/*.cpp"),
-    depends=glob.glob("src/adrt/*.hpp"),
-    language="c++",
-    include_dirs=[numpy.get_include()],
-    py_limited_api=True,
-)
+def build_extension_def():
+    macro_defs = []
+    if not FREE_THREADING_BUILD:
+        major, minor = map(int, LIMITED_API_VERSION.split("."))
+        macro_defs.append(("Py_LIMITED_API", f"0x{major:02X}{minor:02X}0000"))
+    return Extension(
+        "adrt._adrt_cdefs",
+        sources=glob.glob("src/adrt/*.cpp"),
+        depends=glob.glob("src/adrt/*.hpp"),
+        language="c++",
+        include_dirs=[numpy.get_include()],
+        py_limited_api=(not FREE_THREADING_BUILD),
+        define_macros=macro_defs,
+    )
+
+
+def build_default_options():
+    options = {}
+    if not FREE_THREADING_BUILD:
+        major, minor = map(int, LIMITED_API_VERSION.split("."))
+        options["bdist_wheel"] = {"py_limited_api": f"cp{major}{minor}"}
+    return options
 
 
 setup(
-    ext_modules=[adrt_c_ext],
+    ext_modules=[build_extension_def()],
     cmdclass={"build_ext": CPPVersionBuildExt},
-    options={"bdist_wheel": {"py_limited_api": "cp310"}},
+    options=build_default_options(),
 )
