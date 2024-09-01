@@ -34,7 +34,7 @@ jobs:
       run: CXXFLAGS="$CFLAGS" pipx run --python "$WORKFLOW_PYTHON" tox run -e type
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
-        CPPFLAGS: '-U_FORTIFY_SOURCE'
+        CPPFLAGS: '-DNDEBUG -U_FORTIFY_SOURCE'
         CFLAGS: '-O0 -g0 -fvisibility=hidden -fvisibility-inlines-hidden'
     - name: Clean up
       run: python -m pip cache remove adrt || true
