@@ -129,6 +129,7 @@ def iadrt_fmg(
         raise ValueError(
             f"must allow at least one iteration, but specified {max_iters}"
         )
+    _inv1 = a  # Silence linter warning about unbound variable
     for (_inv1, res1), (_, res2) in itertools.pairwise(
         itertools.chain(
             (
