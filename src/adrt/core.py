@@ -371,10 +371,10 @@ def iadrt_fmg_iter(
     desired stopping condition, or consider :func:`itertools.islice`
     to cap the number of elements produced.
     """
-    inv = iadrt_fmg_step(a)
+    inv: npt.NDArray[_F] = iadrt_fmg_step(a)
     inv.setflags(write=False)
     yield inv.copy() if copy else inv.view()
     while True:
-        inv = inv + iadrt_fmg_step(a - _adrt(inv))
+        inv = inv + iadrt_fmg_step(a - _adrt(inv))  # type: ignore[assignment,type-var]
         inv.setflags(write=False)
         yield inv.copy() if copy else inv.view()
