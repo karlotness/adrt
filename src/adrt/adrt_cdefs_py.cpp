@@ -189,7 +189,7 @@ template <size_t n_virtual_dim>
 }
 
 std::optional<size_t> shape_product(std::span<const size_t> shape) {
-    assert(shape.size() > 0u);
+    assert(!shape.empty());
     const std::optional<size_t> n_elem = adrt::_common::shape_product(shape);
     if(!n_elem) {
         PyErr_SetString(PyExc_ValueError, "array is too big; unable to allocate temporary space");

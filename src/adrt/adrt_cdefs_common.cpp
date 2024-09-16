@@ -151,8 +151,8 @@ namespace adrt {
         }
 
         std::optional<size_t> shape_product(std::span<const size_t> shape) {
-            assert((shape.size() == 0u) || (shape.data() != nullptr));
-            if(shape.size() == 0u) {
+            assert(shape.empty() || (shape.data() != nullptr));
+            if(shape.empty()) {
                 return {};
             }
             std::optional<size_t> prod = shape[0];
