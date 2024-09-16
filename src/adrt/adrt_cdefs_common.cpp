@@ -74,6 +74,14 @@ bool is_pow2(size_t val) {
     return !overflow;
 }
 
+template <size_t N>
+std::array<size_t, N> span_to_array(std::span<const size_t, N> s) {
+    static_assert(N != std::dynamic_extent, "Span must have statically-known extent");
+    return [&s]<size_t... Ints>(std::index_sequence<Ints...>) -> std::array<size_t, N> {
+        return {adrt::_common::get<Ints>(s)...};
+    }(std::make_index_sequence<N>{});
+}
+
 #if defined(__GNUC__) || defined(__clang__) // GCC intrinsics
 
 // Compatibility with old GCC
@@ -217,12 +225,7 @@ namespace adrt {
     }
 
     std::array<size_t, 4> adrt_step_result_shape(std::span<const size_t, 4> shape) {
-        return {
-            adrt::_common::get<0>(shape),
-            adrt::_common::get<1>(shape),
-            adrt::_common::get<2>(shape),
-            adrt::_common::get<3>(shape),
-        };
+        return adrt::_impl::span_to_array(shape);
     }
 
     // Implementation for bdrt
@@ -251,21 +254,11 @@ namespace adrt {
 
     // Implementation for bdrt
     std::array<size_t, 4> bdrt_result_shape(std::span<const size_t, 4> shape) {
-        return {
-            adrt::_common::get<0>(shape),
-            adrt::_common::get<1>(shape),
-            adrt::_common::get<2>(shape),
-            adrt::_common::get<3>(shape),
-        };
+        return adrt::_impl::span_to_array(shape);
     }
 
     std::array<size_t, 4> bdrt_step_result_shape(std::span<const size_t, 4> shape) {
-        return {
-            adrt::_common::get<0>(shape),
-            adrt::_common::get<1>(shape),
-            adrt::_common::get<2>(shape),
-            adrt::_common::get<3>(shape),
-        };
+        return adrt::_impl::span_to_array(shape);
     }
 
     bool iadrt_is_valid_shape(std::span<const size_t, 4> shape) {
@@ -284,12 +277,7 @@ namespace adrt {
     }
 
     std::array<size_t, 4> iadrt_result_shape(std::span<const size_t, 4> shape) {
-        return {
-            adrt::_common::get<0>(shape),
-            adrt::_common::get<1>(shape),
-            adrt::_common::get<2>(shape),
-            adrt::_common::get<3>(shape),
-        };
+        return adrt::_impl::span_to_array(shape);
     }
 
     bool interp_adrtcart_is_valid_shape(std::span<const size_t, 4> shape) {
@@ -345,11 +333,7 @@ namespace adrt {
     }
 
     std::array<size_t, 3> fmg_highpass_result_shape(std::span<const size_t, 3> shape) {
-        return {
-            adrt::_common::get<0>(shape),
-            adrt::_common::get<1>(shape),
-            adrt::_common::get<2>(shape),
-        };
+        return adrt::_impl::span_to_array(shape);
     }
 
 } // End namespace adrt
