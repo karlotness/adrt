@@ -140,12 +140,12 @@ jobs:
         if [[ "$RUNNER_ARCH" != 'ARM'* ]]; then
           export CIBW_TEST_SKIP="*-macosx_arm64 *-macosx_universal2:arm64 $CIBW_TEST_SKIP"
         fi
-        pipx run --python "$WORKFLOW_PYTHON" 'cibuildwheel>=2.5.0' --output-dir wheelhouse dist/adrt-*.tar.gz
+        pipx run --python "$WORKFLOW_PYTHON" 'cibuildwheel>=2.20.0' --output-dir wheelhouse dist/adrt-*.tar.gz
       shell: bash
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CIBW_BUILD: 'cp*'
-        CIBW_SKIP: '*-musllinux* pp*'
+        CIBW_SKIP: '*-musllinux* pp* *t-win*'
         CIBW_TEST_SKIP: 'cp3{10,11,12,13}-win32 cp313-*'
         # Linux configuration
         CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux_2_28'
