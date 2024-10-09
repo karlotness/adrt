@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-python@v5
       id: setup-python
       with:
-        python-version: '3.12'
+        python-version: '3.13'
     - name: Cache pip downloads
       uses: actions/cache@v4
       with:
@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12']
+        python: ['3.10', '3.11', '3.12', '3.13']
         include:
           - cflags: '-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all'
             constraints: 'numpy>=2'
@@ -115,7 +115,7 @@ jobs:
       uses: actions/setup-python@v5
       id: setup-python
       with:
-        python-version: '3.12'
+        python-version: '3.13'
     - name: Download Catch2
       if: steps.cache-catch2.outputs.cache-hit != 'true'
       run: pipx run --python "$WORKFLOW_PYTHON" tools/download_catch2.py tests/cpp/catch2/
