@@ -149,6 +149,7 @@ jobs:
         CIBW_TEST_SKIP: 'cp3{10,11,12,13}-win32 cp313-*'
         # Linux configuration
         CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux_2_28'
+        CIBW_MANYLINUX_AARCH64_IMAGE: 'manylinux_2_28'
         CIBW_ARCHS_LINUX: 'auto64'
         CIBW_ENVIRONMENT_LINUX: >-
           CPPFLAGS='-D_FORTIFY_SOURCE=2 -DNDEBUG'
