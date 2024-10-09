@@ -146,7 +146,6 @@ def linkcode_resolve(domain, info):
         except (ValueError, TypeError):
             return None
     # Form the URL from the pieces
-    repo_url = "https://github.com/karlotness/adrt"
     if packaging.version.Version(version).is_devrelease:
         ref = "master"
     else:
@@ -157,4 +156,7 @@ def linkcode_resolve(domain, info):
         line_suffix = f"#L{line_start}"
     else:
         line_suffix = ""
-    return f"{repo_url}/blob/{ref}/src/adrt/{source_file!s}{line_suffix}"
+    return (
+        f"https://github.com/karlotness/adrt/blob/{ref}/src/adrt/"
+        f"{source_file!s}{line_suffix}"
+    )
