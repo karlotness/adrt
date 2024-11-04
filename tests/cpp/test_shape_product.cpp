@@ -75,7 +75,7 @@ TEST_CASE("shape_product handles arrays with max product", "[common][shape_produ
         } while(std::next_permutation(std::begin(vals), std::end(vals)));
     }
     else {
-        WARN("Unusual bit-ness for platform, test skipped");
+        SKIP("Unusual bit-ness for platform, test skipped");
     }
 }
 

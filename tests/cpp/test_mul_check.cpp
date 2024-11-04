@@ -89,7 +89,7 @@ TEST_CASE("mul_check correctly produces size_t_max", "[common][mul_check]") {
         }
     }
     else {
-        WARN("Unusual bit-ness for platform, test skipped");
+        SKIP("Unusual bit-ness for platform, test skipped");
     }
 }
 
