@@ -158,12 +158,13 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
         raise ValueError(
             f"array must have between 2 and 3 dimensions, but had {a.ndim}"
         )
-    if (
-        a.shape[-1] != a.shape[-2]
-        or ((a.shape[-1] - 1) & a.shape[-1]) != 0
-        or not all(a.shape)
-    ):
+    if a.shape[-1] != a.shape[-2] or ((a.shape[-1] - 1) & a.shape[-1]) != 0:
         raise ValueError("array must be square with a power of two shape")
+    if not all(a.shape):
+        raise ValueError(
+            "all array dimensions must be nonzero, "
+            f"but found zero in dimension {a.shape.index(0)}"
+        )
     # Shape is valid, create new output buffer and copy
     n = a.shape[-1]
     output_shape = a.shape[:-2] + (4, 2 * n - 1, n)
