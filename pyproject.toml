@@ -94,13 +94,16 @@ respect-gitignore = true
 fix = false
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY"]
+select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT"]
 ignore = ["UP015", "SIM108"]
 
 [tool.ruff.lint.per-file-ignores]
 "setup.py" = ["ICN001"]
 "tools/version_consistency.py" = ["T20"]
 "tools/download_catch2.py" = ["T20"]
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
 
 [tool.mypy]
 strict = true
