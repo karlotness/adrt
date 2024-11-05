@@ -40,29 +40,35 @@ import adrt
 class TestBdrtStepCdefs:
     def test_refuses_too_few_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="bdrt_step.* expected 2 arguments, got 1"):
             adrt._adrt_cdefs.bdrt_step(arr)
 
     def test_refuses_too_many_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="bdrt_step.* expected 2 arguments, got 3"):
             adrt._adrt_cdefs.bdrt_step(arr, 0, 0)
 
     def test_refuses_non_array(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64).tolist()
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="must be a NumPy array or compatible subclass"
+        ):
             adrt._adrt_cdefs.bdrt_step(arr, 0)
 
     def test_refuses_non_integer(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="int"):
             adrt._adrt_cdefs.bdrt_step(arr, [])
 
     def test_refuses_out_of_range(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
-        with pytest.raises(ValueError, match=r"\-1"):
+        with pytest.raises(
+            ValueError, match=r"step \-1 is out of range.*adrt\.core\.num_iters"
+        ):
             adrt._adrt_cdefs.bdrt_step(arr, -1)
-        with pytest.raises(ValueError, match="4"):
+        with pytest.raises(
+            ValueError, match=r"step 4 is out of range.*adrt\.core\.num_iters"
+        ):
             adrt._adrt_cdefs.bdrt_step(arr, 4)
 
 

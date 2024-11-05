@@ -75,9 +75,9 @@ def test_batch_unique_values(dtype):
 
 
 def test_refuses_non_array():
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="must be numpy.ndarray"):
         adrt.core.adrt_init(None)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="must be numpy.ndarray"):
         adrt.core.adrt_init(
             [
                 [1.0, 2.0, 3.0, 4.0],
@@ -90,35 +90,35 @@ def test_refuses_non_array():
 
 def test_refuses_too_many_dims():
     in_arr = np.ones((2, 3, 16, 16)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 4"):
         adrt.core.adrt_init(in_arr)
 
 
 def test_refuses_too_few_dims():
     in_arr = np.ones(16).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 1"):
         adrt.core.adrt_init(in_arr)
 
 
 def test_refuses_non_square():
     in_arr = np.ones((3, 16, 15)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be square"):
         adrt.core.adrt_init(in_arr)
     in_arr = np.ones((15, 16)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be square"):
         adrt.core.adrt_init(in_arr)
 
 
 def test_refuses_non_power_of_two():
     in_arr = np.ones((7, 7)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="power of two shape"):
         adrt.core.adrt_init(in_arr)
     in_arr = np.ones((2, 7, 7)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="power of two shape"):
         adrt.core.adrt_init(in_arr)
 
 
 def test_refuses_zero_axis_array():
     inarr = np.zeros((0, 32, 32), dtype=np.float32)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="found zero in dimension 0"):
         adrt.core.adrt_init(inarr)

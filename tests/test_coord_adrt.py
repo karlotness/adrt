@@ -45,12 +45,16 @@ def test_return_value_order():
 
 
 def test_reject_invalid_size_small():
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="invalid Radon domain size 1, must be at least 2"
+    ):
         adrt.utils.coord_adrt(1)
 
 
 def test_reject_invalid_size_odd():
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="invalid Radon domain size 5, must be a power of two"
+    ):
         adrt.utils.coord_adrt(5)
 
 

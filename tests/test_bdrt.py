@@ -83,35 +83,39 @@ class TestBdrtCdefs:
         size = 16
         inarr_a = np.zeros((4, 2 * size - 1, size - 1), dtype=np.float32)
         inarr_b = np.zeros((4, 2 * size - 2, size), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             _ = adrt._adrt_cdefs.bdrt(inarr_a)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             _ = adrt._adrt_cdefs.bdrt(inarr_b)
 
     def test_refuses_five_dim(self):
         size = 16
         inarr = np.zeros((6, 5, 4, 2 * size - 1, size), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="between 3 and 4 dimensions, but had 5"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_non_power_of_two(self):
         size = 17
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_non_array(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="must be a NumPy array or compatible subclass"
+        ):
             _ = adrt._adrt_cdefs.bdrt(None)
         base_list = [[1.0, 2.0, 3.0, 4.0]] * 7
         arr_list = [base_list for _ in range(4)]
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="must be a NumPy array or compatible subclass"
+        ):
             _ = adrt._adrt_cdefs.bdrt(arr_list)
 
     def test_refuses_fortran_order(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*C-order"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
@@ -120,7 +124,7 @@ class TestBdrtCdefs:
         inarr = inarr[:, :, ::2]
         assert inarr.shape == (4, 31, 16)
         assert not inarr.flags["C_CONTIGUOUS"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*contiguous"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_byteswapped(self):
@@ -128,18 +132,18 @@ class TestBdrtCdefs:
         inarr = np.ones(
             (4, 2 * size - 1, size), dtype=np.dtype(np.float32).newbyteorder()
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*native byte order"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_zero_axis_array(self):
         size = 16
         inarr = np.zeros((0, 4, 2 * size - 1, size), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="found zero in dimension 0"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
     def test_refuses_zero_size_planes(self):
         inarr = np.zeros((4, 0, 0), dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="found zero in dimension (1|2)"):
             _ = adrt._adrt_cdefs.bdrt(inarr)
 
 

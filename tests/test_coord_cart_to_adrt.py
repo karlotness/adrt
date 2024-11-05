@@ -94,7 +94,7 @@ def test_quadrant_midpoints_periodic(period):
 
 
 def test_refuses_mismatched_array_shapes():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="mismatched shapes for theta and t"):
         _ = adrt.utils.coord_cart_to_adrt(
             theta=np.zeros(3),
             t=np.zeros(2),
@@ -106,7 +106,9 @@ def test_reject_invalid_size():
     theta = np.array([0.25 * np.pi])
     t = np.array([0.5])
     n = 1
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="invalid Radon domain size 1, must be at least 2"
+    ):
         adrt.utils.coord_cart_to_adrt(theta, t, n)
 
 

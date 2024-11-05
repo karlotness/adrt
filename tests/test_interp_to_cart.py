@@ -69,16 +69,20 @@ class TestInterpToCartCdefs:
             _ = adrt._adrt_cdefs.interp_to_cart(arr)
 
     def test_refuses_non_array(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="must be a NumPy array or compatible subclass"
+        ):
             _ = adrt._adrt_cdefs.interp_to_cart(None)
         base_list = np.arange(4, 7, 4, dtype=np.float32).tolist()
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="must be a NumPy array or compatible subclass"
+        ):
             _ = adrt._adrt_cdefs.interp_to_cart(base_list)
 
     def test_refuses_fortran_order(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*C-order"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr)
 
     def test_refuses_c_non_contiguous(self):
@@ -87,14 +91,14 @@ class TestInterpToCartCdefs:
         inarr = inarr[:, ::2]
         assert inarr.shape == (4, 2 * size - 1, size)
         assert not inarr.flags["C_CONTIGUOUS"]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*contiguous"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr)
 
     def test_refuses_byteswapped(self):
         size = 16
         inarr_native = np.ones((4, 2 * size - 1, size), dtype=np.float32)
         inarr_swapped = inarr_native.astype(inarr_native.dtype.newbyteorder("S"))
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must be .*native byte order"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr_swapped)
 
 
@@ -130,7 +134,7 @@ class TestInterpToCart:
 
     def test_refuses_small_1x1(self):
         inarr = np.ones((4, 1, 1), dtype="float64")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             adrt.utils.interp_to_cart(inarr)
 
     def test_small_2x2(self):
@@ -166,23 +170,23 @@ class TestInterpToCart:
             adrt.utils.interp_to_cart(np.zeros((4, 2 * 8 - 1, 8), dtype=np.int32))
 
     def test_refuses_zero_shape(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="found zero in dimension 2"):
             adrt.utils.interp_to_cart(np.zeros((4, 2 * 8 - 1, 0), dtype=np.float32))
 
     def test_refuses_zero_batch(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="found zero in dimension 0"):
             adrt.utils.interp_to_cart(np.zeros((0, 4, 2 * 8 - 1, 8), dtype=np.float32))
 
     def test_refuses_mismatched_shape(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             adrt.utils.interp_to_cart(np.zeros((4, 2 * 8 - 2, 8), dtype=np.float32))
 
     def test_refuses_five_dim(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="between 3 and 4 dimensions, but had 5"):
             adrt.utils.interp_to_cart(
                 np.zeros((2, 3, 4, 2 * 8 - 1, 8), dtype=np.float32)
             )
 
     def test_refuses_non_power_of_two(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
             adrt.utils.interp_to_cart(np.zeros((4, 2 * 7 - 1, 7), dtype=np.int32))

@@ -73,19 +73,19 @@ def test_tiny(dtype):
 
 def test_reject_not_even():
     arr = np.arange(4 * 5 * 3).reshape((4, 5, 3)).astype(np.float32)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
         _ = adrt._wrappers._press_fmg_restriction(arr)
 
 
 def test_reject_mismatch_shape():
     arr = np.arange(4 * 10 * 6).reshape((4, 10, 6)).astype(np.float32)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
         _ = adrt._wrappers._press_fmg_restriction(arr)
 
 
 def test_reject_mismatch_missing_quadrants():
     arr = np.arange(2 * 11 * 6).reshape((2, 11, 6)).astype(np.float32)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must have a valid ADRT output shape"):
         _ = adrt._wrappers._press_fmg_restriction(arr)
 
 

@@ -65,14 +65,14 @@ def test_accepts_batch(dtype):
 def test_refuses_too_many_dim():
     size = 16
     inarr = np.ones((2, 3, 4, 2 * size - 1, size)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 3 and 4 dimensions, but had 5"):
         mi.first(adrt.core.iadrt_fmg_iter(inarr), None)
 
 
 def test_refuses_too_few_dim():
     size = 16
     inarr = np.ones((2 * size - 1, size)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 3 and 4 dimensions, but had 2"):
         mi.first(adrt.core.iadrt_fmg_iter(inarr), None)
 
 

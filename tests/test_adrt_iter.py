@@ -102,27 +102,27 @@ def test_refuses_int32():
 def test_refuses_non_square():
     size = 16
     inarr = np.ones((size, size - 1)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be square"):
         mi.consume(adrt.core.adrt_iter(inarr))
 
 
 def test_refuses_non_power_of_two():
     size = 15
     inarr = np.ones((size, size)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="power of two shape"):
         mi.consume(adrt.core.adrt_iter(inarr))
 
 
 def test_refuses_too_many_dim():
     size = 16
     inarr = np.ones((2, 3, size, size)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 4"):
         mi.consume(adrt.core.adrt_iter(inarr))
 
 
 def test_refuses_too_few_dim():
     inarr = np.ones(16).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 1"):
         mi.consume(adrt.core.adrt_iter(inarr))
 
 

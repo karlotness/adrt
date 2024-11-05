@@ -124,9 +124,9 @@ def test_small():
 
 def test_rejects_tiny():
     arr = np.ones((1, 2), dtype=np.float32)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="array is too small"):
         _ = adrt._wrappers._press_fmg_highpass(arr)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="array is too small"):
         _ = adrt._wrappers._press_fmg_highpass(arr.T)
 
 

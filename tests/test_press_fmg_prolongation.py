@@ -72,13 +72,13 @@ def test_tiny():
 
 def test_reject_too_few_dims():
     arr = np.arange(7).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 1"):
         _ = adrt._wrappers._press_fmg_prolongation(arr)
 
 
 def test_reject_too_many_dims():
     arr = np.arange(180).reshape((2, 3, 5, 6)).astype("float32")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="between 2 and 3 dimensions, but had 4"):
         _ = adrt._wrappers._press_fmg_prolongation(arr)
 
 
