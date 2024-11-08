@@ -39,7 +39,7 @@ import numpy as np
 import adrt
 
 
-@pytest.fixture()
+@pytest.fixture
 def counting_iadrt_fmg_step(monkeypatch):
     count = 0
     orig_fn = adrt.core.iadrt_fmg_step
