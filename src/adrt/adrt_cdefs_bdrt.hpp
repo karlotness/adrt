@@ -1,5 +1,5 @@
 /*
- * Copyright Karl Otness, Donsub Rim
+ * Copyright 2023 Karl Otness, Donsub Rim
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *

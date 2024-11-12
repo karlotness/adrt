@@ -6,7 +6,7 @@ documentation pages are distributed under the license below.
 
 -----
 
-Copyright Karl Otness, Donsub Rim
+Copyright 2023 Karl Otness, Donsub Rim
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
