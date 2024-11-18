@@ -34,7 +34,6 @@
 
 import pytest
 import numpy as np
-import scipy.ndimage
 import adrt
 
 
@@ -45,7 +44,11 @@ CONV_KERNEL = np.array(
 
 def press_highpass(arr):
     assert arr.ndim == 2
-    return scipy.ndimage.convolve(arr, CONV_KERNEL, mode="mirror")
+    conv_kernel = np.expand_dims(CONV_KERNEL, (0, 1))
+    arr = np.lib.stride_tricks.sliding_window_view(
+        np.pad(arr, 1, mode="reflect"), window_shape=(3, 3), writeable=False
+    )
+    return np.sum((arr * conv_kernel), axis=(-1, -2)).astype(arr.dtype)
 
 
 def press_prolongation(arr):

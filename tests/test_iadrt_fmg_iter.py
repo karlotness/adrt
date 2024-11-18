@@ -35,7 +35,6 @@
 import itertools
 import pytest
 import numpy as np
-import scipy.stats
 import more_itertools as mi
 import adrt
 
@@ -105,11 +104,9 @@ def test_copy_false_returns_readonly():
 
 def test_small_few_steps_monotonic_error_decrease():
     size = 32
-    steps = np.linspace(-1, 1, size)
+    steps = np.linspace(-10, 10, size)
     x, y = np.meshgrid(steps, steps)
-    img = scipy.stats.multivariate_normal.pdf(
-        np.stack((x, y), axis=-1), mean=[0, 0], cov=[[0.1, 0.5], [-0.05, 0.2]]
-    )
+    img = np.exp(np.negative(np.linalg.norm(np.stack((x, y), axis=-1), axis=-1)))
     residuals = np.linalg.norm(
         np.expand_dims(img, 0)
         - np.array(
