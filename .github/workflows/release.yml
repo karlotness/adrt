@@ -253,7 +253,7 @@ jobs:
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Check Python ABI
-      run: pipx run --python "$WORKFLOW_PYTHON" abi3audit dist/*.whl
+      run: pipx run --python "$WORKFLOW_PYTHON" abi3audit dist/*-abi3-*.whl
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
   attest:
