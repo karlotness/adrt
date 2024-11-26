@@ -68,11 +68,13 @@ free-threaded-support = true
 [tool.cibuildwheel.linux.environment]
 CPPFLAGS = "-DNDEBUG"
 CFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-math-errno -Wall -Wextra -Wpedantic"
+CXXFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-math-errno -Wall -Wextra -Wpedantic"
 LDFLAGS = "-Wl,--as-needed,-O1"
 
 [tool.cibuildwheel.macos.environment]
 CPPFLAGS = "-DNDEBUG"
 CFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic"
+CXXFLAGS = "-O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -Wpedantic"
 LDFLAGS = "-Wl,-dead_strip_dylibs"
 
 [tool.cibuildwheel.windows.environment]
