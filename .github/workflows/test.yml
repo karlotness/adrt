@@ -109,7 +109,6 @@ jobs:
       with:
         path: tests/cpp/catch2
         key: catch2-${{ hashFiles('tools/download_catch2.py') }}
-        enableCrossOsArchive: true
     - name: Setup Python
       if: steps.cache-catch2.outputs.cache-hit != 'true'
       uses: actions/setup-python@v5

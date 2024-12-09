@@ -19,14 +19,6 @@ jobs:
       id: setup-python
       with:
         python-version: '3.13'
-    - name: Cache pip downloads
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: |
-          pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Check version strings
       run: pipx run --python "$WORKFLOW_PYTHON" tox run -e checkver -- --tag_ref "$GITHUB_REF" --not_dev
       env:
@@ -56,21 +48,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-    - name: Cache Catch2
-      uses: actions/cache@v4
-      id: cache-catch2
-      with:
-        path: tests/cpp/catch2
-        key: catch2-${{ hashFiles('tools/download_catch2.py') }}
-        enableCrossOsArchive: true
     - name: Setup Python
-      if: steps.cache-catch2.outputs.cache-hit != 'true'
       uses: actions/setup-python@v5
       id: setup-python
       with:
         python-version: '3.13'
     - name: Download Catch2
-      if: steps.cache-catch2.outputs.cache-hit != 'true'
       run: pipx run --python "$WORKFLOW_PYTHON" tools/download_catch2.py tests/cpp/catch2/
       shell: bash
       env:
@@ -228,15 +211,6 @@ jobs:
       id: setup-python
       with:
         python-version: '3.13'
-    - name: Cache pip downloads
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: |
-          pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Download sdist
       uses: actions/download-artifact@v4
       with:
