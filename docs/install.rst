@@ -83,14 +83,18 @@ support OpenMP and most Linux platforms will likely have an OpenMP
 runtime installed.
 
 To enable OpenMP you must pass the necessary flags to your C++
-compiler via the ``CFLAGS`` environment variable. For GCC the correct
+compiler via the ``CXXFLAGS`` environment variable. For GCC the correct
 flag is ``-fopenmp``. In this case, run pip as::
 
-  $ CFLAGS="-O3 -fopenmp" python -m pip install .
+  $ CXXFLAGS="-O3 -fopenmp" CPPFLAGS="-DNDEBUG" python -m pip install .
 
 This will install an OpenMP-enabled copy of the package. Other
-compilers will require different flags to be passed through ``CFLAGS``
-and ``LDFLAGS``.
+compilers will require different flags to be passed through
+``CXXFLAGS``, ``CFLAGS``, and ``LDFLAGS``. In the above example
+``CPPFLAGS`` is set to suppress `debugging assertions
+<https://en.cppreference.com/w/cpp/error/assert>`__ using the
+preprocessor. Other compilers may require different flags to ensure
+the same preprocessor macro is set.
 
 After building, you can verify that your installed copy supports
 OpenMP with :func:`adrt.core.threading_enabled`.
