@@ -63,7 +63,7 @@ version = {attr = "adrt.__version__"}
 build-frontend = "build"
 before-test = "pip install -r {package}/tests/requirements.txt"
 test-command = "pytest {package}/tests"
-free-threaded-support = true
+enable = ["cpython-freethreading"]
 
 [tool.cibuildwheel.linux.environment]
 CPPFLAGS = "-DNDEBUG"
