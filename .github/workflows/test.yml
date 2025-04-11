@@ -44,14 +44,21 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.13t']
         include:
           - cflags: '-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize=bounds-strict -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover=all'
+            extra_cflags: '-Werror'
             constraints: 'numpy>=2'
+            py_malloc: 'malloc'
+          - python: '3.13t'
+            cflags: ''
+            extra_cflags: ''
+            py_malloc: 'default'
           - python: '3.11'
             constraints: 'numpy<2'
           - python: '3.10'
             cflags: '-fopenmp'
+            py_malloc: 'default'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -73,7 +80,7 @@ jobs:
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-U_FORTIFY_SOURCE -UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
-        CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wdouble-promotion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=3 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -Wlogical-op'
+        CFLAGS: '-O3 ${{ matrix.cflags }} -fno-omit-frame-pointer -g -flto -fvisibility=hidden -fvisibility-inlines-hidden -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wsign-compare -Wfloat-conversion -Warith-conversion -Wdouble-promotion -Wfloat-equal -Wimplicit-fallthrough -Warray-bounds=2 -Wvla -Wunused -Wduplicated-branches -Wduplicated-cond -Wnull-dereference -Wstack-protector -Wtrampolines -Walloca -Wshift-overflow=2 -Wswitch-default -Wshadow -Wundef -Wcast-align=strict -Wstringop-overflow=3 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-signedness -Wlogical-op ${{ matrix.extra_cflags}}'
     - name: Install package
       id: install-pkg
       run: |
@@ -91,7 +98,7 @@ jobs:
       run: LD_PRELOAD="$(gcc -print-file-name=libasan.so) $(gcc -print-file-name=libubsan.so)" "${VENV_DIR}/bin/python" -m pytest
       env:
         VENV_DIR: '${{ steps.install-pkg.outputs.venv-dir }}'
-        PYTHONMALLOC: 'malloc'
+        PYTHONMALLOC: '${{ matrix.py_malloc }}'
         ASAN_OPTIONS: 'detect_leaks=0:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_invalid_pointer_pairs=2'
     - name: Clean up
       run: python -m pip cache remove adrt || true
