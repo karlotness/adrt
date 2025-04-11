@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=62.6.0",
+    "setuptools>=77.0.0",
     "numpy>=2,<3",
 ]
 build-backend = "setuptools.build_meta"
@@ -10,7 +10,8 @@ name = "adrt"
 description = "Fast approximate discrete Radon transform for NumPy arrays"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "BSD-3-Clause"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
 authors = [
   {name = "Karl Otness"},
   {name = "Donsub Rim"}
@@ -20,7 +21,6 @@ dependencies = [
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "License :: OSI Approved :: BSD License",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Image Processing",
