@@ -31,10 +31,9 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-#include <Python.h>
-
 #define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
 #define NPY_TARGET_VERSION NPY_1_21_API_VERSION
+#include <Python.h>
 #include <numpy/arrayobject.h>
 
 #include <array>
