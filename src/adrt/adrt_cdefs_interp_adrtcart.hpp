@@ -49,7 +49,7 @@ namespace adrt {
     bool interp_adrtcart_is_valid_shape(std::span<const size_t, 4> shape);
     std::array<size_t, 3> interp_adrtcart_result_shape(std::span<const size_t, 4> shape);
 
-    template <typename float_index = double>
+    template <std::floating_point float_index = double>
     bool interp_adrtcart_is_valid_float_index(std::span<const size_t, 4> in_shape) {
         // The input shape is (batch, 4, 2*n-1, n)
         // The output shape is (batch, n, 4*n)
