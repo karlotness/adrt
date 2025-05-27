@@ -100,7 +100,7 @@ jobs:
     needs: sdist
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm]
+        os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm, windows-11-arm]
     steps:
     - name: Download sdist
       uses: actions/download-artifact@v4
@@ -123,7 +123,7 @@ jobs:
         if [[ "$RUNNER_ARCH" != 'ARM'* ]]; then
           export CIBW_TEST_SKIP="*-macosx_arm64 *-macosx_universal2:arm64 $CIBW_TEST_SKIP"
         fi
-        pipx run --python "$WORKFLOW_PYTHON" 'cibuildwheel>=2.22.0' --output-dir wheelhouse dist/adrt-*.tar.gz
+        pipx run --python "$WORKFLOW_PYTHON" 'cibuildwheel>=2.23.0' --output-dir wheelhouse dist/adrt-*.tar.gz
       shell: bash
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
