@@ -45,6 +45,12 @@ Documentation = "https://adrt.readthedocs.io"
 "Source Code" = "https://github.com/karlotness/adrt"
 "Bug Tracker" = "https://github.com/karlotness/adrt/issues"
 
+[dependency-groups]
+test = [
+  "pytest>=6",
+  "more-itertools",
+]
+
 # Additional setuptools settings
 [tool.setuptools]
 include-package-data = false
@@ -61,7 +67,7 @@ version = {attr = "adrt.__version__"}
 # cibuildwheel settings
 [tool.cibuildwheel]
 build-frontend = "build"
-before-test = "pip install -r {package}/tests/requirements.txt"
+test-groups = ["test"]
 test-command = "pytest {package}/tests"
 enable = ["cpython-freethreading"]
 

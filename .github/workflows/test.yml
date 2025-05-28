@@ -115,7 +115,8 @@ jobs:
         printf '%s\n' "$CONSTRAINTS" | tr ':' '\n' | tee "$CONSTRAINT_FILE"
         VENV_DIR="$(mktemp -d)"
         "$WORKFLOW_PYTHON" -m venv "$VENV_DIR"
-        PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install -r tests/requirements.txt
+        PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install 'pip>=25.1'
+        PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install --group test
         PIP_CONSTRAINT="$CONSTRAINT_FILE" "${VENV_DIR}/bin/python" -m pip install dist/adrt-*.whl
         printf 'venv-dir=%s\n' "$VENV_DIR" >> "$GITHUB_OUTPUT"
       env:
