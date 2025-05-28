@@ -64,6 +64,56 @@ adrt = [
 [tool.setuptools.dynamic]
 version = {attr = "adrt.__version__"}
 
+[tool.tox]
+envlist = ["py3", "lint", "checkver", "type"]
+
+[tool.tox.env_run_base]
+description = "Run tests"
+dependency_groups = ["test"]
+commands = [["pytest", {replace = "posargs", extend = true}]]
+passenv = ["CPPFLAGS", "CFLAGS", "CXXFLAGS"]
+
+[tool.tox.env.lint]
+description = "Check code for style and formatting"
+skip_install = true
+ignore_errors = true
+dependency_groups = []
+deps = [
+  "ruff>=0.1.5",
+  "black>=25.1.0,<26",
+]
+commands = [
+  ["ruff", "check", "--", "src{/}adrt", "tests", "docs", "tools", "setup.py"],
+  ["black", "--check", "--diff", "src{/}adrt", "tests", "docs", "tools", "setup.py"],
+]
+
+[tool.tox.env.checkver]
+description = "Check consistency of version strings"
+skip_install = true
+dependency_groups = []
+deps = [
+  "tomli; python_version < '3.11'",
+  "packaging",
+]
+commands = [["{envpython}", "tools{/}version_consistency.py", {replace = "posargs", extend = true}]]
+
+[tool.tox.env.type]
+description = "Check types in library source"
+dependency_groups = []
+deps = [
+  "mypy",
+]
+commands = [["mypy", "--package", "adrt"]]
+
+[tool.tox.env.docs]
+description = "Build documentation site"
+dependency_groups = []
+deps = [
+  "-r docs{/}requirements.txt",
+]
+commands = [["sphinx-build", "-W", "-b", "html", "{tox_root}{/}docs", "{tox_root}{/}docs{/}_build{/}html"]]
+setenv = {PYDEVD_DISABLE_FILE_VALIDATION = "1"}
+
 # cibuildwheel settings
 [tool.cibuildwheel]
 build-frontend = "build"
