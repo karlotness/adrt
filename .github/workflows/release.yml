@@ -135,7 +135,7 @@ jobs:
         CIBW_ARCHS_LINUX: 'auto64'
         CIBW_ENVIRONMENT_LINUX: >-
           CPPFLAGS='-D_FORTIFY_SOURCE=2 -DNDEBUG'
-          CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fno-semantic-interposition -fcf-protection=full -fstack-protector-strong -fstack-clash-protection -fno-math-errno'
+          CFLAGS='-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden -fno-plt -fno-semantic-interposition ${{ (runner.arch == 'X64' || runner.arch == 'X86') && '-fcf-protection=full' || '' }} -fstack-protector-strong -fstack-clash-protection -fno-math-errno'
           CXXFLAGS="$CFLAGS"
           LDFLAGS='-Wl,--strip-all,--as-needed,--sort-common,-O1,-z,relro,-z,now,-z,noexecstack'
         # Windows configuration
