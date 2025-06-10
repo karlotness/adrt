@@ -62,7 +62,7 @@ __all__: typing.Final[collections.abc.Sequence[str]] = [
     "utils",
     "core",
 ]
-__version__: typing.Final[str] = "1.2.0.dev"
+__version__: typing.Final[str] = "1.2.0"
 
 
 _F = typing.TypeVar("_F", np.float32, np.float64)
