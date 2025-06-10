@@ -6,13 +6,13 @@ version of `adrt`. More information and release builds are also
 available on the `GitHub releases page
 <https://github.com/karlotness/adrt/releases>`__.
 
-v1.2.0 (Unreleased)
--------------------
+v1.2.0
+------
 
 * Drop support for Python 3.9, now requires version 3.10 or later
 * Add support for experimental `free-threaded mode
   <https://docs.python.org/3.13/whatsnew/3.13.html#whatsnew313-free-threaded-cpython>`__
-  in Python 3.13 (when built from source)
+  in Python 3.13
 
 v1.1.0
 ------
