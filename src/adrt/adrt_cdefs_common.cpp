@@ -61,14 +61,6 @@ namespace adrt { namespace _impl { namespace {
 // single-step functions the shifts of 1<<(iter+1) never go out of range
 const size_t max_size = 1_uz << (std::numeric_limits<size_t>::digits - 1);
 
-bool is_pow2(size_t val) {
-    if(val == 0u) {
-        return false;
-    }
-    return (val & (val - 1_uz)) == 0u;
-}
-
-
 [[maybe_unused, nodiscard]] bool mul_check_fallback(size_t a, size_t b, size_t &prod) {
     prod = a * b;
     const bool overflow = (b != 0u) && (a > std::numeric_limits<size_t>::max() / b);
@@ -146,7 +138,7 @@ std::array<size_t, N> span_to_array(std::span<const size_t, N> s) {
 namespace adrt {
 
     int num_iters(size_t shape) {
-        return static_cast<int>(std::bit_width(shape)) - (adrt::_impl::is_pow2(shape) ? 1 : 0);
+        return static_cast<int>(std::bit_width(shape)) - (std::has_single_bit(shape) ? 1 : 0);
     }
 
     namespace _common {
@@ -186,7 +178,7 @@ namespace adrt {
         return (std::ranges::all_of(shape, [](size_t v){return v > 0u;}) && // All entries must be nonzero
                 (adrt::_common::get<1>(shape) == adrt::_common::get<2>(shape)) && // Must be square
                 (adrt::_common::get<2>(shape) <= adrt::_impl::max_size) &&
-                (adrt::_impl::is_pow2(adrt::_common::get<2>(shape)))); // Must have power of two shape
+                (std::has_single_bit(adrt::_common::get<2>(shape)))); // Must have power of two shape
     }
 
     // Implementation for adrt
@@ -196,7 +188,7 @@ namespace adrt {
                 (adrt::_common::get<1>(shape) == 4u) &&
                 (adrt::_common::get<3>(shape) <= adrt::_impl::max_size) &&
                 (adrt::_common::get<2>(shape) == (adrt::_common::get<3>(shape) * 2_uz - 1_uz)) &&
-                (adrt::_impl::is_pow2(adrt::_common::get<3>(shape))));
+                (std::has_single_bit(adrt::_common::get<3>(shape))));
     }
 
     // Implementation for adrt
