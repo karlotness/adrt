@@ -38,6 +38,7 @@
 #include <optional>
 #include <algorithm>
 #include <bit>
+#include <utility>
 
 #ifdef _MSC_VER
 // MSVC intrinsics
