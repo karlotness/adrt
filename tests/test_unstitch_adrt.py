@@ -57,7 +57,7 @@ def test_unstitch_adrt_batch(remove_repeated):
     adrt_in = np.arange(6 * n * n, dtype=np.float32).reshape((6, n, n))
     adrt_out = adrt.adrt(adrt_in)
     # Split the batch dimension
-    adrt_out = adrt_out.reshape((2, 3) + adrt_out.shape[1:])
+    adrt_out = adrt_out.reshape((2, 3, *adrt_out.shape[1:]))
     stitched = adrt.utils.stitch_adrt(adrt_out, remove_repeated=remove_repeated)
     unstitched = adrt.utils.unstitch_adrt(stitched)
     assert stitched.dtype == unstitched.dtype

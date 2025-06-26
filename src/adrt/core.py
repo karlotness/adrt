@@ -167,7 +167,7 @@ def adrt_init(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
         )
     # Shape is valid, create new output buffer and copy
     n = a.shape[-1]
-    output_shape = a.shape[:-2] + (4, 2 * n - 1, n)
+    output_shape = (*a.shape[:-2], 4, 2 * n - 1, n)
     ret = np.zeros_like(a, shape=output_shape)
     ret[..., 0, :n, :] = np.flip(a, axis=-1).swapaxes(-1, -2)
     ret[..., 1, :n, :] = np.flip(a, axis=-2)

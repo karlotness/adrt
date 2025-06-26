@@ -117,8 +117,8 @@ def stitch_adrt(
     in_rows = 2 * n - 1
     out_rows = 3 * n - 2
     view_cols = n - (1 if remove_repeated else 0)
-    output_shape = a.shape[:-3] + (out_rows, 4 * view_cols)
-    view_shape = a.shape[:-3] + (out_rows, 4, view_cols)
+    output_shape = (*a.shape[:-3], out_rows, 4 * view_cols)
+    view_shape = (*a.shape[:-3], out_rows, 4, view_cols)
     # We rely on C-ordered layout to merge the last two dimensions
     # without needing to copy
     ret = np.zeros_like(a, shape=view_shape, order="C")
@@ -166,7 +166,7 @@ def unstitch_adrt(a: npt.NDArray[_A], /) -> npt.NDArray[_A]:
         raise ValueError(f"unsuitable shape for ADRT unstitching {a.shape}")
     removed_repeated = a.shape[-1] == 4 * n - 4
     out_rows = 2 * n - 1
-    a = a.reshape(a.shape[:-1] + (4, n - (1 if removed_repeated else 0)))
+    a = a.reshape((*a.shape[:-1], 4, n - (1 if removed_repeated else 0)))
     ret = []
     for q in range(4):
         quadrant = a[..., :, q, :]
