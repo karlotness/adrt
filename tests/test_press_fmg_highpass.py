@@ -63,7 +63,7 @@ def test_checkerboard(dtype):
 
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_vert_stripes(dtype):
-    x, y = np.meshgrid(np.arange(7), np.arange(10))
+    _, y = np.meshgrid(np.arange(7), np.arange(10))
     arr = (y % 2).astype(dtype) * 2 - 1
     adrt_hp = adrt._wrappers._press_fmg_highpass(arr)
     np_hp = np_highpass(arr)
@@ -75,7 +75,7 @@ def test_vert_stripes(dtype):
 
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_horiz_stripes(dtype):
-    x, y = np.meshgrid(np.arange(7), np.arange(10))
+    x, _ = np.meshgrid(np.arange(7), np.arange(10))
     arr = (x % 2).astype(dtype) * 2 - 1
     adrt_hp = adrt._wrappers._press_fmg_highpass(arr)
     np_hp = np_highpass(arr)
