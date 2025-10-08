@@ -134,19 +134,19 @@ class TestAdrtCdefs:
 
     def test_refuses_fortran_order(self):
         inarr = np.zeros((32, 32), dtype=np.float32, order="F")
-        with pytest.raises(ValueError, match="must be .*C-order"):
+        with pytest.raises(ValueError, match=r"must be .*C-order"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_c_non_contiguous(self):
         inarr = np.zeros((64, 32), dtype=np.float32, order="F")[::2]
         assert inarr.shape == (32, 32)
         assert not inarr.flags["C_CONTIGUOUS"]
-        with pytest.raises(ValueError, match="must be .*contiguous"):
+        with pytest.raises(ValueError, match=r"must be .*contiguous"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_byteswapped(self):
         inarr = np.ones((16, 16), dtype=np.dtype(np.float32).newbyteorder())
-        with pytest.raises(ValueError, match="must be .*native byte order"):
+        with pytest.raises(ValueError, match=r"must be .*native byte order"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     def test_refuses_zero_axis_array(self):
@@ -156,13 +156,13 @@ class TestAdrtCdefs:
 
     def test_refuses_zero_size_planes(self):
         inarr = np.zeros((0, 0), dtype=np.float32)
-        with pytest.raises(ValueError, match="found zero in dimension (0|1)"):
+        with pytest.raises(ValueError, match=r"found zero in dimension (0|1)"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
     @pytest.mark.parametrize("dtype", ["float32", "float64"])
     def test_refuses_unaligned(self, dtype):
         inarr = make_unaligned(np.zeros((16, 16), dtype=dtype))
-        with pytest.raises(ValueError, match="must be .*aligned"):
+        with pytest.raises(ValueError, match=r"must be .*aligned"):
             _ = adrt._adrt_cdefs.adrt(inarr)
 
 

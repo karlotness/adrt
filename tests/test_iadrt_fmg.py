@@ -69,7 +69,7 @@ def test_unique_values(dtype):
 def test_rejects_non_integer_max_iters():
     size = 8
     inarr = np.zeros((4, 2 * size - 1, size), dtype="float32")
-    with pytest.raises(ValueError, match="must be.*int"):
+    with pytest.raises(ValueError, match=r"must be.*int"):
         _ = adrt.iadrt_fmg(inarr, max_iters=2.0)
 
 
@@ -77,7 +77,7 @@ def test_rejects_zero_max_iters():
     size = 8
     inarr = np.zeros((4, 2 * size - 1, size), dtype="float32")
     with pytest.raises(
-        ValueError, match="must allow at least one iteration.*specified 0"
+        ValueError, match=r"must allow at least one iteration.*specified 0"
     ):
         _ = adrt.iadrt_fmg(inarr, max_iters=0)
 
@@ -86,7 +86,7 @@ def test_rejects_batch_dimension():
     size = 8
     inarr = np.zeros((3, 4, 2 * size - 1, size), dtype="float32")
     with pytest.raises(
-        ValueError, match="batch dimension not supported.*got 4 dimensions"
+        ValueError, match=r"batch dimension not supported.*got 4 dimensions"
     ):
         _ = adrt.iadrt_fmg(inarr, max_iters=50)
 

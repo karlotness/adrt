@@ -40,12 +40,12 @@ import adrt
 class TestBdrtStepCdefs:
     def test_refuses_too_few_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float32)
-        with pytest.raises(TypeError, match="bdrt_step.* expected 2 arguments, got 1"):
+        with pytest.raises(TypeError, match=r"bdrt_step.* expected 2 arguments, got 1"):
             adrt._adrt_cdefs.bdrt_step(arr)
 
     def test_refuses_too_many_args(self):
         arr = np.zeros((4, 31, 16), dtype=np.float64)
-        with pytest.raises(TypeError, match="bdrt_step.* expected 2 arguments, got 3"):
+        with pytest.raises(TypeError, match=r"bdrt_step.* expected 2 arguments, got 3"):
             adrt._adrt_cdefs.bdrt_step(arr, 0, 0)
 
     def test_refuses_non_array(self):

@@ -82,7 +82,7 @@ class TestInterpToCartCdefs:
     def test_refuses_fortran_order(self):
         size = 16
         inarr = np.zeros((4, 2 * size - 1, size), dtype=np.float32, order="F")
-        with pytest.raises(ValueError, match="must be .*C-order"):
+        with pytest.raises(ValueError, match=r"must be .*C-order"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr)
 
     def test_refuses_c_non_contiguous(self):
@@ -91,14 +91,14 @@ class TestInterpToCartCdefs:
         inarr = inarr[:, ::2]
         assert inarr.shape == (4, 2 * size - 1, size)
         assert not inarr.flags["C_CONTIGUOUS"]
-        with pytest.raises(ValueError, match="must be .*contiguous"):
+        with pytest.raises(ValueError, match=r"must be .*contiguous"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr)
 
     def test_refuses_byteswapped(self):
         size = 16
         inarr_native = np.ones((4, 2 * size - 1, size), dtype=np.float32)
         inarr_swapped = inarr_native.astype(inarr_native.dtype.newbyteorder("S"))
-        with pytest.raises(ValueError, match="must be .*native byte order"):
+        with pytest.raises(ValueError, match=r"must be .*native byte order"):
             _ = adrt._adrt_cdefs.interp_to_cart(inarr_swapped)
 
 

@@ -75,9 +75,9 @@ def test_batch_unique_values(dtype):
 
 
 def test_refuses_non_array():
-    with pytest.raises(TypeError, match="must be numpy.ndarray"):
+    with pytest.raises(TypeError, match=r"must be numpy\.ndarray"):
         adrt.core.adrt_init(None)
-    with pytest.raises(TypeError, match="must be numpy.ndarray"):
+    with pytest.raises(TypeError, match=r"must be numpy\.ndarray"):
         adrt.core.adrt_init(
             [
                 [1.0, 2.0, 3.0, 4.0],

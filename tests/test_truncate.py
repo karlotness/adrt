@@ -73,5 +73,5 @@ def test_accepts_iadrt_output():
 )
 def test_rejects_invalid_sizes(shape):
     inarr = np.ones(shape).astype("float32")
-    with pytest.raises(ValueError, match="unsuitable shape .*ADRT output"):
+    with pytest.raises(ValueError, match=r"unsuitable shape .*ADRT output"):
         _ = adrt.utils.truncate(inarr)
