@@ -35,8 +35,6 @@ jobs:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
         CPPFLAGS: '-UNDEBUG -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC'
         CFLAGS: '-O3 -g0 -flto -fvisibility=hidden -fvisibility-inlines-hidden'
-    - name: Clean up
-      run: python -m pip cache remove adrt || true
   check-cpp:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
