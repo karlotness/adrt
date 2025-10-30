@@ -154,8 +154,8 @@ respect-gitignore = true
 fix = false
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT"]
-ignore = ["UP015", "SIM108", "RUF022"]
+select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT", "PIE", "FURB", "ARG", "TRY", "FBT"]
+ignore = ["UP015", "SIM108", "RUF022", "TRY003"]
 
 [tool.ruff.lint.per-file-ignores]
 "setup.py" = ["ICN001"]
