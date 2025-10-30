@@ -107,7 +107,7 @@ def test_unique_values():
 
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
 def test_unique_values_batch(dtype):
-    arr = np.arange(3 * 256).reshape((3, 16, 16)).astype(np.float32)
+    arr = np.arange(3 * 256).reshape((3, 16, 16)).astype(dtype)
     adrt_hp = adrt._wrappers._press_fmg_highpass(arr)
     np_hp = np.stack([np_highpass(a) for a in arr])
     assert adrt_hp.shape == arr.shape
