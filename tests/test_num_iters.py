@@ -59,9 +59,9 @@ def test_one():
     assert adrt.core.num_iters(1) == 0
 
 
-def test_bool():
-    assert adrt.core.num_iters(False) == adrt.core.num_iters(0)
-    assert adrt.core.num_iters(True) == adrt.core.num_iters(1)
+@pytest.mark.parametrize("in_val", [0, 1])
+def test_bool(in_val):
+    assert adrt.core.num_iters(bool(in_val)) == adrt.core.num_iters(in_val)
 
 
 @pytest.mark.parametrize("in_val", range(2, 17))
