@@ -147,7 +147,7 @@ def find_global_variable_def(var, py_path):
 def find_package_version(init_py):
     ver_str = find_global_variable_def("__version__", init_py)
     if not isinstance(ver_str, str):
-        raise ValueError(f"Version attribute is not a string {ver_str}")
+        raise TypeError(f"Version attribute is not a string {ver_str}")
     return ver_str
 
 
@@ -171,7 +171,7 @@ def find_meta_min_python(pyproject_toml):
 def find_limited_api_python(setup_py):
     ver_str = find_global_variable_def("LIMITED_API_VERSION", setup_py)
     if not isinstance(ver_str, str):
-        raise ValueError(f"Limited API value is not a string {ver_str}")
+        raise TypeError(f"Limited API value is not a string {ver_str}")
     if not re.fullmatch(r"\d+\.\d+", ver_str, re.ASCII):
         raise ValueError(f"Limited API value is not formatted correctly {ver_str}")
     return ver_str
