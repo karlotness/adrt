@@ -252,7 +252,7 @@ if __name__ == "__main__":
         class_str = ", ".join(wrong_classifiers)
         print(f"Python classifiers do not match requires-python (remove {class_str})")
         failure = True
-    print("")
+    print()
 
     # Check Python version requirements
     meta_min_python = find_meta_min_python("pyproject.toml")
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     if meta_min_python != limited_api_python:
         print("Python version mismatch")
         failure = True
-    print("")
+    print()
 
     # Check NumPy version requirements
     package_min_numpy = find_package_min_numpy("pyproject.toml")
