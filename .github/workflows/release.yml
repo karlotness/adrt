@@ -87,7 +87,7 @@ jobs:
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Store artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: sdist
         path: dist/adrt-*.tar.gz
@@ -101,7 +101,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm, windows-11-arm]
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: sdist
         path: dist/
@@ -149,7 +149,7 @@ jobs:
           CXXFLAGS="$CFLAGS"
           LDFLAGS='-Wl,-S,-x,-dead_strip_dylibs'
     - name: Store artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: wheel-${{ runner.os }}-${{ runner.arch }}
         path: wheelhouse/adrt-*.whl
@@ -194,7 +194,7 @@ jobs:
           } > "diagnostics-$(basename -s '.whl' "$wheelfile").txt"
         done
     - name: Store diagnostics
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: diagnostics-${{ runner.os }}-${{ runner.arch }}
         path: diagnostics-*.txt
@@ -210,12 +210,12 @@ jobs:
       with:
         python-version: '3.14'
     - name: Download sdist
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         pattern: wheel-*
         merge-multiple: true
@@ -237,12 +237,12 @@ jobs:
       attestations: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         pattern: wheel-*
         merge-multiple: true
@@ -253,7 +253,7 @@ jobs:
       with:
         subject-path: 'dist/*'
     - name: Store attestation
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: attestation
         path: ${{ steps.gen-attest.outputs.bundle-path }}
@@ -266,18 +266,18 @@ jobs:
       contents: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         pattern: wheel-*
         merge-multiple: true
         path: dist/
     - name: Download attestation
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: attestation
         path: attest/
@@ -296,7 +296,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download diagnostics
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         pattern: diagnostics-*
         merge-multiple: true
@@ -352,12 +352,12 @@ jobs:
       id-token: write
     steps:
     - name: Download sdist
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: sdist
         path: dist/
     - name: Download wheels
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         pattern: wheel-*
         merge-multiple: true
