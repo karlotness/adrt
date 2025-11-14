@@ -47,7 +47,7 @@ def test_accepts_non_batch(dtype):
         .reshape((4, 2 * size - 1, size))
         .astype(dtype)
     )
-    mi.consume(itertools.islice(adrt.core.iadrt_fmg_iter(inarr), 10))
+    mi.consume(adrt.core.iadrt_fmg_iter(inarr), 10)
 
 
 @pytest.mark.parametrize("dtype", ["float32", "float64"])
@@ -58,7 +58,7 @@ def test_accepts_batch(dtype):
         .reshape((3, 4, 2 * size - 1, size))
         .astype(dtype)
     )
-    mi.consume(itertools.islice(adrt.core.iadrt_fmg_iter(inarr), 10))
+    mi.consume(adrt.core.iadrt_fmg_iter(inarr), 10)
 
 
 def test_refuses_too_many_dim():
