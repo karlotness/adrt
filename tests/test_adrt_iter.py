@@ -32,6 +32,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import itertools
 import pytest
 import numpy as np
 import more_itertools as mi
@@ -77,7 +78,7 @@ def test_first_matches_adrt_init_batch(dtype):
 def test_all_match_adrt_step_batch(dtype):
     size = 16
     inarr = np.arange(3 * size**2).reshape((3, size, size)).astype(dtype)
-    for i, (a, b) in enumerate(mi.pairwise(adrt.core.adrt_iter(inarr))):
+    for i, (a, b) in enumerate(itertools.pairwise(adrt.core.adrt_iter(inarr))):
         step_out = adrt.core.adrt_step(a, step=i)
         assert np.allclose(b, step_out)
         assert b.shape == step_out.shape

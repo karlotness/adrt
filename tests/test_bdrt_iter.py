@@ -75,7 +75,7 @@ def test_all_match_bdrt_step_batch(dtype):
         .astype(dtype)
     )
     for i, (a, b) in enumerate(
-        mi.pairwise(itertools.chain([inarr], adrt.core.bdrt_iter(inarr)))
+        itertools.pairwise(itertools.chain([inarr], adrt.core.bdrt_iter(inarr)))
     ):
         step_out = adrt.core.bdrt_step(a, step=i)
         assert np.allclose(b, step_out)
