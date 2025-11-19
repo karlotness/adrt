@@ -5,6 +5,7 @@
 [![Documentation](https://readthedocs.org/projects/adrt/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/adrt/actions/workflows/test.yml/badge.svg)][tests]
 [![JOSS Paper](https://joss.theoj.org/papers/10.21105/joss.05083/status.svg)][joss]
+[![Zenodo](https://zenodo.org/badge/281472943.svg)][zenodo]
 
 Fast approximate discrete Radon transform for
 [NumPy](https://numpy.org/) arrays.
@@ -79,3 +80,4 @@ LICENSE.txt file in the binary build package for more information.
 [brady98]: https://doi.org/10.1137/S0097539793256673
 [press06]: https://doi.org/10.1073/pnas.0609228103
 [rim20]: https://doi.org/10.1016/j.aml.2019.106159
+[zenodo]: https://doi.org/10.5281/zenodo.7738253
