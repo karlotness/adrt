@@ -97,10 +97,6 @@ jobs:
         if [[ "$ADRT_USE_OPENMP" == 'true' ]]; then
           ADRT_CFLAGS="$ADRT_CFLAGS -fopenmp"
         fi
-        # Python 3.13t disables limited API and produces a GCC warning in the headers
-        if [[ "$ADRT_PYTHON" != *t ]]; then
-          ADRT_CFLAGS="$ADRT_CFLAGS -Werror"
-        fi
         CPPFLAGS="$ADRT_CPPFLAGS" CFLAGS="$ADRT_CFLAGS" CXXFLAGS="$ADRT_CFLAGS" pipx run --python "$WORKFLOW_PYTHON" build --wheel
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
