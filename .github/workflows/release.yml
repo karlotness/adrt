@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 10
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
     - name: Setup Python
@@ -43,7 +43,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
     - name: Setup Python
@@ -74,7 +74,7 @@ jobs:
     needs: [check, check-cpp]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
     - name: Setup Python
@@ -106,7 +106,7 @@ jobs:
         name: sdist
         path: dist/
     - name: Checkout repository (Windows)
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       if: runner.os == 'Windows'
       with:
         persist-credentials: false
