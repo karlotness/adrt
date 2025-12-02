@@ -127,15 +127,13 @@ if not adrt_magick_available():
 def adrt_find_anchors():
     repo_root = pathlib.Path(__file__).parent.resolve().parent
     source_root = repo_root / "src" / "adrt"
-    if not (source_root.exists() and source_root.is_dir()):
+    if not source_root.is_dir():
         return {}
     anchor_re = re.compile(
         r"\s*//\s*DOC\s+ANCHOR\s*:\s+(?P<name>\S+)(?:\s+\+\s*(?P<offset>\d+))?\s*"
     )
     anchor_map = {}
     for source_path in source_root.glob("*.[ch]pp"):
-        if not source_path.exists():
-            continue
         with open(source_path, "r", encoding="utf8") as source_file:
             for lnum, line in enumerate(source_file, start=1):
                 if re_match := anchor_re.fullmatch(line):
