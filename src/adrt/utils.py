@@ -306,7 +306,7 @@ def coord_adrt(n: typing.SupportsIndex, /) -> ADRTCoord:
     n = operator.index(n)
     if n < 2:
         raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
-    if (n - 1) & n != 0:
+    if n.bit_count() != 1:
         raise ValueError(f"invalid Radon domain size {n}, must be a power of two")
     hi, step = np.linspace(
         1, (1 - n) / n, num=2 * n - 1, endpoint=False, retstep=True, dtype=np.float64
@@ -408,7 +408,7 @@ def coord_cart_to_adrt(
     n = operator.index(n)
     if n < 2:
         raise ValueError(f"invalid Radon domain size {n}, must be at least 2")
-    if (n - 1) & n != 0:
+    if n.bit_count() != 1:
         raise ValueError(f"invalid Radon domain size {n}, must be a power of two")
     if theta.shape != t.shape:
         raise ValueError(
