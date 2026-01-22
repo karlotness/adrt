@@ -38,7 +38,6 @@ import numpy
 import glob
 import sysconfig
 
-
 LIMITED_API_VERSION = "3.10"
 FREE_THREADING_BUILD = sysconfig.get_config_var("Py_GIL_DISABLED")
 COMPILER_EXTRA_ARGS = {

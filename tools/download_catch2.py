@@ -46,7 +46,6 @@ import asyncio
 import io
 import httpx
 
-
 CATCH2_VERSION = "3.12.0"
 CATCH2_URLS = {
     "catch_amalgamated.cpp": (

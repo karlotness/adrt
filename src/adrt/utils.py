@@ -42,14 +42,12 @@ the ADRT into a single contiguous image, or interpolating the
 irregular ADRT angles into a regular spacing.
 """
 
-
 import operator
 import typing
 import collections.abc
 import numpy as np
 import numpy.typing as npt
 from ._wrappers import interp_to_cart
-
 
 __all__: typing.Final[collections.abc.Sequence[str]] = [
     "stitch_adrt",

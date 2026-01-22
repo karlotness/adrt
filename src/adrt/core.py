@@ -56,7 +56,6 @@ intervene in and modify the progress of the computations, the
 single-step routines make that possible.
 """
 
-
 import typing
 import collections.abc
 import operator
@@ -74,7 +73,6 @@ from ._wrappers import (
     adrt as _adrt,
     bdrt as _bdrt,
 )
-
 
 __all__: typing.Final[collections.abc.Sequence[str]] = [
     "num_iters",

@@ -47,14 +47,12 @@ the native functions more pleasant to use from Python and to attach
 Python documentation.
 """
 
-
 import operator
 import typing
 import collections.abc
 import numpy as np
 import numpy.typing as npt
 from . import _adrt_cdefs
-
 
 __all__: typing.Final[collections.abc.Sequence[str]] = []
 

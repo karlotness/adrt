@@ -44,7 +44,6 @@ routines which provide more control over the computation. Other
 utility routines can be found in :mod:`adrt.utils`.
 """
 
-
 import typing
 import collections.abc
 import itertools
@@ -52,7 +51,6 @@ import numpy as np
 import numpy.typing as npt
 from ._wrappers import adrt, iadrt, bdrt
 from . import utils, core
-
 
 __all__: typing.Final[collections.abc.Sequence[str]] = [
     "adrt",

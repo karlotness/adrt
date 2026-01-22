@@ -41,7 +41,6 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version, InvalidVersion
 from packaging.utils import canonicalize_name, canonicalize_version
 
-
 if sys.version_info >= (3, 11):
     import tomllib
 else:

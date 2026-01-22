@@ -36,7 +36,6 @@ import pytest
 import numpy as np
 import adrt
 
-
 CONV_KERNEL = np.array(
     [[-1 / 16, -1 / 8, -1 / 16], [-1 / 8, 3 / 4, -1 / 8], [-1 / 16, -1 / 8, -1 / 16]]
 )
