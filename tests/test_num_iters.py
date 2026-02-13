@@ -42,7 +42,7 @@ import adrt
 @pytest.mark.parametrize("in_val", [-1, -2])
 def test_reject_negative(in_val):
     with pytest.raises(
-        (OverflowError, ValueError),
+        ValueError,
         match=rf"non-negative value required.*got {re.escape(str(in_val))}",
     ):
         adrt.core.num_iters(in_val)
