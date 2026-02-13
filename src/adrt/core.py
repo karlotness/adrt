@@ -114,7 +114,9 @@ def num_iters(n: typing.SupportsIndex, /) -> int:
     """
     n = operator.index(n)
     if n < 0:
-        raise ValueError("non-negative value required for iteration count")
+        raise ValueError(
+            f"non-negative value required for iteration count, but got {n}"
+        )
     return n.bit_length() - (n.bit_count() == 1)
 
 

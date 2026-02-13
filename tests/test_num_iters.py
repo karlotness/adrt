@@ -32,15 +32,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import re
 import math
 import pytest
 import numpy as np
 import adrt
 
 
-def test_reject_negative():
-    with pytest.raises((OverflowError, ValueError)):
-        adrt.core.num_iters(-1)
+@pytest.mark.parametrize("in_val", [-1, -2])
+def test_reject_negative(in_val):
+    with pytest.raises(
+        (OverflowError, ValueError),
+        match=rf"non-negative value required.*got {re.escape(str(in_val))}",
+    ):
+        adrt.core.num_iters(in_val)
 
 
 @pytest.mark.parametrize(
