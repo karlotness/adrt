@@ -33,6 +33,7 @@
 #include <cstddef>
 #include <array>
 #include <limits>
+#include <type_traits>
 #include "catch2/catch_amalgamated.hpp"
 #include "adrt_cdefs_common.hpp"
 
@@ -57,6 +58,7 @@ namespace adrt_test {
 TEST_CASE("array_access handles 1D shape", "[common][array_access]") {
     const std::array<size_t, 1> shape = {8};
     const auto arr = adrt_test::array_sequence<8>();
+    STATIC_CHECK(std::is_same_v<decltype(adrt::_common::array_access(arr.data(), shape, size_t{0})), decltype(arr.at(0))>);
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
         CHECK(adrt::_common::array_access(arr.data(), shape, i) == arr.at(i));
     }
@@ -65,6 +67,7 @@ TEST_CASE("array_access handles 1D shape", "[common][array_access]") {
 TEST_CASE("array_access handles 2D shape", "[common][array_access]") {
     const std::array<size_t, 2> shape = {3, 4};
     const auto arr = adrt_test::array_sequence<12>();
+    STATIC_CHECK(std::is_same_v<decltype(adrt::_common::array_access(arr.data(), shape, size_t{0}, size_t{0})), decltype(arr.at(0))>);
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
         for(size_t j = 0; j < std::get<1>(shape); ++j) {
             CHECK(adrt::_common::array_access(arr.data(), shape, i, j) == arr.at(i * std::get<1>(shape) + j));
@@ -75,6 +78,7 @@ TEST_CASE("array_access handles 2D shape", "[common][array_access]") {
 TEST_CASE("array_access handles 3D shape", "[common][array_access]") {
     const std::array<size_t, 3> shape = {2, 3, 4};
     const auto arr = adrt_test::array_sequence<24>();
+    STATIC_CHECK(std::is_same_v<decltype(adrt::_common::array_access(arr.data(), shape, size_t{0}, size_t{0}, size_t{0})), decltype(arr.at(0))>);
     for(size_t i = 0; i < std::get<0>(shape); ++i) {
         for(size_t j = 0; j < std::get<1>(shape); ++j) {
             for(size_t k = 0; k < std::get<2>(shape); ++k) {
@@ -88,6 +92,7 @@ TEST_CASE("array_access assigns 3D shape", "[common][array_access]") {
     const unsigned int max_val = std::numeric_limits<unsigned int>::max();
     const std::array<size_t, 3> shape = {2, 3, 4};
     auto arr = adrt_test::array_sequence<24>();
+    STATIC_CHECK(std::is_same_v<decltype(adrt::_common::array_access(arr.data(), shape, size_t{0}, size_t{0}, size_t{0})), decltype(arr.at(0))>);
     REQUIRE(std::get<21>(arr) != max_val);
     adrt::_common::array_access(arr.data(), shape, size_t{1}, size_t{2}, size_t{1}) = max_val;
     CHECK(std::get<21>(arr) == max_val);
