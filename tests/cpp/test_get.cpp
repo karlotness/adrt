@@ -32,6 +32,7 @@
 
 #include <span>
 #include <array>
+#include <type_traits>
 #include "catch2/catch_amalgamated.hpp"
 #include "adrt_cdefs_common.hpp"
 
