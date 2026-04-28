@@ -33,6 +33,7 @@
 #include <cstddef>
 #include <array>
 #include <limits>
+#include <numeric>
 #include <type_traits>
 #include "catch2/catch_amalgamated.hpp"
 #include "adrt_cdefs_common.hpp"
@@ -47,9 +48,7 @@ namespace adrt_test {
             static_assert(N < std::numeric_limits<unsigned int>::max(), "Max value for array too large");
             static_assert(val_increment < std::numeric_limits<unsigned int>::max() - N, "Increment for tests too large");
             std::array<unsigned int, N> arr;
-            for(unsigned int i = 0; i < N; ++i) {
-                arr.at(i) = val_increment + i;
-            }
+            std::iota(std::begin(arr), std::end(arr), val_increment);
             return arr;
         }
     }
