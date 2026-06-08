@@ -33,7 +33,7 @@
 #
 # /// script
 # dependencies = [
-#   "httpx[http2]",
+#   "requests",
 # ]
 # ///
 
@@ -42,9 +42,7 @@ import argparse
 import hashlib
 import sys
 import pathlib
-import asyncio
-import io
-import httpx
+import requests
 
 CATCH2_VERSION = "3.15.0"
 CATCH2_URLS = {
@@ -63,35 +61,30 @@ parser = argparse.ArgumentParser()
 parser.add_argument("out_dir", help="Directory for downloaded sources")
 
 
-async def download_file(name, url, sha512, client):
-    digest = hashlib.sha512()
-    with io.BytesIO() as buffer:
-        async with client.stream("GET", url) as response:
-            response.raise_for_status()
-            async for chunk in response.aiter_bytes():
-                digest.update(chunk)
-                buffer.write(chunk)
-        # Check the hash
-        if digest.digest() != bytes.fromhex(sha512):
-            raise ValueError(f"Invalid hash for {name}. Got: {digest.hexdigest()}")
-        return buffer.getvalue()
+def download_file(name, url, sha512, session):
+    with session.get(url) as response:
+        response.raise_for_status()
+        content = response.content
+    digest = hashlib.sha512(content)
+    # Check the hash
+    if digest.digest() != bytes.fromhex(sha512):
+        raise ValueError(f"Invalid hash for {name}. Got: {digest.hexdigest()}")
+    return content
 
 
-async def main(args):
+def main(args):
     out_dir = pathlib.Path(args.out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    async with httpx.AsyncClient(
-        http1=True, http2=True, follow_redirects=True
-    ) as client:
+    with requests.Session() as session:
         sources = {
-            name: asyncio.create_task(download_file(name, url, sha512, client))
+            name: download_file(name, url, sha512, session)
             for name, (url, sha512) in CATCH2_URLS.items()
         }
-        for name, result in sources.items():
-            (out_dir / name).write_bytes(await result)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name, result in sources.items():
+        (out_dir / name).write_bytes(result)
     print("Downloaded Catch2", file=sys.stderr)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(asyncio.run(main(parser.parse_args())))
+    sys.exit(main(parser.parse_args()))
