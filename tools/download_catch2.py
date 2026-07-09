@@ -44,15 +44,15 @@ import sys
 import pathlib
 import requests
 
-CATCH2_VERSION = "3.15.0"
+CATCH2_VERSION = "3.15.2"
 CATCH2_URLS = {
     "catch_amalgamated.cpp": (
         f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.cpp",
-        "f4b1fa292bc2db56b0e8e3377aa8dec77f0e69fac8c64ee01cf2fecf467685ba2b86fcc950821f11d4f753ea07efaf990c09f9026cdae9bf8b6c7c63b21fe076",
+        "9b6c05f56e12fc08f846bbb6d49beef30e22b09e0b41cb8f91e42d8a6d0e043e1467045ff722de7de7b117e030c2c950cedc4f5c39323e919499ffa9250d024a",
     ),
     "catch_amalgamated.hpp": (
         f"https://github.com/catchorg/Catch2/releases/download/v{CATCH2_VERSION}/catch_amalgamated.hpp",
-        "8edaa6ec80a5227b68b32d0ba3935b62305b40764df0a55ea37ba06587e3fac3ef60c232f3e0210dfc622f9801ea687952fce06d0907b862c184107084568ed5",
+        "80b1d474ead948d530af4109e6372e9490d17bdd7756c08a7cda0805ae0f2b896b8ab582212452c73a1b94662a93dbe82b92a729fb1d1ec85d8434ab2ed6823e",
     ),
 }
 
